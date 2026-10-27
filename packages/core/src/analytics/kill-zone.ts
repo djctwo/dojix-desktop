@@ -18,7 +18,8 @@ import { tradingDayCount } from "../metrics/trading-days";
 import type { Trade } from "../model/trade";
 import { groupByFirstAppearance, stableSorted } from "../swiftcompat/collections";
 import { formatFixed, swiftFormat } from "../swiftcompat/format";
-import { percentOf, sumProfit, winCount } from "./shared";
+import { percentOf, winCount } from "./shared";
+import { sumProfit } from "./support";
 
 export interface HourStats {
   hour: number;

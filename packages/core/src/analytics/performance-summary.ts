@@ -14,7 +14,8 @@
 import type { EngineContext } from "../engine/context";
 import { profitDouble } from "../model/accessors";
 import type { Trade } from "../model/trade";
-import { maxAbsOr, percentOf, positiveProfitCount, sumProfit } from "./shared";
+import { maxAbsOr, percentOf, positiveProfitCount } from "./shared";
+import { sumProfit } from "./support";
 
 export interface DailyBar {
   /** Start of the day, epoch ms. */

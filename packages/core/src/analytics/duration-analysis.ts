@@ -10,7 +10,8 @@
 import type { EngineContext } from "../engine/context";
 import type { Trade } from "../model/trade";
 import { maxBy } from "../swiftcompat/collections";
-import { meanR, percentOf, sumProfit, winCount } from "./shared";
+import { meanR, percentOf, winCount } from "./shared";
+import { sumProfit } from "./support";
 
 export interface DurationRange {
   label: string;

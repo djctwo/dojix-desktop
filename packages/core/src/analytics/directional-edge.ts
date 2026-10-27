@@ -9,7 +9,8 @@
 import type { EngineContext } from "../engine/context";
 import type { Trade } from "../model/trade";
 import { swiftMax } from "../swiftcompat/collections";
-import { meanR, percentOf, sumProfit, winCount } from "./shared";
+import { meanR, percentOf, winCount } from "./shared";
+import { sumProfit } from "./support";
 
 export interface DirectionStats {
   count: number;

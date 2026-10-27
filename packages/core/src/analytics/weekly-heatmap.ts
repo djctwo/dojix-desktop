@@ -15,7 +15,8 @@
 import type { EngineContext } from "../engine/context";
 import type { Trade } from "../model/trade";
 import { groupByFirstAppearance, minBy, stableSorted } from "../swiftcompat/collections";
-import { maxAbsOr, percentOf, sumProfit, winCount } from "./shared";
+import { maxAbsOr, percentOf, winCount } from "./shared";
+import { sumProfit } from "./support";
 
 export interface WeekData {
   id: string;

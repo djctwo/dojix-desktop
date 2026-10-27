@@ -9,7 +9,8 @@ import type { EngineContext } from "../engine/context";
 import type { Trade } from "../model/trade";
 import { groupByFirstAppearance, stableSorted } from "../swiftcompat/collections";
 import { sessionCases } from "./session-intelligence";
-import { percentOf, sumProfit, winCount } from "./shared";
+import { percentOf, winCount } from "./shared";
+import { sumProfit } from "./support";
 
 export interface SessionRank {
   rank: number;

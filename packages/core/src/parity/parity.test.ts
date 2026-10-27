@@ -8,11 +8,17 @@
 // loaders once packages/importers can parse them.
 
 import { describe, expect, it } from "vitest";
+import { registerE3Parity } from "../analytics/e3";
 import { parityContext } from "../engine/context";
 import { toEngineTrade, type StoredTrade } from "../model/stored";
 import type { Trade } from "../model/trade";
 import { compareParity } from "./compare";
 import { parseReferenceFile, resolveParityOutput, type ReferenceFile } from "./reference";
+// Component resolvers register themselves on import.
+import "../analytics/greenwick/parity";
+
+// Component resolvers register themselves on demand (analytics teams).
+registerE3Parity();
 
 // Component teams keep their resolvers next to their components ("*.parity.ts"); importing
 // them registers them.

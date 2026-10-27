@@ -16,7 +16,8 @@ import { sortedByCloseAscending } from "../metrics/metrics-calculator";
 import { profitDouble } from "../model/accessors";
 import type { Trade } from "../model/trade";
 import { groupByFirstAppearance, stableSorted } from "../swiftcompat/collections";
-import { meanR, percentOf, positiveProfitCount, sumProfit } from "./shared";
+import { meanR, percentOf, positiveProfitCount } from "./shared";
+import { sumProfit } from "./support";
 
 export interface SymbolCard {
   symbol: string;

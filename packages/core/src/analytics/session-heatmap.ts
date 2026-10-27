@@ -14,7 +14,8 @@ import { sortedByCloseAscending } from "../metrics/metrics-calculator";
 import type { Trade } from "../model/trade";
 import { groupByFirstAppearance, stableSorted, swiftMin } from "../swiftcompat/collections";
 import type { ZonedCalendar } from "../time/zoned-calendar";
-import { entryDayLabel, maxAbsOr, sumProfit, WEEKDAY_ROWS } from "./shared";
+import { entryDayLabel, maxAbsOr, WEEKDAY_ROWS } from "./shared";
+import { sumProfit } from "./support";
 
 export interface SessionHeatmapCell {
   id: string;

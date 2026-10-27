@@ -14,7 +14,8 @@ import { isLoss, isWin, profitDouble } from "../model/accessors";
 import { MARKET_SESSIONS, MARKET_SESSION_INFO, TRADING_SESSIONS, TRADING_SESSION_INFO } from "../model/enums";
 import type { Trade } from "../model/trade";
 import { groupByFirstAppearance } from "../swiftcompat/collections";
-import { meanR, percentOf, sumProfit } from "./shared";
+import { meanR, percentOf } from "./shared";
+import { sumProfit } from "./support";
 
 export type SessionRecommendation = "focus" | "neutral" | "reduce" | "avoid";
 

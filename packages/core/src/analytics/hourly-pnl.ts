@@ -11,7 +11,7 @@
 import type { EngineContext } from "../engine/context";
 import type { Trade } from "../model/trade";
 import { groupByFirstAppearance, maxBy } from "../swiftcompat/collections";
-import { sumProfit } from "./shared";
+import { sumProfit } from "./support";
 
 export interface HourlyPnLRow {
   hour: number;

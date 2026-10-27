@@ -11,7 +11,8 @@
 import type { EngineContext } from "../engine/context";
 import type { Trade } from "../model/trade";
 import { groupByFirstAppearance, maxBy, minBy } from "../swiftcompat/collections";
-import { closeDayLabel, percentOf, sumProfit, WEEKDAY_ROWS, winCount } from "./shared";
+import { closeDayLabel, percentOf, WEEKDAY_ROWS, winCount } from "./shared";
+import { sumProfit } from "./support";
 
 export interface DayOfWeekRow {
   id: string;

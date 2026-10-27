@@ -9,13 +9,6 @@ import { stableSorted } from "../swiftcompat/collections";
 import { idiv } from "../swiftcompat/int";
 import { entryWeekday, tradingWeekday } from "../time/us-market";
 
-/** `trades.reduce(0.0) { $0 + $1.profitDouble }`. */
-export function sumProfit(trades: readonly Trade[]): number {
-  let total = 0;
-  for (const t of trades) total += profitDouble(t);
-  return total;
-}
-
 /** `trades.filter(\.isWin).count` (Decimal comparison). */
 export function winCount(trades: readonly Trade[]): number {
   let n = 0;

@@ -262,7 +262,10 @@ impl MemoryVault {
 
     /// Makes only writes to `account` fail.
     pub fn fail_writes(&self, account: &str) {
-        self.failing_writes.lock().unwrap().push(account.to_string());
+        self.failing_writes
+            .lock()
+            .unwrap()
+            .push(account.to_string());
     }
 
     /// Ends every injected failure.
@@ -371,9 +374,15 @@ mod tests {
         assert!(matches!(v.lookup(WRAPPED_KEY), Lookup::Absent));
         v.write(WRAPPED_KEY, b"wrapped bytes").unwrap();
         assert!(FolderVault::in_use(tmp.path()));
-        assert!(matches!(v.lookup(WRAPPED_KEY), Lookup::Found(ref s) if s.as_slice() == b"wrapped bytes"));
+        assert!(
+            matches!(v.lookup(WRAPPED_KEY), Lookup::Found(ref s) if s.as_slice() == b"wrapped bytes")
+        );
         v.write(FAILED_ATTEMPTS, b"3").unwrap();
-        assert!(tmp.path().join(LOCAL_RECORDS_DIR).join(FAILED_ATTEMPTS).is_file());
+        assert!(tmp
+            .path()
+            .join(LOCAL_RECORDS_DIR)
+            .join(FAILED_ATTEMPTS)
+            .is_file());
 
         // A bare key or an API key never reaches the disk.
         assert!(v.write(DATABASE_KEY, &[1u8; 32]).is_err());
@@ -429,7 +438,9 @@ mod tests {
         // A wrapped key is longer than a bare one; the vault must hold it byte for byte.
         let wrapped = vec![0xA5u8; 31 + 12 + 64 + 16];
         v.write(WRAPPED_KEY, &wrapped).unwrap();
-        assert!(matches!(v.lookup(WRAPPED_KEY), Lookup::Found(ref k) if k.as_slice() == wrapped.as_slice()));
+        assert!(
+            matches!(v.lookup(WRAPPED_KEY), Lookup::Found(ref k) if k.as_slice() == wrapped.as_slice())
+        );
         v.delete(WRAPPED_KEY).unwrap();
         v.delete(DATABASE_KEY).unwrap();
         v.delete(DATABASE_KEY).unwrap();

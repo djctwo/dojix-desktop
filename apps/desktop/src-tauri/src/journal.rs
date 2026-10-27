@@ -161,14 +161,14 @@ impl Journal {
             },
             Err(e) => return Err((classify(e), current)),
         };
-        let (conn, migrated) = match Self::from_image(&image, bytes, stamp, snapshots, &migrations())
-        {
-            Ok(opened) => opened,
-            Err(e) => {
-                let current = rekey_to.unwrap_or(key);
-                return Err((LoadError::Other(e), current));
-            }
-        };
+        let (conn, migrated) =
+            match Self::from_image(&image, bytes, stamp, snapshots, &migrations()) {
+                Ok(opened) => opened,
+                Err(e) => {
+                    let current = rekey_to.unwrap_or(key);
+                    return Err((LoadError::Other(e), current));
+                }
+            };
         let mut journal = Self {
             conn,
             key,
@@ -183,10 +183,7 @@ impl Journal {
                 return Err((LoadError::Other(e), current));
             }
         }
-        Ok(Loaded {
-            journal,
-            rekey_to,
-        })
+        Ok(Loaded { journal, rekey_to })
     }
 
     /// Deserializes and migrates. Returns the connection and whether a migration ran.
@@ -559,7 +556,11 @@ pub(crate) mod tests {
         assert!(j.add_sample_trade().is_err());
         assert!(j.is_dirty());
         assert_eq!(j.trade_count().unwrap(), 1, "the change stays in memory");
-        assert_eq!(j.generation(), 1, "the generation only counts durable saves");
+        assert_eq!(
+            j.generation(),
+            1,
+            "the generation only counts durable saves"
+        );
         let new = JournalKey::from_bytes(&[9u8; 32]).unwrap();
         assert!(j.rekey(new).is_err());
         assert!(j.key().same_as(&key()));
@@ -568,7 +569,13 @@ pub(crate) mod tests {
         j.save().unwrap();
         assert!(!j.is_dirty());
         drop(j);
-        assert_eq!(load(&path, key(), tmp.path()).unwrap().trade_count().unwrap(), 1);
+        assert_eq!(
+            load(&path, key(), tmp.path())
+                .unwrap()
+                .trade_count()
+                .unwrap(),
+            1
+        );
     }
 
     #[test]

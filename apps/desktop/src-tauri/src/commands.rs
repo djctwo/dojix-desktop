@@ -401,7 +401,10 @@ fn pick(path: PathBuf, state: &AppState) -> Result<PickedBackup, OpError> {
     };
     let kind = crate::backup::kind(&head[..n]);
     if kind == BackupKind::Unknown {
-        return Err(OpError::new("restore_refused", "The selected file is not a backup."));
+        return Err(OpError::new(
+            "restore_refused",
+            "The selected file is not a backup.",
+        ));
     }
     let file_name = path
         .file_name()
@@ -432,7 +435,10 @@ pub async fn backup_pick(
         Ok(app
             .dialog()
             .file()
-            .add_filter("Backups", &["dxbk", "db", "sqlite", "dojixbackup", "gwbackup", "backup"])
+            .add_filter(
+                "Backups",
+                &["dxbk", "db", "sqlite", "dojixbackup", "gwbackup", "backup"],
+            )
             .blocking_pick_file())
     })
     .await?;
@@ -561,9 +567,6 @@ pub async fn e2e_backup_export(
 /// Restore step 1 with a given path (no dialog).
 #[cfg(feature = "e2e")]
 #[tauri::command]
-pub fn e2e_backup_pick(
-    state: State<'_, AppState>,
-    path: String,
-) -> Result<PickedBackup, OpError> {
+pub fn e2e_backup_pick(state: State<'_, AppState>, path: String) -> Result<PickedBackup, OpError> {
     pick(PathBuf::from(path), &state)
 }

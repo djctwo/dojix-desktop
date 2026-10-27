@@ -15,7 +15,7 @@
 
 use zeroize::Zeroizing;
 
-use crate::crypto::{self, CryptoError, Kek, KdfParams, PasswordHeader, BOX_OVERHEAD, KEY_LEN};
+use crate::crypto::{self, CryptoError, KdfParams, Kek, PasswordHeader, BOX_OVERHEAD, KEY_LEN};
 use crate::seal::JournalKey;
 use crate::vault::{Lookup, SecretStore, DATABASE_KEY, WRAPPED_KEY};
 
@@ -124,8 +124,8 @@ pub fn open_wrapped(blob: &[u8], password: &str) -> Result<UnwrappedKeys, VaultE
     if blob.len() != wrapped_len(1) && blob.len() != wrapped_len(2) {
         return Err(VaultError::Corrupt);
     }
-    let header = PasswordHeader::parse(blob, WRAP_MAGIC, WRAP_VERSION)
-        .map_err(|_| VaultError::Corrupt)?;
+    let header =
+        PasswordHeader::parse(blob, WRAP_MAGIC, WRAP_VERSION).map_err(|_| VaultError::Corrupt)?;
     let kek = crypto::argon2id(password.as_bytes(), &header.salt, header.params)
         .map_err(|_| VaultError::Corrupt)?;
     open_with_kek(blob, &kek)
@@ -327,7 +327,8 @@ impl<'a> KeyVault<'a> {
 
     /// Removes a bare key left next to a wrapped one (an interrupted Enable).
     pub fn remove_plain_copy_if_wrapped(&self) {
-        if matches!(self.has_wrapped(), Ok(true)) && matches!(self.read(DATABASE_KEY), Ok(Some(_))) {
+        if matches!(self.has_wrapped(), Ok(true)) && matches!(self.read(DATABASE_KEY), Ok(Some(_)))
+        {
             if let Err(e) = self.store.delete(DATABASE_KEY) {
                 log::warn!("could not remove a leftover bare key: {e}");
             }
@@ -397,10 +398,7 @@ mod tests {
         assert_eq!(v.state().unwrap(), KeyState::Empty);
         let key = v.create_plain_key().unwrap();
         assert_eq!(v.state().unwrap(), KeyState::Plain);
-        assert_eq!(
-            v.plain_key().unwrap().unwrap().as_bytes(),
-            key.as_bytes()
-        );
+        assert_eq!(v.plain_key().unwrap().unwrap().as_bytes(), key.as_bytes());
         assert!(matches!(
             v.create_plain_key(),
             Err(VaultError::KeyAlreadyExists)
@@ -413,7 +411,10 @@ mod tests {
         let v = vault(&store);
         store.fail(WRAPPED_KEY);
         assert!(matches!(v.state(), Err(VaultError::Unreadable(_))));
-        assert!(matches!(v.create_plain_key(), Err(VaultError::Unreadable(_))));
+        assert!(matches!(
+            v.create_plain_key(),
+            Err(VaultError::Unreadable(_))
+        ));
         assert!(!store.contains(DATABASE_KEY));
         store.heal();
         store.fail(DATABASE_KEY);
@@ -440,7 +441,10 @@ mod tests {
             v.begin_rotation(&new, &wrapper("another-pass")),
             Err(VaultError::RotationPending)
         ));
-        assert!(matches!(v.store_plain(&new), Err(VaultError::RotationPending)));
+        assert!(matches!(
+            v.store_plain(&new),
+            Err(VaultError::RotationPending)
+        ));
 
         v.finish_rotation(&new, &w).unwrap();
         assert!(!v.has_pending_rotation().unwrap());

@@ -71,7 +71,9 @@ impl BackupKind {
 pub enum BackupError {
     #[error("This backup is protected with a password. Enter it to restore.")]
     PasswordRequired,
-    #[error("Wrong password for this backup (or the file was changed). Your journal was not changed.")]
+    #[error(
+        "Wrong password for this backup (or the file was changed). Your journal was not changed."
+    )]
     WrongPassword,
     #[error("This backup file is damaged or not a backup. Your journal was not changed.")]
     Damaged,
@@ -103,7 +105,11 @@ pub fn kind(bytes: &[u8]) -> BackupKind {
 }
 
 /// Seals a SQLite image as a desktop backup.
-pub fn seal_desktop(image: &[u8], password: &str, params: KdfParams) -> Result<Vec<u8>, BackupError> {
+pub fn seal_desktop(
+    image: &[u8],
+    password: &str,
+    params: KdfParams,
+) -> Result<Vec<u8>, BackupError> {
     let header = PasswordHeader {
         magic: *DESKTOP_MAGIC,
         version: DESKTOP_VERSION,
@@ -137,9 +143,7 @@ pub fn open(bytes: &[u8], password: Option<&str>) -> Result<Zeroizing<Vec<u8>>, 
     match k {
         BackupKind::Desktop => open_desktop(bytes, password),
         BackupKind::MacDojix => open_djxb(bytes, password),
-        BackupKind::MacDojixLegacy | BackupKind::MacGreenwickLegacy => {
-            open_legacy(bytes, password)
-        }
+        BackupKind::MacDojixLegacy | BackupKind::MacGreenwickLegacy => open_legacy(bytes, password),
         BackupKind::MacGreenwick => open_gwbk(bytes, password),
         BackupKind::Plain | BackupKind::Unknown => Err(BackupError::NotABackup),
     }
@@ -235,23 +239,41 @@ mod tests {
         let sealed = seal_desktop(&image(), PW, KdfParams::TEST_MIN).unwrap();
         assert_eq!(kind(&sealed), BackupKind::Desktop);
         assert_eq!(&sealed[..6], b"DXBK\x01\x01");
-        assert_eq!(open(&sealed, Some(PW)).unwrap().as_slice(), image().as_slice());
+        assert_eq!(
+            open(&sealed, Some(PW)).unwrap().as_slice(),
+            image().as_slice()
+        );
         assert_eq!(
             open(&sealed, Some("wrong-password")).unwrap_err(),
             BackupError::WrongPassword
         );
-        assert_eq!(open(&sealed, None).unwrap_err(), BackupError::PasswordRequired);
-        assert_eq!(open(&sealed, Some("")).unwrap_err(), BackupError::PasswordRequired);
+        assert_eq!(
+            open(&sealed, None).unwrap_err(),
+            BackupError::PasswordRequired
+        );
+        assert_eq!(
+            open(&sealed, Some("")).unwrap_err(),
+            BackupError::PasswordRequired
+        );
         let mut salt = sealed.clone();
         salt[20] ^= 1;
-        assert_eq!(open(&salt, Some(PW)).unwrap_err(), BackupError::WrongPassword);
+        assert_eq!(
+            open(&salt, Some(PW)).unwrap_err(),
+            BackupError::WrongPassword
+        );
         let mut newer = sealed.clone();
         newer[4] = 2;
-        assert_eq!(open(&newer, Some(PW)).unwrap_err(), BackupError::NewerVersion);
+        assert_eq!(
+            open(&newer, Some(PW)).unwrap_err(),
+            BackupError::NewerVersion
+        );
         let mut hours = sealed.clone();
         hours[10..14].copy_from_slice(&1000u32.to_be_bytes());
         assert_eq!(open(&hours, Some(PW)).unwrap_err(), BackupError::Damaged);
-        assert_eq!(open(&sealed[..40], Some(PW)).unwrap_err(), BackupError::Damaged);
+        assert_eq!(
+            open(&sealed[..40], Some(PW)).unwrap_err(),
+            BackupError::Damaged
+        );
     }
 
     #[test]
@@ -259,7 +281,10 @@ mod tests {
         assert_eq!(kind(&image()), BackupKind::Plain);
         assert_eq!(open(&image(), None).unwrap().as_slice(), image().as_slice());
         assert_eq!(kind(b"PK\x03\x04zip"), BackupKind::Unknown);
-        assert_eq!(open(b"PK\x03\x04zip", Some(PW)).unwrap_err(), BackupError::NotABackup);
+        assert_eq!(
+            open(b"PK\x03\x04zip", Some(PW)).unwrap_err(),
+            BackupError::NotABackup
+        );
         assert_eq!(kind(b"ab"), BackupKind::Unknown);
     }
 

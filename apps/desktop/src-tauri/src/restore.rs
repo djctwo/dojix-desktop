@@ -123,7 +123,8 @@ fn open_backup(image: &[u8]) -> Result<Connection, RestoreError> {
         .map_err(|_| RestoreError::NotABackup)?;
     // Defence in depth: no functions from the backup's schema run while it is read.
     let _ = conn.pragma_update(None, "trusted_schema", "OFF");
-    let ok: Vec<String> = query_strings(&conn, "PRAGMA quick_check").map_err(|_| RestoreError::Damaged)?;
+    let ok: Vec<String> =
+        query_strings(&conn, "PRAGMA quick_check").map_err(|_| RestoreError::Damaged)?;
     if ok != ["ok"] {
         return Err(RestoreError::Damaged);
     }
@@ -263,7 +264,9 @@ fn pragma_rows(conn: &Connection, sql: &str, fields: &[usize]) -> Result<String,
     while let Some(row) = rows.next().map_err(|_| RestoreError::Damaged)? {
         let mut cells = Vec::new();
         for &i in fields {
-            cells.push(describe_value(row.get_ref(i).map_err(|_| RestoreError::Damaged)?));
+            cells.push(describe_value(
+                row.get_ref(i).map_err(|_| RestoreError::Damaged)?,
+            ));
         }
         parts.push(cells.join(" "));
     }
@@ -287,7 +290,9 @@ fn check_schema(
         match reference.get(object) {
             None => return Err(RestoreError::UnexpectedSchema(object.clone())),
             Some(expected) if expected != signature => {
-                return Err(RestoreError::UnexpectedSchema(format!("{object} definition")))
+                return Err(RestoreError::UnexpectedSchema(format!(
+                    "{object} definition"
+                )))
             }
             Some(_) => {}
         }
@@ -322,11 +327,7 @@ fn owned(v: ValueRef<'_>) -> Result<Value, &'static str> {
         ValueRef::Null => Value::Null,
         ValueRef::Integer(i) => Value::Integer(i),
         ValueRef::Real(f) => Value::Real(f),
-        ValueRef::Text(t) => Value::Text(
-            std::str::from_utf8(t)
-                .map_err(|_| "text")?
-                .to_string(),
-        ),
+        ValueRef::Text(t) => Value::Text(std::str::from_utf8(t).map_err(|_| "text")?.to_string()),
         ValueRef::Blob(_) => return Err("blob"),
     })
 }
@@ -351,7 +352,8 @@ fn is_disallowed_control(c: char, allow_line_breaks: bool) -> bool {
 }
 
 fn has_controls(text: &str, allow_line_breaks: bool) -> bool {
-    text.chars().any(|c| is_disallowed_control(c, allow_line_breaks))
+    text.chars()
+        .any(|c| is_disallowed_control(c, allow_line_breaks))
 }
 
 fn strip_controls(text: &str, keep_line_breaks: bool) -> String {
@@ -402,7 +404,8 @@ pub fn valid_money(s: &str) -> bool {
         && !frac.is_empty()
         && int.bytes().all(|b| b.is_ascii_digit())
         && frac.bytes().all(|b| b.is_ascii_digit())
-        && s.parse::<f64>().is_ok_and(|v| v.is_finite() && v.abs() <= 1e12)
+        && s.parse::<f64>()
+            .is_ok_and(|v| v.is_finite() && v.abs() <= 1e12)
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -503,7 +506,11 @@ fn check_trade(brand: &Brand, row: &mut Row) -> Vec<String> {
     if !matches!(text(row, "time_basis"), Some("utc" | "broker")) {
         flag("time_basis");
     }
-    let duration_max: i64 = if dojix { 10 * 366 * 24 * 60 } else { 20 * 366 * 24 * 60 };
+    let duration_max: i64 = if dojix {
+        10 * 366 * 24 * 60
+    } else {
+        20 * 366 * 24 * 60
+    };
     if !int(row, "duration_min").is_some_and(|d| (0..=duration_max).contains(&d)) {
         flag("duration_min");
     }
@@ -536,7 +543,9 @@ fn check_trade(brand: &Brand, row: &mut Row) -> Vec<String> {
         "post_close_15m",
         "post_close_30m",
     ] {
-        if !(is_null(row, col) || real(row, col).is_some_and(|v| v.is_finite() && v.abs() <= POINTS_MAX)) {
+        if !(is_null(row, col)
+            || real(row, col).is_some_and(|v| v.is_finite() && v.abs() <= POINTS_MAX))
+        {
             flag(col);
         }
     }
@@ -562,7 +571,9 @@ fn check_trade(brand: &Brand, row: &mut Row) -> Vec<String> {
         flag("account_id");
     }
     for col in ["volume", "avg_volume"] {
-        if !(is_null(row, col) || int(row, col).is_some_and(|v| (0..=1_000_000_000_000).contains(&v))) {
+        if !(is_null(row, col)
+            || int(row, col).is_some_and(|v| (0..=1_000_000_000_000).contains(&v)))
+        {
             flag(col);
         }
     }
@@ -686,7 +697,11 @@ fn desktop_contents(conn: &Connection, brand: &Brand) -> Result<Contents, Restor
         let names: Vec<String> = cols.iter().map(|c| c.name.clone()).collect();
         let sql = format!(
             "SELECT {} FROM {} ORDER BY rowid",
-            names.iter().map(|n| quoted(n)).collect::<Vec<_>>().join(", "),
+            names
+                .iter()
+                .map(|n| quoted(n))
+                .collect::<Vec<_>>()
+                .join(", "),
             quoted(table)
         );
         let mut stmt = conn.prepare(&sql).map_err(|_| RestoreError::Damaged)?;
@@ -716,7 +731,12 @@ fn desktop_contents(conn: &Connection, brand: &Brand) -> Result<Contents, Restor
             if !bad.is_empty() {
                 return Err(invalid(table, index, bad));
             }
-            out.push(names.iter().map(|n| row.remove(n).unwrap_or(Value::Null)).collect());
+            out.push(
+                names
+                    .iter()
+                    .map(|n| row.remove(n).unwrap_or(Value::Null))
+                    .collect(),
+            );
         }
         match table {
             "trades" => trades = out.len(),
@@ -912,11 +932,8 @@ fn check_mac_structure(
     conn: &Connection,
     trade_map: &[(&str, Option<&str>, Kind)],
 ) -> Result<(), RestoreError> {
-    let tables = query_strings(
-        conn,
-        "SELECT name FROM sqlite_master WHERE type = 'table'",
-    )
-    .map_err(|_| RestoreError::Damaged)?;
+    let tables = query_strings(conn, "SELECT name FROM sqlite_master WHERE type = 'table'")
+        .map_err(|_| RestoreError::Damaged)?;
     for table in tables {
         let allowed: Option<Vec<&str>> = match table.as_str() {
             "trades" => Some(trade_map.iter().map(|(n, _, _)| *n).collect()),
@@ -952,11 +969,16 @@ fn read_mac_table(
     map: &[(&str, Option<&str>, Kind)],
 ) -> Result<(Vec<Row>, usize), RestoreError> {
     let present: HashSet<String> = columns(conn, table)?.into_iter().map(|c| c.name).collect();
-    let cols: Vec<&(&str, Option<&str>, Kind)> =
-        map.iter().filter(|(n, _, _)| present.contains(*n)).collect();
+    let cols: Vec<&(&str, Option<&str>, Kind)> = map
+        .iter()
+        .filter(|(n, _, _)| present.contains(*n))
+        .collect();
     let sql = format!(
         "SELECT {} FROM {} ORDER BY rowid",
-        cols.iter().map(|(n, _, _)| quoted(n)).collect::<Vec<_>>().join(", "),
+        cols.iter()
+            .map(|(n, _, _)| quoted(n))
+            .collect::<Vec<_>>()
+            .join(", "),
         quoted(table)
     );
     let mut stmt = conn.prepare(&sql).map_err(|_| RestoreError::Damaged)?;
@@ -991,7 +1013,11 @@ fn read_mac_table(
     Ok((out, dropped))
 }
 
-fn mac_contents(conn: &Connection, brand: &Brand, source: Source) -> Result<Contents, RestoreError> {
+fn mac_contents(
+    conn: &Connection,
+    brand: &Brand,
+    source: Source,
+) -> Result<Contents, RestoreError> {
     let (known, trade_map) = match source {
         Source::MacDojix => (MAC_DOJIX_MIGRATIONS, MAC_DOJIX_TRADE),
         _ => (MAC_GREENWICK_MIGRATIONS, MAC_GREENWICK_TRADE),
@@ -1162,7 +1188,8 @@ fn map_mac_trade(row: &mut Row, source: Source, now: &str) {
         _ => match int(row, "is_sample") {
             Some(v) => v == 1,
             None => {
-                (comment == "Demo" || comment == SAMPLE_COMMENT) && (900_000..=900_029).contains(&ticket)
+                (comment == "Demo" || comment == SAMPLE_COMMENT)
+                    && (900_000..=900_029).contains(&ticket)
             }
         },
     };
@@ -1232,7 +1259,10 @@ pub fn validate(image: &[u8], brand: &Brand) -> Result<Contents, RestoreError> {
     let conn = open_backup(image)?;
     refuse_triggers_and_views(&conn)?;
     if table_exists(&conn, "grdb_migrations")? {
-        let trade_cols: HashSet<String> = columns(&conn, "trades")?.into_iter().map(|c| c.name).collect();
+        let trade_cols: HashSet<String> = columns(&conn, "trades")?
+            .into_iter()
+            .map(|c| c.name)
+            .collect();
         let source = if trade_cols.contains("lots") {
             Source::MacDojix
         } else if trade_cols.contains("shares") {
@@ -1367,7 +1397,13 @@ pub(crate) mod tests {
 
     fn journal(tmp: &tempfile::TempDir, brand: &Brand) -> Journal {
         let key = JournalKey::generate().unwrap();
-        Journal::create(&tmp.path().join("journal.sealed"), key, brand.journal_byte, None).unwrap()
+        Journal::create(
+            &tmp.path().join("journal.sealed"),
+            key,
+            brand.journal_byte,
+            None,
+        )
+        .unwrap()
     }
 
     fn image_of(conn: &Connection) -> Vec<u8> {
@@ -1445,7 +1481,17 @@ pub(crate) mod tests {
         for good in ["0", "-12.5", "1000000000000", "0.00001"] {
             assert!(valid_money(good), "{good}");
         }
-        for bad in ["NaN", "1e5", "1000000000001", "", "-", "1.", ".5", "1,5", " 1"] {
+        for bad in [
+            "NaN",
+            "1e5",
+            "1000000000001",
+            "",
+            "-",
+            "1.",
+            ".5",
+            "1,5",
+            " 1",
+        ] {
             assert!(!valid_money(bad), "{bad}");
         }
     }
@@ -1556,7 +1602,10 @@ pub(crate) mod tests {
     fn a_mac_dojix_backup_is_mapped() {
         let contents = validate(&mac_dojix_backup(""), &DOJIX).unwrap();
         assert_eq!(contents.source, Source::MacDojix);
-        assert_eq!((contents.trades, contents.checkpoints, contents.settings), (2, 1, 1));
+        assert_eq!(
+            (contents.trades, contents.checkpoints, contents.settings),
+            (2, 1, 1)
+        );
         assert_eq!(contents.dropped_screenshot_names, 1);
 
         let tmp = tempfile::tempdir().unwrap();
@@ -1614,7 +1663,10 @@ pub(crate) mod tests {
             RestoreError::OtherBrand("Dojix")
         );
         assert!(matches!(
-            validate(&mac_dojix_backup("INSERT INTO grdb_migrations VALUES ('v9_future');"), &DOJIX),
+            validate(
+                &mac_dojix_backup("INSERT INTO grdb_migrations VALUES ('v9_future');"),
+                &DOJIX
+            ),
             Err(RestoreError::NewerVersion)
         ));
         assert!(matches!(
@@ -1622,19 +1674,31 @@ pub(crate) mod tests {
             Err(RestoreError::UnexpectedSchema(_))
         ));
         assert!(matches!(
-            validate(&mac_dojix_backup("ALTER TABLE trades ADD COLUMN evil TEXT;"), &DOJIX),
+            validate(
+                &mac_dojix_backup("ALTER TABLE trades ADD COLUMN evil TEXT;"),
+                &DOJIX
+            ),
             Err(RestoreError::UnexpectedSchema(_))
         ));
         assert!(matches!(
-            validate(&mac_dojix_backup("UPDATE trades SET lots = -1 WHERE ticket = 1001;"), &DOJIX),
+            validate(
+                &mac_dojix_backup("UPDATE trades SET lots = -1 WHERE ticket = 1001;"),
+                &DOJIX
+            ),
             Err(RestoreError::InvalidRow { .. })
         ));
         assert!(matches!(
-            validate(&mac_dojix_backup("UPDATE trades SET hour = 99 WHERE ticket = 1001;"), &DOJIX),
+            validate(
+                &mac_dojix_backup("UPDATE trades SET hour = 99 WHERE ticket = 1001;"),
+                &DOJIX
+            ),
             Err(RestoreError::InvalidRow { .. })
         ));
         assert!(matches!(
-            validate(&mac_dojix_backup("UPDATE trades SET netProfit = 'NaN' WHERE ticket = 1001;"), &DOJIX),
+            validate(
+                &mac_dojix_backup("UPDATE trades SET netProfit = 'NaN' WHERE ticket = 1001;"),
+                &DOJIX
+            ),
             Err(RestoreError::InvalidRow { .. })
         ));
         assert!(matches!(

@@ -107,11 +107,15 @@ impl Ledger {
         match self.store.lookup(SAVE_RECORD) {
             Lookup::Absent => None,
             Lookup::Failed(e) => {
-                log::error!("could not read the last save record ({e}); accepting the journal file");
+                log::error!(
+                    "could not read the last save record ({e}); accepting the journal file"
+                );
                 None
             }
             Lookup::Found(bytes) => {
-                let record = std::str::from_utf8(&bytes).ok().and_then(SaveRecord::decode);
+                let record = std::str::from_utf8(&bytes)
+                    .ok()
+                    .and_then(SaveRecord::decode);
                 if record.is_none() {
                     log::error!("the stored save record is damaged; ignoring it");
                 }

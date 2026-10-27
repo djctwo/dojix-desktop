@@ -199,7 +199,10 @@ impl<'a> Throttle<'a> {
             return format!("Incorrect password ({count}/5)");
         }
         let until = self.clock.now_ms().saturating_add(wait * 1000);
-        if let Err(e) = self.store.write(LOCKOUT_UNTIL, until.to_string().as_bytes()) {
+        if let Err(e) = self
+            .store
+            .write(LOCKOUT_UNTIL, until.to_string().as_bytes())
+        {
             log::error!("could not store the wrong-password wait: {e}");
         }
         wait_message(wait)
@@ -282,10 +285,14 @@ mod tests {
             let t = Throttle::new(&store, &clock, "Greenwick");
             assert_eq!(t.check(), Gate::Unreadable);
             assert!(t.status().unreadable);
-            assert!(t.record_failure().contains("can't read its wrong-password count"));
+            assert!(t
+                .record_failure()
+                .contains("can't read its wrong-password count"));
             store.heal();
             // The count was not restarted at 1 and no wait was written.
-            assert!(matches!(store.lookup(FAILED_ATTEMPTS), Lookup::Found(ref v) if v.as_slice() == b"3"));
+            assert!(
+                matches!(store.lookup(FAILED_ATTEMPTS), Lookup::Found(ref v) if v.as_slice() == b"3")
+            );
             assert!(matches!(store.lookup(LOCKOUT_UNTIL), Lookup::Absent));
         }
     }

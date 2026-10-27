@@ -191,7 +191,10 @@ impl Screenshots {
             }
             for file in fs::read_dir(&trade)? {
                 let path = file?.path();
-                let Some(name) = path.file_name().and_then(|n| n.to_str()).map(str::to_string)
+                let Some(name) = path
+                    .file_name()
+                    .and_then(|n| n.to_str())
+                    .map(str::to_string)
                 else {
                     continue;
                 };

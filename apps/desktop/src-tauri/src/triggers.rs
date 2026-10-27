@@ -62,8 +62,10 @@ mod win {
     }
 
     /// Hooks the main window's messages. Must run on the window's (UI) thread.
-    pub fn install(hwnd: HWND, on_trigger: OnTrigger) -> Result<(), String> {
+    /// `hwnd` is the window handle as an integer (it is only passed back to Windows).
+    pub fn install(hwnd: isize, on_trigger: OnTrigger) -> Result<(), String> {
         let _ = HANDLER.set(on_trigger);
+        let hwnd = hwnd as HWND;
         unsafe {
             if SetWindowSubclass(hwnd, Some(subclass), SUBCLASS_ID, 0) == 0 {
                 return Err("could not hook the window's messages".to_string());

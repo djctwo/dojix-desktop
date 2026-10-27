@@ -63,12 +63,7 @@ fn open_vault(service: &str, paths: &DataPaths) -> Arc<dyn SecretStore> {
     match OsVault::new(service) {
         Ok(v) => {
             #[cfg(target_os = "linux")]
-            if new_folder
-                && matches!(
-                    v.lookup(vault::SELF_TEST_PROBE),
-                    vault::Lookup::Failed(_)
-                )
-            {
+            if new_folder && matches!(v.lookup(vault::SELF_TEST_PROBE), vault::Lookup::Failed(_)) {
                 log::warn!("the Secret Service does not answer; App Lock will be required");
                 return Arc::new(vault::FolderVault::new(&paths.root));
             }
@@ -350,7 +345,7 @@ pub fn run() {
                 #[cfg(windows)]
                 match window.hwnd() {
                     Ok(hwnd) => {
-                        if let Err(e) = triggers::install_windows(hwnd.0, os_lock(&store)) {
+                        if let Err(e) = triggers::install_windows(hwnd.0 as isize, os_lock(&store)) {
                             log::warn!("OS lock triggers unavailable: {e}");
                         }
                     }
@@ -373,12 +368,10 @@ pub fn run() {
                             on_minimize("minimize");
                         }
                     }
-                    tauri::WindowEvent::CloseRequested { api, .. } => {
-                        // SPEC 6.3: quitting with unsaved changes asks first.
-                        if events.has_unsaved() {
-                            api.prevent_close();
-                            let _ = handle.emit("unsaved_close", ());
-                        }
+                    // SPEC 6.3: quitting with unsaved changes asks first.
+                    tauri::WindowEvent::CloseRequested { api, .. } if events.has_unsaved() => {
+                        api.prevent_close();
+                        let _ = handle.emit("unsaved_close", ());
                     }
                     _ => {}
                 });

@@ -90,12 +90,20 @@ pub enum Outcome {
 enum State {
     Unlocked,
     /// App Lock on and locked. `vault_unreadable`: the wrapped key couldn't be read.
-    Locked { vault_unreadable: bool },
+    Locked {
+        vault_unreadable: bool,
+    },
     /// The journal file is older than the last save this computer recorded.
-    OlderCopy { file: Stamp, record: SaveRecord },
+    OlderCopy {
+        file: Stamp,
+        record: SaveRecord,
+    },
     /// No system keyring and no key yet: a password must be set first.
     Setup,
-    Failed { code: &'static str, message: String },
+    Failed {
+        code: &'static str,
+        message: String,
+    },
 }
 
 /// What the UI renders (`lock_status`).
@@ -405,7 +413,12 @@ impl Core {
     /// Opens the journal file with `current` (then `previous`). With `check_ledger`, an older
     /// copy moves to the older-copy screen instead. A file that fails to decrypt is set aside
     /// (never deleted) and a new journal is started.
-    fn open_journal(&mut self, current: JournalKey, previous: Option<JournalKey>, check_ledger: bool) {
+    fn open_journal(
+        &mut self,
+        current: JournalKey,
+        previous: Option<JournalKey>,
+        check_ledger: bool,
+    ) {
         let path = self.cfg.paths.journal();
         let bytes = match journal::read_file(&path) {
             Ok(Some(bytes)) => bytes,
@@ -450,7 +463,11 @@ impl Core {
             Err((LoadError::Unreadable(e), key)) => {
                 log::warn!("journal file is unreadable ({e}); setting it aside");
                 let ms = self.cfg.clock.now_ms();
-                let target = self.cfg.paths.set_aside().join(format!("journal-{ms}.sealed"));
+                let target = self
+                    .cfg
+                    .paths
+                    .set_aside()
+                    .join(format!("journal-{ms}.sealed"));
                 if let Err(e) = fs::rename(&path, target) {
                     log::error!("could not set the unreadable journal aside: {e}");
                     return self.fail(
@@ -505,7 +522,7 @@ impl Core {
             },
             State::Setup => Phase::Setup,
             State::Failed { code, message } => Phase::Failed {
-                code: *code,
+                code,
                 message: message.clone(),
             },
         };
@@ -635,7 +652,10 @@ impl Core {
         let keys = self.check_password(password)?;
         if let Some(held) = self.journal.as_mut() {
             let ours = held.key().same_as(&keys.current)
-                || keys.previous.as_ref().is_some_and(|p| held.key().same_as(p));
+                || keys
+                    .previous
+                    .as_ref()
+                    .is_some_and(|p| held.key().same_as(p));
             if !ours {
                 return Err(OpError::new(
                     "key_mismatch",
@@ -688,7 +708,11 @@ impl Core {
 
     /// "Open this copy" on the older-copy screen: the App Lock password (lock on, throttled)
     /// or an explicit confirmation (lock off). Starts a new epoch; the count never goes down.
-    pub fn open_older(&mut self, password: Option<&str>, confirmed: bool) -> Result<LockStatus, OpError> {
+    pub fn open_older(
+        &mut self,
+        password: Option<&str>,
+        confirmed: bool,
+    ) -> Result<LockStatus, OpError> {
         let State::OlderCopy { file, record } = self.state.clone() else {
             return Err(OpError::new("not_older", "There is no older copy to open."));
         };
@@ -701,7 +725,10 @@ impl Core {
             )
         } else {
             if !confirmed {
-                return Err(OpError::new("confirm", "Confirm that you want to open this copy."));
+                return Err(OpError::new(
+                    "confirm",
+                    "Confirm that you want to open this copy.",
+                ));
             }
             match self.keys().plain_key() {
                 Ok(Some(key)) => (key, None, None),
@@ -760,7 +787,12 @@ impl Core {
     /// Steps 2–3 for the files next to the journal: re-seal snapshots and screenshots from
     /// `old` to `new`; drop `old` only when nothing needs it and the journal on disk opens
     /// with `new`.
-    fn reseal_and_finish(&self, old: &JournalKey, new: &JournalKey, wrapper: Option<&Wrapper>) -> Outcome {
+    fn reseal_and_finish(
+        &self,
+        old: &JournalKey,
+        new: &JournalKey,
+        wrapper: Option<&Wrapper>,
+    ) -> Outcome {
         let brand = self.cfg.brand.journal_byte;
         let mut pending = 0usize;
         match snapshot::reseal(&self.cfg.paths.snapshots(), brand, old, new) {
@@ -778,14 +810,18 @@ impl Core {
             }
         }
         if pending > 0 {
-            log::error!("{pending} file(s) still need the previous key; finishing at the next unlock");
+            log::error!(
+                "{pending} file(s) still need the previous key; finishing at the next unlock"
+            );
             return Outcome::FinishesOnNextUnlock;
         }
         let opens = fs::read(self.cfg.paths.journal())
             .ok()
             .is_some_and(|bytes| seal::open(new, brand, &bytes).is_ok());
         if !opens {
-            log::error!("the journal on disk does not open with the new key; keeping the previous key");
+            log::error!(
+                "the journal on disk does not open with the new key; keeping the previous key"
+            );
             return Outcome::FinishesOnNextUnlock;
         }
         let Some(wrapper) = wrapper else {
@@ -1006,7 +1042,10 @@ impl Core {
 
     /// The bytes of a backup of the journal as it is in memory: `DXBK` with a password, or
     /// the plain image without one.
-    pub fn backup_bytes(&self, password: Option<(&str, &str)>) -> Result<Zeroizing<Vec<u8>>, OpError> {
+    pub fn backup_bytes(
+        &self,
+        password: Option<(&str, &str)>,
+    ) -> Result<Zeroizing<Vec<u8>>, OpError> {
         let image = self.journal()?.image().map_err(|e| {
             log::error!("backup: {e}");
             OpError::new("backup_failed", "The backup could not be made.")
@@ -1046,7 +1085,10 @@ impl Core {
         drop(image);
         let generation = self.journal()?.generation();
         let snaps = self.cfg.paths.snapshots();
-        let name = format!("pre-restore-{}-g{generation}.sealed", self.cfg.clock.now_ms());
+        let name = format!(
+            "pre-restore-{}-g{generation}.sealed",
+            self.cfg.clock.now_ms()
+        );
         if let Err(e) = fs::read(self.cfg.paths.journal())
             .and_then(|b| crate::fsec::write_atomic(&snaps.join(name), &b))
             .and_then(|()| snapshot::prune(&snaps, snapshot::KEEP))
@@ -1086,7 +1128,10 @@ impl Core {
 
     pub fn set_idle_minutes(&mut self, minutes: u32) -> Result<(), OpError> {
         if !prefs::IDLE_CHOICES.contains(&minutes) {
-            return Err(OpError::new("invalid", "Choose Off, 1, 5, 15, 30 or 60 minutes."));
+            return Err(OpError::new(
+                "invalid",
+                "Choose Off, 1, 5, 15, 30 or 60 minutes.",
+            ));
         }
         self.idle_minutes = minutes;
         self.activity();
@@ -1216,7 +1261,10 @@ impl Store {
     }
 
     fn gone() -> OpError {
-        OpError::new("store", "The journal stopped responding. Quit and reopen the app.")
+        OpError::new(
+            "store",
+            "The journal stopped responding. Quit and reopen the app.",
+        )
     }
 
     /// Runs `f` on the store thread and waits for its result.
@@ -1349,7 +1397,10 @@ mod tests {
         assert!(password_problem("1234567", "1234567").is_some());
         assert!(password_problem("12345678", "12345678").is_none());
         let long = "é".repeat(128);
-        assert!(password_problem(&long, &long).is_none(), "scalars, not bytes");
+        assert!(
+            password_problem(&long, &long).is_none(),
+            "scalars, not bytes"
+        );
         let too_long = "x".repeat(129);
         assert!(password_problem(&too_long, &too_long).is_some());
     }
@@ -1387,7 +1438,10 @@ mod tests {
 
         let mut core = env.launch();
         assert_eq!(phase(&core), locked_phase());
-        assert!(core.journal().is_err(), "nothing decrypted before the password");
+        assert!(
+            core.journal().is_err(),
+            "nothing decrypted before the password"
+        );
         for n in 1..=4 {
             let e = core.unlock("wrong-password").unwrap_err();
             assert_eq!(e.code, "wrong_password");
@@ -1404,7 +1458,11 @@ mod tests {
         env.clock.advance_ms(30_000);
         assert_eq!(core.unlock(PW).unwrap().phase, Phase::Unlocked);
         assert_eq!(trades(&core), 1);
-        assert_eq!(core.status().throttle.attempts, 0, "a right password resets");
+        assert_eq!(
+            core.status().throttle.attempts,
+            0,
+            "a right password resets"
+        );
     }
 
     #[test]
@@ -1457,7 +1515,9 @@ mod tests {
         fs::remove_file(&path).unwrap();
         fs::create_dir(&path).unwrap();
         assert_eq!(
-            core.with_journal(|j| j.add_sample_trade()).unwrap_err().code,
+            core.with_journal(|j| j.add_sample_trade())
+                .unwrap_err()
+                .code,
             "save_failed"
         );
         assert!(core.status().save_failing);
@@ -1486,8 +1546,15 @@ mod tests {
         add_trade(&mut core);
         core.enable(PW, PW).unwrap();
         let key_before = copy_key(core.journal().unwrap().key());
-        assert_eq!(core.change("wrong-password", PW2, PW2).unwrap_err().code, "wrong_password");
-        assert_eq!(core.status().throttle.attempts, 1, "Settings shares the throttle");
+        assert_eq!(
+            core.change("wrong-password", PW2, PW2).unwrap_err().code,
+            "wrong_password"
+        );
+        assert_eq!(
+            core.status().throttle.attempts,
+            1,
+            "Settings shares the throttle"
+        );
         assert_eq!(core.change(PW, PW2, PW2).unwrap(), Outcome::Complete);
         assert!(!core.journal().unwrap().key().same_as(&key_before));
         drop(core);
@@ -1503,7 +1570,10 @@ mod tests {
         let mut core = env.launch();
         add_trade(&mut core);
         core.enable(PW, PW).unwrap();
-        assert_eq!(core.disable("wrong-password").unwrap_err().code, "wrong_password");
+        assert_eq!(
+            core.disable("wrong-password").unwrap_err().code,
+            "wrong_password"
+        );
         core.disable(PW).unwrap();
         assert!(!core.status().lock_enabled);
         assert!(!env.vault.contains(WRAPPED_KEY));
@@ -1534,11 +1604,18 @@ mod tests {
                 .store(core.journal().unwrap().key(), 1, b"fictional jpeg")
                 .unwrap();
             core.set_crash(Some(point));
-            assert_eq!(core.enable(PW, PW).unwrap_err().code, "crashed", "{point:?}");
+            assert_eq!(
+                core.enable(PW, PW).unwrap_err().code,
+                "crashed",
+                "{point:?}"
+            );
             drop(core);
 
             let kv = KeyVault::new(env.vault.as_ref(), KdfParams::TEST_MIN);
-            assert!(kv.has_pending_rotation().unwrap(), "{point:?}: both keys kept");
+            assert!(
+                kv.has_pending_rotation().unwrap(),
+                "{point:?}: both keys kept"
+            );
             let mut core = env.launch();
             assert_eq!(phase(&core), locked_phase(), "{point:?}");
             core.unlock(PW).unwrap();
@@ -1572,9 +1649,15 @@ mod tests {
         fs::write(&snaps, b"not a folder").unwrap();
         assert_eq!(core.disable(PW).unwrap_err().code, "rotation_pending");
         assert!(core.status().lock_enabled);
-        assert!(kv.has_pending_rotation().unwrap(), "the previous key is kept");
+        assert!(
+            kv.has_pending_rotation().unwrap(),
+            "the previous key is kept"
+        );
         assert_eq!(core.enable(PW, PW).unwrap_err().code, "already_on");
-        assert_eq!(core.change(PW, PW2, PW2).unwrap_err().code, "rotation_pending");
+        assert_eq!(
+            core.change(PW, PW2, PW2).unwrap_err().code,
+            "rotation_pending"
+        );
         // Once the folder is back, the next attempt finishes the rotation first.
         fs::remove_file(&snaps).unwrap();
         fs::create_dir(&snaps).unwrap();
@@ -1600,7 +1683,10 @@ mod tests {
         assert_eq!(core.unlock(PW).unwrap_err().code, "vault_unreadable");
         assert_eq!(core.status().throttle.attempts, 0, "no attempt counted");
         assert_eq!(core.erase("Dojix").unwrap_err().code, "vault_unreadable");
-        assert!(env.paths.journal().exists(), "erase refused, nothing deleted");
+        assert!(
+            env.paths.journal().exists(),
+            "erase refused, nothing deleted"
+        );
         env.vault.heal();
         core.unlock(PW).unwrap();
         assert!(core.is_unlocked());
@@ -1612,7 +1698,13 @@ mod tests {
         drop(env.launch());
         env.vault.fail(DATABASE_KEY);
         let core = env.launch();
-        assert!(matches!(phase(&core), Phase::Failed { code: "vault_unavailable", .. }));
+        assert!(matches!(
+            phase(&core),
+            Phase::Failed {
+                code: "vault_unavailable",
+                ..
+            }
+        ));
         env.vault.heal();
         assert!(env.vault.contains(DATABASE_KEY));
     }
@@ -1631,7 +1723,9 @@ mod tests {
             assert_eq!(core.unlock(PW).unwrap_err().code, "throttle_unreadable");
             assert!(!core.is_unlocked());
             env.vault.heal();
-            assert!(matches!(env.vault.lookup(FAILED_ATTEMPTS), Lookup::Found(ref v) if v.as_slice() == b"2"));
+            assert!(
+                matches!(env.vault.lookup(FAILED_ATTEMPTS), Lookup::Found(ref v) if v.as_slice() == b"2")
+            );
         }
     }
 
@@ -1656,13 +1750,20 @@ mod tests {
                 needs_password,
                 ..
             } => {
-                assert_eq!((file_generation, record_generation), (old_generation, latest));
+                assert_eq!(
+                    (file_generation, record_generation),
+                    (old_generation, latest)
+                );
                 assert!(!needs_password);
             }
             other => panic!("{other:?}"),
         }
         assert!(core.journal().is_err(), "nothing decrypted into the app");
-        assert_eq!(fs::read(env.paths.journal()).unwrap(), old_copy, "file untouched");
+        assert_eq!(
+            fs::read(env.paths.journal()).unwrap(),
+            old_copy,
+            "file untouched"
+        );
         assert_eq!(core.open_older(None, false).unwrap_err().code, "confirm");
         core.open_older(None, true).unwrap();
         assert!(core.is_unlocked());
@@ -1684,8 +1785,19 @@ mod tests {
         drop(core);
         fs::write(env.paths.journal(), &old_copy).unwrap();
         let mut core = env.launch();
-        assert!(matches!(phase(&core), Phase::OlderCopy { needs_password: true, .. }));
-        assert_eq!(core.open_older(Some("wrong-password"), true).unwrap_err().code, "wrong_password");
+        assert!(matches!(
+            phase(&core),
+            Phase::OlderCopy {
+                needs_password: true,
+                ..
+            }
+        ));
+        assert_eq!(
+            core.open_older(Some("wrong-password"), true)
+                .unwrap_err()
+                .code,
+            "wrong_password"
+        );
         assert_eq!(core.status().throttle.attempts, 1);
         core.open_older(Some(PW), false).unwrap();
         assert!(core.is_unlocked());
@@ -1702,7 +1814,11 @@ mod tests {
         drop(core);
         env.vault.heal();
         let core = env.launch();
-        assert_eq!(phase(&core), Phase::Unlocked, "a newer file in the same epoch opens");
+        assert_eq!(
+            phase(&core),
+            Phase::Unlocked,
+            "a newer file in the same epoch opens"
+        );
         assert_eq!(trades(&core), 2);
     }
 
@@ -1713,7 +1829,11 @@ mod tests {
         add_trade(&mut core);
         drop(core);
         // What a kill between "write temp" and "rename" leaves behind.
-        fs::write(env.paths.root.join(".tmp-0123456789abcdef01234567"), b"partial").unwrap();
+        fs::write(
+            env.paths.root.join(".tmp-0123456789abcdef01234567"),
+            b"partial",
+        )
+        .unwrap();
         let core = env.launch();
         assert_eq!(phase(&core), Phase::Unlocked);
         assert_eq!(trades(&core), 1);
@@ -1725,7 +1845,9 @@ mod tests {
         let mut core = env.launch();
         add_trade(&mut core);
         core.enable(PW, PW).unwrap();
-        env.vault.write("anthropic_api_key", b"fictional-key").unwrap();
+        env.vault
+            .write("anthropic_api_key", b"fictional-key")
+            .unwrap();
         env.clock.advance_ms(86_400_000);
         core.tick();
         assert_eq!(core.erase("dojix").unwrap_err().code, "confirm");
@@ -1739,7 +1861,12 @@ mod tests {
         let mut core = env.launch();
         assert_eq!(phase(&core), locked_phase());
         core.erase("Dojix").unwrap();
-        for account in [WRAPPED_KEY, FAILED_ATTEMPTS, LOCKOUT_UNTIL, "anthropic_api_key"] {
+        for account in [
+            WRAPPED_KEY,
+            FAILED_ATTEMPTS,
+            LOCKOUT_UNTIL,
+            "anthropic_api_key",
+        ] {
             assert!(!env.vault.contains(account), "{account}");
         }
         // Fresh start: lock off, a new empty journal with a new key.
@@ -1749,7 +1876,10 @@ mod tests {
         let key = core.journal().unwrap().key();
         for entry in fs::read_dir(env.paths.snapshots()).unwrap() {
             let bytes = fs::read(entry.unwrap().path()).unwrap();
-            assert!(seal::open(key, 1, &bytes).is_ok(), "only the new journal's snapshot");
+            assert!(
+                seal::open(key, 1, &bytes).is_ok(),
+                "only the new journal's snapshot"
+            );
         }
     }
 
@@ -1760,7 +1890,9 @@ mod tests {
         add_trade(&mut core);
         add_trade(&mut core);
         assert_eq!(
-            core.backup_bytes(Some(("short", "short"))).unwrap_err().code,
+            core.backup_bytes(Some(("short", "short")))
+                .unwrap_err()
+                .code,
             "invalid_password"
         );
         let bytes = core.backup_bytes(Some((PW, PW))).unwrap();
@@ -1768,17 +1900,17 @@ mod tests {
         assert!(!bytes.windows(16).any(|w| w == crate::seal::SQLITE_MAGIC));
         let plain = core.backup_bytes(None).unwrap();
         assert_eq!(Core::backup_kind(&plain), BackupKind::Plain);
-        core.with_journal(|j| {
-            j.write(|tx| tx.execute("DELETE FROM trades", []).map(|_| ()))
-        })
-        .unwrap();
+        core.with_journal(|j| j.write(|tx| tx.execute("DELETE FROM trades", []).map(|_| ())))
+            .unwrap();
         assert_eq!(trades(&core), 0);
         assert_eq!(
             core.restore(&bytes, None, None).unwrap_err().code,
             "password_required"
         );
         assert_eq!(
-            core.restore(&bytes, None, Some("wrong-password")).unwrap_err().code,
+            core.restore(&bytes, None, Some("wrong-password"))
+                .unwrap_err()
+                .code,
             "wrong_backup_password"
         );
         let summary = core.restore(&bytes, Some("j.dxbk"), Some(PW)).unwrap();
@@ -1814,8 +1946,14 @@ mod tests {
         let mut core = env.core_with(folder.clone(), DOJIX);
         assert_eq!(phase(&core), Phase::Setup);
         assert!(core.status().lock_required);
-        assert!(!env.paths.journal().exists(), "nothing created before a password");
-        assert_eq!(core.setup("short", "short").unwrap_err().code, "invalid_password");
+        assert!(
+            !env.paths.journal().exists(),
+            "nothing created before a password"
+        );
+        assert_eq!(
+            core.setup("short", "short").unwrap_err().code,
+            "invalid_password"
+        );
         core.setup(PW, PW).unwrap();
         assert!(core.is_unlocked());
         add_trade(&mut core);
@@ -1835,7 +1973,10 @@ mod tests {
                 if p.is_dir() {
                     holds(&p, needle)
                 } else {
-                    fs::read(&p).unwrap().windows(needle.len()).any(|w| w == needle)
+                    fs::read(&p)
+                        .unwrap()
+                        .windows(needle.len())
+                        .any(|w| w == needle)
                 }
             })
         }

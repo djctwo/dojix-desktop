@@ -647,6 +647,16 @@ Contents:
 | `set-aside/` | Files that failed to decrypt or are not a database. They are moved here, never deleted |
 | `logs/` | Rotating, redacted logs (no trade data, keys, prices or paths) |
 | `prefs.json` | Settings that must be readable while locked (6.11). Holds no trading data |
+| `key.wrapped` | Linux without a Secret Service only: the wrapped key (6.4) |
+| `local-records/` | Linux without a Secret Service only: the rollback record and the throttle (6.4) |
+
+**The web view's own files are never in the data folder.** WebView2 and WebKitGTK keep
+caches, cookies and IndexedDB as plain SQLite databases, so the main window gets its own
+folder, `<cache dir>/<identifier>.webview` (`%LOCALAPPDATA%` on Windows, `~/.cache` on
+Linux; a sibling `<data-dir>.webview` with `--data-dir`), and runs in private (incognito)
+mode so most of that never reaches a disk. The e2e suite checks both the scratch and the
+default data folder for the SQLite magic. (Phase 6: the uninstaller's "Remove my journal
+data" must remove that folder too.)
 
 `--data-dir <path>` (or `DOJIX_DATA_DIR` / `GREENWICK_DATA_DIR`) and `--vault-service <name>`
 override the folder and the vault namespace **in debug and `e2e` builds only**. Release
@@ -764,8 +774,14 @@ only `set_secret`, `has_secret`, `delete_secret` and `test_connection`.
   running as the user can open the journal. With App Lock **on**, the vault holds only the
   wrapped key, and the password is still needed.
 - **Linux with no Secret Service** (headless, minimal window managers):
-  - App Lock becomes **mandatory**. The wrapped key is stored in `key.wrapped` in the data
-    folder, because there is no vault to hold it.
+  - **When this mode is chosen:** a data folder that already uses it (`key.wrapped` exists)
+    keeps it. Otherwise, a *new* data folder (no `journal.sealed`) uses it when the Secret
+    Service can't be reached or doesn't answer a lookup. A folder that already holds a journal
+    never switches: an unusable vault then fails closed, as everywhere else.
+  - App Lock becomes **mandatory**. The first launch asks for a password before any key or
+    journal exists. The wrapped key is stored in `key.wrapped` in the data folder, because
+    there is no vault to hold it; App Lock can't be turned off. This store refuses a bare
+    journal key and API keys.
   - Rollback protection and the throttle counter can't be kept outside the data folder. The
     app says so in Settings → Security and in SECURITY.md.
   - Nothing is ever stored as an unencrypted journal.
@@ -782,6 +798,9 @@ Same rules as the Mac (`SaveGenerationStore` / `JournalLedger`).
 
 A file newer than the record in the same epoch opens. That can happen when the last vault
 write failed.
+
+**When it is checked:** at launch, before the lock screen, and again at every unlock (the
+file may have been replaced while the app was locked).
 
 **Older-copy screen.** It explains what happened. The file opens only after:
 - the App Lock password (lock on, through the shared throttle);
@@ -906,6 +925,13 @@ without one:
   the Mac).
 - They are restored only through the validated restore pipeline, never by renaming them into
   place.
+- A restore first keeps a `pre-restore-…` snapshot of the journal as it was.
+
+**Restoring a Mac backup** replaces the trades and strategy checkpoints and upserts the Mac
+settings keys; the desktop-only tables (watchlist, checklist rules, mapping presets, import
+history, AI reports) are kept. The restore is recorded as one `import_batches` row with origin
+`mac_backup`. Unknown MAE/MFE stays 0 for these rows (the Mac stored 0, so "unknown" can't be
+told apart).
 
 ### 6.9 Single instance
 
@@ -928,6 +954,9 @@ without one:
   `"DXSC" | version u8 | AES-256-GCM box`, with the header **and the file name** as associated
   data. This is Greenwick's `GWSC` construction, which is stronger than Dojix's `DJXS` (that
   one has no associated data). Both brands use it.
+- **Phase split:** 1S ships the format, storage, read-back, lock gating and the re-seal on
+  key rotation (`screenshots.rs`). The ingest (decode, re-encode, size limits) and the
+  `screenshot_*` IPC commands arrive with the trade-detail screen in phase 3.
 - **Behaviour:**
   - Every write goes through the secure writer and is read back.
   - Images are decrypted into memory only and served to the web view as `blob:` URLs, which
@@ -1043,8 +1072,11 @@ Debug builds also get a brand switcher, for agents and screenshots.
   tags / emotion / checklist / costs), `import_preview`, `import_commit`.
 - **Settings and data:** `settings_get`, `settings_set`, `backup_export`, `backup_restore`,
   `erase_all`.
-- **App Lock:** `lock_status`, `lock_unlock`, `lock_enable`, `lock_change`, `lock_disable`,
-  `lock_now`.
+- **App Lock:** `lock_status`, `lock_unlock`, `lock_setup` (no keyring), `lock_enable`,
+  `lock_change`, `lock_disable`, `lock_now`, `lock_activity` (idle timer), `older_copy_open`,
+  `prefs_set_idle`, `save_retry`, `app_quit`.
+- **Backups:** `backup_export`, `backup_pick` (step 1: the file dialog opens in Rust and the
+  path stays there), `backup_restore` (step 2).
 - **Screenshots:** `screenshot_add`, `screenshot_get`, `screenshot_delete`.
 - **Secrets and network:** `set_secret`, `has_secret`, `delete_secret`, `test_connection`,
   `ai_preview`, `ai_run`, `quotes_*`, `calendar_week`.
@@ -1057,8 +1089,9 @@ Events: `trades_changed`, `locked`, `unlocked`, `save_failed`, `import_progress`
 **Analytics.** They run in a Web Worker over the in-memory trade array. The budget is about 10k
 trades in under 300 ms per tab, enforced with fixture F9.
 
-**Test-only commands** (`__test_set_now`, `__test_import_path`, `__test_vault_fail`, updater
-endpoint override) exist only behind the Cargo feature `e2e`. The release job scans the binary
+**Test-only commands** (`e2e_status`, `e2e_add_trade`, `e2e_set_idle_seconds`,
+`e2e_backup_export`, `e2e_backup_pick`; later `__test_set_now`, `__test_import_path`,
+`__test_vault_fail`, updater endpoint override) exist only behind the Cargo feature `e2e`. The release job scans the binary
 to prove they are absent.
 
 ## 8. Online features (all optional, off by default, user's own keys)

@@ -140,13 +140,9 @@ pub fn argon2id(password: &[u8], salt: &[u8], params: KdfParams) -> Result<Kek, 
     if !params.is_sane() {
         return Err(CryptoError::BadParams);
     }
-    let argon_params = argon2::Params::new(
-        params.m_kib,
-        params.t,
-        u32::from(params.p),
-        Some(KEY_LEN),
-    )
-    .map_err(|_| CryptoError::BadParams)?;
+    let argon_params =
+        argon2::Params::new(params.m_kib, params.t, u32::from(params.p), Some(KEY_LEN))
+            .map_err(|_| CryptoError::BadParams)?;
     let argon = argon2::Argon2::new(
         argon2::Algorithm::Argon2id,
         argon2::Version::V0x13,
@@ -397,6 +393,5 @@ mod tests {
 
     const ARGON2ID_VECTOR: &str =
         "ae7030e8810a3ea5c18e87b20fe51910af871db8195671371b8a81cb15fb63b6";
-    const PBKDF2_VECTOR: &str =
-        "054717d1aa76c7ebaca1ca72b1b1ee23f5ba74bc29ac676acd4a9bbbb0ca39ce";
+    const PBKDF2_VECTOR: &str = "054717d1aa76c7ebaca1ca72b1b1ee23f5ba74bc29ac676acd4a9bbbb0ca39ce";
 }

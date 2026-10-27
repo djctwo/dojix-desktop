@@ -99,7 +99,9 @@ pub enum SealError {
 
 /// Parses the header without decrypting. Returns the stamp of a well-formed file.
 pub fn read_stamp(bytes: &[u8]) -> Result<Stamp, SealError> {
-    if bytes.len() < HEADER_LEN + NONCE_LEN + TAG_LEN || &bytes[0..4] != MAGIC || bytes[4] != VERSION
+    if bytes.len() < HEADER_LEN + NONCE_LEN + TAG_LEN
+        || &bytes[0..4] != MAGIC
+        || bytes[4] != VERSION
     {
         return Err(SealError::NotAJournal);
     }
@@ -224,7 +226,9 @@ mod tests {
         let key = JournalKey::generate().unwrap();
         let image = fake_image();
         let sealed = seal(&key, &stamp(), &image).unwrap();
-        assert!(!sealed.windows(SQLITE_MAGIC.len()).any(|w| w == SQLITE_MAGIC));
+        assert!(!sealed
+            .windows(SQLITE_MAGIC.len())
+            .any(|w| w == SQLITE_MAGIC));
         let (s, opened) = open(&key, 1, &sealed).unwrap();
         assert_eq!(s.generation, 42);
         assert_eq!(opened.as_slice(), image.as_slice());
@@ -237,7 +241,11 @@ mod tests {
         for i in 6..HEADER_LEN {
             let mut tampered = sealed.clone();
             tampered[i] ^= 0x01;
-            assert_eq!(open(&key, 1, &tampered).unwrap_err(), SealError::Decrypt, "byte {i}");
+            assert_eq!(
+                open(&key, 1, &tampered).unwrap_err(),
+                SealError::Decrypt,
+                "byte {i}"
+            );
         }
         let mut body = sealed.clone();
         let last = body.len() - 1;
@@ -251,11 +259,17 @@ mod tests {
         let sealed = seal(&key, &stamp(), &fake_image()).unwrap();
         let other = JournalKey::generate().unwrap();
         assert_eq!(open(&other, 1, &sealed).unwrap_err(), SealError::Decrypt);
-        assert_eq!(open(&key, 2, &sealed).unwrap_err(), SealError::OtherBrand(1));
+        assert_eq!(
+            open(&key, 2, &sealed).unwrap_err(),
+            SealError::OtherBrand(1)
+        );
         let mut magic = sealed.clone();
         magic[0] = b'X';
         assert_eq!(open(&key, 1, &magic).unwrap_err(), SealError::NotAJournal);
-        assert_eq!(open(&key, 1, &sealed[..20]).unwrap_err(), SealError::NotAJournal);
+        assert_eq!(
+            open(&key, 1, &sealed[..20]).unwrap_err(),
+            SealError::NotAJournal
+        );
         let not_db = seal(&key, &stamp(), b"not a database at all").unwrap();
         assert_eq!(open(&key, 1, &not_db).unwrap_err(), SealError::NotADatabase);
     }

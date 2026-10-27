@@ -114,7 +114,10 @@ mod tests {
         let report = run(&GREENWICK, &paths, &MemoryVault::default());
         assert!(report.ok, "{report:?}");
         assert_eq!(report.checks.len(), 4);
-        assert!(!paths.journal().exists(), "self-test must not create a journal");
+        assert!(
+            !paths.journal().exists(),
+            "self-test must not create a journal"
+        );
 
         let broken = UnavailableVault {
             reason: "no secret service".to_string(),
@@ -133,7 +136,11 @@ mod tests {
         paths.ensure().unwrap();
         let _held = instance::acquire(&paths.lock_file()).unwrap();
         let report = run(&GREENWICK, &paths, &MemoryVault::default());
-        let lock = report.checks.iter().find(|c| c.name == "lock_file").unwrap();
+        let lock = report
+            .checks
+            .iter()
+            .find(|c| c.name == "lock_file")
+            .unwrap();
         assert!(!lock.ok);
     }
 }

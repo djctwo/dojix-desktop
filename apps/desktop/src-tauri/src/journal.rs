@@ -327,11 +327,16 @@ mod tests {
         assert_eq!(j.generation(), 2);
         drop(j);
 
-        assert!(!contains_sqlite_magic(tmp.path()), "plaintext SQLite found on disk");
+        assert!(
+            !contains_sqlite_magic(tmp.path()),
+            "plaintext SQLite found on disk"
+        );
         let bytes = fs::read(&path).unwrap();
         assert_eq!(&bytes[..4], b"DXJN");
 
-        let j = Journal::load(&path, key(), 1, &snaps).map_err(|e| e.0).unwrap();
+        let j = Journal::load(&path, key(), 1, &snaps)
+            .map_err(|e| e.0)
+            .unwrap();
         let rows = j.recent(10).unwrap();
         assert_eq!(rows.len(), 1);
         assert_eq!(rows[0].id, id);

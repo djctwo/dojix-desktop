@@ -233,7 +233,9 @@ mod tests {
         probe(&v).unwrap();
         v.write(DATABASE_KEY, &[9u8; 32]).unwrap();
         v.write(DATABASE_KEY, &[8u8; 32]).unwrap();
-        assert!(matches!(v.lookup(DATABASE_KEY), Lookup::Found(ref k) if k.as_slice() == [8u8; 32]));
+        assert!(
+            matches!(v.lookup(DATABASE_KEY), Lookup::Found(ref k) if k.as_slice() == [8u8; 32])
+        );
         v.delete(DATABASE_KEY).unwrap();
         v.delete(DATABASE_KEY).unwrap();
         assert!(matches!(v.lookup(DATABASE_KEY), Lookup::Absent));

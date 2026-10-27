@@ -98,7 +98,7 @@ async function find(session, css, timeoutMs = 60000) {
       const el = await wd("POST", `/session/${session}/element`, { using: "css selector", value: css });
       return el[ELEMENT];
     } catch (err) {
-      if (Date.now() > end) throw new Error(`element ${css} not found: ${err.message}`);
+      if (Date.now() > end) throw new Error(`element ${css} not found: ${err.message}`, { cause: err });
       await sleep(250);
     }
   }

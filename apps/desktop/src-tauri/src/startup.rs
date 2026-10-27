@@ -94,7 +94,10 @@ fn create(path: &Path, key: JournalKey, brand: &Brand) -> Result<Journal, Failur
         log::error!("could not create the journal: {e}");
         Failure::new(
             "save_failed",
-            format!("{} could not save a new journal in its data folder.", brand.product_name),
+            format!(
+                "{} could not save a new journal in its data folder.",
+                brand.product_name
+            ),
         )
     })
 }
@@ -108,7 +111,10 @@ pub fn open_journal(
     let path = paths.journal();
     let exists = path.try_exists().map_err(|e| {
         log::error!("could not check the journal file: {e}");
-        Failure::new("io", "The journal file could not be checked. Nothing was changed.")
+        Failure::new(
+            "io",
+            "The journal file could not be checked. Nothing was changed.",
+        )
     })?;
     let key = key_for(vault, exists, brand.product_name)?;
     if !exists {
@@ -130,7 +136,10 @@ pub fn open_journal(
             log::warn!("journal file is unreadable ({e}); setting it aside");
             set_aside(paths).map_err(|e| {
                 log::error!("could not set the unreadable journal aside: {e}");
-                Failure::new("io", "The journal file could not be read or moved. Nothing was deleted.")
+                Failure::new(
+                    "io",
+                    "The journal file could not be read or moved. Nothing was deleted.",
+                )
             })?;
             let journal = create(&path, key, brand)?;
             Ok(Opened {
@@ -143,7 +152,10 @@ pub fn open_journal(
             log::error!("could not load the journal: {e}");
             Err(Failure::new(
                 "load_failed",
-                format!("{} could not open its journal file ({e}). The file was left untouched.", brand.product_name),
+                format!(
+                    "{} could not open its journal file ({e}). The file was left untouched.",
+                    brand.product_name
+                ),
             ))
         }
     }

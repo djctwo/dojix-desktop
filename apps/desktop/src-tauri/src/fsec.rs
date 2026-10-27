@@ -137,9 +137,8 @@ mod win {
 
     use windows_sys::Win32::Foundation::{CloseHandle, LocalFree, HANDLE};
     use windows_sys::Win32::Security::Authorization::{
-        ConvertSecurityDescriptorToStringSecurityDescriptorW,
-        ConvertSidToStringSidW, ConvertStringSecurityDescriptorToSecurityDescriptorW,
-        SDDL_REVISION_1,
+        ConvertSecurityDescriptorToStringSecurityDescriptorW, ConvertSidToStringSidW,
+        ConvertStringSecurityDescriptorToSecurityDescriptorW, SDDL_REVISION_1,
     };
     use windows_sys::Win32::Security::{
         GetFileSecurityW, GetTokenInformation, SetFileSecurityW, TokenUser,
@@ -312,7 +311,10 @@ mod win {
             let b = normalise("D:PAI(A;OICI;FA;;;S-1-5-21-1)(A;OICI;FA;;;SY)");
             assert_eq!(a, b);
             assert_ne!(a, normalise("D:AI(A;OICI;FA;;;S-1-5-21-1)(A;OICI;FA;;;SY)"));
-            assert_ne!(a, normalise("D:P(A;OICI;FA;;;S-1-5-21-1)(A;OICI;FA;;;SY)(A;;FA;;;BA)"));
+            assert_ne!(
+                a,
+                normalise("D:P(A;OICI;FA;;;S-1-5-21-1)(A;OICI;FA;;;SY)(A;;FA;;;BA)")
+            );
         }
     }
 }
@@ -350,7 +352,10 @@ mod tests {
         let tmp = tempfile::tempdir().unwrap();
         let target = tmp.path().join("f");
         write_atomic(&target, b"x").unwrap();
-        assert_eq!(fs::metadata(&target).unwrap().permissions().mode() & 0o777, 0o600);
+        assert_eq!(
+            fs::metadata(&target).unwrap().permissions().mode() & 0o777,
+            0o600
+        );
 
         let loose = tmp.path().join("loose");
         fs::create_dir(&loose).unwrap();

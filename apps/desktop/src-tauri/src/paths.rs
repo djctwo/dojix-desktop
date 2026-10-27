@@ -155,7 +155,13 @@ mod tests {
     fn release_builds_ignore_overrides() {
         let tmp = tempfile::tempdir().unwrap();
         let cli = tmp.path().join("cli");
-        let p = resolve(&DOJIX, false, Some(&cli), Some(cli.clone().into_os_string())).unwrap();
+        let p = resolve(
+            &DOJIX,
+            false,
+            Some(&cli),
+            Some(cli.clone().into_os_string()),
+        )
+        .unwrap();
         assert_eq!(p.source, DataDirSource::Default);
         assert!(p.root.ends_with("io.github.djctwo.dojix"));
     }

@@ -46,7 +46,11 @@ mod tests {
     use super::*;
 
     fn overlay(brand: &Brand) -> serde_json::Value {
-        let path = format!("{}/tauri.{}.conf.json", env!("CARGO_MANIFEST_DIR"), brand.id);
+        let path = format!(
+            "{}/tauri.{}.conf.json",
+            env!("CARGO_MANIFEST_DIR"),
+            brand.id
+        );
         let text = std::fs::read_to_string(path).expect("brand overlay exists");
         serde_json::from_str(&text).expect("brand overlay is JSON")
     }

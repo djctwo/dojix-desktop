@@ -8,3 +8,4 @@ export * from "./model";
 export * from "./parity";
 export * from "./swiftcompat";
 export * from "./time";
+export * from "./analytics";

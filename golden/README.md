@@ -90,6 +90,24 @@ pin a Mac behaviour the desktop fixes on purpose carry `"parity": "D-xx"`. `_ind
 ported files, counts, and the security/UI test files that were not ported (with a reason). Ticker
 symbols in these files are copied verbatim from the public Mac test suites.
 
+### Reproducibility
+
+A second run of the workflow (40588172520, same commit) produced identical reference files,
+apart from `now` and `MonteCarloSimulation.result`. Those are the unseeded shuffle (D-05), and every
+file already lists them as `nondeterministic`.
+
+### Notes for the engine teams
+
+- **Formatted text uses `en_US_POSIX`**, as SPEC §10.2 pins it. Currency strings inside insight and
+  summary text read `$ 4755.36`, not `$4,755.36`. Compare formatted text with POSIX formatting, or
+  exclude it here and test it with the en-US vectors (SPEC §10.1).
+- **Honour `nondeterministic`.** Swift's dictionary order and its random choice among ties make
+  those paths differ from run to run. For example, the order of `CommissionAnalytics.symbolCosts` on
+  tied totals, and `EdgeDecayMonitor`'s dominant regime on a tie. Compare them unordered (as
+  `tools/parity-check` does) or skip them.
+- **Variant files** (`@<zone>_<locale>`) need the engine context built from their own `tz`,
+  `firstWeekday` and `minimumDaysInFirstWeek`.
+
 ## Using the references (Phase 2)
 
 `tools/parity-check` compares the engine with every reference value. Register an engine function

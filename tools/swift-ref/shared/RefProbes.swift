@@ -50,7 +50,7 @@ func refProbes() -> RefJSON {
             comps.hour = parts[3]; comps.minute = parts[4]; comps.second = parts[5]
         }
         let viaCalendar = cal.date(from: comps)
-        func row(_ d: Date?) -> RefJSON {
+        @MainActor func row(_ d: Date?) -> RefJSON {
             guard let d else { return .null }
             return .object([("utc", .string(RefFormat.iso.string(from: d))),
                             ("offsetSeconds", .int(Int64(tz.secondsFromGMT(for: d))))])

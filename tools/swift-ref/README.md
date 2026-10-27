@@ -35,29 +35,38 @@ Never run it on a maintainer's Mac.
 
 ## What each reference file contains
 
-`golden/reference/<brand>/<fixture>[@<tz>_<locale>].json`:
+`golden/reference/<brand>/<fixture>[@<tz>_<locale>].json`, one per fixture and environment.
+Nothing else goes in that folder, so `packages/core` can read every file there as a reference:
 
 | Key | Content |
 |---|---|
-| `source_sha`, `xcode`, `swift`, `tz`, `locale`, `firstWeekday`, `minimumDaysInFirstWeek`, `now` | Environment. Inject `now` and the calendar values into the TypeScript engine context |
+| `source_sha`, `xcode`, `swift`, `tz`, `locale`, `firstWeekday`, `minimumDaysInFirstWeek`, `now` | The environment. `tz` is Foundation's name for the zone (TZ=UTC reads back as `GMT`); `environment.tz` is the zone that was requested. Inject `now` and the calendar values into the engine context |
 | `import.detect`, `import.route` | Header detection (platform, column mapping) and the route the Mac's Import screen takes |
-| `import.saDirect` | Dojix: the 32-column parser applied directly (the MT5 watcher path) |
+| `import.saDirect` | Dojix only: the 32-column parser applied directly (the MT5 watcher path) |
 | `import.error` | The parser's error, if any |
-| `import.parsed` | Every parsed trade, all stored fields, plus: Dojix `contentKey` (the SHA-256 ticket input) and `storageViolations`; Greenwick `storageViolations`, `controlCharacterFields`, `rejected` |
-| `import.inserted`, `reimportInserted` | Rows the app's repository inserted, and inserted again on a second import (0 = idempotent) |
-| `import.journal` | The stored journal read back (close time descending), after `Trade+Sanitize` (Dojix) or `TradeLimits` (Greenwick) |
-| `outputs.Metrics` | `MetricsCalculator.calculate`, plus `edgeBy*`, `allEdgeConditions` (tradingDays = 21) and the confidence table |
-| `outputs.TradeGrader.grades` | The grade of every trade |
-| `outputs.Trade.derived` | Per trade: every computed `Trade` property, plus session, hour, day and display values of the open and close times (Greenwick adds the ET day key) |
-| `outputs.<Component>.<value>` | Every computed value of every analytics component. `<Component>[variant]` marks the extra `@State` instances |
+| `import.parsed` | File fixtures only. Every parsed trade with all stored fields. Dojix adds `contentKey` (the SHA-256 ticket input) and `storageViolations`. Greenwick adds `storageViolations`, `controlCharacterFields` and `rejected` |
+| `import.inserted`, `import.reimportInserted` | Rows the app's repository inserted, and rows inserted again on a second import (0 = idempotent) |
+| `import.journal` | The stored journal read back in close-time-descending order, after `Trade+Sanitize` (Dojix) or `TradeLimits` (Greenwick). The scale sets record counts only |
+| `outputs["Metrics.<field>"]` | `MetricsCalculator.calculate` |
+| `outputs["Metrics.edgeBy…"]`, `outputs["Metrics.allEdgeConditions[tradingDays=21]"]`, `outputs["Metrics.confidence"]` | Edge breakdowns, edge conditions with tradingDays = 21, and the confidence table |
+| `outputs["TradeGrader.grades"]` | The grade of every trade |
+| `outputs["Trade.derived"]` | Per trade: every computed `Trade` property, plus the session, hour, day and display values of the open and close times. Greenwick adds the ET day key |
+| `outputs["<Component>.<value>"]` | Every computed value of every analytics component. `<Component>[variant]` marks the extra `@State` instances |
 | `skipped`, `nondeterministic` | See above |
 
-Encoding rules (Doubles, ±∞, Decimals, dates, enums, Int64 tickets) are at the top of
-`shared/RefSupport.swift`; `tools/parity-check` follows the same rules.
+Encoding rules for Doubles, ±∞, Decimals, dates, enums and Int64 tickets are at the top of
+`shared/RefSupport.swift`. `tools/parity-check` follows the same rules.
 
-Also in each folder: `sample-trades.json` (invariants of the random sample trades), `f10/` (Mac backup
-vectors written by the app's own backup code from F1), `index.json` (one row per run) and
-`checksums.json` (a hand-edited reference file fails `parity-check`).
+Other outputs of the same run:
+
+| Path | Content |
+|---|---|
+| `golden/reference-meta/<brand>/index.json` | One row per run: status, seconds, skipped and nondeterministic counts |
+| `golden/reference-meta/<brand>/checksums.json` | SHA-256 of every reference and F10 file, paths relative to `golden/`. A hand-edited file fails `parity-check` |
+| `golden/reference-meta/<brand>/probes.json` | How Foundation converts Decimal to Double, how it resolves skipped and repeated DST wall times, and how each brand's parser reads times |
+| `golden/reference-meta/<brand>/sample-trades.json` | Invariants of the random sample trades |
+| `golden/fixtures/<brand>/F10/` | Mac backup vectors written by the app's own backup code from F1, plus `backups.json` |
+| `golden/fixtures/<brand>/<name>.trades.json` | `export-trades.mjs`: each reference's `import.journal`, mapped to the `StoredTrade` row of `packages/core`. This is the engine input |
 
 ## Not covered (gaps)
 

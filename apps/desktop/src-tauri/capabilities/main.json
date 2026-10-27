@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "Least privilege: the main window may call only this app's own commands. No fs, shell, http or opener access.",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "allow-app-info",
+    "allow-journal-query"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Dojix",
+  "mainBinaryName": "dojix",
+  "identifier": "io.github.djctwo.dojix",
+  "build": {
+    "beforeDevCommand": "pnpm dev:dojix",
+    "beforeBuildCommand": "pnpm build:web:dojix"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Dojix",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 960,
+        "minHeight": 600,
+        "center": true,
+        "theme": "Dark",
+        "backgroundColor": "#0e0d0b"
+      }
+    ]
+  },
+  "bundle": {
+    "shortDescription": "Forex trade journal",
+    "longDescription": "Dojix is a free, open-source forex trade journal. Your journal stays encrypted on your computer.",
+    "icon": [
+      "../../../brands/dojix/icons/32x32.png",
+      "../../../brands/dojix/icons/128x128.png",
+      "../../../brands/dojix/icons/128x128@2x.png",
+      "../../../brands/dojix/icons/icon.png",
+      "../../../brands/dojix/icons/icon.ico"
+    ],
+    "windows": {
+      "wix": {
+        "upgradeCode": "7d45870e-e3c1-543b-b910-bb505b187914"
+      }
+    }
+  }
+}

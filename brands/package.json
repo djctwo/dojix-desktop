@@ -1,0 +1,24 @@
+{
+  "name": "@dojix-desktop/brands",
+  "private": true,
+  "version": "0.1.0",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./dojix": "./dojix/brand.ts",
+    "./greenwick": "./greenwick/brand.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@dojix-desktop/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "6.0.3",
+    "vitest": "5.0.4"
+  }
+}

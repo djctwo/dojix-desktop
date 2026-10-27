@@ -1,0 +1,11 @@
+packages:
+  - packages/*
+  - brands
+  - apps/*
+
+# Exact versions only; the lockfile is the source of truth in CI (--frozen-lockfile).
+saveExact: true
+# Don't pick up a release until it has been public for a while (minutes).
+minimumReleaseAge: 10080
+# No dependency may run install scripts unless listed here.
+onlyBuiltDependencies: []

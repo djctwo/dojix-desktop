@@ -1,0 +1,28 @@
+{
+  "name": "dojix-desktop",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Dojix and Greenwick trading journals for Windows and Linux",
+  "license": "GPL-3.0-or-later",
+  "author": "Douglas Cleary",
+  "type": "module",
+  "packageManager": "pnpm@12.15.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "build:web:dojix": "pnpm --filter @dojix-desktop/desktop build:web:dojix",
+    "build:web:greenwick": "pnpm --filter @dojix-desktop/desktop build:web:greenwick"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.12.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.13.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.2"
+  }
+}

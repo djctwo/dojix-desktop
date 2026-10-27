@@ -110,43 +110,7 @@ fn start(brand: &brand::Brand, paths: &DataPaths, vault: &dyn SecretStore) -> Ap
     }
 }
 
-/// e2e builds on Windows: msedgedriver passes the WebView2 user-data folder it watches (for
-/// the DevTools port file) as `--user-data-dir` inside WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS,
-/// but Tauri always sets its own folder. Point WebView2 at the driver's folder instead.
-#[cfg(all(windows, feature = "e2e"))]
-fn adopt_webdriver_user_data_folder() -> bool {
-    let Some(args) = std::env::var_os("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS") else {
-        return false;
-    };
-    if std::env::var_os("WEBVIEW2_USER_DATA_FOLDER").is_some() {
-        return false;
-    }
-    match user_data_dir_arg(&args.to_string_lossy()) {
-        Some(dir) => {
-            // Single-threaded at this point: nothing else reads the environment yet.
-            std::env::set_var("WEBVIEW2_USER_DATA_FOLDER", dir);
-            true
-        }
-        None => false,
-    }
-}
-
-/// Extracts the value of `--user-data-dir=` (quoted or not) from a switch list.
-#[cfg(any(test, all(windows, feature = "e2e")))]
-fn user_data_dir_arg(args: &str) -> Option<String> {
-    let start = args.find("--user-data-dir=")? + "--user-data-dir=".len();
-    let rest = &args[start..];
-    let value = if let Some(quoted) = rest.strip_prefix('"') {
-        quoted.split('"').next()?
-    } else {
-        rest.split(' ').next()?
-    };
-    (!value.is_empty()).then(|| value.to_string())
-}
-
 pub fn run() {
-    #[cfg(all(windows, feature = "e2e"))]
-    let adopted_webdriver_folder = adopt_webdriver_user_data_folder();
     let brand = brand::CURRENT;
     let args = cli::parse(std::env::args_os()).unwrap_or_else(|msg| exit_with(&msg, 2));
     let paths = paths::resolve(
@@ -176,7 +140,10 @@ pub fn run() {
     );
 
     #[cfg(all(windows, feature = "e2e"))]
-    log::info!("e2e build; WebDriver user-data folder adopted: {adopted_webdriver_folder}");
+    log::info!(
+        "e2e build; WebDriver user-data folder set: {}",
+        std::env::var_os("WEBVIEW2_USER_DATA_FOLDER").is_some()
+    );
 
     let vault = open_vault(&service);
 
@@ -210,6 +177,25 @@ pub fn run() {
                 )
                 .into());
             }
+            // The main window is created here rather than from the config, so the webview can
+            // be adjusted per build before it exists.
+            let config = app
+                .config()
+                .app
+                .windows
+                .first()
+                .cloned()
+                .ok_or("no window configured")?;
+            #[allow(unused_mut)]
+            let mut window = tauri::WebviewWindowBuilder::from_config(app.handle(), &config)?;
+            // e2e builds on Windows: msedgedriver watches its own WebView2 user-data folder for
+            // the DevTools port file, but Tauri always passes a folder of its own. Use the
+            // driver's folder so the WebDriver session can connect. Release builds never do this.
+            #[cfg(all(windows, feature = "e2e"))]
+            if let Some(dir) = std::env::var_os("WEBVIEW2_USER_DATA_FOLDER") {
+                window = window.data_directory(dir.into());
+            }
+            window.build()?;
             Ok(())
         });
 
@@ -232,17 +218,3 @@ pub fn run() {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::user_data_dir_arg;
-
-    #[test]
-    fn finds_the_webdriver_user_data_dir_in_both_forms() {
-        let plain = "--a --user-data-dir=C:\\t\\scoped_dir1 --remote-debugging-port=0";
-        assert_eq!(user_data_dir_arg(plain).as_deref(), Some("C:\\t\\scoped_dir1"));
-        let quoted = "--x --user-data-dir=\"C:\\a b\\dir\" --y";
-        assert_eq!(user_data_dir_arg(quoted).as_deref(), Some("C:\\a b\\dir"));
-        assert_eq!(user_data_dir_arg("--remote-debugging-port=0"), None);
-        assert_eq!(user_data_dir_arg("--user-data-dir="), None);
-    }
-}

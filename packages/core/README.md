@@ -16,6 +16,7 @@ here reproduces Swift and says which Swift line it matches.
 | `time/` | `ZonedCalendar` (Foundation/ICU calendar in any IANA zone), forex sessions, the Greenwick `Market` / `TradingCalendar`, NYSE holidays + the desktop session clock, GRDB time text, date filters |
 | `engine/` | `EngineContext`, `CompatMode`, seeded `Rng`, `AnalyticsRegistry` |
 | `metrics/` | `calculateMetrics`, `edgeBy*`, `allEdgeConditions`, `confidenceLevel`, `tradingDayCount` |
+| `analytics/` | One file per Mac analytics component (Appendix A): `computeX` (the full model, fields named after the Swift members), `xComponent` (registry entry) and `xParity` (how the Tier B harness reads it). `support.ts` holds the shared encoder; `e3.ts` lists team E3's components and registers their parity resolvers |
 | `parity/` | The §10.1 equality rule, reference-file parsing, output resolvers |
 | `analytics/greenwick/` | The nine Greenwick-only components (SectorExposure, VolumeAnalysis, GapAnalysis, OpeningRangeAnalysis, ExecutionQuality, IntradayEquityCurve, RegimeAnalysis, EarningsImpact, DiversificationScore): one `compute*` per component returning a plain model, `components.ts` (registry entries), `parity.ts` (resolvers in the harness's shapes, loaded by the parity suite) |
 | `formulas.ts` | `FORMULA_INDEX`: every formula of SPEC §3.3 and Appendix A, its owner team, status, module and divergences |

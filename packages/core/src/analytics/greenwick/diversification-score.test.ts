@@ -3,7 +3,7 @@ import { createEngineContext } from "../../engine/context";
 import { AnalyticsRegistry } from "../../engine/registry";
 import { etWall, stTrade } from "../../test-support/trades";
 import { registerGreenwickOnlyComponents } from "./components";
-import { computeDiversificationScore, diversificationGrade, diversificationGradeDetails, pearsonCorrelation } from "./diversification-score";
+import { computeDiversificationScore, diversificationGrade, diversificationGradeDetails, diversificationPearsonCorrelation } from "./diversification-score";
 
 const reg = registerGreenwickOnlyComponents(new AnalyticsRegistry());
 const on = (symbol: string, day: number, netProfit: string, sector = "") =>
@@ -66,9 +66,9 @@ describe("DiversificationScore (DiversificationScore.swift:48-215)", () => {
 
   it("correlation needs two common days and variance", () => {
     const a = new Map([["d1", 1], ["d2", 2]]);
-    expect(pearsonCorrelation(a, new Map([["d1", 5]]), ["d1", "d2"])).toBe(0);
-    expect(pearsonCorrelation(a, new Map([["d1", 5], ["d2", 5]]), ["d1", "d2"])).toBe(0);
-    expect(pearsonCorrelation(a, new Map([["d1", 3], ["d2", 7]]), ["d1", "d2"])).toBeCloseTo(1, 12);
+    expect(diversificationPearsonCorrelation(a, new Map([["d1", 5]]), ["d1", "d2"])).toBe(0);
+    expect(diversificationPearsonCorrelation(a, new Map([["d1", 5], ["d2", 5]]), ["d1", "d2"])).toBe(0);
+    expect(diversificationPearsonCorrelation(a, new Map([["d1", 3], ["d2", 7]]), ["d1", "d2"])).toBeCloseTo(1, 12);
   });
 
   it("fewer than two symbols, all breakeven", () => {

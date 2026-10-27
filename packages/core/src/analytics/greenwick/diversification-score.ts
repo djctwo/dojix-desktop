@@ -67,8 +67,8 @@ export interface DiversificationScoreModel {
   gradeDetails: string;
 }
 
-/** `pearsonCorrelation` (:91-115) over `dates` in the given order. */
-export function pearsonCorrelation(
+/** `diversificationPearsonCorrelation` (:91-115) over `dates` in the given order. */
+export function diversificationPearsonCorrelation(
   series1: ReadonlyMap<string, number>,
   series2: ReadonlyMap<string, number>,
   dates: readonly string[],
@@ -158,7 +158,7 @@ export function computeDiversificationScore(trades: readonly GreenwickTrade[]): 
   for (let i = 0; i < n; i++) {
     (matrix[i] as number[])[i] = 1.0;
     for (let j = i + 1; j < n; j++) {
-      const corr = pearsonCorrelation(
+      const corr = diversificationPearsonCorrelation(
         daily.get(swiftStringKey(symbols[i] as string)) as Map<string, number>,
         daily.get(swiftStringKey(symbols[j] as string)) as Map<string, number>,
         allDates,

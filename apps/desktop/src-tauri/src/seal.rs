@@ -43,6 +43,11 @@ impl JournalKey {
         &self.0
     }
 
+    /// Constant-time comparison.
+    pub fn same_as(&self, other: &JournalKey) -> bool {
+        crate::crypto::ct_eq(self.0.as_ref(), other.0.as_ref())
+    }
+
     fn cipher(&self) -> Aes256Gcm {
         Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(self.0.as_ref()))
     }
@@ -178,6 +183,18 @@ pub fn open(
     Ok((stamp, image))
 }
 
+/// Re-seals a sealed journal (or snapshot) from `old` to `new`, keeping its stamp. A fresh
+/// nonce is used.
+pub fn reseal(
+    old: &JournalKey,
+    new: &JournalKey,
+    brand: u8,
+    bytes: &[u8],
+) -> Result<Vec<u8>, SealError> {
+    let (stamp, image) = open(old, brand, bytes)?;
+    seal(new, &stamp, &image)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -272,6 +289,21 @@ mod tests {
         );
         let not_db = seal(&key, &stamp(), b"not a database at all").unwrap();
         assert_eq!(open(&key, 1, &not_db).unwrap_err(), SealError::NotADatabase);
+    }
+
+    #[test]
+    fn reseal_keeps_the_stamp_and_changes_the_key() {
+        let old = JournalKey::generate().unwrap();
+        let new = JournalKey::generate().unwrap();
+        let sealed = seal(&old, &stamp(), &fake_image()).unwrap();
+        let moved = reseal(&old, &new, 1, &sealed).unwrap();
+        assert_eq!(&moved[..HEADER_LEN], &sealed[..HEADER_LEN]);
+        assert_eq!(open(&old, 1, &moved).unwrap_err(), SealError::Decrypt);
+        let (s, image) = open(&new, 1, &moved).unwrap();
+        assert_eq!(s, stamp());
+        assert_eq!(image.as_slice(), fake_image().as_slice());
+        assert!(new.same_as(&JournalKey::from_bytes(new.as_bytes()).unwrap()));
+        assert!(!new.same_as(&old));
     }
 
     #[test]

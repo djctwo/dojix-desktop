@@ -26,6 +26,8 @@ pub struct Report {
     pub version: &'static str,
     pub data_dir: &'static str,
     pub vault: &'static str,
+    /// The web view runs in private mode (true for every release build).
+    pub webview_private: bool,
     pub checks: Vec<Check>,
 }
 
@@ -96,6 +98,7 @@ pub fn run(brand: &Brand, paths: &DataPaths, vault: &dyn SecretStore) -> Report 
         version: env!("CARGO_PKG_VERSION"),
         data_dir: paths.source.as_str(),
         vault: vault.backend(),
+        webview_private: crate::PRIVATE_WEBVIEW,
         checks,
     }
 }

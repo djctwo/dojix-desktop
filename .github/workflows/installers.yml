@@ -82,7 +82,7 @@ jobs:
             # Release binaries must not contain the e2e-only commands.
             bin="target/release/$brand$ext"
             [ -f "$bin" ] || bin="target/release/dojix-desktop$ext"
-            if grep -a -q -E 'e2e_status|e2e_add_trade' "$bin"; then
+            if grep -a -q -E 'e2e_(status|add_trade|set_idle_seconds|backup_export|backup_pick)' "$bin"; then
               echo "::error::release binary for $brand contains test-only commands"; exit 1
             fi
             echo "ok - $brand release binary has no test-only commands"

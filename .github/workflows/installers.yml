@@ -1,0 +1,145 @@
+name: installers
+
+# Skeleton of the installer pipeline: builds 2 brands x {NSIS, MSI} on Windows and
+# {AppImage, deb} on Linux, proves the release binaries carry no test-only hooks, then installs,
+# self-tests and uninstalls them on clean runners. Unsigned; update signing comes in a later phase.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: installers-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  build:
+    name: build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            bundles: nsis,msi
+            kinds: nsis msi
+          - os: ubuntu-22.04
+            bundles: appimage,deb
+            kinds: appimage deb
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Linux system libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev \
+            build-essential pkg-config file libfuse2
+
+      - name: Install the pinned Rust toolchain (rust-toolchain.toml)
+        run: rustup show active-toolchain || rustup toolchain install
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          shared-key: installers
+
+      - name: Build installers for both brands
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: "1"
+          BUNDLES: ${{ matrix.bundles }}
+          KINDS: ${{ matrix.kinds }}
+        run: |
+          set -euo pipefail
+          ext=""; [ "$RUNNER_OS" = "Windows" ] && ext=".exe"
+          for brand in dojix greenwick; do
+            rm -rf target/release/bundle
+            (cd apps/desktop && pnpm tauri build --ci --bundles "$BUNDLES" \
+              --features brand-$brand \
+              --config src-tauri/tauri.$brand.conf.json)
+
+            # Release binaries must not contain the e2e-only commands.
+            bin="target/release/$brand$ext"
+            [ -f "$bin" ] || bin="target/release/dojix-desktop$ext"
+            if grep -a -q -E 'e2e_status|e2e_add_trade' "$bin"; then
+              echo "::error::release binary for $brand contains test-only commands"; exit 1
+            fi
+            echo "ok - $brand release binary has no test-only commands"
+
+            mkdir -p "dist-installers/$brand"
+            for kind in $KINDS; do
+              cp target/release/bundle/$kind/*.{exe,msi,AppImage,deb} "dist-installers/$brand/" 2>/dev/null || true
+            done
+          done
+          ls -laR dist-installers
+
+      - name: Every expected installer exists
+        env:
+          OS: ${{ runner.os }}
+        run: |
+          set -euo pipefail
+          for brand in dojix greenwick; do
+            if [ "$OS" = "Windows" ]; then
+              ls dist-installers/$brand/*-setup.exe dist-installers/$brand/*.msi
+            else
+              ls dist-installers/$brand/*.AppImage dist-installers/$brand/*.deb
+            fi
+          done
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installers-${{ runner.os }}
+          path: dist-installers/
+          if-no-files-found: error
+
+  smoke-windows:
+    needs: build
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: installers-Windows
+          path: installers
+      - name: Install, self-test and uninstall (NSIS and MSI, both brands)
+        shell: pwsh
+        run: ./tools/ci/installer-smoke.ps1 -ArtifactDir installers
+
+  smoke-linux:
+    needs: build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: installers-Linux
+          path: installers
+      - name: Keyring for the self-test
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gnome-keyring dbus-x11 libfuse2
+      - name: Install the .deb and run the AppImage, with a self-test each (both brands)
+        run: tools/ci/with-keyring.sh tools/ci/installer-smoke-linux.sh installers

@@ -74,18 +74,25 @@ export function loadReferences(dir: string): { docs: { file: string; doc: Refere
   return { docs, errors };
 }
 
-/** Reference files are produced only by CI; a hand edit breaks the checksum manifest. */
-export function verifyChecksums(dir: string): string[] {
-  const manifest = join(dir, "checksums.json");
-  if (!existsSync(manifest)) return existsSync(dir) ? [`${dir}: checksums.json missing`] : [];
+/**
+ * Reference files are produced only by CI; a hand edit breaks the checksum manifest
+ * (golden/reference-meta/<brand>/checksums.json, paths relative to golden/).
+ */
+export function verifyChecksums(golden: string, brand: string): string[] {
+  const manifest = join(golden, "reference-meta", brand, "checksums.json");
+  const refDir = join(golden, "reference", brand);
+  if (!existsSync(manifest)) return existsSync(refDir) ? [`${brand}: reference-meta/${brand}/checksums.json missing`] : [];
   const sums = JSON.parse(readFileSync(manifest, "utf8")) as Record<string, string>;
   const errors: string[] = [];
   for (const [file, sum] of Object.entries(sums)) {
-    const p = join(dir, file);
+    const p = join(golden, file);
     if (!existsSync(p)) errors.push(`${file}: listed in checksums.json but missing`);
     else if (createHash("sha256").update(readFileSync(p)).digest("hex") !== sum) {
       errors.push(`${file}: edited by hand (checksum differs from the CI run)`);
     }
+  }
+  for (const name of existsSync(refDir) ? readdirSync(refDir) : []) {
+    if (!(`reference/${brand}/${name}` in sums)) errors.push(`reference/${brand}/${name}: not produced by the CI run`);
   }
   return errors;
 }

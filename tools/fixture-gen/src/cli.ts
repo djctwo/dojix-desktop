@@ -76,7 +76,13 @@ function main(argv: readonly string[]): number {
     return bad ? 1 : 0;
   }
 
-  for (const brand of ["dojix", "greenwick"]) rmSync(join(root, brand), { recursive: true, force: true });
+  // Only the generator's own set folders are replaced: F10 (Mac backups written by the Swift
+  // harness) and <fixture>.trades.json (engine input exported from the references) stay.
+  for (const brand of ["dojix", "greenwick"]) {
+    for (const set of ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9"]) {
+      rmSync(join(root, brand, set), { recursive: true, force: true });
+    }
+  }
   for (const f of fixtures) {
     const p = join(root, f.path);
     mkdirSync(dirname(p), { recursive: true });

@@ -5,6 +5,7 @@
 //              [--source-sha <sha>] [--xcode <version>]
 //   <Brand>Ref --backups <dir> --fixture <journal json>        (F10 Mac backup vectors)
 //   <Brand>Ref --samples <json>                                 (sample-trade invariants)
+//   <Brand>Ref --probes <json>                                  (Decimal→Double and DST probes)
 //
 // TZ and -AppleLocale are set by the driver (tools/swift-ref/run.mjs).
 import Foundation
@@ -45,6 +46,11 @@ func refMain() -> Int32 {
         FileManager.default.createFile(atPath: samplesOut, contents: Data(text.utf8))
         return 0
     }
+    if let probesOut = refArgs["probes"] {
+        let text = refSerialize(refProbes(), indent: 1) + "\n"
+        FileManager.default.createFile(atPath: probesOut, contents: Data(text.utf8))
+        return 0
+    }
     guard let fixture = refArgs["fixture"] else {
         refLog("missing --fixture")
         return 2
@@ -82,15 +88,21 @@ func refMain() -> Int32 {
     } else {
         parsed = refParseFile(fixture, into: &section)
     }
+    // Scale sets (components off) record counts only; journal fixtures are their own parsed form.
+    let compact = refArgs["components"] == "false"
     refMark("$import.parsed")
     section.append(("parsedCount", .int(Int64(parsed.count))))
-    section.append(("parsed", .array(parsed.map(refFullTrade))))
+    if kind != "journal" && !compact {
+        section.append(("parsed", .array(parsed.map(refFullTrade))))
+    }
 
     // 2. Store through the app's repository and read back (close time descending)
     refMark("$import.store")
     let journal = refStore(parsed, into: &section)
     section.append(("journalCount", .int(Int64(journal.count))))
-    section.append(("journal", .array(journal.map(refFullTrade))))
+    if !compact {
+        section.append(("journal", .array(journal.map(refFullTrade))))
+    }
 
     // 3. Analytics on the stored journal
     refMark("$analytics.context")
@@ -102,7 +114,7 @@ func refMain() -> Int32 {
     let ctx = RefContext(trades: journal, metrics: metrics, checkpoints: [checkpoint],
                          lastClose: journal.first?.closeTime ?? Date(timeIntervalSince1970: 0))
     var outputs = refBrandOutputs(ctx)
-    if refArgs["components"] == "false" {
+    if compact {
         let keep: Set<String> = ["Metrics", "Metrics.edgeByHour", "Metrics.edgeBySession", "Metrics.edgeByDay"]
         outputs = outputs.filter { keep.contains($0.key) }
     }

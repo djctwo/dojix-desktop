@@ -231,3 +231,19 @@ func refWriteBackups(_ trades: [Trade], to dir: URL, password: String) throws ->
         ("tickets", refEncode(try repo.fetchAll().map { String($0.ticket) })),
     ])
 }
+
+/// Dojix-specific probes: how the generic parser and the 32-column parser read times.
+@MainActor
+func refBrandProbes() -> RefJSON {
+    let parsers = GenericCSVParser.DateParsers(primaryFormat: "yyyy-MM-dd HH:mm:ss")
+    let texts = ["2026-03-08 02:30:00", "2026-03-29 02:30:00", "2026-10-25 02:30:00", "2026-06-09T10:40:35+0000",
+                 "2026-06-09T10:40:35+0200", "2026-06-09T10:40:35", "06/09/2026 10:40:35", "2026-06-09", "16 Apr 2026"]
+    return .object([
+        ("genericDateParsers", .array(texts.map { t in
+            .object([("text", .string(t)), ("utc", parsers.parse(t).map { .string(RefFormat.iso.string(from: $0)) } ?? .null)])
+        })),
+        ("saDateTime", .array(["2026.03.29 02:30:00", "2026.3.9 1:05:00", "2026-03-29 02:30:00"].map { t in
+            .object([("text", .string(t)), ("utc", Date.fromSADateTime(t).map { .string(RefFormat.iso.string(from: $0)) } ?? .null)])
+        })),
+    ])
+}

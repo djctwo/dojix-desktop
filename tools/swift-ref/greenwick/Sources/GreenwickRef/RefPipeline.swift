@@ -222,3 +222,28 @@ func refWriteBackups(_ trades: [Trade], to dir: URL, password: String) throws ->
         ("tickets", refEncode(try repo.fetchAll().map { String($0.ticket) })),
     ])
 }
+
+/// Greenwick-specific probes: how the import parser reads ET wall-clock times around DST, and
+/// how the trading calendar sizes those days.
+@MainActor
+func refBrandProbes() -> RefJSON {
+    let texts: [(String, String)] = [
+        ("03/08/2026 02:30:00", "MM/dd/yyyy HH:mm:ss"), ("11/01/2026 01:30:00", "MM/dd/yyyy HH:mm:ss"),
+        ("3/8/2026", "M/d/yyyy"), ("11/1/2026", "M/d/yyyy"), ("2026-03-08T02:30:00Z", "yyyy-MM-dd'T'HH:mm:ssZ"),
+        ("06/30/2026 10:00:00 EDT", "MM/dd/yyyy HH:mm:ss"), ("03/08/26", "MM/dd/yy"),
+    ]
+    let days = ["2026-03-08", "2026-11-01", "2026-06-15"]
+    return .object([
+        ("parseDateTime", .array(texts.map { t, f in
+            .object([("text", .string(t)), ("format", .string(f)),
+                     ("utc", GenericCSVParser.parseDateTime(t, format: f).map { .string(RefFormat.iso.string(from: $0)) } ?? .null)])
+        })),
+        ("tradingDays", .array(days.compactMap { key -> RefJSON? in
+            guard let start = TradingCalendar.date(fromDayKey: key) else { return nil }
+            let next = TradingCalendar.calendar.date(byAdding: .day, value: 1, to: start) ?? start
+            return .object([("dayKey", .string(key)), ("start", .string(RefFormat.iso.string(from: start))),
+                            ("hours", refDouble(next.timeIntervalSince(start) / 3600)),
+                            ("roundTrip", .string(TradingCalendar.dayKey(start)))])
+        })),
+    ])
+}

@@ -127,9 +127,8 @@ describe("runParity", () => {
 describe("committed reference files", () => {
   for (const brand of ["dojix", "greenwick"]) {
     it(`${brand}: checksums match the CI run and every file parses`, () => {
-      const dir = join(golden, "reference", brand);
-      expect(verifyChecksums(dir)).toEqual([]);
-      const { errors } = loadReferences(dir);
+      expect(verifyChecksums(golden, brand)).toEqual([]);
+      const { errors } = loadReferences(join(golden, "reference", brand));
       expect(errors).toEqual([]);
     });
   }

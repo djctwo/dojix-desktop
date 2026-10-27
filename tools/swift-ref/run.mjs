@@ -1,7 +1,12 @@
 // Runs the built Swift reference harness over every fixture of one brand (CI only, macOS).
 //
-//   node tools/swift-ref/run.mjs --brand dojix --bin <DojixRef binary> --out golden/reference/dojix \
+//   node tools/swift-ref/run.mjs --brand dojix --bin <DojixRef binary> \
 //        --source-sha <sha> --xcode <version> [--scale-dir <dir with F9 files>] [--only <substring>]
+//
+// Writes (relative to the repository root):
+//   golden/reference/<brand>/<fixture>[@<tz>_<locale>].json   one reference file per run (only these)
+//   golden/reference-meta/<brand>/{index,checksums,probes,sample-trades}.json
+//   golden/fixtures/<brand>/F10/*                               Mac backup vectors (+ backups.json)
 //
 // For each fixture × environment variant it runs the harness twice — once with
 // SWIFT_DETERMINISTIC_HASHING=1 and once with Swift's random per-process hashing — and records
@@ -66,6 +71,17 @@ function runFixture(bin, baseArgs, env, timeoutMs, workDir) {
   return { ok: false, skip, error: "too many skipped values" };
 }
 
+/** "Metrics": {…} → "Metrics.<field>": … (the SPEC's key shape; packages/core resolves these). */
+export function flattenMetrics(outputs) {
+  const out = {};
+  for (const [k, v] of Object.entries(outputs)) {
+    if (k === "Metrics" && v && typeof v === "object" && !Array.isArray(v) && !("$skipped" in v)) {
+      for (const [f, x] of Object.entries(v)) out[`Metrics.${f}`] = x;
+    } else out[k] = v;
+  }
+  return out;
+}
+
 function sha256(path) {
   return createHash("sha256").update(readFileSync(path)).digest("hex");
 }
@@ -73,7 +89,10 @@ function sha256(path) {
 function main(argv) {
   const brand = arg(argv, "--brand");
   const bin = resolve(arg(argv, "--bin", ""));
-  const outDir = resolve(arg(argv, "--out", join(repo, "golden/reference", brand ?? "")));
+  const golden = resolve(arg(argv, "--golden", join(repo, "golden")));
+  const outDir = join(golden, "reference", brand ?? "");
+  const metaDir = join(golden, "reference-meta", brand ?? "");
+  const f10Dir = join(golden, "fixtures", brand ?? "", "F10");
   const scaleDir = arg(argv, "--scale-dir");
   const only = arg(argv, "--only");
   const sourceSha = arg(argv, "--source-sha", "");
@@ -83,8 +102,10 @@ function main(argv) {
     return 2;
   }
   const manifest = JSON.parse(readFileSync(join(repo, "golden/fixtures/manifest.json"), "utf8"));
-  rmSync(outDir, { recursive: true, force: true });
-  mkdirSync(outDir, { recursive: true });
+  for (const d of [outDir, metaDir, f10Dir]) {
+    rmSync(d, { recursive: true, force: true });
+    mkdirSync(d, { recursive: true });
+  }
   const work = mkdtempSync(join(tmpdir(), "swift-ref-"));
   const baseEnv = {
     ...process.env,
@@ -114,7 +135,8 @@ function main(argv) {
       const a = runFixture(bin, [...base, "--out", outA], { ...env, SWIFT_DETERMINISTIC_HASHING: "1" }, timeout, work);
       if (!a.ok) {
         failures++;
-        writeFileSync(outA, JSON.stringify({ schema: 1, brand, fixture: f.id, error: a.error, stderr: a.stderr }, null, 1) + "\n");
+        writeFileSync(outA, JSON.stringify({ schema: 1, brand, fixture: f.id, source_sha: sourceSha, xcode, tz: v.tz,
+          locale: v.locale, now: new Date().toISOString(), outputs: {}, error: a.error, stderr: a.stderr }, null, 1) + "\n");
         index.push({ fixture: f.id, variant: v, file: name, status: "failed", error: a.error });
         console.error(`FAIL ${name}: ${a.error}`);
         continue;
@@ -136,6 +158,7 @@ function main(argv) {
         nondeterministic = ["$second-run-failed"];
       }
       docA.environment = { tz: v.tz, locale: v.locale, deterministicHashing: true };
+      docA.outputs = flattenMetrics(docA.outputs);
       docA.nondeterministic = nondeterministic;
       writeFileSync(outA, JSON.stringify(docA, null, 1) + "\n");
       const seconds = Math.round((Date.now() - started) / 100) / 10;
@@ -146,29 +169,33 @@ function main(argv) {
   }
 
   // Sample-trade invariants and F10 backup vectors.
-  const samples = runOnce(bin, ["--samples", join(outDir, "sample-trades.json")], baseEnv, 120_000);
+  const samples = runOnce(bin, ["--samples", join(metaDir, "sample-trades.json")], baseEnv, 120_000);
   if (samples.status !== 0) { failures++; console.error(`FAIL samples: ${samples.stderr.slice(-2000)}`); }
+  const probes = runOnce(bin, ["--probes", join(metaDir, "probes.json")], baseEnv, 120_000);
+  if (probes.status !== 0) { failures++; console.error(`FAIL probes: ${probes.stderr.slice(-2000)}`); }
   const f1 = manifest.fixtures.find((x) => x.brand === brand && x.id === `${brand}/f1-tiny-journal`);
   if (f1) {
-    const r = runOnce(bin, ["--backups", join(outDir, "f10"), "--fixture", join(repo, "golden/fixtures", f1.path)], baseEnv, 300_000);
+    const r = runOnce(bin, ["--backups", f10Dir, "--fixture", join(repo, "golden/fixtures", f1.path)], baseEnv, 300_000);
     if (r.status !== 0) { failures++; console.error(`FAIL backups: ${r.stderr.slice(-2000)}`); }
   }
 
-  writeFileSync(join(outDir, "index.json"), JSON.stringify({
+  writeFileSync(join(metaDir, "index.json"), JSON.stringify({
     brand, source_sha: sourceSha, xcode, fixtures: index,
   }, null, 1) + "\n");
-  // Checksums: parity-check refuses reference files that were edited by hand.
+  // Checksums (paths relative to golden/): parity-check refuses files edited by hand.
   const files = [];
   const walk = (d) => {
     for (const n of readdirSync(d, { withFileTypes: true })) {
       const p = join(d, n.name);
       if (n.isDirectory()) walk(p);
-      else if (n.name !== "checksums.json") files.push(p);
+      else files.push(p);
     }
   };
   walk(outDir);
-  const sums = Object.fromEntries(files.sort().map((p) => [relative(outDir, p), sha256(p)]));
-  writeFileSync(join(outDir, "checksums.json"), JSON.stringify(sums, null, 1) + "\n");
+  walk(f10Dir);
+  for (const n of ["index.json", "probes.json", "sample-trades.json"]) if (existsSync(join(metaDir, n))) files.push(join(metaDir, n));
+  const sums = Object.fromEntries(files.sort().map((p) => [relative(golden, p).replace(/\\/g, "/"), sha256(p)]));
+  writeFileSync(join(metaDir, "checksums.json"), JSON.stringify(sums, null, 1) + "\n");
   rmSync(work, { recursive: true, force: true });
   console.log(`${brand}: ${index.filter((x) => x.status === "ok").length} reference files, ${failures} failure(s)`);
   return failures ? 1 : 0;

@@ -23,7 +23,7 @@ function main(argv: readonly string[]): number {
   for (const brand of ["dojix", "greenwick"] as Brand[]) {
     if (only && only !== brand) continue;
     const dir = join(golden, "reference", brand);
-    const checksumErrors = verifyChecksums(dir);
+    const checksumErrors = verifyChecksums(golden, brand);
     const { docs, errors } = loadReferences(dir);
     if (docs.length === 0) {
       console.log(`${brand}: no reference files yet (run parity-reference.yml)`);

@@ -89,9 +89,12 @@ jobs:
           BIN="tools/swift-ref/${{ matrix.brand }}/.build/release/${{ matrix.target }}"
           test -x "$BIN"
           node tools/swift-ref/run.mjs --brand ${{ matrix.brand }} --bin "$BIN" \
-            --out golden/reference/${{ matrix.brand }} \
             --source-sha "$SOURCE_SHA" --xcode "$(xcodebuild -version | head -1)" \
             --scale-dir "$RUNNER_TEMP/f9"
+
+      - name: Export the stored journals as engine input (<fixture>.trades.json)
+        if: always()
+        run: node tools/swift-ref/export-trades.mjs
 
       - name: Upload the reference files
         if: always()
@@ -100,5 +103,8 @@ jobs:
           name: reference-${{ matrix.brand }}
           path: |
             golden/reference/${{ matrix.brand }}
+            golden/reference-meta/${{ matrix.brand }}
+            golden/fixtures/${{ matrix.brand }}/F10
+            golden/fixtures/${{ matrix.brand }}/*.trades.json
             tools/swift-ref/${{ matrix.brand }}/generated-report.json
           if-no-files-found: warn

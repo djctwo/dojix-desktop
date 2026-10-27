@@ -229,7 +229,8 @@ pub fn run() {
             // driver's (including --remote-debugging-port), so merge the two in e2e builds.
             #[cfg(all(windows, feature = "e2e"))]
             if let Some(extra) = std::env::var_os("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS") {
-                let merged = merge_browser_args(TAURI_DEFAULT_BROWSER_ARGS, &extra.to_string_lossy());
+                let merged =
+                    merge_browser_args(TAURI_DEFAULT_BROWSER_ARGS, &extra.to_string_lossy());
                 window = window.additional_browser_args(&merged);
             }
             window.build()?;

@@ -20,6 +20,10 @@ import "../analytics/greenwick/parity";
 // Component resolvers register themselves on demand (analytics teams).
 registerE3Parity();
 
+// Component teams keep their resolvers next to their components ("*.parity.ts"); importing
+// them registers them.
+import.meta.glob("../**/*.parity.ts", { eager: true });
+
 const referenceJson = import.meta.glob<unknown>("../../../../golden/reference/**/*.json", { eager: true, import: "default" });
 const fixtureJson = import.meta.glob<{ trades?: StoredTrade[] }>("../../../../golden/fixtures/**/*.trades.json", {
   eager: true,

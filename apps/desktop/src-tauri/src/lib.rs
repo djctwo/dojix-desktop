@@ -110,6 +110,36 @@ fn start(brand: &brand::Brand, paths: &DataPaths, vault: &dyn SecretStore) -> Ap
     }
 }
 
+/// The WebView2 arguments Tauri uses when none are given (mini menu and SmartScreen off).
+#[cfg(any(test, all(windows, feature = "e2e")))]
+const TAURI_DEFAULT_BROWSER_ARGS: &str =
+    "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection";
+
+/// Joins two WebView2 switch lists, combining their `--disable-features=` lists into one.
+#[cfg(any(test, all(windows, feature = "e2e")))]
+fn merge_browser_args(base: &str, extra: &str) -> String {
+    const KEY: &str = "--disable-features=";
+    let mut features: Vec<&str> = Vec::new();
+    let mut others: Vec<&str> = Vec::new();
+    for arg in base.split_whitespace().chain(extra.split_whitespace()) {
+        match arg.strip_prefix(KEY) {
+            Some(list) => features.extend(list.split(',').filter(|f| !f.is_empty())),
+            None => others.push(arg),
+        }
+    }
+    let mut seen = std::collections::HashSet::new();
+    features.retain(|f| seen.insert(*f));
+    let mut out = others.join(" ");
+    if !features.is_empty() {
+        if !out.is_empty() {
+            out.push(' ');
+        }
+        out.push_str(KEY);
+        out.push_str(&features.join(","));
+    }
+    out
+}
+
 pub fn run() {
     let brand = brand::CURRENT;
     let args = cli::parse(std::env::args_os()).unwrap_or_else(|msg| exit_with(&msg, 2));
@@ -195,6 +225,13 @@ pub fn run() {
             if let Some(dir) = std::env::var_os("WEBVIEW2_USER_DATA_FOLDER") {
                 window = window.data_directory(dir.into());
             }
+            // Tauri passes its own WebView2 browser arguments, which take the place of the
+            // driver's (including --remote-debugging-port), so merge the two in e2e builds.
+            #[cfg(all(windows, feature = "e2e"))]
+            if let Some(extra) = std::env::var_os("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS") {
+                let merged = merge_browser_args(TAURI_DEFAULT_BROWSER_ARGS, &extra.to_string_lossy());
+                window = window.additional_browser_args(&merged);
+            }
             window.build()?;
             Ok(())
         });
@@ -218,3 +255,21 @@ pub fn run() {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::{merge_browser_args, TAURI_DEFAULT_BROWSER_ARGS};
+
+    #[test]
+    fn merges_disable_features_and_keeps_the_driver_switches() {
+        let merged = merge_browser_args(
+            TAURI_DEFAULT_BROWSER_ARGS,
+            "--enable-automation --disable-features=Prewarm,msWebOOUI --remote-debugging-port=0",
+        );
+        assert_eq!(
+            merged,
+            "--enable-automation --remote-debugging-port=0 \
+             --disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,Prewarm"
+        );
+        assert_eq!(merge_browser_args("", ""), "");
+    }
+}

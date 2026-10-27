@@ -17,8 +17,9 @@ crate-type = ["rlib"]
 # Exactly one brand must be enabled: --features brand-dojix or --features brand-greenwick.
 brand-dojix = []
 brand-greenwick = []
-# Test-only IPC hooks. Never enabled in release or installer builds.
-e2e = []
+# Test-only IPC hooks (and devtools, which WebDriver needs). Never enabled in release or
+# installer builds.
+e2e = ["tauri/devtools"]
 
 [build-dependencies]
 tauri-build = { version = "=2.7.2", features = [] }

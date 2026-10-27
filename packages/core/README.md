@@ -17,6 +17,7 @@ here reproduces Swift and says which Swift line it matches.
 | `engine/` | `EngineContext`, `CompatMode`, seeded `Rng`, `AnalyticsRegistry` |
 | `metrics/` | `calculateMetrics`, `edgeBy*`, `allEdgeConditions`, `confidenceLevel`, `tradingDayCount` |
 | `parity/` | The §10.1 equality rule, reference-file parsing, output resolvers |
+| `analytics/greenwick/` | The nine Greenwick-only components (SectorExposure, VolumeAnalysis, GapAnalysis, OpeningRangeAnalysis, ExecutionQuality, IntradayEquityCurve, RegimeAnalysis, EarningsImpact, DiversificationScore): one `compute*` per component returning a plain model, `components.ts` (registry entries), `parity.ts` (resolvers in the harness's shapes, loaded by the parity suite) |
 | `formulas.ts` | `FORMULA_INDEX`: every formula of SPEC §3.3 and Appendix A, its owner team, status, module and divergences |
 
 ## Writing an analytics component
@@ -63,6 +64,7 @@ here reproduces Swift and says which Swift line it matches.
 | Week numbers | ICU rules with `firstWeekday` / `minimumDaysInFirstWeek` (Greenwick: week 0 of a Friday-start month) | — | `ZonedCalendar.weekOfYear`, `weekOfMonth` |
 | DST | days of 23/25 h; skipped wall times read with the earlier offset; repeated ones resolve to the first | — | `ZonedCalendar` |
 | Greenwick day | ET date of the **close**; session/hour/weekday from the ET **open** | — | `tradingDay`, `etSession` |
+| String keys | `==`, hashing and `<` use canonical equivalence (NFC) and scalar order | code units | `groupByString`, `swiftStringLess` (analytics/greenwick/shared.ts) |
 
 **Open check for the parity team.** The Decimal → Double algorithm is the one in
 swift-foundation (`Decimal+Math.swift`, `doubleValue`). If the Tier B harness shows that

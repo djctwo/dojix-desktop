@@ -1,5 +1,10 @@
 // The desktop engine functions registered for parity checking.
 //
+// The CI gate for the engine is packages/core/src/parity/parity.test.ts (Vitest), which
+// resolves every reference key the engine computes, under the same rules (it shares
+// golden/divergences.yaml's reader with this tool). This command-line map stays for checks
+// outside Vitest (e.g. the importers' output once packages/importers lands).
+//
 // Phase 0 ships this map empty: the reference files exist, the engine does not yet. Phase 2
 // registers one function per reference key as it ports each formula, e.g.
 //

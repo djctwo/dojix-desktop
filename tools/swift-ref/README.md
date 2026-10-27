@@ -26,9 +26,12 @@ Never run it on a maintainer's Mac.
 
    `generated-report.json` (uploaded with the artifact) lists what was read and what was left out.
 4. `swift build -c release`, against the same GRDB commit the apps pin.
-5. `run.mjs` runs the binary once per fixture × environment (`TZ`, `-AppleLocale`). It runs each one
-   **twice**: with `SWIFT_DETERMINISTIC_HASHING=1`, then with Swift's per-process random hashing.
-   Every output path that differs between the two runs is listed in `nondeterministic`. That covers
+5. `run.mjs` runs the binary per fixture × environment (`TZ`, `-AppleLocale`): once with
+   `SWIFT_DETERMINISTIC_HASHING=1` (the recorded values), then `RANDOM_RUNS` (12) times with Swift's
+   per-process random hashing (once for the metrics-only scale sets). Every output path that differs
+   from the first run in any of them is listed in `nondeterministic`. One random run is not enough: it
+   reproduces a two-key dictionary's order half the time (run 40586319588 missed
+   `GapAnalysis.gapTrades` and `CommissionAnalytics.symbolCosts` on some F6 files that way). That covers
    dictionary order, unseeded randomness and clock reads. When a value crashes or hangs (for example,
    a property the view only shows above a minimum sample), the driver records it under `skipped` and
    runs again without it.

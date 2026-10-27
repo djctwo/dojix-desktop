@@ -8,10 +8,10 @@
 //   golden/reference-meta/<brand>/{index,checksums,probes,sample-trades}.json
 //   golden/fixtures/<brand>/F10/*                               Mac backup vectors (+ backups.json)
 //
-// For each fixture × environment variant it runs the harness twice — once with
-// SWIFT_DETERMINISTIC_HASHING=1 and once with Swift's random per-process hashing — and records
-// every output path that differs between the two runs as `nondeterministic` (dictionary order,
-// unseeded randomness, clock reads). A value that crashes or hangs is skipped and named in
+// For each fixture × environment variant it runs the harness once with
+// SWIFT_DETERMINISTIC_HASHING=1 (the recorded values) and then RANDOM_RUNS times with Swift's random
+// per-process hashing, and records every output path that differs from the first run in any of them
+// as `nondeterministic` (dictionary order, unseeded randomness, clock reads). A value that crashes or hangs is skipped and named in
 // `skipped`; the run is repeated without it.
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
@@ -27,6 +27,12 @@ function arg(argv, key, fallback) {
   const i = argv.indexOf(key);
   return i >= 0 ? argv[i + 1] : fallback;
 }
+
+/**
+ * Random-hashing runs per component fixture. A path whose order depends on a dictionary of n ≥ 2
+ * keys goes undetected only if every run reproduces run A's order: at most 2^-RANDOM_RUNS.
+ */
+export const RANDOM_RUNS = 12;
 
 export function variantSuffix(v) {
   if (v.tz === "UTC" && v.locale === "en_US_POSIX") return "";
@@ -141,22 +147,28 @@ function main(argv) {
         console.error(`FAIL ${name}: ${a.error}`);
         continue;
       }
-      // Second run with random hashing: anything that differs is order- or time-dependent.
+      // Further runs with Swift's per-process random hashing: anything that differs from run A is
+      // order- or time-dependent. One random run can reproduce run A's dictionary order by chance
+      // (1 in 2 for a two-key dictionary), so component fixtures get RANDOM_RUNS of them and the
+      // differing paths are united; the scale sets (metrics only) get one.
       const skipB = join(work, "skip-b.json");
       writeFileSync(skipB, JSON.stringify(a.skip));
-      const b = runOnce(bin, [...base, "--out", outB, "--skip", skipB], env, timeout);
       const docA = JSON.parse(readFileSync(outA, "utf8"));
-      let nondeterministic;
-      if (b.status === 0) {
+      const nowA = docA.now;
+      delete docA.now;
+      const found = new Set();
+      const runs = f.components ? RANDOM_RUNS : 1;
+      let completed = 0;
+      for (let k = 0; k < runs; k++) {
+        const b = runOnce(bin, [...base, "--out", outB, "--skip", skipB], env, timeout);
+        if (b.status !== 0) continue;
         const docB = JSON.parse(readFileSync(outB, "utf8"));
         delete docB.now;
-        const nowA = docA.now;
-        delete docA.now;
-        nondeterministic = [...diffPaths(docA, docB)].sort();
-        docA.now = nowA;
-      } else {
-        nondeterministic = ["$second-run-failed"];
+        for (const p of diffPaths(docA, docB)) found.add(p);
+        completed++;
       }
+      docA.now = nowA;
+      const nondeterministic = completed === runs ? [...found].sort() : ["$second-run-failed", ...[...found].sort()];
       docA.environment = { tz: v.tz, locale: v.locale, deterministicHashing: true };
       docA.outputs = flattenMetrics(docA.outputs);
       docA.nondeterministic = nondeterministic;

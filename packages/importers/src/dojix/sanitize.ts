@@ -1,8 +1,8 @@
 // Dojix storage hygiene: `Trade+Sanitize.swift` (clamp on import, reject on restore).
 
-import { SwiftDecimal, swiftPrefix, swiftCount, trimSwiftWhitespaces, utcHour, utcShortDayName } from "@dojix-desktop/core";
+import { SwiftDecimal, swiftPrefix, swiftCount, utcHour, utcShortDayName } from "@dojix-desktop/core";
 import type { DojixMacTrade } from "../model";
-import { isFoundationControl, stripFoundationControls } from "../swift/text";
+import { isFoundationControl, stripFoundationControls, trimWs } from "../swift/text";
 import { isValidDojixScreenshotName, screenshotList } from "../screenshots";
 
 /** Trade+Sanitize.swift:11-22. */
@@ -33,9 +33,14 @@ export function dojixLotSize(v: number): number {
   return size > 0 && size < DOJIX_LIMITS.minimumLots ? DOJIX_LIMITS.minimumLots : size;
 }
 
+const MONEY_LIMIT_BIG = 1_000_000_000_000n;
+
 /** Trade+Sanitize.swift:135-138: NaN → 0, clamped to ±1e12. */
 export function dojixMoney(v: SwiftDecimal): SwiftDecimal {
   if (v.isNaN) return SwiftDecimal.zero;
+  // Fast path (no 10^n scaling): |sig × 10^exp| ≤ sig ≤ 1e12 when exp ≤ 0.
+  const parts = v.toParts();
+  if (parts && parts.exponent <= 0 && parts.significand <= MONEY_LIMIT_BIG) return v;
   const limit = DOJIX_LIMITS.moneyLimit;
   if (v.compare(limit) > 0) return limit;
   if (v.compare(limit.negate()) < 0) return limit.negate();
@@ -44,7 +49,9 @@ export function dojixMoney(v: SwiftDecimal): SwiftDecimal {
 
 /** Trade+Sanitize.swift:140-143: control characters removed, `.whitespaces` trimmed, then the first N Characters. */
 function clean(value: string, maxLength: number): string {
-  return swiftPrefix(trimSwiftWhitespaces(stripFoundationControls(value, false)), maxLength);
+  const s = trimWs(stripFoundationControls(value, false));
+  // A string with no more code units than the limit has no more Characters either.
+  return s.length <= maxLength ? s : swiftPrefix(s, maxLength);
 }
 
 function clampInt(v: number, lo: number, hi: number): number {

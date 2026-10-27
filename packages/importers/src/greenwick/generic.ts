@@ -2,7 +2,7 @@
 // (Interactive Brokers, thinkorswim, TradingView, NinjaTrader, Webull, generic mapping) and the
 // shared field parsers. Transaction platforms (FIFO) are in transactions.ts.
 
-import { SwiftDecimal, etHour, etSession, etWeekdayName, graphemes, intSaturating, swiftPrefix } from "@dojix-desktop/core";
+import { POSIX_WEEKDAY_NAMES, SwiftDecimal, TRADING_CALENDAR, graphemes, intSaturating, sessionAtMinute, swiftPrefix } from "@dojix-desktop/core";
 import type { GreenwickMacTrade, ImportContext, ImportSource, ParsedRow, RowIssue } from "../model";
 import { type CsvDialect, splitFields } from "../csv/dialect";
 import { DateParsers } from "../swift/dates";
@@ -199,7 +199,10 @@ export function detectGreenwickHeaders(headers: readonly string[]): GreenwickCol
 
 /** `cleanSymbol` (GenericCSVParser.swift:932-938): upper-cased, letters/digits/dots only, at most 10 Characters. */
 export function greenwickCleanSymbol(raw: string): string {
-  return swiftPrefix(keepLettersDigitsDots(trimWs(raw.toUpperCase())), 10);
+  const upper = trimWs(raw.toUpperCase());
+  // ASCII fast path: letters, digits and "." are single Characters.
+  if (/^[\x20-\x7e]*$/.test(upper)) return upper.replace(/[^A-Z0-9.]/g, "").slice(0, 10);
+  return swiftPrefix(keepLettersDigitsDots(upper), 10);
 }
 
 /** `sanitizeImportField` (GenericCSVParser.swift:941-944): drops one leading formula character. */
@@ -274,11 +277,14 @@ export function emptyGreenwickTrade(): GreenwickMacTrade {
 
 /** Derived ET fields from the open time and the duration (GenericCSVParser.swift:713-716, 262-264). */
 export function greenwickTimeFields(openTime: number, closeTime: number): Pick<GreenwickMacTrade, "durationMin" | "session" | "dayOfWeek" | "hour"> {
+  // One ET field lookup gives what etSession / etWeekdayName / etHour each compute.
+  const f = TRADING_CALENDAR.fields(openTime);
+  const weekend = f.weekday === 1 || f.weekday === 7;
   return {
     durationMin: Math.max(0, intSaturating((closeTime - openTime) / 60_000, "greenwick")),
-    session: etSession(openTime),
-    dayOfWeek: etWeekdayName(openTime),
-    hour: etHour(openTime),
+    session: weekend ? "EXTENDED" : sessionAtMinute(f.hour * 60 + f.minute),
+    dayOfWeek: POSIX_WEEKDAY_NAMES[f.weekday - 1] as GreenwickMacTrade["dayOfWeek"],
+    hour: f.hour,
   };
 }
 

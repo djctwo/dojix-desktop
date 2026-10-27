@@ -13,7 +13,40 @@
 
 import { SwiftDecimal } from "@dojix-desktop/core";
 
-const DECIMAL_FLOAT = /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/;
+/** strtod's decimal grammar, checked in one pass (a regex like `\d+\.?\d*` backtracks quadratically). */
+function isDecimalFloat(s: string): boolean {
+  let i = 0;
+  const n = s.length;
+  const digit = (k: number) => {
+    const c = s.charCodeAt(k);
+    return c >= 48 && c <= 57;
+  };
+  if (s[i] === "+" || s[i] === "-") i++;
+  let mantissaDigits = 0;
+  while (i < n && digit(i)) {
+    i++;
+    mantissaDigits++;
+  }
+  if (s[i] === ".") {
+    i++;
+    while (i < n && digit(i)) {
+      i++;
+      mantissaDigits++;
+    }
+  }
+  if (mantissaDigits === 0) return false;
+  if (s[i] === "e" || s[i] === "E") {
+    i++;
+    if (s[i] === "+" || s[i] === "-") i++;
+    let expDigits = 0;
+    while (i < n && digit(i)) {
+      i++;
+      expDigits++;
+    }
+    if (expDigits === 0) return false;
+  }
+  return i === n;
+}
 const HEX_FLOAT = /^([+-]?)0[xX]([0-9a-fA-F]*)(?:\.([0-9a-fA-F]*))?(?:[pP]([+-]?\d+))?$/;
 const INFINITY_TEXT = /^([+-]?)(?:inf|infinity)$/i;
 const NAN_TEXT = /^[+-]?nan(?:\([0-9A-Za-z_]*\))?$/i;
@@ -25,7 +58,7 @@ export function swiftDouble(text: string): number | null {
   if (s.length === 0) return null;
   const first = s.charCodeAt(0);
   if (first === 32 || (first >= 9 && first <= 13)) return null;
-  if (DECIMAL_FLOAT.test(s)) return Number(s);
+  if (isDecimalFloat(s)) return Number(s);
   const inf = INFINITY_TEXT.exec(s);
   if (inf) return inf[1] === "-" ? -Infinity : Infinity;
   if (NAN_TEXT.test(s)) return NaN;

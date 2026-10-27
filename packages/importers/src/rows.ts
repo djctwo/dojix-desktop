@@ -50,7 +50,7 @@ function common(t: MacTrade, row: ParsedRow, importedAt: number) {
     scaledIn: t.scaledIn,
     comment: t.comment,
     notes: t.notes,
-    tags: JSON.stringify(macTagList(t.tags)),
+    tags: t.tags === "" ? "[]" : JSON.stringify(macTagList(t.tags)),
     emotion: t.emotion === "" ? null : t.emotion,
     checklist: checklistJson(t.checklistData),
     importedAt: formatGrdbDate(importedAt),

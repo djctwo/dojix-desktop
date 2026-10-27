@@ -2,9 +2,26 @@
 // (which iterates Characters, i.e. grapheme clusters), whitespace trimming and Character
 // classification.
 
-import { graphemes, trimSwiftWhitespaces } from "@dojix-desktop/core";
+import { graphemes } from "@dojix-desktop/core";
 
-export { trimSwiftWhitespaces as trimWs };
+
+/** `CharacterSet.whitespaces`: U+0009 and general category Zs (all in the BMP). */
+function isSwiftWhitespace(code: number): boolean {
+  return code === 9 || code === 32 || code === 0xa0 || code === 0x1680 || (code >= 0x2000 && code <= 0x200a) || code === 0x202f || code === 0x205f || code === 0x3000;
+}
+
+/**
+ * Swift `s.trimmingCharacters(in: .whitespaces)` (tab and Zs; newlines kept). A linear scan:
+ * an end-anchored regex like `/[\t\p{Zs}]+$/` backtracks quadratically on long runs of spaces
+ * in the middle of hostile input.
+ */
+export function trimWs(s: string): string {
+  let start = 0;
+  let end = s.length;
+  while (start < end && isSwiftWhitespace(s.charCodeAt(start))) start++;
+  while (end > start && isSwiftWhitespace(s.charCodeAt(end - 1))) end--;
+  return start === 0 && end === s.length ? s : s.slice(start, end);
+}
 
 /**
  * The Mac's line split: CRLF → LF, then `split(separator: "\n", omittingEmptySubsequences: false)`.
@@ -13,53 +30,62 @@ export { trimSwiftWhitespaces as trimWs };
  */
 export function macLines(content: string, dropBlank: boolean): string[] {
   const lines = content.replace(/\r\n/g, "\n").split("\n");
-  return dropBlank ? lines.filter((l) => trimSwiftWhitespaces(l) !== "") : lines;
+  return dropBlank ? lines.filter((l) => trimWs(l) !== "") : lines;
 }
 
-// Fast check: a line made only of these code units has one Character per code unit.
-// eslint-disable-next-line no-control-regex -- control characters are single Characters too
-const SIMPLE_LINE = /^[\x00-\x7e]*$/;
+// Grapheme cluster rules that can merge an ASCII quote or delimiter with a neighbour (UAX #29):
+// GB9/GB9a: × (Extend | ZWJ | SpacingMark) after it; GB9b: Prepend × before it.
+const EXTENDS = /[\p{Grapheme_Extend}\p{Mc}\p{Emoji_Modifier}\u200d]/u;
+const PREPEND = new Set([0x600, 0x601, 0x602, 0x603, 0x604, 0x605, 0x6dd, 0x70f, 0x890, 0x891, 0x8e2, 0xd4e, 0x110bd, 0x110cd, 0x111c2, 0x111c3, 0x1193f, 0x11941, 0x11a3a, 0x11a84, 0x11a85, 0x11a86, 0x11a87, 0x11a88, 0x11a89, 0x11d46, 0x11f02]);
+
+/** True when the ASCII character at `i` is a whole Character (no mark after it, no Prepend before it). */
+function standsAlone(line: string, i: number): boolean {
+  const next = line.codePointAt(i + 1);
+  if (next !== undefined && next >= 0x300 && EXTENDS.test(String.fromCodePoint(next))) return false;
+  if (i > 0) {
+    let prev = line.charCodeAt(i - 1);
+    if (prev >= 0xdc00 && prev <= 0xdfff && i > 1) {
+      const high = line.charCodeAt(i - 2);
+      if (high >= 0xd800 && high <= 0xdbff) prev = line.codePointAt(i - 2) as number;
+    }
+    if (PREPEND.has(prev)) return false;
+  }
+  return true;
+}
 
 /**
  * `GenericCSVParser.parseCSVLine` / `CSVParser.parseCSVLine` (both apps, identical): every `"`
  * Character toggles the quote state (so `""` inside quotes yields nothing), a delimiter outside
  * quotes ends the field, and each field is trimmed of `.whitespaces`. Swift compares whole
- * Characters, so a quote or comma followed by a combining mark is ordinary text.
+ * Characters, so a quote or comma followed by a combining mark (or preceded by a Prepend
+ * character) is ordinary text. One linear pass over code units; only quotes and delimiters
+ * next to non-ASCII text need the grapheme check.
  *
  * `delimiter` is "," on the Mac; the desktop also passes ";" or "\t" (SPEC §5.1 step 2).
  */
 export function macCsvFields(line: string, delimiter = ","): string[] {
   const fields: string[] = [];
   let inQuotes = false;
-  if (SIMPLE_LINE.test(line)) {
-    let current = "";
-    let start = 0;
-    for (let i = 0; i < line.length; i++) {
-      const c = line[i];
-      if (c === '"') {
-        current += line.slice(start, i);
-        start = i + 1;
-        inQuotes = !inQuotes;
-      } else if (c === delimiter && !inQuotes) {
-        current += line.slice(start, i);
-        fields.push(trimSwiftWhitespaces(current));
-        current = "";
-        start = i + 1;
-      }
-    }
-    current += line.slice(start);
-    fields.push(trimSwiftWhitespaces(current));
-    return fields;
-  }
   let current = "";
-  for (const ch of graphemes(line)) {
-    if (ch === '"') inQuotes = !inQuotes;
-    else if (ch === delimiter && !inQuotes) {
-      fields.push(trimSwiftWhitespaces(current));
+  let start = 0;
+  const d = delimiter.charCodeAt(0);
+  for (let i = 0; i < line.length; i++) {
+    const c = line.charCodeAt(i);
+    if (c !== 34 && c !== d) continue;
+    if (!standsAlone(line, i)) continue;
+    if (c === 34) {
+      current += line.slice(start, i);
+      start = i + 1;
+      inQuotes = !inQuotes;
+    } else if (!inQuotes) {
+      current += line.slice(start, i);
+      fields.push(trimWs(current));
       current = "";
-    } else current += ch;
+      start = i + 1;
+    }
   }
-  fields.push(trimSwiftWhitespaces(current));
+  current += line.slice(start);
+  fields.push(trimWs(current));
   return fields;
 }
 
@@ -93,6 +119,7 @@ export function isFoundationControl(cp: number): boolean {
 
 /** Removes `CharacterSet.controlCharacters` scalars (Dojix `Trade+Sanitize`), keeping \n and \t when asked. */
 export function stripFoundationControls(s: string, keepLineBreaks: boolean): string {
+  if (/^[\x20-\x7e]*$/.test(s)) return s; // printable ASCII: nothing to strip
   let out = "";
   for (const ch of s) {
     const cp = ch.codePointAt(0) as number;

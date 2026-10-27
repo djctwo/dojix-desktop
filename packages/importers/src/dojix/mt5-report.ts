@@ -35,50 +35,100 @@ function safeCodePoint(cp: number): string | null {
   return cp > 0 && cp <= 0x10ffff && !(cp >= 0xd800 && cp <= 0xdfff) ? String.fromCodePoint(cp) : null;
 }
 
-function stripTags(s: string): string {
-  return s.replace(/<[^>]*>/g, "");
+/** Scanner limits: anything beyond them is not an MT5 report the terminal writes. */
+export const REPORT_LIMITS = Object.freeze({ maxRows: 2_000_000, maxCellsPerRow: 64, maxCellLength: 4096, maxAttributeLength: 4096 });
+
+/** True when the attribute text of a tag has `class` containing the token "hidden" (no regex). */
+function hasHiddenClass(attrs: string): boolean {
+  const lower = attrs.slice(0, REPORT_LIMITS.maxAttributeLength).toLowerCase();
+  let from = 0;
+  for (;;) {
+    const at = lower.indexOf("class", from);
+    if (at < 0) return false;
+    from = at + 5;
+    let i = from;
+    while (i < lower.length && lower.charCodeAt(i) <= 32) i++;
+    if (lower[i] !== "=") continue;
+    i++;
+    while (i < lower.length && lower.charCodeAt(i) <= 32) i++;
+    const quote = lower[i] === '"' || lower[i] === "'" ? lower[i] : null;
+    if (quote) i++;
+    let end = i;
+    while (end < lower.length && (quote ? lower[end] !== quote : lower.charCodeAt(end) > 32)) end++;
+    if (lower.slice(i, end).split(/\s+/).includes("hidden")) return true;
+  }
 }
 
-/** Every `<tr>` of the document as its visible cells (cells with class "hidden" are dropped). */
+interface OpenCell {
+  parts: string[];
+  length: number;
+  header: boolean;
+  hidden: boolean;
+}
+
+/**
+ * Every `<tr>` of the document as its visible cells (cells with class "hidden" are dropped).
+ * One forward pass: each tag's end (`>`) is found once, and when a `<` has no `>` after it the
+ * rest of the input cannot contain a tag, so the scan stops. Text outside cells is ignored;
+ * rows, cells per row and cell text are capped (`REPORT_LIMITS`). Linear in the input size.
+ */
 export function htmlTableRows(html: string): Cell[][] {
-  const lower = html.toLowerCase();
   const rows: Cell[][] = [];
-  const starts: number[] = [];
-  for (let i = lower.indexOf("<tr"); i >= 0; i = lower.indexOf("<tr", i + 3)) {
-    const next = lower.charCodeAt(i + 3);
-    if (next === 62 || next === 32 || next === 9 || next === 10 || next === 13 || next === 47) starts.push(i);
-  }
-  for (let r = 0; r < starts.length; r++) {
-    const start = starts[r] as number;
-    const end = r + 1 < starts.length ? (starts[r + 1] as number) : html.length;
-    rows.push(cellsOf(html.slice(start, end), lower.slice(start, end)));
-  }
-  return rows;
-}
-
-function cellsOf(row: string, lower: string): Cell[] {
-  const cells: Cell[] = [];
-  const opens: { at: number; header: boolean }[] = [];
-  for (let i = lower.indexOf("<t"); i >= 0; i = lower.indexOf("<t", i + 2)) {
-    const kind = lower[i + 2];
-    const after = lower.charCodeAt(i + 3);
-    if ((kind === "d" || kind === "h") && (after === 62 || after === 32 || after === 9 || after === 10 || after === 13)) {
-      opens.push({ at: i, header: kind === "h" });
+  let row: Cell[] | null = null;
+  let cell: OpenCell | null = null;
+  const closeCell = () => {
+    if (cell && row && !cell.hidden && row.length < REPORT_LIMITS.maxCellsPerRow) {
+      const text = trimWs(decodeEntities(cell.parts.join("")).replace(/\s+/g, " "));
+      row.push({ text, isHeader: cell.header });
     }
+    cell = null;
+  };
+  const closeRow = () => {
+    closeCell();
+    if (row && rows.length < REPORT_LIMITS.maxRows) rows.push(row);
+    row = null;
+  };
+  const appendText = (from: number, to: number) => {
+    if (!cell || to <= from) return;
+    const room = REPORT_LIMITS.maxCellLength - cell.length;
+    if (room <= 0) return;
+    const piece = html.slice(from, Math.min(to, from + room));
+    cell.parts.push(piece);
+    cell.length += piece.length;
+  };
+  let i = 0;
+  const n = html.length;
+  while (i < n) {
+    const lt = html.indexOf("<", i);
+    if (lt < 0) {
+      appendText(i, n);
+      break;
+    }
+    appendText(i, lt);
+    const gt = html.indexOf(">", lt + 1);
+    if (gt < 0) break; // no tag can follow: stop
+    let j = lt + 1;
+    const closing = html[j] === "/";
+    if (closing) j++;
+    let nameEnd = j;
+    while (nameEnd < gt && nameEnd - j < 8 && /[A-Za-z0-9]/.test(html[nameEnd] as string)) nameEnd++;
+    const name = html.slice(j, nameEnd).toLowerCase();
+    const boundary = html.charCodeAt(nameEnd);
+    const isName = nameEnd === gt || boundary <= 32 || boundary === 47; // ">" / whitespace / "/"
+    if (isName && name === "tr") {
+      if (closing) closeRow();
+      else {
+        closeRow();
+        row = [];
+      }
+    } else if (isName && (name === "td" || name === "th")) {
+      closeCell();
+      if (!closing && row) cell = { parts: [], length: 0, header: name === "th", hidden: hasHiddenClass(html.slice(nameEnd, gt)) };
+    }
+    i = gt + 1;
   }
-  for (let c = 0; c < opens.length; c++) {
-    const { at, header } = opens[c] as { at: number; header: boolean };
-    const tagEnd = lower.indexOf(">", at);
-    if (tagEnd < 0) break;
-    const attrs = lower.slice(at, tagEnd);
-    const limit = c + 1 < opens.length ? (opens[c + 1] as { at: number }).at : row.length;
-    let contentEnd = lower.indexOf("</t", tagEnd);
-    if (contentEnd < 0 || contentEnd > limit) contentEnd = limit;
-    if (/class\s*=\s*["']?[^"'>]*\bhidden\b/.test(attrs)) continue;
-    const text = trimWs(decodeEntities(stripTags(row.slice(tagEnd + 1, contentEnd))).replace(/\s+/g, " "));
-    cells.push({ text, isHeader: header });
-  }
-  return cells;
+  closeRow();
+  return rows;
 }
 
 /** True when the decoded text looks like an MT5 history report. */

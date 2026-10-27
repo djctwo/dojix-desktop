@@ -36,6 +36,7 @@ const DECIMAL_COMMA_NUMBER = /^([+-]?\(?[$€£]?[+-]?)(\d{1,3}(?:\.\d{3})+|\d+)
 
 /** Rewrites a decimal-comma number to the "." form the Mac parsers expect; other text is unchanged. */
 export function normaliseDecimalComma(field: string): string {
+  if (field.length > 64 || !field.includes(",")) return field;
   const m = DECIMAL_COMMA_NUMBER.exec(field);
   if (!m) return field;
   return `${m[1]}${(m[2] as string).replace(/\./g, "")}.${m[3]}${m[4]}`;

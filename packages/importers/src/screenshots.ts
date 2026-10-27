@@ -6,7 +6,7 @@ const UUID_RE = /^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0
 
 /** `Trade.screenshotList`: the comma list split, trimmed, empty names dropped (same rule as tags). */
 export function screenshotList(raw: string): string[] {
-  return macTagList(raw);
+  return raw === "" ? [] : macTagList(raw);
 }
 
 /** Dojix `ScreenshotManager.isValidFilename` (Components/TradeScreenshots.swift:57-62). */

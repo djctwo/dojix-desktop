@@ -4064,17 +4064,17 @@
      "points": [
       0,
       -1000000000000,
-      -999999999992,
+      -999999999991,
       -999999999982,
-      -999999999971,
-      -999999999961,
-      -999999999951,
-      -999999999939,
-      -999999999928,
-      -999999999916,
-      -999999999902,
-      -999999999887,
-      98.989990234375,
+      -999999999972,
+      -999999999962,
+      -999999999950,
+      -999999999938,
+      -999999999926,
+      -999999999915,
+      -999999999903,
+      82,
+      98,
       111,
       125.989990234375,
       1000000000125.99
@@ -4088,15 +4088,15 @@
       7,
       16,
       23,
-      23.989990234375,
-      31.989990234375,
-      40,
-      49.989990234375,
-      60.989990234375,
-      72.989990234375,
-      84,
-      95.989990234375,
-      108,
+      24.989990234375,
+      32.989990234375,
+      41,
+      52.989990234375,
+      63.989990234375,
+      73.989990234375,
+      85,
+      97,
+      110,
       1000000000094.99,
       1000000000110.99,
       1000000000125.99
@@ -4110,15 +4110,15 @@
       11,
       22,
       33,
-      44,
+      45,
       56,
       68,
-      90,
-      1000000000045.99,
-      1000000000057.99,
-      1000000000068.99,
-      1000000000080.99,
-      1000000000091.99,
+      1000000000034.99,
+      1000000000046.99,
+      1000000000059.99,
+      1000000000070.99,
+      1000000000081.99,
+      1000000000092.99,
       1000000000103.99,
       1000000000114.99,
       1000000000125.99
@@ -4131,18 +4131,18 @@
       0,
       15,
       31,
-      1000000000018,
+      1000000000017.99,
       1000000000029.99,
-      1000000000041,
-      1000000000052.99,
-      1000000000064.99,
-      1000000000074.99,
-      1000000000084.99,
-      1000000000093,
-      1000000000096.99,
+      1000000000041.99,
+      1000000000053.99,
+      1000000000064,
+      1000000000075.99,
+      1000000000086,
+      1000000000093.99,
+      1000000000099.99,
       1000000000101.99,
       1000000000109.99,
-      1000000000117.99,
+      1000000000118.99,
       1000000000125.99
      ]
     },
@@ -4153,17 +4153,17 @@
       0,
       1000000000000,
       1000000000014.99,
-      1000000000027.99,
-      2000000000015.99,
-      2000000000029.99,
-      2000000000042.99,
-      2000000000053.99,
+      1000000000028.99,
+      2000000000013.99,
+      2000000000027.99,
+      2000000000039.99,
+      2000000000052.99,
       2000000000064.99,
       2000000000075.99,
       2000000000086.99,
-      2000000000095.99,
-      2000000000105.99,
-      2000000000114.99,
+      2000000000097.99,
+      2000000000107.99,
+      2000000000115.99,
       2000000000125.99,
       1000000000125.99
      ]
@@ -4287,54 +4287,11 @@
    "total": 1
   },
   "PerformanceSummary.calendar": {
-   "calendar": {
-    "_firstWeekday": null,
-    "_minimumDaysInFirstWeek": null,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "GMT",
-     "identifier": "GMT",
-     "isDaylightSavingTime": false,
-     "secondsFromGMT": 0,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "GMT"
-     }
-    }
-   },
    "firstWeekday": 1,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 1,
-   "timeZone": {
-    "abbreviation": "GMT",
-    "identifier": "GMT",
-    "isDaylightSavingTime": false,
-    "secondsFromGMT": 0,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "GMT"
-    }
-   }
+   "timeZone": "GMT"
   },
   "PerformanceSummary.thisWeekTrades": [],
   "PerformanceSummary.thisMonthTrades": [],
@@ -4930,54 +4887,11 @@
   "TimeToMFEAnalysis.avgExitEfficiency": 72.65258215962443,
   "TimeToMFEAnalysis.isOverholding": true,
   "TradeCalendar.calendar": {
-   "calendar": {
-    "_firstWeekday": null,
-    "_minimumDaysInFirstWeek": null,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "GMT",
-     "identifier": "GMT",
-     "isDaylightSavingTime": false,
-     "secondsFromGMT": 0,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "GMT"
-     }
-    }
-   },
    "firstWeekday": 1,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 1,
-   "timeZone": {
-    "abbreviation": "GMT",
-    "identifier": "GMT",
-    "isDaylightSavingTime": false,
-    "secondsFromGMT": 0,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "GMT"
-    }
-   }
+   "timeZone": "GMT"
   },
   "TradeCalendar.dailyPnL": {
    "2026-05-04T00:00:00.000Z": 999999999999.99,
@@ -5021,54 +4935,11 @@
   ],
   "TradeCalendar.firstWeekdayOffset": 4,
   "TradeCalendar[lastTradeMonth].calendar": {
-   "calendar": {
-    "_firstWeekday": null,
-    "_minimumDaysInFirstWeek": null,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "GMT",
-     "identifier": "GMT",
-     "isDaylightSavingTime": false,
-     "secondsFromGMT": 0,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "GMT"
-     }
-    }
-   },
    "firstWeekday": 1,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 1,
-   "timeZone": {
-    "abbreviation": "GMT",
-    "identifier": "GMT",
-    "isDaylightSavingTime": false,
-    "secondsFromGMT": 0,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "GMT"
-    }
-   }
+   "timeZone": "GMT"
   },
   "TradeCalendar[lastTradeMonth].dailyPnL": {
    "2026-05-04T00:00:00.000Z": 999999999999.99,
@@ -5991,7 +5862,7 @@
   ]
  },
  "skipped": {},
- "now": "2026-10-27T21:29:45.222Z",
+ "now": "2026-10-27T22:14:18.243Z",
  "environment": {
   "tz": "UTC",
   "locale": "en_US_POSIX",

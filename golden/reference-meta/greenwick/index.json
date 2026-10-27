@@ -15,7 +15,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.2
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f1-tiny-ninjatrader",
@@ -29,7 +29,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.2
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f2-stocks-year-journal",
@@ -42,8 +42,8 @@
    "file": "f2-stocks-year-journal.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 11,
-   "seconds": 5.4
+   "nondeterministic": 13,
+   "seconds": 33.1
   },
   {
    "fixture": "greenwick/f2-stocks-year-ninjatrader",
@@ -56,8 +56,8 @@
    "file": "f2-stocks-year-ninjatrader.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 10,
-   "seconds": 4.9
+   "nondeterministic": 14,
+   "seconds": 35
   },
   {
    "fixture": "greenwick/f3-empty-journal",
@@ -71,7 +71,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.2
+   "seconds": 0.6
   },
   {
    "fixture": "greenwick/f3-empty-ninjatrader",
@@ -85,7 +85,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.7
   },
   {
    "fixture": "greenwick/f3-single-journal",
@@ -99,7 +99,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.7
   },
   {
    "fixture": "greenwick/f3-all-wins-journal",
@@ -113,7 +113,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.2
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f3-all-losses-journal",
@@ -127,7 +127,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.2
+   "seconds": 0.6
   },
   {
    "fixture": "greenwick/f3-breakevens-journal",
@@ -140,8 +140,8 @@
    "file": "f3-breakevens-journal.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.2
+   "nondeterministic": 2,
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f3-fifty-percent-journal",
@@ -154,8 +154,8 @@
    "file": "f3-fifty-percent-journal.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.2
+   "nondeterministic": 2,
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f3-bucket-edges-journal",
@@ -168,8 +168,8 @@
    "file": "f3-bucket-edges-journal.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 2,
-   "seconds": 0.2
+   "nondeterministic": 3,
+   "seconds": 1
   },
   {
    "fixture": "greenwick/f3-trade-limits-journal",
@@ -182,8 +182,8 @@
    "file": "f3-trade-limits-journal.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.1
+   "nondeterministic": 4,
+   "seconds": 0.7
   },
   {
    "fixture": "greenwick/f3-hostile-ninjatrader",
@@ -197,7 +197,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.1
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f3-enc-crlf",
@@ -211,7 +211,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.1
+   "seconds": 0.6
   },
   {
    "fixture": "greenwick/f3-enc-utf8-bom",
@@ -225,7 +225,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.1
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f3-enc-utf16le-bom",
@@ -239,7 +239,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.6
   },
   {
    "fixture": "greenwick/f3-enc-cp1252",
@@ -253,7 +253,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.1
+   "seconds": 0.7
   },
   {
    "fixture": "greenwick/f4-long-history-journal",
@@ -267,7 +267,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 7,
-   "seconds": 3.6
+   "seconds": 22.1
   },
   {
    "fixture": "greenwick/f5-ibkr",
@@ -281,7 +281,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.2
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f5-tos",
@@ -295,7 +295,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.2
+   "seconds": 1
   },
   {
    "fixture": "greenwick/f5-tradingview",
@@ -309,7 +309,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 5,
-   "seconds": 0.2
+   "seconds": 1.2
   },
   {
    "fixture": "greenwick/f5-ninjatrader",
@@ -323,7 +323,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.1
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f5-webull",
@@ -336,8 +336,8 @@
    "file": "f5-webull.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 7,
-   "seconds": 0.1
+   "nondeterministic": 8,
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f5-webull-pnl",
@@ -351,7 +351,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.2
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f5-generic-unknown",
@@ -365,7 +365,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.4
   },
   {
    "fixture": "greenwick/f5-robinhood",
@@ -379,7 +379,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.1
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f5-schwab",
@@ -393,7 +393,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.1
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f5-fidelity",
@@ -407,7 +407,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.1
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f5-etrade",
@@ -421,7 +421,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.1
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f5-tastytrade",
@@ -435,7 +435,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.2
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f6-robinhood",
@@ -448,8 +448,8 @@
    "file": "f6-robinhood.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 2,
-   "seconds": 0.1
+   "nondeterministic": 3,
+   "seconds": 0.7
   },
   {
    "fixture": "greenwick/f6-robinhood-fees",
@@ -463,7 +463,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.1
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f6-schwab",
@@ -476,8 +476,8 @@
    "file": "f6-schwab.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 2,
-   "seconds": 0.1
+   "nondeterministic": 3,
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f6-schwab-no-footer",
@@ -491,7 +491,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.1
+   "seconds": 0.7
   },
   {
    "fixture": "greenwick/f6-schwab-header-first",
@@ -505,7 +505,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.4
   },
   {
    "fixture": "greenwick/f6-fidelity",
@@ -519,7 +519,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.1
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f6-fidelity-no-price",
@@ -533,7 +533,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 5,
-   "seconds": 0.1
+   "seconds": 0.7
   },
   {
    "fixture": "greenwick/f6-etrade",
@@ -546,8 +546,8 @@
    "file": "f6-etrade.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.1
+   "nondeterministic": 3,
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f6-tastytrade",
@@ -560,8 +560,8 @@
    "file": "f6-tastytrade.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 2,
-   "seconds": 0.1
+   "nondeterministic": 3,
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f7-et-boundaries-journal",
@@ -575,7 +575,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.1
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f7-et-boundaries-journal",
@@ -589,7 +589,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.1
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f7-et-boundaries-journal",
@@ -603,7 +603,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.2
+   "seconds": 0.8
   },
   {
    "fixture": "greenwick/f7-et-boundaries-journal",
@@ -617,7 +617,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.2
+   "seconds": 1
   },
   {
    "fixture": "greenwick/f7-et-boundaries-journal",
@@ -631,7 +631,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.2
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f7-et-boundaries-ninjatrader",
@@ -645,7 +645,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.2
+   "seconds": 1.1
   },
   {
    "fixture": "greenwick/f7-et-boundaries-ninjatrader",
@@ -659,7 +659,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.2
+   "seconds": 0.9
   },
   {
    "fixture": "greenwick/f7-et-boundaries-ninjatrader",
@@ -673,7 +673,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.2
+   "seconds": 1
   },
   {
    "fixture": "greenwick/f7-et-boundaries-ninjatrader",
@@ -687,7 +687,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.1
+   "seconds": 1.4
   },
   {
    "fixture": "greenwick/f7-et-boundaries-ninjatrader",
@@ -701,7 +701,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 1,
-   "seconds": 0.1
+   "seconds": 1
   },
   {
    "fixture": "greenwick/f8-tie-traps-journal",
@@ -714,8 +714,8 @@
    "file": "f8-tie-traps-journal.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 4,
-   "seconds": 0.1
+   "nondeterministic": 5,
+   "seconds": 0.7
   },
   {
    "fixture": "greenwick/f9-scale-10k-ninjatrader",
@@ -729,7 +729,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 8.8
+   "seconds": 9.4
   },
   {
    "fixture": "greenwick/f9-scale-50k-ninjatrader",
@@ -743,7 +743,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 43.4
+   "seconds": 38.3
   },
   {
    "fixture": "greenwick/f9-scale-100k-ninjatrader",
@@ -757,7 +757,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 84.7
+   "seconds": 83.9
   }
  ]
 }

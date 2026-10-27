@@ -1472,54 +1472,11 @@
   "OpeningRangeAnalysis.hasData": true,
   "OpeningRangeAnalysis.insightText": "Need more trades across different times for insights",
   "PerformanceSummary.calendar": {
-   "calendar": {
-    "_firstWeekday": 2,
-    "_minimumDaysInFirstWeek": 4,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "EDT",
-     "identifier": "America/New_York",
-     "isDaylightSavingTime": true,
-     "secondsFromGMT": -14400,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "America/New_York"
-     }
-    }
-   },
    "firstWeekday": 2,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 4,
-   "timeZone": {
-    "abbreviation": "EDT",
-    "identifier": "America/New_York",
-    "isDaylightSavingTime": true,
-    "secondsFromGMT": -14400,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "America/New_York"
-    }
-   }
+   "timeZone": "America/New_York"
   },
   "PerformanceSummary.thisWeekTrades": [],
   "PerformanceSummary.thisMonthTrades": [],
@@ -2084,54 +2041,11 @@
   "TimeToMFEAnalysis.avgExitEfficiency": null,
   "TimeToMFEAnalysis.isOverholding": false,
   "TradeCalendar.calendar": {
-   "calendar": {
-    "_firstWeekday": 1,
-    "_minimumDaysInFirstWeek": 4,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "EDT",
-     "identifier": "America/New_York",
-     "isDaylightSavingTime": true,
-     "secondsFromGMT": -14400,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "America/New_York"
-     }
-    }
-   },
    "firstWeekday": 1,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 4,
-   "timeZone": {
-    "abbreviation": "EDT",
-    "identifier": "America/New_York",
-    "isDaylightSavingTime": true,
-    "secondsFromGMT": -14400,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "America/New_York"
-    }
-   }
+   "timeZone": "America/New_York"
   },
   "TradeCalendar.dailyPnL": {
    "2026-04-20T04:00:00.000Z": 12,
@@ -2173,54 +2087,11 @@
   ],
   "TradeCalendar.firstWeekdayOffset": 4,
   "TradeCalendar[lastTradeMonth].calendar": {
-   "calendar": {
-    "_firstWeekday": 1,
-    "_minimumDaysInFirstWeek": 4,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "EDT",
-     "identifier": "America/New_York",
-     "isDaylightSavingTime": true,
-     "secondsFromGMT": -14400,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "America/New_York"
-     }
-    }
-   },
    "firstWeekday": 1,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 4,
-   "timeZone": {
-    "abbreviation": "EDT",
-    "identifier": "America/New_York",
-    "isDaylightSavingTime": true,
-    "secondsFromGMT": -14400,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "America/New_York"
-    }
-   }
+   "timeZone": "America/New_York"
   },
   "TradeCalendar[lastTradeMonth].dailyPnL": {
    "2026-04-20T04:00:00.000Z": 12,
@@ -3172,7 +3043,7 @@
   ]
  },
  "skipped": {},
- "now": "2026-10-27T21:27:46.287Z",
+ "now": "2026-10-27T22:14:14.843Z",
  "environment": {
   "tz": "UTC",
   "locale": "en_US_POSIX",

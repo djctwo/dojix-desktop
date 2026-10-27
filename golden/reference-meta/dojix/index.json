@@ -14,8 +14,8 @@
    "file": "f1-tiny.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.2
+   "nondeterministic": 3,
+   "seconds": 1.1
   },
   {
    "fixture": "dojix/f1-tiny-journal",
@@ -29,7 +29,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.1
+   "seconds": 0.9
   },
   {
    "fixture": "dojix/f2-forex-year",
@@ -42,8 +42,8 @@
    "file": "f2-forex-year.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 7,
-   "seconds": 5
+   "nondeterministic": 10,
+   "seconds": 39.6
   },
   {
    "fixture": "dojix/f2-forex-year-journal",
@@ -56,8 +56,8 @@
    "file": "f2-forex-year-journal.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 7,
-   "seconds": 5.2
+   "nondeterministic": 8,
+   "seconds": 32.3
   },
   {
    "fixture": "dojix/f3-empty",
@@ -71,7 +71,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.5
   },
   {
    "fixture": "dojix/f3-empty-journal",
@@ -85,7 +85,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.5
   },
   {
    "fixture": "dojix/f3-single",
@@ -98,8 +98,8 @@
    "file": "f3-single.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 0,
-   "seconds": 0.1
+   "nondeterministic": 2,
+   "seconds": 0.6
   },
   {
    "fixture": "dojix/f3-all-wins",
@@ -112,8 +112,8 @@
    "file": "f3-all-wins.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.1
+   "nondeterministic": 3,
+   "seconds": 0.7
   },
   {
    "fixture": "dojix/f3-all-losses",
@@ -126,8 +126,8 @@
    "file": "f3-all-losses.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.1
+   "nondeterministic": 3,
+   "seconds": 0.7
   },
   {
    "fixture": "dojix/f3-breakevens",
@@ -140,8 +140,8 @@
    "file": "f3-breakevens.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.1
+   "nondeterministic": 4,
+   "seconds": 1
   },
   {
    "fixture": "dojix/f3-all-breakeven",
@@ -154,8 +154,8 @@
    "file": "f3-all-breakeven.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 2,
-   "seconds": 0.1
+   "nondeterministic": 4,
+   "seconds": 0.8
   },
   {
    "fixture": "dojix/f3-fifty-percent",
@@ -168,8 +168,8 @@
    "file": "f3-fifty-percent.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.1
+   "nondeterministic": 4,
+   "seconds": 1.1
   },
   {
    "fixture": "dojix/f3-zero-sl-jpy",
@@ -183,7 +183,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 4,
-   "seconds": 0.1
+   "seconds": 0.9
   },
   {
    "fixture": "dojix/f3-bucket-edges",
@@ -196,8 +196,8 @@
    "file": "f3-bucket-edges.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.1
+   "nondeterministic": 4,
+   "seconds": 0.9
   },
   {
    "fixture": "dojix/f3-columns",
@@ -210,8 +210,8 @@
    "file": "f3-columns.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.1
+   "nondeterministic": 3,
+   "seconds": 0.6
   },
   {
    "fixture": "dojix/f3-enc-lf",
@@ -225,7 +225,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.1
+   "seconds": 0.5
   },
   {
    "fixture": "dojix/f3-enc-crlf",
@@ -238,8 +238,8 @@
    "file": "f3-enc-crlf.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 1,
-   "seconds": 0.1
+   "nondeterministic": 3,
+   "seconds": 0.5
   },
   {
    "fixture": "dojix/f3-enc-utf8-bom",
@@ -253,7 +253,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.4
   },
   {
    "fixture": "dojix/f3-enc-utf16le-bom",
@@ -267,7 +267,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.4
   },
   {
    "fixture": "dojix/f3-enc-cp1252",
@@ -281,7 +281,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.1
+   "seconds": 0.6
   },
   {
    "fixture": "dojix/StrategyAnalytics_f3-multisection",
@@ -295,7 +295,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.1
+   "seconds": 0.5
   },
   {
    "fixture": "dojix/f3-renamed-multisection",
@@ -309,7 +309,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.4
   },
   {
    "fixture": "dojix/f3-sanitize-limits",
@@ -323,7 +323,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.1
+   "seconds": 0.9
   },
   {
    "fixture": "dojix/f3-sanitize-journal",
@@ -336,8 +336,8 @@
    "file": "f3-sanitize-journal.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 2,
-   "seconds": 0.1
+   "nondeterministic": 4,
+   "seconds": 0.5
   },
   {
    "fixture": "dojix/f4-long-history",
@@ -351,7 +351,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 9,
-   "seconds": 2.9
+   "seconds": 22.1
   },
   {
    "fixture": "dojix/f4-long-history-journal",
@@ -364,8 +364,8 @@
    "file": "f4-long-history-journal.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 5,
-   "seconds": 3.3
+   "nondeterministic": 8,
+   "seconds": 21.6
   },
   {
    "fixture": "dojix/f5-mt4",
@@ -379,7 +379,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.2
+   "seconds": 0.8
   },
   {
    "fixture": "dojix/f5-ctrader",
@@ -393,7 +393,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.2
+   "seconds": 0.7
   },
   {
    "fixture": "dojix/f5-ctrader-compact",
@@ -407,7 +407,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.4
   },
   {
    "fixture": "dojix/f5-tradingview",
@@ -421,7 +421,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 7,
-   "seconds": 0.2
+   "seconds": 1.1
   },
   {
    "fixture": "dojix/f5-oanda",
@@ -435,7 +435,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.2
+   "seconds": 0.7
   },
   {
    "fixture": "dojix/f5-ibkr",
@@ -449,7 +449,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.2
+   "seconds": 0.7
   },
   {
    "fixture": "dojix/f5-tos",
@@ -463,7 +463,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.1
+   "seconds": 0.7
   },
   {
    "fixture": "dojix/f5-ninjatrader",
@@ -477,7 +477,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.1
+   "seconds": 0.8
   },
   {
    "fixture": "dojix/f5-generic-unknown",
@@ -491,7 +491,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.4
   },
   {
    "fixture": "dojix/DojixExport_00000000_20260630",
@@ -505,7 +505,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.2
+   "seconds": 0.8
   },
   {
    "fixture": "dojix/ReportHistory-00000000",
@@ -519,7 +519,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 0.1
+   "seconds": 0.4
   },
   {
    "fixture": "dojix/f5-sa32",
@@ -533,7 +533,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 2,
-   "seconds": 0.2
+   "seconds": 0.8
   },
   {
    "fixture": "dojix/f7-dst-boundaries",
@@ -547,7 +547,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 4,
-   "seconds": 0.4
+   "seconds": 2.3
   },
   {
    "fixture": "dojix/f7-dst-boundaries",
@@ -560,8 +560,8 @@
    "file": "f7-dst-boundaries@Europe-Berlin_en_GB.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 2,
-   "seconds": 0.4
+   "nondeterministic": 4,
+   "seconds": 2.3
   },
   {
    "fixture": "dojix/f7-dst-boundaries",
@@ -575,7 +575,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 4,
-   "seconds": 0.5
+   "seconds": 2.5
   },
   {
    "fixture": "dojix/f7-dst-boundaries",
@@ -589,7 +589,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 4,
-   "seconds": 0.4
+   "seconds": 2.3
   },
   {
    "fixture": "dojix/f7-dst-boundaries",
@@ -602,8 +602,8 @@
    "file": "f7-dst-boundaries@Asia-Tokyo_ja_JP.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 2,
-   "seconds": 0.4
+   "nondeterministic": 4,
+   "seconds": 2.3
   },
   {
    "fixture": "dojix/f7-ctrader-utc",
@@ -616,8 +616,8 @@
    "file": "f7-ctrader-utc.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 3,
-   "seconds": 0.6
+   "nondeterministic": 4,
+   "seconds": 2
   },
   {
    "fixture": "dojix/f7-ctrader-utc",
@@ -631,7 +631,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 4,
-   "seconds": 0.4
+   "seconds": 2.3
   },
   {
    "fixture": "dojix/f7-ctrader-utc",
@@ -644,8 +644,8 @@
    "file": "f7-ctrader-utc@America-New_York_en_US.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 2,
-   "seconds": 0.4
+   "nondeterministic": 4,
+   "seconds": 2.3
   },
   {
    "fixture": "dojix/f7-ctrader-utc",
@@ -658,8 +658,8 @@
    "file": "f7-ctrader-utc@Asia-Kolkata_en_IN.json",
    "status": "ok",
    "skipped": [],
-   "nondeterministic": 2,
-   "seconds": 0.4
+   "nondeterministic": 4,
+   "seconds": 2.2
   },
   {
    "fixture": "dojix/f7-ctrader-utc",
@@ -673,7 +673,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 4,
-   "seconds": 0.5
+   "seconds": 2.3
   },
   {
    "fixture": "dojix/f8-tie-traps",
@@ -687,7 +687,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 3,
-   "seconds": 0.2
+   "seconds": 0.8
   },
   {
    "fixture": "dojix/f9-scale-10k",
@@ -701,7 +701,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 18.1
+   "seconds": 12
   },
   {
    "fixture": "dojix/f9-scale-50k",
@@ -715,7 +715,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 70.8
+   "seconds": 67.7
   },
   {
    "fixture": "dojix/f9-scale-100k",
@@ -729,7 +729,7 @@
    "status": "ok",
    "skipped": [],
    "nondeterministic": 0,
-   "seconds": 117.9
+   "seconds": 121
   }
  ]
 }

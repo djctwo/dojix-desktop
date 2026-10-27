@@ -550,54 +550,11 @@
    "total": 0
   },
   "PerformanceSummary.calendar": {
-   "calendar": {
-    "_firstWeekday": null,
-    "_minimumDaysInFirstWeek": null,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "GMT",
-     "identifier": "GMT",
-     "isDaylightSavingTime": false,
-     "secondsFromGMT": 0,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "GMT"
-     }
-    }
-   },
    "firstWeekday": 1,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 1,
-   "timeZone": {
-    "abbreviation": "GMT",
-    "identifier": "GMT",
-    "isDaylightSavingTime": false,
-    "secondsFromGMT": 0,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "GMT"
-    }
-   }
+   "timeZone": "GMT"
   },
   "PerformanceSummary.thisWeekTrades": [],
   "PerformanceSummary.thisMonthTrades": [],
@@ -881,54 +838,11 @@
   "TimeToMFEAnalysis.avgExitEfficiency": null,
   "TimeToMFEAnalysis.isOverholding": false,
   "TradeCalendar.calendar": {
-   "calendar": {
-    "_firstWeekday": null,
-    "_minimumDaysInFirstWeek": null,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "GMT",
-     "identifier": "GMT",
-     "isDaylightSavingTime": false,
-     "secondsFromGMT": 0,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "GMT"
-     }
-    }
-   },
    "firstWeekday": 1,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 1,
-   "timeZone": {
-    "abbreviation": "GMT",
-    "identifier": "GMT",
-    "isDaylightSavingTime": false,
-    "secondsFromGMT": 0,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "GMT"
-    }
-   }
+   "timeZone": "GMT"
   },
   "TradeCalendar.dailyPnL": {},
   "TradeCalendar.daysInMonth": [
@@ -966,54 +880,11 @@
   ],
   "TradeCalendar.firstWeekdayOffset": 4,
   "TradeCalendar[lastTradeMonth].calendar": {
-   "calendar": {
-    "_firstWeekday": null,
-    "_minimumDaysInFirstWeek": null,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "GMT",
-     "identifier": "GMT",
-     "isDaylightSavingTime": false,
-     "secondsFromGMT": 0,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "GMT"
-     }
-    }
-   },
    "firstWeekday": 1,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 1,
-   "timeZone": {
-    "abbreviation": "GMT",
-    "identifier": "GMT",
-    "isDaylightSavingTime": false,
-    "secondsFromGMT": 0,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "GMT"
-    }
-   }
+   "timeZone": "GMT"
   },
   "TradeCalendar[lastTradeMonth].dailyPnL": {},
   "TradeCalendar[lastTradeMonth].daysInMonth": [
@@ -1906,7 +1777,7 @@
   "WinLossDistribution.buckets": []
  },
  "skipped": {},
- "now": "2026-10-27T21:29:52.900Z",
+ "now": "2026-10-27T22:15:09.502Z",
  "environment": {
   "tz": "UTC",
   "locale": "en_US_POSIX",

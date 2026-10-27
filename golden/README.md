@@ -16,9 +16,9 @@ The desktop engine has to produce the same numbers as the Mac apps for the same 
 ## Reference run
 
 <!-- reference-run -->
-**Run [40586319588](https://github.com/djctwo/dojix-desktop/actions/runs/40586319588)**: success,
-2026-10-27. Built from commit `6be8319` of this repository, against djctwo/dojix `614bd6a` and
-djctwo/greenwick `64495e2`. Toolchain: Xcode 16.4, macOS 15.7.9 (24G830).
+**Run [40592293872](https://github.com/djctwo/dojix-desktop/actions/runs/40592293872)**: success,
+2026-10-27. Built from commit `75979e2` of this repository, against djctwo/dojix `614bd6a` and
+djctwo/greenwick `64495e2`. Toolchain: Xcode 16.4, macOS 15.
 
 - Dojix: 52 reference files. That is every Dojix fixture, the four extra F7 environments for each
   of its two F7 fixtures, and the F9 scale sets.
@@ -26,9 +26,17 @@ djctwo/greenwick `64495e2`. Toolchain: Xcode 16.4, macOS 15.7.9 (24G830).
 - `reference-meta/<brand>/index.json` lists each run.
 - No value crashed or hung, so `skipped` is empty everywhere.
 - The F9 scale sets record metrics only.
+- Compared with the first run (40586319588): every value is the same except
+  - `nondeterministic` now comes from 12 random-hashing runs per fixture instead of one, and lists
+    order-dependent paths the single run had missed (GapAnalysis.gapTrades and
+    CommissionAnalytics.symbolCosts on F6 files, edgeBy* ties in F3, NetCurrencyExposure);
+  - `TradeCalendar.calendar` / `PerformanceSummary.calendar` are encoded as the calendar's settings;
+  - `EventImpactProfiler.tradingMonths` (a span up to "now") and the random Monte Carlo paths follow
+    the new run's clock and shuffle.
 
 Everything under `reference/`, `reference-meta/`, `fixtures/*/F10/` and `fixtures/*/*.trades.json` was
-copied unchanged from that run's artifacts (`gh run download 40586319588`).
+copied unchanged from that run's artifacts (`gh run download 40592293872`); the `.trades.json` files
+came out byte-identical.
 <!-- /reference-run -->
 
 ### Platform probes (`reference-meta/<brand>/probes.json`)

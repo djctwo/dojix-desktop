@@ -6722,27 +6722,27 @@
       0,
       -56.489999999999995,
       -57.449999999999996,
-      -58.41,
-      -57.849999999999994,
-      -57.449999999999996,
-      -58.219999999999985,
-      -54.23999999999999,
-      -53.209999999999994,
-      -49.21999999999999,
-      -42.189999999999976,
-      -37.55999999999999,
-      -31.51,
-      -17.3,
-      4.180000000000007,
-      15.880000000000015,
-      24.49000000000001,
-      63.03000000000001,
-      244.43000000000004,
-      288.17000000000013,
-      298.4400000000001,
-      307.35000000000014,
-      348.19000000000005,
-      355.6900000000001,
+      -57.33,
+      -57.69,
+      -58.74,
+      -58.529999999999994,
+      -58.28999999999999,
+      -54.339999999999996,
+      -54.099999999999994,
+      -46.87999999999999,
+      -41.75000000000001,
+      -34.80999999999999,
+      -26.719999999999995,
+      -18.47,
+      5.740000000000006,
+      23.950000000000014,
+      27.60000000000001,
+      45.810000000000024,
+      257.79000000000013,
+      295.93000000000006,
+      306.01000000000005,
+      346.81000000000006,
+      355.69000000000005,
       675.7199999999999
      ]
     },
@@ -6752,26 +6752,26 @@
      "points": [
       0,
       -2.3,
-      -2.04,
-      -0.03999999999999937,
-      0.6900000000000057,
-      4.920000000000002,
-      7.310000000000009,
-      13.619999999999997,
-      20.15,
-      42.660000000000004,
-      65.86,
-      80.69,
-      199.05000000000004,
-      264.80000000000007,
-      283.58000000000004,
-      303.0200000000001,
-      324.4000000000001,
-      339.4800000000001,
-      345.2200000000001,
-      355.00000000000006,
-      386.5600000000001,
-      566.94,
+      -2.0599999999999996,
+      -1.2399999999999993,
+      -0.8199999999999932,
+      1.700000000000001,
+      4.8000000000000025,
+      10.120000000000005,
+      16.139999999999993,
+      23.14,
+      39.64999999999999,
+      73.18000000000002,
+      124,
+      257.05000000000007,
+      277.87000000000006,
+      290.58000000000004,
+      303.82000000000005,
+      323.55000000000007,
+      342.99000000000007,
+      350.11000000000007,
+      358.18,
+      413.14,
       626.1600000000001,
       666.8399999999999,
       675.72
@@ -6784,27 +6784,27 @@
       0,
       6.37,
       7.799999999999999,
-      16.619999999999997,
-      29.689999999999998,
-      62.09,
-      79.97,
-      202.82999999999998,
-      266.58000000000004,
-      294.4700000000001,
-      314.97,
-      326.18,
-      336.47,
-      345.36000000000007,
-      358.68000000000006,
-      388.01000000000005,
-      400.82000000000005,
-      419.3900000000001,
-      594.59,
-      617.3700000000001,
-      647.42,
-      660.48,
-      667.9800000000002,
-      675.48,
+      15.419999999999998,
+      25.759999999999998,
+      49.52,
+      66.73,
+      105.88,
+      253.68,
+      277.88,
+      300.61,
+      317.98,
+      331.85,
+      340.3100000000001,
+      354.74,
+      369.97,
+      397.1000000000001,
+      446.8800000000001,
+      599.1800000000001,
+      616.24,
+      644.8100000000001,
+      660.4200000000002,
+      667.98,
+      669.3500000000001,
       675.72
      ]
     },
@@ -6814,28 +6814,28 @@
      "points": [
       0,
       12.809999999999999,
-      48.34,
-      255.76000000000002,
-      303.51000000000005,
-      320.72,
-      327.91,
-      339.69000000000005,
-      352.19000000000005,
-      371.20000000000005,
-      388.29,
-      400.69,
-      431.6600000000001,
-      546.6700000000001,
-      605.15,
-      620.08,
-      648.37,
-      658.4100000000001,
-      665.95,
-      670.5,
-      674.9900000000001,
-      678.09,
-      678.9800000000002,
-      678.0199999999999,
+      50.88,
+      67.02,
+      285.23,
+      316.5800000000001,
+      324.7700000000001,
+      336.93000000000006,
+      348.52000000000004,
+      359.08000000000004,
+      380.18,
+      394.66,
+      424.45000000000005,
+      575.7800000000001,
+      608.9200000000002,
+      626.6399999999999,
+      652.7200000000001,
+      662.6700000000001,
+      668.4499999999999,
+      673.71,
+      677.5000000000001,
+      677.5400000000002,
+      677.78,
+      676.8000000000002,
       675.7200000000001
      ]
     },
@@ -6846,26 +6846,26 @@
       0,
       320.03000000000003,
       327.53000000000003,
-      341.72,
-      378.41,
-      384.84000000000003,
-      436.8,
-      626.0600000000001,
-      643.19,
-      656.0500000000001,
-      670.3900000000002,
-      682.04,
-      699.3900000000001,
-      709.0700000000002,
-      715.16,
-      723.3799999999999,
-      722.7300000000001,
-      727.6199999999999,
-      728.21,
-      729.2200000000001,
-      733.57,
-      733.0500000000001,
-      733.1700000000002,
+      339.21000000000004,
+      375.87,
+      388.68,
+      573.6300000000001,
+      613.2600000000001,
+      642.0000000000001,
+      658.8000000000001,
+      662.5500000000001,
+      686.6100000000001,
+      704.65,
+      714.6199999999999,
+      719.76,
+      718.73,
+      724.79,
+      727.3200000000002,
+      729.5500000000001,
+      733.33,
+      734.0300000000001,
+      733.6200000000001,
+      733.1700000000001,
       732.21,
       675.7200000000001
      ]
@@ -7002,54 +7002,11 @@
   "OpeningRangeAnalysis.hasData": true,
   "OpeningRangeAnalysis.insightText": "Your best entries are power hour (+$ 163.20 avg) — afternoon costs you $ 8.86",
   "PerformanceSummary.calendar": {
-   "calendar": {
-    "_firstWeekday": 2,
-    "_minimumDaysInFirstWeek": 4,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "EDT",
-     "identifier": "America/New_York",
-     "isDaylightSavingTime": true,
-     "secondsFromGMT": -14400,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "America/New_York"
-     }
-    }
-   },
    "firstWeekday": 2,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 4,
-   "timeZone": {
-    "abbreviation": "EDT",
-    "identifier": "America/New_York",
-    "isDaylightSavingTime": true,
-    "secondsFromGMT": -14400,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "America/New_York"
-    }
-   }
+   "timeZone": "America/New_York"
   },
   "PerformanceSummary.thisWeekTrades": [],
   "PerformanceSummary.thisMonthTrades": [],
@@ -8424,54 +8381,11 @@
   "TimeToMFEAnalysis.avgExitEfficiency": null,
   "TimeToMFEAnalysis.isOverholding": false,
   "TradeCalendar.calendar": {
-   "calendar": {
-    "_firstWeekday": 1,
-    "_minimumDaysInFirstWeek": 4,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "EDT",
-     "identifier": "America/New_York",
-     "isDaylightSavingTime": true,
-     "secondsFromGMT": -14400,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "America/New_York"
-     }
-    }
-   },
    "firstWeekday": 1,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 4,
-   "timeZone": {
-    "abbreviation": "EDT",
-    "identifier": "America/New_York",
-    "isDaylightSavingTime": true,
-    "secondsFromGMT": -14400,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "America/New_York"
-    }
-   }
+   "timeZone": "America/New_York"
   },
   "TradeCalendar.dailyPnL": {
    "2026-06-02T04:00:00.000Z": -112.97999999999999,
@@ -8519,54 +8433,11 @@
   ],
   "TradeCalendar.firstWeekdayOffset": 4,
   "TradeCalendar[lastTradeMonth].calendar": {
-   "calendar": {
-    "_firstWeekday": 1,
-    "_minimumDaysInFirstWeek": 4,
-    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
-    "gregorianStartYear": 1582,
-    "inf_ti": 4398046511104,
-    "julianCutoverDay": 2299161,
-    "kDefaultJulianCutoverDay": 2299161,
-    "kSecondsInDay": 86400,
-    "kSecondsInHour": 3600,
-    "kSecondsInMinute": 60,
-    "kSecondsInWeek": 604800,
-    "locale": {
-     "identifier": "en_US_POSIX",
-     "locale": "fixed en_US_POSIX"
-    },
-    "timeZone": {
-     "abbreviation": "EDT",
-     "identifier": "America/New_York",
-     "isDaylightSavingTime": true,
-     "secondsFromGMT": -14400,
-     "tz": {
-      "lock": {
-       "_buffer": {}
-      },
-      "name": "America/New_York"
-     }
-    }
-   },
    "firstWeekday": 1,
    "identifier": "gregorian",
-   "locale": {
-    "identifier": "en_US_POSIX",
-    "locale": "fixed en_US_POSIX"
-   },
+   "locale": "en_US_POSIX",
    "minimumDaysInFirstWeek": 4,
-   "timeZone": {
-    "abbreviation": "EDT",
-    "identifier": "America/New_York",
-    "isDaylightSavingTime": true,
-    "secondsFromGMT": -14400,
-    "tz": {
-     "lock": {
-      "_buffer": {}
-     },
-     "name": "America/New_York"
-    }
-   }
+   "timeZone": "America/New_York"
   },
   "TradeCalendar[lastTradeMonth].dailyPnL": {
    "2026-06-02T04:00:00.000Z": -112.97999999999999,
@@ -9545,7 +9416,7 @@
   ]
  },
  "skipped": {},
- "now": "2026-10-27T21:27:50.667Z",
+ "now": "2026-10-27T22:14:41.515Z",
  "environment": {
   "tz": "UTC",
   "locale": "en_US_POSIX",

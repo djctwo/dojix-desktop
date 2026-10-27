@@ -1,4 +1,5 @@
 // @dojix-desktop/core: pure TypeScript (no DOM, IPC or Tauri). See README.md for the map.
+export * from "./analytics/greenwick";
 export * from "./brand";
 export * from "./journal";
 export * from "./engine";

@@ -69,6 +69,30 @@ const planned = (
   ...(note ? { note } : {}),
 });
 
+/**
+ * An implemented Greenwick-only component (E4, `analytics/greenwick/`). Registry entries:
+ * `analytics/greenwick/components.ts`; parity resolvers: `analytics/greenwick/parity.ts`.
+ */
+const st = (
+  id: string,
+  placement: AnalyticsPlacement,
+  file: string,
+  exports: readonly string[],
+  divergences?: readonly string[],
+  note?: string,
+): FormulaEntry => ({
+  id,
+  spec: "App. A",
+  brands: ST,
+  placement: at(undefined, placement),
+  owner: "E4",
+  status: "implemented",
+  module: `analytics/greenwick/${file}`,
+  exports,
+  ...(divergences ? { divergences } : {}),
+  ...(note ? { note } : {}),
+});
+
 export const FORMULA_INDEX: readonly FormulaEntry[] = [
   // --- §3.3 headline (E1, done) --------------------------------------------------------------
   metric("totalTrades"),
@@ -225,15 +249,15 @@ export const FORMULA_INDEX: readonly FormulaEntry[] = [
   planned("Pulse edge signal", "E3", FX, at("pulse"), ["D-28"]),
 
   // --- Appendix A, Greenwick only -------------------------------------------------------------
-  planned("SectorExposure", "E4", ST, at(undefined, "pairs")),
-  planned("VolumeAnalysis", "E4", ST, at(undefined, "pairs")),
-  planned("GapAnalysis", "E4", ST, at(undefined, "timing")),
-  planned("OpeningRangeAnalysis", "E4", ST, at(undefined, "timing")),
-  planned("ExecutionQuality", "E4", ST, at(undefined, "risk")),
-  planned("IntradayEquityCurve", "E4", ST, at(undefined, "advanced")),
-  planned("RegimeAnalysis", "E4", ST, at(undefined, "advanced")),
-  planned("EarningsImpact", "E4", ST, at(undefined, "advanced")),
-  planned("DiversificationScore", "E4", ST, at(undefined, "pairs")),
+  st("SectorExposure", "pairs", "sector-exposure.ts", ["computeSectorExposure"]),
+  st("VolumeAnalysis", "pairs", "volume-analysis.ts", ["computeVolumeAnalysis", "relativeVolume"], undefined, "closed ranges share edges (RVOL 0.5/1.5/3 count twice; > 1000 in none), as on the Mac"),
+  st("GapAnalysis", "timing", "gap-analysis.ts", ["computeGapAnalysis", "findGapTrades", "gapStats"], undefined, "ET open day keys (D-13, parity); prev close = maxBy, today's open = minBy"),
+  st("OpeningRangeAnalysis", "timing", "opening-range.ts", ["computeOpeningRange", "minutesSinceOpen"]),
+  st("ExecutionQuality", "risk", "execution-quality.ts", ["computeExecutionQuality", "executionScoreParts", "executionScoreLabel"]),
+  st("IntradayEquityCurve", "advanced", "intraday-equity-curve.ts", ["computeIntradayEquityCurve"]),
+  st("RegimeAnalysis", "advanced", "regime-analysis.ts", ["computeRegimeAnalysis", "classifyRegime"], ["D-18"], "current-regime tie: desktop keeps maxBy over first appearance (Mac: dictionary order)"),
+  st("EarningsImpact", "advanced", "earnings-impact.ts", ["computeEarningsImpact", "tradeVolatility", "earningsRecommendation"], ["D-18"], "catalyst day = ET close day (the Swift code; SPEC said open day)"),
+  st("DiversificationScore", "pairs", "diversification-score.ts", ["computeDiversificationScore", "pearsonCorrelation", "diversificationGrade"]),
 ];
 
 /** Index entries for one owner (e.g. what's left for E2). */

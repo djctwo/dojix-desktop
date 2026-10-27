@@ -1,18 +1,21 @@
-//! Journal store v0 (SPEC 6.3): an in-memory SQLite database, sealed to `journal.sealed`
+//! The journal store (SPEC 6.3): an in-memory SQLite database, sealed to `journal.sealed`
 //! after every committed write. No WAL, rollback journal or temp file ever reaches the disk.
 //!
-//! App Lock, the older-copy ledger and key rotation arrive in phase 1S; this store runs with
-//! App Lock off (the bare key lives in the vault).
+//! Every save is numbered (epoch + generation in the authenticated header) and recorded in the
+//! vault's rollback record after the file is durable (SPEC 6.5). The journal is only ever
+//! touched from the store thread (`session::Store`), the single writer.
 
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use rusqlite::{Connection, MAIN_DB};
+use rusqlite::{Connection, Transaction, MAIN_DB};
 use rusqlite_migration::{Migrations, M};
 use serde::Serialize;
+use zeroize::Zeroizing;
 
 use crate::fsec;
+use crate::ledger::{Ledger, SaveRecord};
 use crate::seal::{self, JournalKey, SealError, Stamp};
 
 const MIGRATION_LIST: &[M<'static>] = &[M::up(include_str!("../migrations/0001_initial.sql"))];
@@ -36,6 +39,8 @@ pub enum StoreError {
     Io(#[from] std::io::Error),
     #[error("the journal's schema ({found}) is newer than this app supports ({supported})")]
     TooNew { found: usize, supported: usize },
+    #[error("{0}")]
+    Invalid(String),
 }
 
 /// Why a journal file could not be loaded.
@@ -61,16 +66,25 @@ pub struct JournalRow {
 pub struct Journal {
     conn: Connection,
     key: JournalKey,
-    /// Stamp of the last durable save.
+    /// Stamp of the last durable save (or, after a new epoch whose save failed, of the next).
     stamp: Stamp,
     path: PathBuf,
+    ledger: Option<Ledger>,
+    /// The last save failed: the contents in memory are newer than the file.
+    dirty: bool,
 }
 
-fn now_ms() -> i64 {
+/// A journal opened from disk. `rekey_to` is set when the file opened only with the previous
+/// key of a pending rotation: the caller re-seals it with that (current) key.
+pub struct Loaded {
+    pub journal: Journal,
+    pub rekey_to: Option<JournalKey>,
+}
+
+pub fn now_ms() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_millis() as i64)
-        .unwrap_or(0)
+        .map_or(0, |d| i64::try_from(d.as_millis()).unwrap_or(i64::MAX))
 }
 
 /// Connection settings: everything in memory, foreign keys on.
@@ -78,6 +92,8 @@ fn configure(conn: &Connection) -> rusqlite::Result<()> {
     conn.pragma_update(None, "journal_mode", "MEMORY")?;
     conn.pragma_update(None, "temp_store", "MEMORY")?;
     conn.pragma_update(None, "foreign_keys", "ON")?;
+    // Deleted rows are overwritten in the image, so they don't linger in free pages.
+    conn.pragma_update(None, "secure_delete", "ON")?;
     Ok(())
 }
 
@@ -94,55 +110,83 @@ fn new_memory_journal() -> Result<Connection, StoreError> {
     Ok(conn)
 }
 
+/// Opens a SQLite image in a private in-memory connection.
+pub fn memory_connection_from(image: &[u8], read_only: bool) -> Result<Connection, StoreError> {
+    let mut conn = Connection::open_in_memory()?;
+    conn.deserialize_read_exact(MAIN_DB, image, image.len(), read_only)?;
+    configure(&conn)?;
+    Ok(conn)
+}
+
 impl Journal {
     /// Creates a new, empty journal and saves it (generation 1 of a new epoch).
-    pub fn create(path: &Path, key: JournalKey, brand: u8) -> Result<Self, StoreError> {
+    pub fn create(
+        path: &Path,
+        key: JournalKey,
+        brand: u8,
+        ledger: Option<Ledger>,
+    ) -> Result<Self, StoreError> {
         let mut journal = Self {
             conn: new_memory_journal()?,
             key,
             stamp: Stamp::new_epoch(brand)?,
             path: path.to_path_buf(),
+            ledger,
+            dirty: false,
         };
         journal.save()?;
         Ok(journal)
     }
 
-    /// Loads `journal.sealed`. On failure the key is handed back so the caller can decide.
-    /// Before a migration, the sealed file as it was is copied into `snapshots`.
-    pub fn load(
+    /// Opens sealed bytes read from `path` (the caller has already applied the rollback
+    /// verdict). Tries the current key, then the previous one. On failure the current key is
+    /// handed back. Before a migration, the sealed file as it was is copied to `snapshots`.
+    pub fn open(
         path: &Path,
-        key: JournalKey,
+        bytes: &[u8],
+        current: JournalKey,
+        previous: Option<JournalKey>,
         brand: u8,
         snapshots: &Path,
-    ) -> Result<Self, (LoadError, JournalKey)> {
-        let bytes = match fs::read(path) {
-            Ok(b) => b,
-            Err(e) => return Err((LoadError::Other(e.into()), key)),
+        ledger: Option<Ledger>,
+    ) -> Result<Loaded, (LoadError, JournalKey)> {
+        let (key, rekey_to, stamp, image) = match seal::open(&current, brand, bytes) {
+            Ok((stamp, image)) => (current, None, stamp, image),
+            Err(SealError::Decrypt) => match previous {
+                Some(prev) => match seal::open(&prev, brand, bytes) {
+                    Ok((stamp, image)) => (prev, Some(current), stamp, image),
+                    Err(e) => return Err((classify(e), current)),
+                },
+                None => return Err((LoadError::Unreadable(SealError::Decrypt), current)),
+            },
+            Err(e) => return Err((classify(e), current)),
         };
-        let (stamp, image) = match seal::open(&key, brand, &bytes) {
+        let (conn, migrated) = match Self::from_image(&image, bytes, stamp, snapshots, &migrations())
+        {
             Ok(opened) => opened,
-            Err(e @ (SealError::Decrypt | SealError::NotAJournal | SealError::NotADatabase)) => {
-                return Err((LoadError::Unreadable(e), key))
+            Err(e) => {
+                let current = rekey_to.unwrap_or(key);
+                return Err((LoadError::Other(e), current));
             }
-            Err(e) => return Err((LoadError::Other(e.into()), key)),
         };
-        let (conn, migrated) =
-            match Self::from_image(&image, &bytes, stamp, snapshots, &migrations()) {
-                Ok(opened) => opened,
-                Err(e) => return Err((LoadError::Other(e), key)),
-            };
         let mut journal = Self {
             conn,
             key,
             stamp,
             path: path.to_path_buf(),
+            ledger,
+            dirty: false,
         };
         if migrated {
             if let Err(e) = journal.save() {
-                return Err((LoadError::Other(e), journal.key));
+                let current = rekey_to.unwrap_or(journal.key);
+                return Err((LoadError::Other(e), current));
             }
         }
-        Ok(journal)
+        Ok(Loaded {
+            journal,
+            rekey_to,
+        })
     }
 
     /// Deserializes and migrates. Returns the connection and whether a migration ran.
@@ -154,9 +198,7 @@ impl Journal {
         snapshots: &Path,
         ms: &Migrations<'_>,
     ) -> Result<(Connection, bool), StoreError> {
-        let mut conn = Connection::open_in_memory()?;
-        conn.deserialize_read_exact(MAIN_DB, image, image.len(), false)?;
-        configure(&conn)?;
+        let mut conn = memory_connection_from(image, false)?;
         let found = usize::from(ms.current_version(&conn)?);
         let pending = ms.pending_migrations(&conn)?;
         if pending < 0 {
@@ -177,7 +219,7 @@ impl Journal {
     }
 
     /// Serializes, seals with the next generation and writes durably. The stamp advances only
-    /// after the file is on stable storage.
+    /// after the file is on stable storage; the rollback record is written after that.
     pub fn save(&mut self) -> Result<(), StoreError> {
         let next = Stamp {
             generation: self.stamp.generation + 1,
@@ -188,16 +230,23 @@ impl Journal {
             let image = self.conn.serialize(MAIN_DB)?;
             seal::seal(&self.key, &next, &image)?
         };
-        fsec::write_atomic(&self.path, &sealed)?;
+        if let Err(e) = fsec::write_atomic(&self.path, &sealed) {
+            self.dirty = true;
+            return Err(e.into());
+        }
         self.stamp = next;
+        self.dirty = false;
+        if let Some(ledger) = &self.ledger {
+            ledger.record(&SaveRecord::of(&next, &sealed));
+        }
         Ok(())
     }
 
     /// Runs `f` in one transaction, commits, then saves. A failed save leaves the change in
-    /// memory and returns the error (the caller must surface it).
+    /// memory (`is_dirty`) and returns the error: the caller must surface it.
     pub fn write<T>(
         &mut self,
-        f: impl FnOnce(&rusqlite::Transaction<'_>) -> rusqlite::Result<T>,
+        f: impl FnOnce(&Transaction<'_>) -> rusqlite::Result<T>,
     ) -> Result<T, StoreError> {
         let tx = self.conn.transaction()?;
         let out = f(&tx)?;
@@ -206,12 +255,95 @@ impl Journal {
         Ok(out)
     }
 
+    /// Replaces the contents in one transaction and saves. If the transaction or the save
+    /// fails, the previous contents go back into memory (SPEC 6.8 step 4).
+    pub fn replace_with<T>(
+        &mut self,
+        f: impl FnOnce(&Transaction<'_>) -> Result<T, StoreError>,
+    ) -> Result<T, StoreError> {
+        let before = self.image()?;
+        let was_dirty = self.dirty;
+        let tx = self.conn.transaction()?;
+        let out = f(&tx)?;
+        tx.commit()?;
+        if let Err(e) = self.save() {
+            self.load_image(&before)?;
+            self.dirty = was_dirty;
+            return Err(e);
+        }
+        Ok(out)
+    }
+
+    fn load_image(&mut self, image: &[u8]) -> Result<(), StoreError> {
+        self.conn
+            .deserialize_read_exact(MAIN_DB, image, image.len(), false)?;
+        configure(&self.conn)?;
+        Ok(())
+    }
+
+    /// Re-seals the journal with `new` (a key rotation). On failure the old key stays in use
+    /// and the file on disk is unchanged.
+    pub fn rekey(&mut self, new: JournalKey) -> Result<(), StoreError> {
+        let old = std::mem::replace(&mut self.key, new);
+        let generation = self.stamp.generation;
+        match self.save() {
+            Ok(()) => Ok(()),
+            Err(e) => {
+                self.key = old;
+                debug_assert_eq!(generation, self.stamp.generation);
+                Err(e)
+            }
+        }
+    }
+
+    /// Starts a new line of saves after the user chose to open an older copy: a fresh epoch,
+    /// and a generation that never goes down (`at_least` + 1 is saved).
+    pub fn start_new_epoch(&mut self, at_least: u64) -> Result<(), StoreError> {
+        let fresh = Stamp::new_epoch(self.stamp.brand)?;
+        self.stamp = Stamp {
+            generation: at_least.max(self.stamp.generation),
+            ..fresh
+        };
+        self.save()
+    }
+
+    /// A copy of the database image (for backups and restore rollback), wiped when dropped.
+    pub fn image(&self) -> Result<Zeroizing<Vec<u8>>, StoreError> {
+        Ok(Zeroizing::new(self.conn.serialize(MAIN_DB)?.to_vec()))
+    }
+
+    pub fn conn(&self) -> &Connection {
+        &self.conn
+    }
+
+    pub fn key(&self) -> &JournalKey {
+        &self.key
+    }
+
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    pub fn is_dirty(&self) -> bool {
+        self.dirty
+    }
+
     pub fn generation(&self) -> u64 {
         self.stamp.generation
     }
 
+    pub fn stamp(&self) -> Stamp {
+        self.stamp
+    }
+
     pub fn schema_version(&self) -> Result<usize, StoreError> {
         Ok(usize::from(migrations().current_version(&self.conn)?))
+    }
+
+    pub fn trade_count(&self) -> Result<i64, StoreError> {
+        Ok(self
+            .conn
+            .query_row("SELECT COUNT(*) FROM trades", [], |r| r.get(0))?)
     }
 
     /// The newest trades first.
@@ -248,11 +380,29 @@ impl Journal {
                  session, day_of_week, hour, imported_at, updated_at) \
                  VALUES (?1, 'sample', 1, 'TESTSYM', 'BUY', 1.0, \
                  '2026-01-05 09:00:00.000', '2026-01-05 10:30:00.000', 90, '1.1', '1.2', '12.5', \
-                 'London', 'Monday', 9, '2026-01-05 11:00:00.000', '2026-01-05 11:00:00.000')",
+                 'London', 'Mon', 9, '2026-01-05 11:00:00.000', '2026-01-05 11:00:00.000')",
                 [ticket],
             )?;
             Ok(tx.last_insert_rowid())
         })
+    }
+}
+
+fn classify(e: SealError) -> LoadError {
+    match e {
+        SealError::Decrypt | SealError::NotAJournal | SealError::NotADatabase => {
+            LoadError::Unreadable(e)
+        }
+        other => LoadError::Other(StoreError::Seal(other)),
+    }
+}
+
+/// Reads the journal file, if there is one.
+pub fn read_file(path: &Path) -> std::io::Result<Option<Vec<u8>>> {
+    match fs::read(path) {
+        Ok(bytes) => Ok(Some(bytes)),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
+        Err(e) => Err(e),
     }
 }
 
@@ -267,8 +417,7 @@ pub fn seal_round_trip(brand: u8) -> Result<usize, StoreError> {
         seal::seal(&key, &stamp, &image)?
     };
     let (_, image) = seal::open(&key, brand, &sealed)?;
-    let mut copy = Connection::open_in_memory()?;
-    copy.deserialize_read_exact(MAIN_DB, image.as_slice(), image.len(), false)?;
+    let copy = memory_connection_from(image.as_slice(), false)?;
     let version = usize::from(migrations().current_version(&copy)?);
     let ok: String = copy.query_row("PRAGMA quick_check", [], |r| r.get(0))?;
     if ok != "ok" {
@@ -278,7 +427,7 @@ pub fn seal_round_trip(brand: u8) -> Result<usize, StoreError> {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     use crate::seal::SQLITE_MAGIC;
 
@@ -286,7 +435,7 @@ mod tests {
         JournalKey::from_bytes(&[3u8; 32]).unwrap()
     }
 
-    fn contains_sqlite_magic(dir: &Path) -> bool {
+    pub(crate) fn contains_sqlite_magic(dir: &Path) -> bool {
         fs::read_dir(dir).unwrap().any(|e| {
             let path = e.unwrap().path();
             if path.is_dir() {
@@ -295,6 +444,13 @@ mod tests {
             let bytes = fs::read(&path).unwrap();
             bytes.windows(SQLITE_MAGIC.len()).any(|w| w == SQLITE_MAGIC)
         })
+    }
+
+    fn load(path: &Path, key: JournalKey, snaps: &Path) -> Result<Journal, LoadError> {
+        let bytes = fs::read(path).map_err(|e| LoadError::Other(e.into()))?;
+        Journal::open(path, &bytes, key, None, 1, snaps, None)
+            .map(|l| l.journal)
+            .map_err(|e| e.0)
     }
 
     #[test]
@@ -320,7 +476,7 @@ mod tests {
         let snaps = tmp.path().join("snapshots");
         fs::create_dir(&snaps).unwrap();
 
-        let mut j = Journal::create(&path, key(), 1).unwrap();
+        let mut j = Journal::create(&path, key(), 1, None).unwrap();
         assert_eq!(j.generation(), 1);
         assert!(j.recent(10).unwrap().is_empty());
         let id = j.add_sample_trade().unwrap();
@@ -334,9 +490,7 @@ mod tests {
         let bytes = fs::read(&path).unwrap();
         assert_eq!(&bytes[..4], b"DXJN");
 
-        let j = Journal::load(&path, key(), 1, &snaps)
-            .map_err(|e| e.0)
-            .unwrap();
+        let j = load(&path, key(), &snaps).unwrap();
         let rows = j.recent(10).unwrap();
         assert_eq!(rows.len(), 1);
         assert_eq!(rows[0].id, id);
@@ -350,36 +504,122 @@ mod tests {
     fn wrong_key_or_garbage_is_unreadable_and_io_errors_are_not() {
         let tmp = tempfile::tempdir().unwrap();
         let path = tmp.path().join("journal.sealed");
-        Journal::create(&path, key(), 1).unwrap();
+        Journal::create(&path, key(), 1, None).unwrap();
         let other = JournalKey::from_bytes(&[4u8; 32]).unwrap();
-        match Journal::load(&path, other, 1, tmp.path()) {
-            Err((LoadError::Unreadable(SealError::Decrypt), _)) => {}
-            _ => panic!("expected an unreadable journal"),
-        }
+        assert!(matches!(
+            load(&path, other, tmp.path()),
+            Err(LoadError::Unreadable(SealError::Decrypt))
+        ));
         fs::write(&path, b"garbage").unwrap();
         assert!(matches!(
-            Journal::load(&path, key(), 1, tmp.path()),
-            Err((LoadError::Unreadable(SealError::NotAJournal), _))
+            load(&path, key(), tmp.path()),
+            Err(LoadError::Unreadable(SealError::NotAJournal))
         ));
         let missing = tmp.path().join("nope.sealed");
         assert!(matches!(
-            Journal::load(&missing, key(), 1, tmp.path()),
-            Err((LoadError::Other(StoreError::Io(_)), _))
+            load(&missing, key(), tmp.path()),
+            Err(LoadError::Other(StoreError::Io(_)))
         ));
+    }
+
+    #[test]
+    fn a_file_sealed_with_the_previous_key_opens_and_asks_for_a_rekey() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("journal.sealed");
+        let old = JournalKey::from_bytes(&[5u8; 32]).unwrap();
+        let new = JournalKey::from_bytes(&[6u8; 32]).unwrap();
+        let mut j = Journal::create(&path, old, 1, None).unwrap();
+        j.add_sample_trade().unwrap();
+        drop(j);
+        let bytes = fs::read(&path).unwrap();
+        let prev = JournalKey::from_bytes(&[5u8; 32]).unwrap();
+        let loaded = Journal::open(&path, &bytes, new, Some(prev), 1, tmp.path(), None)
+            .map_err(|e| e.0)
+            .unwrap();
+        let mut j = loaded.journal;
+        let target = loaded.rekey_to.expect("opened with the previous key");
+        assert!(target.same_as(&JournalKey::from_bytes(&[6u8; 32]).unwrap()));
+        j.rekey(target).unwrap();
+        drop(j);
+        let new = JournalKey::from_bytes(&[6u8; 32]).unwrap();
+        let j = load(&path, new, tmp.path()).unwrap();
+        assert_eq!(j.trade_count().unwrap(), 1);
+        assert_eq!(j.generation(), 3);
+    }
+
+    #[test]
+    fn a_failed_save_keeps_the_change_in_memory_and_a_failed_rekey_keeps_the_old_key() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("journal.sealed");
+        let mut j = Journal::create(&path, key(), 1, None).unwrap();
+        let before = fs::read(&path).unwrap();
+        // A folder where the file should be: every save fails (as on a full disk).
+        fs::remove_file(&path).unwrap();
+        fs::create_dir(&path).unwrap();
+        assert!(j.add_sample_trade().is_err());
+        assert!(j.is_dirty());
+        assert_eq!(j.trade_count().unwrap(), 1, "the change stays in memory");
+        assert_eq!(j.generation(), 1, "the generation only counts durable saves");
+        let new = JournalKey::from_bytes(&[9u8; 32]).unwrap();
+        assert!(j.rekey(new).is_err());
+        assert!(j.key().same_as(&key()));
+        fs::remove_dir(&path).unwrap();
+        fs::write(&path, &before).unwrap();
+        j.save().unwrap();
+        assert!(!j.is_dirty());
+        drop(j);
+        assert_eq!(load(&path, key(), tmp.path()).unwrap().trade_count().unwrap(), 1);
+    }
+
+    #[test]
+    fn replace_with_rolls_back_in_memory_when_the_save_fails() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("journal.sealed");
+        let mut j = Journal::create(&path, key(), 1, None).unwrap();
+        j.add_sample_trade().unwrap();
+        fs::remove_file(&path).unwrap();
+        fs::create_dir(&path).unwrap();
+        let result = j.replace_with(|tx| {
+            tx.execute("DELETE FROM trades", [])?;
+            Ok(())
+        });
+        assert!(result.is_err());
+        assert_eq!(j.trade_count().unwrap(), 1, "previous contents restored");
+        // A failing transaction changes nothing either.
+        let result: Result<(), StoreError> = j.replace_with(|tx| {
+            tx.execute("DELETE FROM trades", [])?;
+            Err(StoreError::Invalid("refused".into()))
+        });
+        assert!(result.is_err());
+        assert_eq!(j.trade_count().unwrap(), 1);
+    }
+
+    #[test]
+    fn a_new_epoch_never_lowers_the_generation() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join("journal.sealed");
+        let mut j = Journal::create(&path, key(), 1, None).unwrap();
+        let epoch = j.stamp().epoch;
+        j.start_new_epoch(41).unwrap();
+        assert_ne!(j.stamp().epoch, epoch);
+        assert_eq!(j.generation(), 42);
+        let stamp = seal::read_stamp(&fs::read(&path).unwrap()).unwrap();
+        assert_eq!(stamp.generation, 42);
+        assert_eq!(stamp.epoch, j.stamp().epoch);
     }
 
     #[test]
     fn a_newer_schema_is_refused_and_left_alone() {
         let tmp = tempfile::tempdir().unwrap();
         let path = tmp.path().join("journal.sealed");
-        let mut j = Journal::create(&path, key(), 1).unwrap();
+        let mut j = Journal::create(&path, key(), 1, None).unwrap();
         j.conn.pragma_update(None, "user_version", 99).unwrap();
         j.save().unwrap();
         drop(j);
         let before = fs::read(&path).unwrap();
         assert!(matches!(
-            Journal::load(&path, key(), 1, tmp.path()),
-            Err((LoadError::Other(StoreError::TooNew { found: 99, .. }), _))
+            load(&path, key(), tmp.path()),
+            Err(LoadError::Other(StoreError::TooNew { found: 99, .. }))
         ));
         assert_eq!(fs::read(&path).unwrap(), before);
     }
@@ -391,7 +631,7 @@ mod tests {
         let snaps = tmp.path().join("snapshots");
         fs::create_dir(&snaps).unwrap();
         // A journal at schema 1, opened by a build that knows one more migration.
-        Journal::create(&path, key(), 1).unwrap();
+        Journal::create(&path, key(), 1, None).unwrap();
         let sealed = fs::read(&path).unwrap();
         let (stamp, image) = seal::open(&key(), 1, &sealed).unwrap();
         let later = [

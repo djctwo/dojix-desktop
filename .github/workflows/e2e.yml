@@ -1,8 +1,10 @@
 name: e2e
 
-# Real-binary smoke test: builds each brand (release profile + the `e2e` feature), launches it
-# through tauri-driver (WebDriver) on Windows and Linux, and checks the empty Journal, a trade
-# surviving a restart, and that no plaintext database reaches the disk.
+# Real-binary tests: builds each brand (release profile + the `e2e` feature) and drives it
+# through tauri-driver (WebDriver) on Windows and Linux: App Lock, the wrong-password throttle
+# across restarts, idle lock, older-copy refusal, password-protected backup round trip, erase,
+# Linux without a keyring, and no plaintext database anywhere in the data folder (scratch and
+# default layouts). See apps/desktop/e2e/run.mjs.
 
 on:
   push:
@@ -32,7 +34,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-22.04]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -95,7 +97,7 @@ jobs:
             [ "$code" = "0" ] || exit 1
           done
 
-      - name: Run the smoke test for each brand
+      - name: Lock, throttle, idle lock, older copy, backup round trip, erase, default data folder
         run: |
           set -euo pipefail
           status=0
@@ -103,12 +105,26 @@ jobs:
             echo "::group::$brand"
             if [ "$RUNNER_OS" = "Windows" ]; then
               node apps/desktop/e2e/run.mjs --brand $brand --app e2e-bin/$brand/$brand.exe \
-                --native-driver "$MSEDGEDRIVER" --out e2e-output || status=1
+                --native-driver "$MSEDGEDRIVER" --out e2e-output --scenario all || status=1
             else
               xvfb-run -a tools/ci/with-keyring.sh \
                 node apps/desktop/e2e/run.mjs --brand $brand --app e2e-bin/$brand/$brand \
-                --out e2e-output || status=1
+                --out e2e-output --scenario all || status=1
             fi
+            echo "::endgroup::"
+          done
+          exit $status
+
+      - name: Linux without a Secret Service (App Lock required, key in the data folder)
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          status=0
+          for brand in dojix greenwick; do
+            echo "::group::$brand"
+            xvfb-run -a tools/ci/with-session-bus.sh \
+              node apps/desktop/e2e/run.mjs --brand $brand --app e2e-bin/$brand/$brand \
+              --out e2e-output --scenario no-keyring || status=1
             echo "::endgroup::"
           done
           exit $status

@@ -1,71 +1,156 @@
 //! Dojix / Greenwick desktop shell. The Rust process owns all state: the in-memory journal,
 //! the key, the vault and every file operation. The web view only renders.
 
+pub mod backup;
 pub mod brand;
 pub mod cli;
 pub mod commands;
+pub mod crypto;
 pub mod fsec;
 pub mod instance;
 pub mod journal;
+pub mod keyvault;
+pub mod ledger;
 pub mod logging;
 pub mod paths;
+pub mod prefs;
+pub mod restore;
+pub mod screenshots;
 pub mod seal;
 pub mod selftest;
-pub mod startup;
+pub mod session;
+pub mod snapshot;
+pub mod throttle;
+pub mod triggers;
 pub mod vault;
 
-use std::sync::Mutex;
+use std::sync::{Arc, OnceLock};
+use std::time::Duration;
 
-use tauri::Manager;
+use tauri::{AppHandle, Emitter, Manager};
 
-use crate::commands::{AppInfo, AppState, StorageState};
+use crate::commands::AppState;
+use crate::crypto::KdfParams;
 use crate::instance::LockOutcome;
 use crate::paths::{DataPaths, OVERRIDES_ALLOWED};
+use crate::session::{Config, Core, Notifier, Store};
+use crate::throttle::SystemClock;
 use crate::vault::{OsVault, SecretStore, UnavailableVault};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+/// How often the idle timer and the daily snapshot are checked (SPEC 6.7).
+const TICK: Duration = Duration::from_secs(5);
 
 fn exit_with(message: &str, code: i32) -> ! {
     eprintln!("{message}");
     std::process::exit(code);
 }
 
-fn open_vault(service: &str) -> Box<dyn SecretStore> {
+/// The credential store for this data folder (SPEC 6.4). On Linux without a usable Secret
+/// Service, a new data folder uses the data-folder store (App Lock mandatory); once chosen,
+/// that mode sticks. A folder that already has a journal never switches silently: an
+/// unusable vault then fails closed.
+fn open_vault(service: &str, paths: &DataPaths) -> Arc<dyn SecretStore> {
+    #[cfg(target_os = "linux")]
+    if vault::FolderVault::in_use(&paths.root) {
+        log::info!("no system keyring for this data folder: App Lock key kept in the folder");
+        return Arc::new(vault::FolderVault::new(&paths.root));
+    }
+    #[cfg(target_os = "linux")]
+    let new_folder = !paths.journal().exists();
+    #[cfg(not(target_os = "linux"))]
+    let _ = paths;
     match OsVault::new(service) {
-        Ok(v) => Box::new(v),
+        Ok(v) => {
+            #[cfg(target_os = "linux")]
+            if new_folder
+                && matches!(
+                    v.lookup(vault::SELF_TEST_PROBE),
+                    vault::Lookup::Failed(_)
+                )
+            {
+                log::warn!("the Secret Service does not answer; App Lock will be required");
+                return Arc::new(vault::FolderVault::new(&paths.root));
+            }
+            Arc::new(v)
+        }
         Err(reason) => {
             log::error!("credential vault unavailable: {reason}");
-            Box::new(UnavailableVault { reason })
+            #[cfg(target_os = "linux")]
+            if new_folder {
+                return Arc::new(vault::FolderVault::new(&paths.root));
+            }
+            Arc::new(UnavailableVault { reason })
+        }
+    }
+}
+
+/// Tells the window layer what the session did. The handle arrives once the app is built.
+struct WindowNotifier {
+    app: Arc<OnceLock<AppHandle>>,
+}
+
+impl Notifier for WindowNotifier {
+    fn locked(&self) {
+        let Some(app) = self.app.get() else {
+            return;
+        };
+        let _ = app.emit("locked", ());
+        let Some(window) = app.get_webview_window("main") else {
+            return;
+        };
+        // SPEC 6.6: drop everything the web view cached, then render the lock route in a
+        // fresh document so no journal rows stay reachable from the old one.
+        if let Err(e) = window.clear_all_browsing_data() {
+            log::warn!("could not clear the web view's data on lock: {e}");
+        }
+        match window.url() {
+            Ok(mut url) => {
+                url.set_query(None);
+                url.set_fragment(None);
+                url.set_path("/");
+                if let Err(e) = window.navigate(url) {
+                    log::warn!("could not reload the web view on lock: {e}");
+                }
+            }
+            Err(e) => log::warn!("could not read the web view's address: {e}"),
+        }
+    }
+
+    fn save_state(&self, failing: bool) {
+        if let Some(app) = self.app.get() {
+            let _ = app.emit("save_failed", failing);
         }
     }
 }
 
 /// Opens storage for the GUI. Failures become a visible error state, never a silent fallback.
-fn start(brand: &brand::Brand, paths: &DataPaths, vault: &dyn SecretStore) -> AppState {
-    let base = |storage: StorageState| AppInfo {
-        brand: brand.id,
-        product_name: brand.product_name,
-        version: VERSION,
-        data_dir_source: paths.source.as_str(),
-        vault_backend: vault.backend(),
-        storage,
+fn start(
+    brand: &brand::Brand,
+    paths: &DataPaths,
+    vault: Arc<dyn SecretStore>,
+    app_slot: Arc<OnceLock<AppHandle>>,
+) -> AppState {
+    let state = |store: Option<Store>,
+                 error: Option<(&'static str, String)>,
+                 lock: Option<instance::InstanceLock>| {
+        AppState::new(
+            brand.id,
+            brand.product_name,
+            VERSION,
+            paths.source.as_str(),
+            vault.backend(),
+            store,
+            error,
+            lock,
+        )
     };
-    let error = |code: &'static str, message: String| AppState {
-        info: base(StorageState::Error { code, message }),
-        journal: None,
-        _instance_lock: None,
-        #[cfg(feature = "e2e")]
-        data_dir_is_override: paths.source == crate::paths::DataDirSource::Override,
-    };
-
     let lock = match instance::acquire(&paths.lock_file()) {
         Ok(LockOutcome::Held(lock)) => Some(lock),
         Ok(LockOutcome::AlreadyOpen) => {
             log::warn!("another copy already has this data folder open");
-            return error(
-                "already_open",
-                format!("{} is already open.", brand.product_name),
-            );
+            let message = format!("{} is already open.", brand.product_name);
+            return state(None, Some(("already_open", message)), None);
         }
         Ok(LockOutcome::Unsupported(e)) => {
             log::warn!("the data folder does not support file locks ({e}); opening anyway");
@@ -73,39 +158,26 @@ fn start(brand: &brand::Brand, paths: &DataPaths, vault: &dyn SecretStore) -> Ap
         }
         Err(e) => {
             log::error!("could not open the lock file: {e}");
-            return error(
-                "io",
-                format!("{} could not use its data folder.", brand.product_name),
-            );
+            let message = format!("{} could not use its data folder.", brand.product_name);
+            return state(None, Some(("io", message)), None);
         }
     };
-
-    match startup::open_journal(brand, paths, vault) {
-        Ok(opened) => {
-            log::info!(
-                "journal open (created: {}, set aside: {}, generation {})",
-                opened.created,
-                opened.set_aside,
-                opened.journal.generation()
-            );
-            let schema_version = opened.journal.schema_version().unwrap_or(0);
-            AppState {
-                info: base(StorageState::Ready {
-                    encrypted: true,
-                    schema_version,
-                    set_aside: opened.set_aside,
-                }),
-                journal: Some(Mutex::new(opened.journal)),
-                _instance_lock: lock,
-                #[cfg(feature = "e2e")]
-                data_dir_is_override: paths.source == crate::paths::DataDirSource::Override,
-            }
-        }
-        Err(failure) => {
-            log::error!("journal not opened: {}", failure.code);
-            let mut state = error(failure.code, failure.message);
-            state._instance_lock = lock;
-            state
+    let core = Core::new(
+        Config {
+            brand: *brand,
+            paths: paths.clone(),
+            vault: vault.clone(),
+            kdf: KdfParams::DEFAULT,
+            clock: Arc::new(SystemClock),
+        },
+        Box::new(WindowNotifier { app: app_slot }),
+    );
+    match Store::spawn(core) {
+        Ok(store) => state(Some(store), None, lock),
+        Err(e) => {
+            log::error!("could not start the journal thread: {e}");
+            let message = format!("{} could not start.", brand.product_name);
+            state(None, Some(("io", message)), lock)
         }
     }
 }
@@ -138,6 +210,29 @@ fn merge_browser_args(base: &str, extra: &str) -> String {
         out.push_str(&features.join(","));
     }
     out
+}
+
+/// Starts the 5-second ticker (idle lock, daily snapshot).
+fn start_ticker(store: Store) {
+    let spawned = std::thread::Builder::new()
+        .name("idle-ticker".into())
+        .spawn(move || loop {
+            std::thread::sleep(TICK);
+            store.post(|c| c.tick());
+        });
+    if let Err(e) = spawned {
+        log::error!("could not start the idle timer: {e}");
+    }
+}
+
+/// A lock request from the OS (session lock, sleep, user switch) or the window (minimize).
+fn os_lock(store: &Store) -> triggers::OnTrigger {
+    let store = store.clone();
+    Arc::new(move |why: &'static str| {
+        store.post(move |c| {
+            c.lock(why);
+        });
+    })
 }
 
 pub fn run() {
@@ -175,7 +270,7 @@ pub fn run() {
         std::env::var_os("WEBVIEW2_USER_DATA_FOLDER").is_some()
     );
 
-    let vault = open_vault(&service);
+    let vault = open_vault(&service, &paths);
 
     if args.self_test {
         let report = selftest::run(&brand, &paths, vault.as_ref());
@@ -186,7 +281,10 @@ pub fn run() {
         std::process::exit(if report.ok { 0 } else { 1 });
     }
 
-    let state = start(&brand, &paths, vault.as_ref());
+    let app_slot: Arc<OnceLock<AppHandle>> = Arc::new(OnceLock::new());
+    let state = start(&brand, &paths, vault, app_slot.clone());
+    let store = state.store.clone();
+    let webview_dir = paths.webview_dir(&brand);
 
     let builder = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
@@ -196,6 +294,7 @@ pub fn run() {
                 let _ = window.set_focus();
             }
         }))
+        .plugin(tauri_plugin_dialog::init())
         .manage(state)
         .setup(move |app| {
             let configured = app.config().identifier.clone();
@@ -207,6 +306,7 @@ pub fn run() {
                 )
                 .into());
             }
+            let _ = app_slot.set(app.handle().clone());
             // The main window is created here rather than from the config, so the webview can
             // be adjusted per build before it exists.
             let config = app
@@ -216,8 +316,17 @@ pub fn run() {
                 .first()
                 .cloned()
                 .ok_or("no window configured")?;
-            #[allow(unused_mut)]
-            let mut window = tauri::WebviewWindowBuilder::from_config(app.handle(), &config)?;
+            // SPEC 6.2: the web view's own files (caches, cookies, IndexedDB: plain SQLite)
+            // never live in the journal's data folder, and private mode keeps most of them
+            // off the disk entirely.
+            let mut window =
+                tauri::WebviewWindowBuilder::from_config(app.handle(), &config)?.incognito(true);
+            if let Some(dir) = webview_dir.clone() {
+                if let Err(e) = fsec::create_private_dir(&dir) {
+                    log::warn!("could not prepare the web view folder: {e}");
+                }
+                window = window.data_directory(dir);
+            }
             // e2e builds on Windows: msedgedriver watches its own WebView2 user-data folder for
             // the DevTools port file, but Tauri always passes a folder of its own. Use the
             // driver's folder so the WebDriver session can connect. Release builds never do this.
@@ -233,7 +342,47 @@ pub fn run() {
                     merge_browser_args(TAURI_DEFAULT_BROWSER_ARGS, &extra.to_string_lossy());
                 window = window.additional_browser_args(&merged);
             }
-            window.build()?;
+            #[allow(unused_variables)]
+            let window = window.build()?;
+
+            if let Some(store) = store.clone() {
+                start_ticker(store.clone());
+                #[cfg(windows)]
+                match window.hwnd() {
+                    Ok(hwnd) => {
+                        if let Err(e) = triggers::install_windows(hwnd.0, os_lock(&store)) {
+                            log::warn!("OS lock triggers unavailable: {e}");
+                        }
+                    }
+                    Err(e) => log::warn!("OS lock triggers unavailable: {e}"),
+                }
+                #[cfg(target_os = "linux")]
+                triggers::install_linux(os_lock(&store));
+
+                let events = store.clone();
+                let on_minimize = os_lock(&store);
+                let handle = app.handle().clone();
+                window.on_window_event(move |event| match event {
+                    tauri::WindowEvent::Focused(true) => events.post(|c| c.activity()),
+                    tauri::WindowEvent::Resized(_) => {
+                        let minimized = handle
+                            .get_webview_window("main")
+                            .and_then(|w| w.is_minimized().ok())
+                            .unwrap_or(false);
+                        if minimized {
+                            on_minimize("minimize");
+                        }
+                    }
+                    tauri::WindowEvent::CloseRequested { api, .. } => {
+                        // SPEC 6.3: quitting with unsaved changes asks first.
+                        if events.has_unsaved() {
+                            api.prevent_close();
+                            let _ = handle.emit("unsaved_close", ());
+                        }
+                    }
+                    _ => {}
+                });
+            }
             Ok(())
         });
 
@@ -241,13 +390,48 @@ pub fn run() {
     let builder = builder.invoke_handler(tauri::generate_handler![
         commands::app_info,
         commands::journal_query,
+        commands::lock_status,
+        commands::lock_unlock,
+        commands::lock_setup,
+        commands::lock_enable,
+        commands::lock_change,
+        commands::lock_disable,
+        commands::lock_now,
+        commands::lock_activity,
+        commands::older_copy_open,
+        commands::prefs_set_idle,
+        commands::erase_all,
+        commands::save_retry,
+        commands::app_quit,
+        commands::backup_export,
+        commands::backup_pick,
+        commands::backup_restore,
         commands::e2e_status,
-        commands::e2e_add_trade
+        commands::e2e_add_trade,
+        commands::e2e_set_idle_seconds,
+        commands::e2e_backup_export,
+        commands::e2e_backup_pick
     ]);
     #[cfg(not(feature = "e2e"))]
     let builder = builder.invoke_handler(tauri::generate_handler![
         commands::app_info,
-        commands::journal_query
+        commands::journal_query,
+        commands::lock_status,
+        commands::lock_unlock,
+        commands::lock_setup,
+        commands::lock_enable,
+        commands::lock_change,
+        commands::lock_disable,
+        commands::lock_now,
+        commands::lock_activity,
+        commands::older_copy_open,
+        commands::prefs_set_idle,
+        commands::erase_all,
+        commands::save_retry,
+        commands::app_quit,
+        commands::backup_export,
+        commands::backup_pick,
+        commands::backup_restore
     ]);
 
     if let Err(e) = builder.run(tauri::generate_context!()) {

@@ -89,7 +89,16 @@ jobs:
 
       - name: Lockfile flag
         run: |
-          if [ -f Cargo.lock ]; then echo "LOCKED=--locked" >> "$GITHUB_ENV"; else echo "LOCKED=" >> "$GITHUB_ENV"; fi
+          # A Cargo.lock that doesn't match the manifests is resolved here so the rest of the job
+          # still runs and the resolved file is uploaded; the job then fails at the end.
+          if [ -f Cargo.lock ] && cargo metadata --locked --format-version 1 >/dev/null 2>&1; then
+            echo "LOCKED=--locked" >> "$GITHUB_ENV"
+          else
+            echo "::error::Cargo.lock is missing or out of date; commit the cargo-lock artifact"
+            cargo metadata --format-version 1 >/dev/null
+            echo "LOCKED=" >> "$GITHUB_ENV"
+            echo "STALE_LOCK=1" >> "$GITHUB_ENV"
+          fi
 
       - name: Clippy (each brand, plus the e2e feature)
         run: |
@@ -121,3 +130,7 @@ jobs:
         with:
           name: cargo-lock
           path: Cargo.lock
+
+      - name: Fail when Cargo.lock was out of date
+        if: env.STALE_LOCK == '1'
+        run: exit 1

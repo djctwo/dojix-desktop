@@ -56,6 +56,23 @@ impl DataPaths {
         self.root.join("screenshots")
     }
 
+    /// Where the web view (WebView2 / WebKitGTK) keeps its own files: always OUTSIDE the
+    /// journal's data folder, so that folder never holds a browser database (plain SQLite).
+    /// Default: `<cache dir>/<identifier>.webview` (`%LOCALAPPDATA%` on Windows,
+    /// `~/.cache` on Linux). With a `--data-dir` override: a sibling `<data-dir>.webview`.
+    pub fn webview_dir(&self, brand: &Brand) -> Option<PathBuf> {
+        match self.source {
+            DataDirSource::Override => {
+                let mut name = self.root.file_name()?.to_os_string();
+                name.push(".webview");
+                Some(self.root.with_file_name(name))
+            }
+            DataDirSource::Default => {
+                dirs::cache_dir().map(|d| d.join(format!("{}.webview", brand.identifier)))
+            }
+        }
+    }
+
     fn folders(&self) -> [PathBuf; 5] {
         [
             self.snapshots(),
@@ -180,6 +197,21 @@ mod tests {
         assert!(d.root.ends_with("io.github.djctwo.dojix"));
         assert!(g.root.ends_with("io.github.djctwo.greenwick"));
         assert_eq!(d.root.parent(), dirs::data_local_dir().as_deref());
+    }
+
+    #[test]
+    fn the_web_view_folder_is_never_inside_the_data_folder() {
+        let tmp = tempfile::tempdir().unwrap();
+        let o = resolve(&DOJIX, true, Some(&tmp.path().join("data")), None).unwrap();
+        let w = o.webview_dir(&DOJIX).unwrap();
+        assert_eq!(w, tmp.path().join("data.webview"));
+        assert!(!w.starts_with(&o.root));
+        for brand in [DOJIX, GREENWICK] {
+            let d = resolve(&brand, false, None, None).unwrap();
+            let w = d.webview_dir(&brand).unwrap();
+            assert!(!w.starts_with(&d.root), "{}", w.display());
+            assert!(w.ends_with(format!("{}.webview", brand.identifier)));
+        }
     }
 
     #[test]

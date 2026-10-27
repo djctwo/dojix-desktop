@@ -5,18 +5,56 @@
 //! over an item that exists but can't be read.
 //!
 //! Secrets never leave Rust: there is no IPC command that returns one.
+//!
+//! Linux without a Secret Service uses [`FolderVault`]: App Lock is mandatory there, the
+//! wrapped key lives in `key.wrapped`, and the rollback record and throttle sit inside the
+//! data folder (SPEC 6.4). A bare key is never written to disk.
 
 #[cfg(test)]
 use std::collections::HashMap;
+use std::fs;
+use std::io;
+use std::path::{Path, PathBuf};
 #[cfg(test)]
 use std::sync::Mutex;
 
 use zeroize::Zeroizing;
 
+use crate::fsec;
+
 /// Vault account holding the bare journal key (App Lock off).
 pub const DATABASE_KEY: &str = "database_encryption_key";
+/// App Lock on: the journal key(s) wrapped with the password (`DXKW`).
+pub const WRAPPED_KEY: &str = "database_key_wrapped";
+/// Rollback record: the last save this computer made (SPEC 6.5).
+pub const SAVE_RECORD: &str = "journal_save_generation";
+/// Wrong-password throttle (SPEC 6.6).
+pub const FAILED_ATTEMPTS: &str = "lock_failed_attempts";
+pub const LOCKOUT_UNTIL: &str = "lock_lockout_until";
 /// Account used by `--self-test` to prove the vault works. Removed after the check.
 pub const SELF_TEST_PROBE: &str = "self_test_probe";
+/// User API keys (both brands; a brand uses only some of them).
+pub const API_KEYS: &[&str] = &[
+    "anthropic_api_key",
+    "twelve_data_api_key",
+    "polygon_api_key",
+    "oanda_api_token",
+    "oanda_account_id",
+    "finnhub_api_key",
+];
+
+/// Every item "Erase all local data" removes.
+pub fn all_accounts() -> Vec<&'static str> {
+    let mut list = vec![
+        DATABASE_KEY,
+        WRAPPED_KEY,
+        SAVE_RECORD,
+        FAILED_ATTEMPTS,
+        LOCKOUT_UNTIL,
+    ];
+    list.extend_from_slice(API_KEYS);
+    list
+}
 
 pub enum Lookup {
     Found(Zeroizing<Vec<u8>>),
@@ -32,6 +70,10 @@ pub trait SecretStore: Send + Sync {
     fn write(&self, account: &str, secret: &[u8]) -> Result<(), String>;
     /// Deletes the item; an absent item is not an error.
     fn delete(&self, account: &str) -> Result<(), String>;
+    /// True when App Lock can't be turned off (no place for a bare key).
+    fn lock_required(&self) -> bool {
+        false
+    }
 }
 
 /// The real OS vault. Service = the brand identifier (or a scratch name in tests).
@@ -125,12 +167,90 @@ impl SecretStore for UnavailableVault {
     }
 }
 
+/// Name of the wrapped-key file used when there is no system keyring.
+pub const WRAPPED_KEY_FILE: &str = "key.wrapped";
+/// Folder for the rollback record and throttle when there is no system keyring.
+pub const LOCAL_RECORDS_DIR: &str = "local-records";
+
+/// Linux without a Secret Service (SPEC 6.4): items live in the data folder. Only the
+/// wrapped key, the rollback record and the throttle can be stored; a bare journal key or an
+/// API key is refused, so nothing secret is ever written to disk unencrypted.
+pub struct FolderVault {
+    root: PathBuf,
+}
+
+impl FolderVault {
+    pub fn new(root: &Path) -> Self {
+        Self {
+            root: root.to_path_buf(),
+        }
+    }
+
+    /// True when the data folder already uses this mode (it sticks once chosen).
+    pub fn in_use(root: &Path) -> bool {
+        root.join(WRAPPED_KEY_FILE).exists()
+    }
+
+    fn path(&self, account: &str) -> Option<PathBuf> {
+        match account {
+            WRAPPED_KEY => Some(self.root.join(WRAPPED_KEY_FILE)),
+            SAVE_RECORD | FAILED_ATTEMPTS | LOCKOUT_UNTIL | SELF_TEST_PROBE => {
+                Some(self.root.join(LOCAL_RECORDS_DIR).join(account))
+            }
+            _ => None,
+        }
+    }
+}
+
+impl SecretStore for FolderVault {
+    fn backend(&self) -> &'static str {
+        "data-folder"
+    }
+
+    fn lookup(&self, account: &str) -> Lookup {
+        let Some(path) = self.path(account) else {
+            return Lookup::Absent;
+        };
+        match fs::read(&path) {
+            Ok(bytes) => Lookup::Found(Zeroizing::new(bytes)),
+            Err(e) if e.kind() == io::ErrorKind::NotFound => Lookup::Absent,
+            Err(e) => Lookup::Failed(format!("could not read a record in the data folder: {e}")),
+        }
+    }
+
+    fn write(&self, account: &str, secret: &[u8]) -> Result<(), String> {
+        let Some(path) = self.path(account) else {
+            return Err("this item can't be stored without a system keyring".to_string());
+        };
+        if let Some(dir) = path.parent() {
+            fsec::create_private_dir(dir).map_err(|e| e.to_string())?;
+        }
+        fsec::write_atomic(&path, secret).map_err(|e| e.to_string())
+    }
+
+    fn delete(&self, account: &str) -> Result<(), String> {
+        let Some(path) = self.path(account) else {
+            return Ok(());
+        };
+        match fs::remove_file(&path) {
+            Ok(()) => Ok(()),
+            Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(()),
+            Err(e) => Err(e.to_string()),
+        }
+    }
+
+    fn lock_required(&self) -> bool {
+        true
+    }
+}
+
 /// In-memory vault for unit tests, with failure injection.
 #[cfg(test)]
 #[derive(Default)]
 pub struct MemoryVault {
     items: Mutex<HashMap<String, Vec<u8>>>,
     failing: Mutex<Vec<String>>,
+    failing_writes: Mutex<Vec<String>>,
 }
 
 #[cfg(test)]
@@ -140,8 +260,23 @@ impl MemoryVault {
         self.failing.lock().unwrap().push(account.to_string());
     }
 
+    /// Makes only writes to `account` fail.
+    pub fn fail_writes(&self, account: &str) {
+        self.failing_writes.lock().unwrap().push(account.to_string());
+    }
+
+    /// Ends every injected failure.
+    pub fn heal(&self) {
+        self.failing.lock().unwrap().clear();
+        self.failing_writes.lock().unwrap().clear();
+    }
+
     fn is_failing(&self, account: &str) -> bool {
         self.failing.lock().unwrap().iter().any(|a| a == account)
+    }
+
+    pub fn contains(&self, account: &str) -> bool {
+        self.items.lock().unwrap().contains_key(account)
     }
 }
 
@@ -162,7 +297,13 @@ impl SecretStore for MemoryVault {
     }
 
     fn write(&self, account: &str, secret: &[u8]) -> Result<(), String> {
-        if self.is_failing(account) {
+        let write_fails = self
+            .failing_writes
+            .lock()
+            .unwrap()
+            .iter()
+            .any(|a| a == account);
+        if self.is_failing(account) || write_fails {
             return Err("injected failure".to_string());
         }
         self.items
@@ -221,6 +362,55 @@ mod tests {
         assert!(probe(&broken).is_err());
     }
 
+    #[test]
+    fn folder_vault_stores_only_what_may_live_on_disk() {
+        let tmp = tempfile::tempdir().unwrap();
+        let v = FolderVault::new(tmp.path());
+        assert!(v.lock_required());
+        assert!(!FolderVault::in_use(tmp.path()));
+        assert!(matches!(v.lookup(WRAPPED_KEY), Lookup::Absent));
+        v.write(WRAPPED_KEY, b"wrapped bytes").unwrap();
+        assert!(FolderVault::in_use(tmp.path()));
+        assert!(matches!(v.lookup(WRAPPED_KEY), Lookup::Found(ref s) if s.as_slice() == b"wrapped bytes"));
+        v.write(FAILED_ATTEMPTS, b"3").unwrap();
+        assert!(tmp.path().join(LOCAL_RECORDS_DIR).join(FAILED_ATTEMPTS).is_file());
+
+        // A bare key or an API key never reaches the disk.
+        assert!(v.write(DATABASE_KEY, &[1u8; 32]).is_err());
+        assert!(v.write("anthropic_api_key", b"fictional").is_err());
+        assert!(matches!(v.lookup(DATABASE_KEY), Lookup::Absent));
+        v.delete(DATABASE_KEY).unwrap();
+
+        v.delete(WRAPPED_KEY).unwrap();
+        v.delete(WRAPPED_KEY).unwrap();
+        assert!(matches!(v.lookup(WRAPPED_KEY), Lookup::Absent));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn folder_vault_read_errors_fail_closed() {
+        let tmp = tempfile::tempdir().unwrap();
+        let v = FolderVault::new(tmp.path());
+        // A folder where the file should be: exists but can't be read as a file.
+        fs::create_dir(tmp.path().join(WRAPPED_KEY_FILE)).unwrap();
+        assert!(matches!(v.lookup(WRAPPED_KEY), Lookup::Failed(_)));
+    }
+
+    #[test]
+    fn erase_list_covers_keys_records_and_api_keys() {
+        let all = all_accounts();
+        for account in [
+            DATABASE_KEY,
+            WRAPPED_KEY,
+            SAVE_RECORD,
+            FAILED_ATTEMPTS,
+            LOCKOUT_UNTIL,
+            "finnhub_api_key",
+        ] {
+            assert!(all.contains(&account), "{account}");
+        }
+    }
+
     /// Runs against the real OS vault only when CI opts in (a scratch service name is used).
     #[test]
     fn os_vault_round_trip_when_enabled() {
@@ -236,6 +426,11 @@ mod tests {
         assert!(
             matches!(v.lookup(DATABASE_KEY), Lookup::Found(ref k) if k.as_slice() == [8u8; 32])
         );
+        // A wrapped key is longer than a bare one; the vault must hold it byte for byte.
+        let wrapped = vec![0xA5u8; 31 + 12 + 64 + 16];
+        v.write(WRAPPED_KEY, &wrapped).unwrap();
+        assert!(matches!(v.lookup(WRAPPED_KEY), Lookup::Found(ref k) if k.as_slice() == wrapped.as_slice()));
+        v.delete(WRAPPED_KEY).unwrap();
         v.delete(DATABASE_KEY).unwrap();
         v.delete(DATABASE_KEY).unwrap();
         assert!(matches!(v.lookup(DATABASE_KEY), Lookup::Absent));

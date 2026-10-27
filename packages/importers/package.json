@@ -10,7 +10,8 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --coverage",
-    "test:props": "PROPERTY_RUNS=100000 vitest run src/properties.test.ts"
+    "test:props": "PROPERTY_RUNS=100000 vitest run src/properties.test.ts src/swift/swift.test.ts",
+    "test:perf": "PERF_FULL=1 vitest run src/perf.test.ts"
   },
   "dependencies": {
     "@dojix-desktop/core": "workspace:*"

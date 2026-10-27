@@ -11,13 +11,15 @@ export type EngineTeam = "E1" | "E2" | "E3" | "E4" | "I1" | "I2";
 export interface FormulaEntry {
   /** Component type name on the Mac, or "Metrics.<field>" / helper name for §3.3. */
   id: string;
-  spec: "§3.1" | "§3.3" | "App. A";
+  spec: "§3.1" | "§3.3" | "§4.3" | "§5.1" | "§5.2" | "App. A";
   brands: readonly BrandId[];
   /** Where the Mac shows it (per brand when it differs). */
   placement?: Partial<Record<BrandId, AnalyticsPlacement>>;
   owner: EngineTeam;
   status: "implemented" | "planned";
-  /** Path under packages/core/src (implemented entries). */
+  /** Package the module lives in (default "core"). Importer entries are checked by packages/importers. */
+  package?: "core" | "importers";
+  /** Path under packages/<package>/src (implemented entries). */
   module?: string;
   /** Exported names in `module` that implement it. */
   exports?: readonly string[];
@@ -190,10 +192,14 @@ export const FORMULA_INDEX: readonly FormulaEntry[] = [
     spec: "§3.3",
     brands: BOTH,
     owner: "I1",
-    status: "planned",
+    status: "implemented",
+    package: "importers",
+    module: "derive.ts",
+    exports: ["dojixSlDistAndR", "greenwickSlDistAndR"],
     divergences: ["D-06"],
-    note: "computed at import time (packages/importers); I2 owns the Greenwick side",
+    note: "computed at import time; I2 owns the Greenwick side",
   },
+  ...importerEntries(),
 
   // --- Appendix A, shared ------------------------------------------------------------------
   planned("LotSizeAnalysis / ShareSizeAnalysis", "E2", BOTH, at("pairs", "pairs")),
@@ -269,6 +275,28 @@ export const FORMULA_INDEX: readonly FormulaEntry[] = [
 ];
 
 /** Index entries for one owner (e.g. what's left for E2). */
+/** The import pipeline's rules (packages/importers, SPEC §4.3 and §5), owned by I1 (Dojix) and I2 (Greenwick). */
+function importerEntries(): FormulaEntry[] {
+  const e = (id: string, spec: FormulaEntry["spec"], brands: readonly BrandId[], owner: EngineTeam, module: string, exports: readonly string[], divergences?: readonly string[]): FormulaEntry => ({
+    id, spec, brands, owner, status: "implemented", package: "importers", module, exports, ...(divergences ? { divergences } : {}),
+  });
+  return [
+    e("Import: Dojix content ticket", "§5.1", FX, "I1", "tickets.ts", ["dojixContentKey", "dojixContentTicket"]),
+    e("Import: Greenwick FNV ticket", "§5.1", ST, "I2", "tickets.ts", ["greenwickHash", "GreenwickTicketCounter"]),
+    e("Import: Trade+Sanitize (clamp) / storageViolations", "§4.3", FX, "I1", "dojix/sanitize.ts", ["sanitizeDojix", "dojixStorageViolations", "sanitizeDojixForRestore"]),
+    e("Import: TradeLimits (reject)", "§4.3", ST, "I2", "greenwick/limits.ts", ["sanitizeGreenwick", "greenwickStorageViolations", "greenwickControlCharacterFields"]),
+    e("Import: 32-column MT5 CSV + DojixExport", "§5.2", FX, "I1", "dojix/sa32.ts", ["parseSa32"], ["D-21"]),
+    e("Import: Dojix platform mappings (MT4, cTrader, OANDA CSV, IBKR, thinkorswim, NinjaTrader, TradingView, generic)", "§5.2", FX, "I1", "dojix/generic.ts", ["detectDojixHeaders", "parseDojixMapped"], ["D-06", "D-15", "D-16"]),
+    e("Import: MT5 History Report", "§5.2", FX, "I1", "dojix/mt5-report.ts", ["parseMt5Report"]),
+    e("Import: OANDA v20 mapping", "§5.2", FX, "I1", "dojix/oanda-api.ts", ["decodeOandaPage", "mapOandaTransactions"]),
+    e("Import: Greenwick matched-row platforms (IBKR, thinkorswim, TradingView, NinjaTrader, Webull, generic)", "§5.2", ST, "I2", "greenwick/generic.ts", ["detectGreenwickHeaders", "parseGreenwickMapped"], ["D-16"]),
+    e("Import: Greenwick transaction platforms (Robinhood, Schwab, Fidelity, E*Trade, Tastytrade)", "§5.2", ST, "I2", "greenwick/transactions.ts", ["parseGreenwickTransactions"], ["D-22", "D-23", "D-24", "D-27"]),
+    e("Import: FIFO pairing", "§5.2", ST, "I2", "greenwick/fifo.ts", ["pairTransactions"], ["D-25", "D-26"]),
+    e("Import: unknown MAE/MFE stored as NULL", "§5.1", BOTH, "I1", "rows.ts", ["dojixRow", "greenwickRow"], ["D-18"]),
+    e("Import: pipeline (decode, dialect, detect, validate)", "§5.1", BOTH, "I1", "pipeline.ts", ["importTradeFile", "detectFormat", "importOandaPages"]),
+  ];
+}
+
 export function formulasOwnedBy(team: EngineTeam): FormulaEntry[] {
   return FORMULA_INDEX.filter((f) => f.owner === team);
 }

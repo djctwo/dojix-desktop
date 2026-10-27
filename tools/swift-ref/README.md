@@ -57,7 +57,8 @@ Nothing else goes in that folder, so `packages/core` can read every file there a
 | `outputs["<Component>.<value>"]` | Every computed value of every analytics component. `<Component>[variant]` marks the extra `@State` instances |
 | `skipped`, `nondeterministic` | See above |
 
-Encoding rules for Doubles, ±∞, Decimals, dates, enums and Int64 tickets are at the top of
+Encoding rules for Doubles, ±∞, Decimals, dates, enums, Int64 tickets and Foundation values
+(`Calendar` by its settings, `TimeZone` and `Locale` by identifier) are at the top of
 `shared/RefSupport.swift`. `tools/parity-check` follows the same rules.
 
 Other outputs of the same run:

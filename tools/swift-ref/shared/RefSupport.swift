@@ -10,6 +10,8 @@
 //   Trade   → "#<ticket>" inside analytics outputs (the full trade is in the import section)
 //   enum    → raw value when it has one, else the case name; payload cases → {"$case", "values"}
 //   struct  → object of stored properties (+ computed ones exposed via RefDumpable)
+//   Calendar → {identifier, firstWeekday, minimumDaysInFirstWeek, timeZone, locale} (its public
+//              settings, not Foundation's reflected internals); TimeZone / Locale → identifier
 //   UUID, closures and UI values (colours, fonts, images) are omitted.
 import Foundation
 
@@ -68,6 +70,17 @@ private let uiTypeNames: Set<String> = ["Color", "Font", "Image", "AnyView", "Gr
                                         "AngularGradient", "AnyShapeStyle", "NSColor", "NSImage", "Text", "Binding",
                                         "ModifiedContent", "LocalizedStringKey", "AttributedString"]
 
+/// A Calendar by the settings a component can observe (the reflected storage holds ICU internals).
+func refCalendar(_ c: Calendar) -> RefJSON {
+    .object([
+        ("firstWeekday", .int(Int64(c.firstWeekday))),
+        ("identifier", .string(String(describing: c.identifier))),
+        ("locale", c.locale.map { RefJSON.string($0.identifier) } ?? RefJSON.null),
+        ("minimumDaysInFirstWeek", .int(Int64(c.minimumDaysInFirstWeek))),
+        ("timeZone", .string(c.timeZone.identifier)),
+    ])
+}
+
 @MainActor
 func refEncode(_ value: Any, depth: Int = 0) -> RefJSON {
     if depth > 16 { return .string("$max-depth") }
@@ -90,6 +103,9 @@ func refEncode(_ value: Any, depth: Int = 0) -> RefJSON {
     case is UUID: return .omit
     case let v as URL: return .string(v.lastPathComponent)
     case let v as Trade: return .string("#\(v.ticket)")
+    case let v as Calendar: return refCalendar(v)
+    case let v as TimeZone: return .string(v.identifier)
+    case let v as Locale: return .string(v.identifier)
     default: break
     }
     let typeName = String(describing: type(of: value))

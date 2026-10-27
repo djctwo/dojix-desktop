@@ -44,6 +44,11 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// reports this and the installer smoke test checks it.
 pub const PRIVATE_WEBVIEW: bool = !cfg!(all(target_os = "linux", feature = "e2e"));
 
+// A build without the test hooks (every release build) can't compile with a non-private
+// web view.
+#[cfg(not(feature = "e2e"))]
+const _: () = assert!(PRIVATE_WEBVIEW);
+
 /// How often the idle timer and the daily snapshot are checked (SPEC 6.7).
 const TICK: Duration = Duration::from_secs(5);
 
@@ -442,14 +447,7 @@ pub fn run() {
 
 #[cfg(test)]
 mod tests {
-    use super::{merge_browser_args, PRIVATE_WEBVIEW, TAURI_DEFAULT_BROWSER_ARGS};
-
-    /// `cargo test` runs without the `e2e` feature, i.e. as a release build is configured.
-    #[cfg(not(feature = "e2e"))]
-    #[test]
-    fn builds_without_test_hooks_always_use_a_private_web_view() {
-        assert!(PRIVATE_WEBVIEW);
-    }
+    use super::{merge_browser_args, TAURI_DEFAULT_BROWSER_ARGS};
 
     #[test]
     fn merges_disable_features_and_keeps_the_driver_switches() {

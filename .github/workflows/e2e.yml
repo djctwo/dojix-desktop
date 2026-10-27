@@ -116,7 +116,8 @@ jobs:
       - name: msedgedriver log (Windows, on failure)
         if: failure() && runner.os == 'Windows'
         run: |
-          grep -vE '^\s+"|^\s+[}\]],?$' "$MSEDGEDRIVER_LOG" | cut -c1-400 | head -120 || true
+          grep -o 'WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = .*' "$MSEDGEDRIVER_LOG" | head -1 | fold -w 200 || true
+          grep -E '^\[' "$MSEDGEDRIVER_LOG" | cut -c1-300 | head -40 || true
           ls "$LOCALAPPDATA"/io.github.djctwo.*/logs/ 2>/dev/null && cat "$LOCALAPPDATA"/io.github.djctwo.*/logs/*.log || true
 
       - name: Upload screenshots and logs

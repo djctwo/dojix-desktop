@@ -98,9 +98,11 @@ file already lists them as `nondeterministic`.
 
 ### Notes for the engine teams
 
-- **Formatted text uses `en_US_POSIX`**, as SPEC §10.2 pins it. Currency strings inside insight and
-  summary text read `$ 4755.36`, not `$4,755.36`. Compare formatted text with POSIX formatting, or
-  exclude it here and test it with the en-US vectors (SPEC §10.1).
+- **Formatted text follows the run's locale.** The default runs pin `en_US_POSIX` (SPEC §10.2), so
+  currency inside insight and summary text reads `$\u00a04755.36` (a no-break space, no grouping); the
+  F7 variants use their own locale (`US$9.83` in en_GB, `3月 2` month names in ja_JP). The engine
+  formats with `ctx.locale` and the parity suite builds the context from each reference, so these
+  strings are compared like any other value.
 - **Honour `nondeterministic`.** Swift's dictionary order and its random choice among ties make
   those paths differ from run to run. For example, the order of `CommissionAnalytics.symbolCosts` on
   tied totals, and `EdgeDecayMonitor`'s dominant regime on a tie. Compare them unordered (as
@@ -110,7 +112,9 @@ file already lists them as `nondeterministic`.
 
 ## Using the references (Phase 2)
 
-`tools/parity-check` compares the engine with every reference value. Register an engine function
+`packages/core/src/parity/parity.test.ts` (Vitest, in CI) compares the engine with every reference
+value it can resolve, under the rules below. `tools/parity-check` applies the same rules from the
+command line. Register an engine function
 per reference key in `tools/parity-check/src/engine.ts`. Inputs come from the reference itself:
 `import.journal` holds the stored trades, and `now`, `tz`, `locale` and `firstWeekday` hold the
 context.
@@ -118,9 +122,13 @@ context.
 - Doubles must agree within 1e-9 relative.
 - Integers, labels, decimal text and ±∞ must be exact.
 - Paths listed in a file's `nondeterministic` (Swift dictionary order, unseeded randomness, clock
-  reads) are compared unordered and only warn.
-- A difference fails unless `divergences.yaml` covers that path for that fixture. A headline
-  (Dashboard) number also needs an approved headline entry.
+  reads) are compared unordered and only warn. `tools/swift-ref/run.mjs` finds them by repeating
+  the run with random hashing (12 times; one run can reproduce a small dictionary's order by chance).
+- In `swift` compat every value must match, including the ones an approved D-xx changes. In
+  `fixed` compat (what the app ships) a difference fails unless `divergences.yaml` covers that path
+  for that fixture. A headline (Dashboard) number also needs an approved headline entry.
+- F8 (`compare: false` in the manifest) is never compared. The `import.*` keys and the F9 scale sets
+  (whose only input is the import file) are compared by packages/importers.
 
 ```sh
 node tools/parity-check/src/cli.ts            # summary; fails on unexplained differences

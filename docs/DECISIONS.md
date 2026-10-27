@@ -1,6 +1,6 @@
 # Decisions
 
-These are the seven project decisions the Windows and Linux edition is built on. They were
+These are the project decisions the Windows and Linux edition is built on. They were
 accepted on 2026-10-26 and checked again on 2026-10-27 against the current Mac apps.
 The full design is in [SPEC.md](SPEC.md). The behaviour differences from the Mac apps are
 listed in [PARITY.md](PARITY.md).
@@ -14,3 +14,5 @@ listed in [PARITY.md](PARITY.md).
 | 5 | **The journal is encrypted at rest.** | It matches the Mac apps' current design. The journal is held in memory and sealed with AES-256-GCM after every commit, so no plaintext database file ever exists. This replaces the earlier plan for page-level database encryption (SPEC §6). |
 | 6 | **Bugs found in the Mac apps are fixed in the desktop app, not copied, and every difference is logged.** | Many have since been fixed in the Mac apps themselves. Those are now parity items. The remaining differences are in PARITY.md, each with its reason and a test. |
 | 7 | **The products keep their names on Windows and Linux: Dojix (forex) and Greenwick (stocks).** | One codebase builds two installers, one for each brand. |
+| 8 | **The five headline-affecting parity fixes (D-16, D-18, D-22, D-23, D-27) are approved** (2026-10-27). | A Dashboard number can differ from the Mac app for the affected files only; each fix is listed in PARITY.md with a test. |
+| 9 | **No Windows → Mac backup export in v1** (2026-10-27). | Mac → Windows import is supported; the reverse can be added on request. |

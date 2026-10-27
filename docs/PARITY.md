@@ -238,16 +238,11 @@ the desktop matches them:
 
 ## C. Open questions for the maintainer
 
-Each has a recommended default. Work proceeds on the default until it is answered.
+Both were answered on 2026-10-27:
 
-1. **Approve the headline-affecting fixes D-16, D-18, D-22, D-23 and D-27?** Each one can change
-   a Dashboard header number compared with the Mac app *for the affected files only*:
-   - TradingView exports;
-   - trades without MAE/MFE;
-   - Greenwick files with options, a Schwab file with no footer, or Robinhood fees.
-
-   **Default: approve all five.** They fix wrong counts or P&L, and each is logged and tested.
-2. **Should the desktop app also export a backup the Mac apps can restore?** That would mean
-   writing the Mac's exact schema and `DJXB` / `GWBK` format for Windows → Mac moves.
-   **Default: not in v1.** Mac → Windows is supported, and the reverse can follow when someone
-   asks.
+1. **The headline-affecting fixes D-16, D-18, D-22, D-23 and D-27 are approved.** Each one can change
+   a Dashboard header number compared with the Mac app *for the affected files only* (TradingView
+   exports; trades without MAE/MFE; Greenwick files with options, a Schwab file with no footer, or
+   Robinhood fees). Each is logged and tested.
+2. **No Windows → Mac backup export in v1.** Mac → Windows is supported; the reverse can follow when
+   someone asks.

@@ -1,0 +1,7 @@
+[workspace]
+members = ["apps/desktop/src-tauri"]
+resolver = "2"
+
+[profile.release]
+# Smaller binaries, and no symbol names for the release string scan to trip over.
+strip = "symbols"

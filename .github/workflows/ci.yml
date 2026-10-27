@@ -1,0 +1,123 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  rustfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install the pinned Rust toolchain (rust-toolchain.toml)
+        run: rustup show active-toolchain || rustup toolchain install
+      - name: cargo fmt --check
+        run: |
+          if ! cargo fmt --all -- --check; then
+            cargo fmt --all
+            git diff > rustfmt.patch
+            exit 1
+          fi
+      - name: Upload the formatting patch
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rustfmt-patch
+          path: rustfmt.patch
+          if-no-files-found: ignore
+
+  check:
+    name: check (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: ESLint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Vitest
+        run: pnpm test
+
+      - name: Web build per brand, and check the other brand is tree-shaken out
+        run: |
+          pnpm build:web:greenwick
+          ! grep -q '#e8b44c' apps/desktop/dist/assets/*.js
+          pnpm build:web:dojix
+          ! grep -q '#00d4aa' apps/desktop/dist/assets/*.js
+
+      - name: Linux system libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev \
+            build-essential pkg-config gnome-keyring dbus-x11
+
+      - name: Install the pinned Rust toolchain (rust-toolchain.toml)
+        run: rustup show active-toolchain || rustup toolchain install
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          shared-key: check
+
+      - name: Lockfile flag
+        run: |
+          if [ -f Cargo.lock ]; then echo "LOCKED=--locked" >> "$GITHUB_ENV"; else echo "LOCKED=" >> "$GITHUB_ENV"; fi
+
+      - name: Clippy (each brand, plus the e2e feature)
+        run: |
+          set -euo pipefail
+          T=apps/desktop/src-tauri
+          for brand in dojix greenwick; do
+            export TAURI_CONFIG="$(node tools/ci/tauri-config.mjs $T/tauri.$brand.conf.json)"
+            cargo clippy $LOCKED -p dojix-desktop --all-targets --features brand-$brand -- -D warnings
+          done
+          export TAURI_CONFIG="$(node tools/ci/tauri-config.mjs $T/tauri.dojix.conf.json $T/tauri.e2e.conf.json)"
+          cargo clippy $LOCKED -p dojix-desktop --all-targets --features brand-dojix,e2e -- -D warnings
+
+      - name: Cargo test (each brand; the real OS credential vault is exercised)
+        env:
+          DOJIX_TEST_OS_VAULT: "1"
+        run: |
+          set -euo pipefail
+          T=apps/desktop/src-tauri
+          WRAP=""
+          if [ "$RUNNER_OS" = "Linux" ]; then WRAP="tools/ci/with-keyring.sh"; fi
+          for brand in dojix greenwick; do
+            export TAURI_CONFIG="$(node tools/ci/tauri-config.mjs $T/tauri.$brand.conf.json)"
+            $WRAP cargo test $LOCKED -p dojix-desktop --features brand-$brand
+          done
+
+      - name: Upload Cargo.lock (resolved by this run)
+        if: always() && runner.os == 'Linux'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cargo-lock
+          path: Cargo.lock

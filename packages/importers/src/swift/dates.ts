@@ -204,6 +204,20 @@ function daysInMonth(year: number, month: number): number {
   return [4, 6, 9, 11].includes(month) ? 30 : 31;
 }
 
+/**
+ * DateFormatter's reading of a wall time in a DST zone (Swift reference run, golden/reference):
+ * a wall time skipped by the spring-forward change is rejected (nil), and a repeated one (the
+ * autumn hour) resolves to its SECOND occurrence.
+ */
+function wallToInstant(cal: ZonedCalendar, y: number, month: number, day: number, hour: number, minute: number, second: number, millis: number): number | null {
+  const t = cal.instantFromWall(y, month, day, hour, minute, second, millis);
+  const f = cal.fields(t);
+  if (f.year !== y || f.month !== month || f.day !== day || f.hour !== hour || f.minute !== minute) return null; // skipped
+  const later = t + 3_600_000;
+  const g = cal.fields(later);
+  return g.year === y && g.month === month && g.day === day && g.hour === hour && g.minute === minute ? later : t;
+}
+
 function utcInstant(year: number, month: number, day: number, hour: number, minute: number, second: number, millis: number): number {
   const d = new Date(0);
   d.setUTCFullYear(year, month - 1, day);
@@ -246,7 +260,7 @@ function resolve(p: Parsed, tz: TimeZoneId, now: number): number | null {
     if (p.offsetMinutes !== undefined) return utcInstant(y, month, day, hour, minute, second, millis) - p.offsetMinutes * 60_000;
     if (tz === "UTC") return utcInstant(y, month, day, hour, minute, second, millis);
     if (y > 9999) return null;
-    return calendarFor(tz).instantFromWall(y, month, day, hour, minute, second, millis);
+    return wallToInstant(calendarFor(tz), y, month, day, hour, minute, second, millis);
   };
   let t = instant(year);
   if (t !== null && ambiguousYear && centuryStart !== null && t < centuryStart) t = instant(year + 100);

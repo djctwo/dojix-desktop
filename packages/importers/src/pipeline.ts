@@ -3,7 +3,7 @@
 // the preview and `import_commit`.
 
 import type { BrandId } from "@dojix-desktop/core";
-import { decodeTradeFile, type TextEncodingName } from "./encoding";
+import { decodeTradeFile, decodeTradeFileMac, type TextEncodingName } from "./encoding";
 import type { CompatMode, FormatId, ImportContext, ImportedTrade, MacTrade, ParsedRow, RowIssue } from "./model";
 import { ImportError, MAX_IMPORT_BYTES } from "./model";
 import { type CsvDialect, COMMA_DIALECT, detectDialect, splitFields } from "./csv/dialect";
@@ -13,6 +13,7 @@ import { findSa32Header, parseSa32 } from "./dojix/sa32";
 import { looksLikeMt5Report, parseMt5Report } from "./dojix/mt5-report";
 import { type GreenwickColumnMapping, GREENWICK_PLATFORM_SOURCE, detectGreenwickHeaders, needsFifo, parseGreenwickMapped } from "./greenwick/generic";
 import { parseGreenwickTransactions } from "./greenwick/transactions";
+import { type OandaTransaction, decodeOandaPage, mapOandaTransactions } from "./dojix/oanda-api";
 import { storeRow } from "./rows";
 import { sha256, toHex } from "./hash";
 
@@ -26,6 +27,13 @@ export interface ImportOptions {
   now: number;
   /** A user's column mapping for an unrecognised file (the mapping sheet or a saved preset). */
   mapping?: ColumnMapping;
+  /** The file's name. Only `swift` compat uses it: the Mac routes "StrategyAnalytics*" / "SA_Results*" files by name. */
+  fileName?: string;
+}
+
+export interface DetectOptions {
+  compat?: CompatMode;
+  fileName?: string;
 }
 
 export interface Detection {
@@ -85,8 +93,52 @@ function dialectOf(lines: readonly NumberedLine[]): CsvDialect {
   return COMMA_DIALECT;
 }
 
+/** True for the file names the Mac sends straight to the 32-column parser (ImportViewModel.swift:63). */
+export function isMac32ColumnFileName(name: string | undefined): boolean {
+  return name !== undefined && (name.startsWith("StrategyAnalytics") || name.startsWith("SA_Results"));
+}
+
+/**
+ * The Mac's routing (`swift` compat): Dojix sends "StrategyAnalytics*" files to the 32-column
+ * parser by name and otherwise looks at line 1 only (a multi-section file with another name
+ * goes to the mapping sheet); comma only; no MT5 report or DojixExport.
+ */
+function detectMac(text: string, brand: BrandId, fileName: string | undefined): Detection {
+  const dialect = COMMA_DIALECT;
+  if (brand === "dojix" && isMac32ColumnFileName(fileName)) return { format: "mt5_32col", dialect, headers: [], sampleRows: [], mapping: null, needsMapping: false };
+  const content = brand === "greenwick" && text.startsWith("\uFEFF") ? text.slice(1) : text;
+  const lines = numberedNonBlank(content);
+  if (lines.length === 0) throw new ImportError("empty_file", "The file is empty");
+  const fieldsOf = (l: NumberedLine | undefined) => (l ? splitFields(l.text, dialect) : []);
+  const samples = (from: number) => lines.slice(from, from + 5).map((l) => fieldsOf(l));
+  if (brand === "dojix") {
+    const headers = fieldsOf(lines[0]);
+    const d = detectDojixHeaders(headers);
+    if (d.kind === "mt5_32col") return { format: "mt5_32col", dialect, headers, sampleRows: [], mapping: null, needsMapping: false };
+    if (d.kind === "mapped") return { format: DOJIX_PLATFORM_SOURCE[d.mapping.platform] as FormatId, dialect, headers, sampleRows: samples(1), mapping: d.mapping, needsMapping: false };
+    return { format: "generic", dialect, headers, sampleRows: samples(1), mapping: null, needsMapping: true };
+  }
+  return detectGreenwick(lines, dialect, fieldsOf, samples);
+}
+
+function detectGreenwick(
+  lines: readonly NumberedLine[],
+  dialect: CsvDialect,
+  fieldsOf: (l: NumberedLine | undefined) => string[],
+  samples: (from: number) => string[][],
+): Detection {
+  // Line 1, then line 2 (Schwab / Fidelity title lines).
+  for (const at of [0, 1]) {
+    const headers = fieldsOf(lines[at]);
+    const m = at < lines.length ? detectGreenwickHeaders(headers) : null;
+    if (m) return { format: GREENWICK_PLATFORM_SOURCE[m.platform] as FormatId, dialect, headers, sampleRows: samples(at + 1), mapping: m, needsMapping: false };
+  }
+  return { format: "generic", dialect, headers: fieldsOf(lines[0]), sampleRows: samples(1), mapping: null, needsMapping: true };
+}
+
 /** Detects a decoded file's format for `brand` (SPEC §5.1 step 3). */
-export function detectFormat(text: string, brand: BrandId): Detection {
+export function detectFormat(text: string, brand: BrandId, options: DetectOptions = {}): Detection {
+  if (options.compat === "swift") return detectMac(text, brand, options.fileName);
   const lines = numberedNonBlank(text);
   if (lines.length === 0) throw new ImportError("empty_file", "The file is empty");
   const dialect = dialectOf(lines);
@@ -109,13 +161,7 @@ export function detectFormat(text: string, brand: BrandId): Detection {
     }
     return { format: "generic", dialect, headers, sampleRows: samples(1), mapping: null, needsMapping: true };
   }
-  // Greenwick: line 1, then line 2 (Schwab / Fidelity title lines).
-  for (const at of [0, 1]) {
-    const headers = fieldsOf(lines[at]);
-    const m = at < lines.length ? detectGreenwickHeaders(headers) : null;
-    if (m) return { format: GREENWICK_PLATFORM_SOURCE[m.platform] as FormatId, dialect, headers, sampleRows: samples(at + 1), mapping: m, needsMapping: false };
-  }
-  return { format: "generic", dialect, headers: fieldsOf(lines[0]), sampleRows: samples(1), mapping: null, needsMapping: true };
+  return detectGreenwick(lines, dialect, fieldsOf, samples);
 }
 
 /** A stable signature of a header row, for `mapping_presets.header_signature`. */
@@ -126,7 +172,8 @@ export function headerSignature(headers: readonly string[]): string {
 /** Imports decoded text (see `importTradeFile`). */
 export function importTradeText(text: string, encoding: TextEncodingName, options: ImportOptions): ImportResult {
   const ctx: ImportContext = { brand: options.brand, compat: options.compat ?? "fixed", now: options.now };
-  const detection = detectFormat(text, ctx.brand);
+  const detection = detectFormat(text, ctx.brand, { compat: ctx.compat, ...(options.fileName !== undefined ? { fileName: options.fileName } : {}) });
+  if (ctx.brand === "greenwick" && ctx.compat === "swift" && text.startsWith("\uFEFF")) text = text.slice(1);
   let rows: ParsedRow[];
   let issues: RowIssue[];
   let optionsSkipped = 0;
@@ -155,6 +202,13 @@ export function importTradeText(text: string, encoding: TextEncodingName, option
       ({ rows, issues, optionsSkipped } = out);
     }
   }
+  const stored = storeRows(rows, ctx, issues);
+  const format = detection.format === "generic" && options.mapping ? "generic" : detection.format;
+  return { format, encoding, dialect: detection.dialect, ...stored, issues, parsed: rows.length, optionsSkipped, mac: rows.map((r) => r.trade), detection };
+}
+
+/** The storage rule, in-file duplicate tickets and the issue order: shared by files and the OANDA API. */
+function storeRows(rows: readonly ParsedRow[], ctx: ImportContext, issues: RowIssue[]): { trades: ImportedTrade[]; duplicatesInFile: number } {
   const trades: ImportedTrade[] = [];
   const seen = new Set<string>();
   let duplicatesInFile = 0;
@@ -173,8 +227,25 @@ export function importTradeText(text: string, encoding: TextEncodingName, option
     trades.push(stored.trade);
   }
   issues.sort((a, b) => (a.line ?? Infinity) - (b.line ?? Infinity));
-  const format = detection.format === "generic" && options.mapping ? "generic" : detection.format;
-  return { format, encoding, dialect: detection.dialect, trades, issues, parsed: rows.length, optionsSkipped, duplicatesInFile, mac: rows.map((r) => r.trade), detection };
+  return { trades, duplicatesInFile };
+}
+
+/**
+ * OANDA v20 API import (SPEC §8.4): the `transactions` pages the Rust client fetched, decoded,
+ * paired and stored like a file import. A page that doesn't decode makes the whole import fail
+ * (null), as `JSONDecoder` does on the Mac.
+ */
+export function importOandaPages(pages: readonly unknown[], options: Omit<ImportOptions, "brand" | "mapping" | "fileName">): { trades: ImportedTrade[]; issues: RowIssue[]; parsed: number } | null {
+  const ctx: ImportContext = { brand: "dojix", compat: options.compat ?? "fixed", now: options.now };
+  const transactions: OandaTransaction[] = [];
+  for (const page of pages) {
+    const decoded = decodeOandaPage(page);
+    if (decoded === null) return null;
+    transactions.push(...decoded);
+  }
+  const { rows, issues } = mapOandaTransactions(transactions, ctx);
+  const { trades } = storeRows(rows, ctx, issues);
+  return { trades, issues, parsed: rows.length };
 }
 
 /**
@@ -184,6 +255,6 @@ export function importTradeText(text: string, encoding: TextEncodingName, option
  */
 export function importTradeFile(bytes: Uint8Array, options: ImportOptions): ImportResult {
   if (bytes.length > MAX_IMPORT_BYTES) throw new ImportError("too_large", "The file is larger than 50 MB");
-  const decoded = decodeTradeFile(bytes);
+  const decoded = options.compat === "swift" ? decodeTradeFileMac(bytes) : decodeTradeFile(bytes);
   return importTradeText(decoded.text, decoded.encoding, options);
 }

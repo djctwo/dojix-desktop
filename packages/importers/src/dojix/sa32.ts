@@ -76,7 +76,8 @@ export function parseSa32(lines: readonly string[], dialect: CsvDialect, ctx: Im
   const headerIndex = findSa32Header(lines, dialect);
   if (headerIndex < 0) throw new ImportError("no_trade_section", "No trade detail section found in CSV");
   const headerFields = splitFields(lines[headerIndex] as string, dialect);
-  const exp = exportColumns(headerFields);
+  // The Mac reads a DojixExport file as a plain 32-column file (extra columns ignored).
+  const exp = ctx.compat === "fixed" ? exportColumns(headerFields) : null;
   const rows: ParsedRow<DojixMacTrade>[] = [];
   const issues: RowIssue[] = [];
   for (let i = headerIndex + 1; i < lines.length; i++) {

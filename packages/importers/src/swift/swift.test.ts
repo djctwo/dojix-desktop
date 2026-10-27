@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { SwiftDecimal } from "@dojix-desktop/core";
+import fc from "fast-check";
+import { SwiftDecimal, graphemes } from "@dojix-desktop/core";
 import { decimalDescription, decimalFromDouble, doubleDescription, swiftDouble, swiftInt, swiftInt64 } from "./numbers";
 import { DateParsers, compilePattern, parseDatePattern, parseIso8601 } from "./dates";
 import {
@@ -11,6 +12,7 @@ import {
   removeGreenwickControls,
   startsWithNumberCharacter,
   stripFoundationControls,
+  trimWs,
 } from "./text";
 
 const NOW = Date.UTC(2026, 9, 27, 12);
@@ -240,5 +242,33 @@ describe("Mac text helpers", () => {
     expect(removeGreenwickControls("a\nb\tc", true)).toBe("a\nb\tc");
     expect(hasGreenwickControls("a\nb", true)).toBe(false);
     expect(hasGreenwickControls("a\nb", false)).toBe(true);
+  });
+});
+
+describe("tokenizer fast path = per-Character reference", () => {
+  // The literal Swift algorithm: iterate Characters (grapheme clusters).
+  const reference = (line: string, delimiter = ","): string[] => {
+    const fields: string[] = [];
+    let cur = "";
+    let q = false;
+    for (const ch of graphemes(line)) {
+      if (ch === '"') q = !q;
+      else if (ch === delimiter && !q) {
+        fields.push(trimWs(cur));
+        cur = "";
+      } else cur += ch;
+    }
+    fields.push(trimWs(cur));
+    return fields;
+  };
+  it("agrees on hostile Unicode around quotes and commas", () => {
+    const pieces = fc.constantFrom('"', ",", ";", " ", "́", "‍", "؀", "\u{110BD}", "\u{1F3FB}", "ः", "a", "é", "\u{1F4A9}", "\r", "\t", " ", "\uD800", "\uDC00");
+    fc.assert(
+      fc.property(fc.array(pieces, { maxLength: 30 }), fc.constantFrom(",", ";"), (parts, d) => {
+        const line = parts.join("");
+        expect(macCsvFields(line, d)).toEqual(reference(line, d));
+      }),
+      { numRuns: Number(process.env.PROPERTY_RUNS ?? 3000) },
+    );
   });
 });

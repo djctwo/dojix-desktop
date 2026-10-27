@@ -15,7 +15,7 @@
   headline: false
   approved: true
   reason: "WinLossDistribution: the top bucket is closed at +maxAbs (Mac: the largest win falls outside every bucket)"
-  test: null
+  test: packages/core/src/analytics/pairs-overview.test.ts
   affects: ["outputs.WinLossDistribution"]
   fixtures: []
 - id: D-02
@@ -23,7 +23,7 @@
   headline: false
   approved: true
   reason: "SlippageAnalysis: half-open buckets, last one open-ended (Mac: edges counted twice, values above 100 dropped)"
-  test: null
+  test: packages/core/src/analytics/pairs-overview.test.ts
   affects: ["outputs.SlippageAnalysis"]
   fixtures: []
 - id: D-03
@@ -31,7 +31,7 @@
   headline: false
   approved: true
   reason: "ExitAnalysis: half-open efficiency buckets with 100 in the last (Mac: edges counted twice)"
-  test: null
+  test: packages/core/src/analytics/exit-analysis.test.ts
   affects: ["outputs.ExitAnalysis"]
   fixtures: []
 - id: D-04
@@ -39,7 +39,7 @@
   headline: false
   approved: true
   reason: "RiskOfRuin: the general formula at exactly 50% win rate (Mac: always 100%)"
-  test: null
+  test: packages/core/src/analytics/risk-of-ruin.test.ts
   affects: ["outputs.RiskOfRuin"]
   fixtures: []
 - id: D-05
@@ -47,7 +47,7 @@
   headline: false
   approved: true
   reason: "Monte Carlo: seeded bootstrap with replacement (Mac: unseeded shuffle, every final equals the total). Only invariants are compared"
-  test: null
+  test: packages/core/src/analytics/monte-carlo-simulation.test.ts
   affects: ["outputs.MonteCarloSimulation"]
   fixtures: []
 - id: D-06
@@ -63,7 +63,7 @@
   headline: false
   approved: true
   reason: "KillZone counts trading days by close day like WhatToCut (Mac: open day)"
-  test: null
+  test: packages/core/src/analytics/sessions.test.ts
   affects: ["outputs.KillZoneOptimizer"]
   fixtures: []
 - id: D-09
@@ -71,7 +71,7 @@
   headline: false
   approved: true
   reason: "News-event heuristics in UTC (Mac: the computer's calendar)"
-  test: null
+  test: packages/core/src/analytics/calendar-correlation.test.ts
   affects: ["outputs.CalendarCorrelation", "outputs.EventImpactProfiler"]
   fixtures: []
 - id: D-15
@@ -95,7 +95,7 @@
   headline: false
   approved: true
   reason: "Streaks: MetricsCalculator lets breakevens pass, StreakCard counts them as losses. No change; documented per component"
-  test: null
+  test: packages/core/src/analytics/pairs-overview.test.ts
   affects: []
   fixtures: []
 - id: D-18
@@ -111,7 +111,7 @@
   headline: false
   approved: true
   reason: "NFP 'week 1' means the first Friday of the month (Mac: locale weeks / Monday-minDays-4 weeks)"
-  test: null
+  test: packages/core/src/analytics/calendar-correlation.test.ts
   affects: ["outputs.CalendarCorrelation", "outputs.EventImpactProfiler"]
   fixtures: []
 - id: D-20
@@ -119,7 +119,7 @@
   headline: false
   approved: true
   reason: "DrawdownRecovery: the same duration rule for recovered and unrecovered drawdowns (Mac: +1 for unrecovered only)"
-  test: null
+  test: packages/core/src/analytics/drawdown-recovery.test.ts
   affects: ["outputs.DrawdownRecovery"]
   fixtures: []
 - id: D-21

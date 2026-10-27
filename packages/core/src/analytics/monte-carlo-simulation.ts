@@ -210,14 +210,28 @@ export const monteCarloSimulationComponent = defineComponent<BrandId, MonteCarlo
 });
 
 /**
- * The only Mac member is `result`, and it is random (unseeded shuffle), so the harness flags it
- * nondeterministic and it is never compared value-for-value (D-05: "only invariants are
- * parity-tested"). No member resolver is registered; `monteCarloShuffleInvariantViolations`
- * checks a reference result's invariants instead.
+ * The only Mac member is `result`. The Mac's paths are random (unseeded shuffle), so the
+ * harness lists the members that changed between its runs (`bands`, usually `bestCase` /
+ * `worstCase`, sometimes `medianFinalPnL` and `probDrawdown20`) as nondeterministic: those are
+ * compared unordered and only warn. What the shuffle cannot change is compared exactly (D-05:
+ * "only invariants are parity-tested"): `probProfit` and `probTarget` (every final equals the
+ * total), the finals up to summation order, the band labels and opacities. In `fixed` compat
+ * (bootstrap) every member may differ (D-05 in golden/divergences.yaml).
  */
 export const monteCarloSimulationParity: ComponentParity<MonteCarloModel> = {
   component: "MonteCarloSimulation",
   brands: ["dojix", "greenwick"],
   compute: (ctx, trades) => computeMonteCarloSimulation(ctx, trades),
-  members: {},
+  members: {
+    result: (m) =>
+      m.result && {
+        bands: m.result.bands.map((b) => ({ label: b.label, opacity: b.opacity, points: b.points })),
+        probProfit: m.result.probProfit,
+        probTarget: m.result.probTarget,
+        probDrawdown20: m.result.probDrawdown20,
+        medianFinalPnL: m.result.medianFinalPnL,
+        worstCase: m.result.worstCase,
+        bestCase: m.result.bestCase,
+      },
+  },
 };

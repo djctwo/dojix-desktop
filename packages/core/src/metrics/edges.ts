@@ -116,6 +116,13 @@ export function confidenceLevel(sampleSize: number): ConfidenceLevel {
   return "significant";
 }
 
+/** `ConfidenceLevel.label` / `.icon` (`Components/ConfidenceBadge.swift:9-31`, both apps); colours are the UI's. */
+export const CONFIDENCE_LEVEL_INFO: Readonly<Record<ConfidenceLevel, { label: string; icon: string }>> = {
+  insufficient: { label: "Insufficient", icon: "exclamationmark.triangle.fill" },
+  low: { label: "Low confidence", icon: "info.circle.fill" },
+  significant: { label: "Significant", icon: "checkmark.seal.fill" },
+};
+
 /** `isActionable(sampleSize:)`: n ≥ 30. */
 export function isActionable(sampleSize: number): boolean {
   return sampleSize >= 30;

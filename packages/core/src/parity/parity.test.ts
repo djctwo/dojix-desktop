@@ -55,6 +55,19 @@ const references = Object.entries(referenceJson)
   .filter(([path]) => !/\/(manifest|index|checksums)\.json$/.test(path))
   .map(([path, json]) => parseReferenceFile(path, json));
 
+/**
+ * Reference keys packages/core does not compute, and why. Not a tolerance: each names who owns
+ * the comparison instead (SPEC tags, packages/importers).
+ */
+const NOT_IN_CORE: readonly { prefix: string; reason: string }[] = [
+  { prefix: "QuickInsight.", reason: "not ported: dead code in both apps, tagged DROP in SPEC §2.3" },
+  { prefix: "TicketKeyCounter.", reason: "importer parity pending: ticket hashing is packages/importers" },
+  {
+    prefix: "Trade.derived",
+    reason: "importer parity pending: the per-trade record includes the storage validation (Trade+Sanitize / TradeLimits) of packages/importers",
+  },
+];
+
 function describeMismatches(mm: readonly ParityMismatch[]): string {
   const show = (v: unknown) => JSON.stringify(v)?.slice(0, 160) ?? "undefined";
   return mm
@@ -105,6 +118,11 @@ describe("parity with the Mac apps (golden/reference)", () => {
           const soft = mm.filter((m) => nondeterministic.some((p) => pathWithin(m.path, p)));
           return { hard: mm.filter((m) => !soft.includes(m)), soft };
         };
+        const owner = NOT_IN_CORE.find((n) => key.startsWith(n.prefix));
+        if (owner) {
+          it.skip(`${key}: ${owner.reason}`, () => {});
+          continue;
+        }
         const actual = resolveParityOutput(key, swiftCtx, trades);
         if (actual === undefined) {
           it.skip(`${key}: no resolver yet (owner per FORMULA_INDEX)`, () => {});

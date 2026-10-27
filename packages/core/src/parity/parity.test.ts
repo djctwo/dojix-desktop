@@ -8,11 +8,15 @@
 // loaders once packages/importers can parse them.
 
 import { describe, expect, it } from "vitest";
+import { registerE3Parity } from "../analytics/e3";
 import { parityContext } from "../engine/context";
 import { toEngineTrade, type StoredTrade } from "../model/stored";
 import type { Trade } from "../model/trade";
 import { compareParity } from "./compare";
 import { parseReferenceFile, resolveParityOutput, type ReferenceFile } from "./reference";
+
+// Component resolvers register themselves on demand (analytics teams).
+registerE3Parity();
 
 const referenceJson = import.meta.glob<unknown>("../../../../golden/reference/**/*.json", { eager: true, import: "default" });
 const fixtureJson = import.meta.glob<{ trades?: StoredTrade[] }>("../../../../golden/fixtures/**/*.trades.json", {

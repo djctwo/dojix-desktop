@@ -312,10 +312,11 @@ pub fn run() {
                 .cloned()
                 .ok_or("no window configured")?;
             // SPEC 6.2: the web view's own files (caches, cookies, IndexedDB: plain SQLite)
-            // never live in the journal's data folder, and private mode keeps most of them
-            // off the disk entirely.
-            let mut window =
-                tauri::WebviewWindowBuilder::from_config(app.handle(), &config)?.incognito(true);
+            // never live in the journal's data folder. On Windows, private (InPrivate) mode
+            // also keeps most of them off the disk. WebKitGTK's ephemeral mode can't be
+            // driven by WebDriver, so Linux uses the separate folder only.
+            let mut window = tauri::WebviewWindowBuilder::from_config(app.handle(), &config)?
+                .incognito(cfg!(windows));
             if let Some(dir) = webview_dir.clone() {
                 if let Err(e) = fsec::create_private_dir(&dir) {
                     log::warn!("could not prepare the web view folder: {e}");

@@ -1,0 +1,2 @@
+# Fixture bytes are test data: never normalise line endings.
+* -text

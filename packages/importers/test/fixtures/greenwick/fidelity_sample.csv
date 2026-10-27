@@ -1,0 +1,14 @@
+Brokerage
+"Run Date","Action","Symbol","Security Description","Security Type","Quantity","Price ($)","Commission ($)","Fees ($)","Accrued Interest ($)","Amount ($)","Cash Balance ($)","Settlement Date"
+"03/24/2026","YOU BOUGHT","AAPL","APPLE INC","Cash","100","171.50","0.00","0.02","","(17150.02)","50000.00","03/26/2026"
+"03/24/2026","YOU SOLD","AAPL","APPLE INC","Cash","100","174.75","0.00","0.03","","17474.97","67474.97","03/26/2026"
+"03/24/2026","YOU BOUGHT","TSLA","TESLA INC","Cash","50","179.20","0.00","0.01","","(8960.01)","58514.96","03/26/2026"
+"03/24/2026","YOU SOLD","TSLA","TESLA INC","Cash","50","176.80","0.00","0.02","","8839.98","67354.94","03/26/2026"
+"03/25/2026","YOU BOUGHT","NVDA","NVIDIA CORP","Cash","30","891.50","0.00","0.03","","(26745.03)","40609.91","03/27/2026"
+"03/25/2026","YOU SOLD","NVDA","NVIDIA CORP","Cash","30","897.20","0.00","0.04","","26915.96","67525.87","03/27/2026"
+"03/25/2026","YOU BOUGHT","META","META PLATFORMS INC CLASS A","Cash","40","505.30","0.00","0.02","","(20212.02)","47313.85","03/27/2026"
+"03/25/2026","YOU SOLD","META","META PLATFORMS INC CLASS A","Cash","40","510.60","0.00","0.03","","20423.97","67737.82","03/27/2026"
+"03/26/2026","DIVIDEND RECEIVED","AAPL","APPLE INC","Cash","","","","","","25.00","67762.82",""
+"03/26/2026","YOU BOUGHT","SPY","SPDR S&P 500 ETF TRUST","Cash","200","520.40","0.00","0.05","","(104080.05)","0.00","03/28/2026"
+"03/26/2026","YOU SOLD","SPY","SPDR S&P 500 ETF TRUST","Cash","200","521.90","0.00","0.06","","104379.94","104379.94","03/28/2026"
+The data and information in this spreadsheet is provided by Fidelity for informational purposes only.

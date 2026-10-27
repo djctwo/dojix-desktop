@@ -47,3 +47,19 @@ export function decodeTradeFile(bytes: Uint8Array): DecodedText {
     return { encoding: "windows-1252", hadBom: false, text: normaliseLineEndings(text) };
   }
 }
+
+/**
+ * The Mac apps' own decoding, for `swift` compat: strict UTF-8 (a byte-order mark is kept as
+ * U+FEFF, which is why a BOM file's 32-column header is not found on the Mac), otherwise
+ * Windows-1252; only CRLF becomes LF (a lone CR stays inside the line). UTF-16 files therefore
+ * decode as Windows-1252 text full of NULs and import nothing, as on the Mac.
+ */
+export function decodeTradeFileMac(bytes: Uint8Array): DecodedText {
+  try {
+    const text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
+    return { encoding: "utf-8", hadBom: text.startsWith("\uFEFF"), text: text.replace(/\r\n/g, "\n") };
+  } catch {
+    const text = new TextDecoder("windows-1252").decode(bytes);
+    return { encoding: "windows-1252", hadBom: false, text: text.replace(/\r\n/g, "\n") };
+  }
+}

@@ -38,6 +38,12 @@ use crate::throttle::SystemClock;
 use crate::vault::{OsVault, SecretStore, UnavailableVault};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+/// The web view runs in private mode (WebView2 InPrivate, WebKitGTK ephemeral) in every
+/// build except Linux `e2e` builds: WebKitWebDriver can't open a session on an ephemeral
+/// WebKitGTK context. Release builds on both platforms are always private; `--self-test`
+/// reports this and the installer smoke test checks it.
+pub const PRIVATE_WEBVIEW: bool = !cfg!(all(target_os = "linux", feature = "e2e"));
+
 /// How often the idle timer and the daily snapshot are checked (SPEC 6.7).
 const TICK: Duration = Duration::from_secs(5);
 
@@ -312,11 +318,10 @@ pub fn run() {
                 .cloned()
                 .ok_or("no window configured")?;
             // SPEC 6.2: the web view's own files (caches, cookies, IndexedDB: plain SQLite)
-            // never live in the journal's data folder. On Windows, private (InPrivate) mode
-            // also keeps most of them off the disk. WebKitGTK's ephemeral mode can't be
-            // driven by WebDriver, so Linux uses the separate folder only.
+            // never live in the journal's data folder, and private mode keeps most of them
+            // off the disk entirely (see `PRIVATE_WEBVIEW`).
             let mut window = tauri::WebviewWindowBuilder::from_config(app.handle(), &config)?
-                .incognito(cfg!(windows));
+                .incognito(PRIVATE_WEBVIEW);
             if let Some(dir) = webview_dir.clone() {
                 if let Err(e) = fsec::create_private_dir(&dir) {
                     log::warn!("could not prepare the web view folder: {e}");
@@ -346,7 +351,8 @@ pub fn run() {
                 #[cfg(windows)]
                 match window.hwnd() {
                     Ok(hwnd) => {
-                        if let Err(e) = triggers::install_windows(hwnd.0 as isize, os_lock(&store)) {
+                        if let Err(e) = triggers::install_windows(hwnd.0 as isize, os_lock(&store))
+                        {
                             log::warn!("OS lock triggers unavailable: {e}");
                         }
                     }
@@ -436,7 +442,14 @@ pub fn run() {
 
 #[cfg(test)]
 mod tests {
-    use super::{merge_browser_args, TAURI_DEFAULT_BROWSER_ARGS};
+    use super::{merge_browser_args, PRIVATE_WEBVIEW, TAURI_DEFAULT_BROWSER_ARGS};
+
+    /// `cargo test` runs without the `e2e` feature, i.e. as a release build is configured.
+    #[cfg(not(feature = "e2e"))]
+    #[test]
+    fn builds_without_test_hooks_always_use_a_private_web_view() {
+        assert!(PRIVATE_WEBVIEW);
+    }
 
     #[test]
     fn merges_disable_features_and_keeps_the_driver_switches() {

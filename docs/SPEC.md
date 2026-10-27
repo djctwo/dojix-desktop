@@ -653,9 +653,12 @@ Contents:
 **The web view's own files are never in the data folder.** WebView2 and WebKitGTK keep
 caches, cookies and IndexedDB as plain SQLite databases, so the main window gets its own
 folder, `<cache dir>/<identifier>.webview` (`%LOCALAPPDATA%` on Windows, `~/.cache` on
-Linux; a sibling `<data-dir>.webview` with `--data-dir`). On Windows it also runs in
-private (InPrivate) mode, so most of that never reaches a disk; WebKitGTK's ephemeral mode
-can't be driven by WebDriver, so Linux relies on the separate folder. The e2e suite checks both the scratch and the
+Linux; a sibling `<data-dir>.webview` with `--data-dir`), and runs in private mode
+(WebView2 InPrivate, WebKitGTK ephemeral) so most of that never reaches a disk. The one
+exception is Linux `e2e` builds: WebKitWebDriver can't open a session on an ephemeral
+context, so those use the separate folder only. `--self-test` reports `webviewPrivate`, and
+the installer smoke tests require it to be true for every release build. The UI uses no web
+storage (local storage, IndexedDB), so private mode costs nothing. The e2e suite checks both the scratch and the
 default data folder for the SQLite magic. (Phase 6: the uninstaller's "Remove my journal
 data" must remove that folder too.)
 

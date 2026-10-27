@@ -1,0 +1,25 @@
+Date,Type,Action,Symbol,Instrument Type,Description,Value,Quantity,Average Price,Commissions,Fees,Multiplier,Root Symbol,Underlying Symbol,Expiration Date,Strike Price,Call or Put,Order #
+2026-06-02T15:15:00+0000,Trade,BUY_TO_OPEN,FIXB,Equity,Fictional fill 150 @ 106.87,-16030.50,150,106.87,-0.53,0,1,,FIXB,,,,0
+2026-06-02T21:03:00+0000,Trade,SELL_TO_CLOSE,FIXB,Equity,Fictional fill 150 @ 106.50,15975.00,150,106.50,-0.53,0,1,,FIXB,,,,0
+2026-06-03T16:53:26+0000,Trade,BUY_TO_OPEN,FIXD,Equity,Fictional fill 10 @ 84.29,-842.90,10,84.29,-0.00,0,1,,FIXD,,,,0
+2026-06-03T17:31:26+0000,Trade,SELL_TO_CLOSE,FIXD,Equity,Fictional fill 10 @ 83.51,835.10,10,83.51,-0.00,0,1,,FIXD,,,,0
+2026-06-05T16:13:46+0000,Trade,BUY_TO_OPEN,FIXE,Equity,Fictional fill 5 @ 9.48,-47.40,5,9.48,-0.26,0,1,,FIXE,,,,0
+2026-06-05T17:02:46+0000,Trade,SELL_TO_CLOSE,FIXE,Equity,Fictional fill 5 @ 9.35,46.75,5,9.35,-0.26,0,1,,FIXE,,,,0
+2026-06-11T13:10:40+0000,Trade,BUY_TO_OPEN,FIXB,Equity,Fictional fill 5 @ 124.35,-621.75,5,124.35,-1.12,0,1,,FIXB,,,,0
+2026-06-11T14:11:40+0000,Trade,SELL_TO_CLOSE,FIXB,Equity,Fictional fill 5 @ 126.57,632.85,5,126.57,-1.12,0,1,,FIXB,,,,0
+2026-06-12T15:51:22+0000,Trade,BUY_TO_OPEN,FIXC,Equity,Fictional fill 25 @ 24.25,-606.25,25,24.25,-1.28,0,1,,FIXC,,,,0
+2026-06-12T15:55:22+0000,Trade,SELL_TO_CLOSE,FIXC,Equity,Fictional fill 25 @ 24.65,616.25,25,24.65,-1.28,0,1,,FIXC,,,,0
+2026-06-12T16:54:14+0000,Trade,BUY_TO_OPEN,FIXA,Equity,Fictional fill 1 @ 43.03,-43.03,1,43.03,-0.56,0,1,,FIXA,,,,0
+2026-06-12T20:04:14+0000,Trade,SELL_TO_CLOSE,FIXA,Equity,Fictional fill 1 @ 43.12,43.12,1,43.12,-0.56,0,1,,FIXA,,,,0
+2026-06-19T14:01:58+0000,Trade,BUY_TO_OPEN,FIXA,Equity,Fictional fill 0.5 @ 44.85,-22.43,0.5,44.85,-1.08,0,1,,FIXA,,,,0
+2026-06-19T14:40:58+0000,Trade,SELL_TO_CLOSE,FIXA,Equity,Fictional fill 0.5 @ 44.43,22.21,0.5,44.43,-1.08,0,1,,FIXA,,,,0
+2026-06-22T13:10:41+0000,Trade,BUY_TO_OPEN,FIXC,Equity,Fictional fill 150 @ 21.55,-3232.50,150,21.55,-0.39,0,1,,FIXC,,,,0
+2026-06-22T13:18:41+0000,Trade,SELL_TO_CLOSE,FIXC,Equity,Fictional fill 150 @ 21.64,3246.00,150,21.64,-0.39,0,1,,FIXC,,,,0
+2026-06-23T14:01:20+0000,Trade,SELL_TO_CLOSE,FIXD,Equity,Fictional fill 1 @ 74.02,74.02,1,74.02,-0.94,0,1,,FIXD,,,,0
+2026-06-23T14:01:20+0000,Trade,BUY_TO_OPEN,FIXD,Equity,Fictional fill 1 @ 71.96,-71.96,1,71.96,-0.94,0,1,,FIXD,,,,0
+2026-06-23T15:03:57+0000,Trade,BUY_TO_OPEN,FIXC,Equity,Fictional fill 150 @ 21.50,-3225.00,150,21.50,-0.97,0,1,,FIXC,,,,0
+2026-06-23T15:03:57+0000,Trade,SELL_TO_CLOSE,FIXC,Equity,Fictional fill 150 @ 21.85,3277.50,150,21.85,-0.97,0,1,,FIXC,,,,0
+2026-06-23T19:05:06+0000,Trade,BUY_TO_OPEN,FIX.B,Equity,Fictional fill 0.5 @ 320.39,-160.19,0.5,320.39,-0.00,0,1,,FIX.B,,,,0
+2026-06-23T19:14:06+0000,Trade,SELL_TO_CLOSE,FIX.B,Equity,Fictional fill 0.5 @ 332.99,166.50,0.5,332.99,-0.00,0,1,,FIX.B,,,,0
+2026-06-25T19:14:48+0000,Trade,BUY_TO_OPEN,FIXA,Equity,Fictional fill 200 @ 45.77,-9154.00,200,45.77,-0.00,0,1,,FIXA,,,,0
+2026-06-25T19:45:48+0000,Trade,SELL_TO_CLOSE,FIXA,Equity,Fictional fill 200 @ 47.37,9474.00,200,47.37,-0.00,0,1,,FIXA,,,,0

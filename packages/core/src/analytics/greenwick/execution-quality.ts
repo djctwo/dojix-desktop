@@ -34,7 +34,7 @@ export interface ExecutionQualityModel {
   tradesWithSlippage: GreenwickTrade[];
   /** By stored ET hour, ascending. */
   hourlySlippage: HourSlippage[];
-  /** Highest average slippage (last of ties in hour order). */
+  /** Highest average slippage (first of ties in hour order). */
   worstHour: HourSlippage | null;
   /** Largest bar (chart scale), 1 when empty. */
   maxHourlySlippage: number;

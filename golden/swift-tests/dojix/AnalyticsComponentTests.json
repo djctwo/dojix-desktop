@@ -1,0 +1,1657 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/AnalyticsComponentTests.swift",
+  "helpers": {
+    "makeTrade": {
+      "line": 9,
+      "defaults": {
+        "ticket": 1,
+        "symbol": "GBPUSD",
+        "direction": "BUY",
+        "netProfit": null,
+        "lots": 0.1,
+        "rMultiple": 1.0,
+        "maePips": 5.0,
+        "mfePips": 10.0,
+        "session": "LONDON",
+        "dayOfWeek": "Mon",
+        "hour": 10,
+        "durationMin": 60,
+        "closeTime": {
+          "relative_seconds": 0
+        },
+        "postClose15m": 5.0,
+        "postClose30m": 10.0,
+        "biasAtEntry": "WITH",
+        "volRegime": "MED",
+        "openTime": {
+          "expr": "closeTime - durationMin*60 s"
+        },
+        "openPrice": 1.25,
+        "closePrice": 1.26,
+        "sl": 1.24,
+        "tp": 1.27,
+        "rangeSize": 40,
+        "sweepDepth": 10,
+        "usedFVG": false,
+        "hitBreakeven": false,
+        "scaledIn": false,
+        "magic": 0,
+        "comment": "",
+        "timeToMFEMin": 30,
+        "slDistPips": 20,
+        "slippagePips": 0.5
+      },
+      "notes": "netProfit is required. closeTime defaults to Date() per call (call order = ascending close order). Decimal fields given as Swift float literals (e.g. openPrice 1.26) are built through Double (Decimal(floatLiteral:)), so they may carry binary noise; no assertion here depends on them."
+    }
+  },
+  "cases": [
+    {
+      "id": "AnalyticsComponentTests.testRiskOfRuinWinRateCalculation",
+      "line": 56,
+      "subject": "RiskOfRuin.winRate",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 0,
+            "netProfit": 50
+          },
+          {
+            "ticket": 1,
+            "netProfit": 50
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50
+          },
+          {
+            "ticket": 3,
+            "netProfit": 50
+          },
+          {
+            "ticket": 4,
+            "netProfit": 50
+          },
+          {
+            "ticket": 5,
+            "netProfit": 50
+          },
+          {
+            "ticket": 6,
+            "netProfit": 50
+          },
+          {
+            "ticket": 7,
+            "netProfit": -30
+          },
+          {
+            "ticket": 8,
+            "netProfit": -30
+          },
+          {
+            "ticket": 9,
+            "netProfit": -30
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "winRate",
+          "op": "approx",
+          "value": 0.7,
+          "accuracy": 0.001,
+          "line": 64,
+          "derived": false
+        },
+        {
+          "path": "RiskOfRuin.rewardRiskRatio",
+          "op": "approx",
+          "value": 1.6666666666666667,
+          "accuracy": 1e-09,
+          "line": 56,
+          "derived": true
+        },
+        {
+          "path": "RiskOfRuin.riskOfRuin",
+          "op": "approx",
+          "value": 1.1951964277455126e-23,
+          "accuracy": 1e-09,
+          "line": 56,
+          "derived": true
+        },
+        {
+          "path": "RiskOfRuin.kellyFraction",
+          "op": "approx",
+          "value": 0.5199999999999999,
+          "accuracy": 1e-09,
+          "line": 56,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; win rate is a 0-1 fraction here (as in RiskOfRuin). Derived RiskOfRuin.* values are the component's private computed values for the same trades (Appendix A; riskOfRuin = base^20, about 1e-23)."
+    },
+    {
+      "id": "AnalyticsComponentTests.testRiskOfRuinRewardRiskRatio",
+      "line": 67,
+      "subject": "RiskOfRuin.rewardRiskRatio",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 0,
+            "netProfit": 50
+          },
+          {
+            "ticket": 1,
+            "netProfit": 50
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50
+          },
+          {
+            "ticket": 3,
+            "netProfit": 50
+          },
+          {
+            "ticket": 4,
+            "netProfit": 50
+          },
+          {
+            "ticket": 5,
+            "netProfit": -30
+          },
+          {
+            "ticket": 6,
+            "netProfit": -30
+          },
+          {
+            "ticket": 7,
+            "netProfit": -30
+          },
+          {
+            "ticket": 8,
+            "netProfit": -30
+          },
+          {
+            "ticket": 9,
+            "netProfit": -30
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "avgWin",
+          "op": "approx",
+          "value": 50,
+          "accuracy": 0.01,
+          "line": 79,
+          "derived": false
+        },
+        {
+          "path": "avgLoss",
+          "op": "approx",
+          "value": 30,
+          "accuracy": 0.01,
+          "line": 80,
+          "derived": false
+        },
+        {
+          "path": "rewardRiskRatio",
+          "op": "approx",
+          "value": 1.667,
+          "accuracy": 0.01,
+          "line": 81,
+          "derived": false
+        },
+        {
+          "path": "RiskOfRuin.kellyFraction",
+          "op": "approx",
+          "value": 0.2,
+          "accuracy": 1e-09,
+          "line": 67,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Win rate is exactly 50% here, so the real RiskOfRuin component returns riskOfRuin = 1.0 despite a positive edge (D-04); that value is deliberately not listed."
+    },
+    {
+      "id": "AnalyticsComponentTests.testKellyCriterion",
+      "line": 84,
+      "subject": "RiskOfRuin.kellyFraction",
+      "kind": "component",
+      "input": {
+        "w": 0.6,
+        "r": 1.5
+      },
+      "expect": [
+        {
+          "path": "kelly",
+          "op": "approx",
+          "value": 0.333,
+          "accuracy": 0.01,
+          "line": 90,
+          "derived": false
+        },
+        {
+          "path": "kelly",
+          "op": "approx",
+          "value": 0.3333333333333333,
+          "accuracy": 1e-09,
+          "line": 84,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; kelly = w - (1 - w) / r on plain numbers (no trades)."
+    },
+    {
+      "id": "AnalyticsComponentTests.testKellyCriterionNegativeEdge",
+      "line": 93,
+      "subject": "RiskOfRuin.kellyFraction",
+      "kind": "component",
+      "input": {
+        "w": 0.4,
+        "r": 1.0
+      },
+      "expect": [
+        {
+          "path": "kelly",
+          "op": "lt",
+          "value": 0,
+          "line": 98,
+          "derived": false
+        },
+        {
+          "path": "kelly",
+          "op": "approx",
+          "value": -0.19999999999999996,
+          "accuracy": 1e-09,
+          "line": 93,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Unclamped formula; the component reports max(0, kelly) = 0."
+    },
+    {
+      "id": "AnalyticsComponentTests.testConsistentLotSizes",
+      "line": 103,
+      "subject": "ConsistencyScore (size CV)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 0,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 1,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 3,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 4,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 5,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 6,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 7,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 8,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 9,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 10,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 11,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 12,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 13,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 14,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 15,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 16,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 17,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 18,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 19,
+            "netProfit": 50,
+            "lots": 0.1
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "cv",
+          "op": "approx",
+          "value": 0,
+          "accuracy": 0.001,
+          "line": 113,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; cv = sigma_pop / mean of lots (1.0 when mean is 0); ConsistencyScore's size sub-score is (1 - cv) x 100."
+    },
+    {
+      "id": "AnalyticsComponentTests.testInconsistentLotSizes",
+      "line": 116,
+      "subject": "ConsistencyScore (size CV)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 0,
+            "netProfit": 50,
+            "lots": 0.01
+          },
+          {
+            "ticket": 1,
+            "netProfit": 50,
+            "lots": 0.5
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50,
+            "lots": 0.1
+          },
+          {
+            "ticket": 3,
+            "netProfit": 50,
+            "lots": 1.0
+          },
+          {
+            "ticket": 4,
+            "netProfit": 50,
+            "lots": 0.05
+          },
+          {
+            "ticket": 5,
+            "netProfit": 50,
+            "lots": 0.8
+          },
+          {
+            "ticket": 6,
+            "netProfit": 50,
+            "lots": 0.02
+          },
+          {
+            "ticket": 7,
+            "netProfit": 50,
+            "lots": 0.3
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "cv",
+          "op": "gt",
+          "value": 0.5,
+          "line": 127,
+          "derived": false
+        },
+        {
+          "path": "cv",
+          "op": "approx",
+          "value": 1.031038416020357,
+          "accuracy": 1e-09,
+          "line": 116,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula"
+    },
+    {
+      "id": "AnalyticsComponentTests.testWinRateStability",
+      "line": 130,
+      "subject": "ConsistencyScore (win-rate windows)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 0,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 0
+            }
+          },
+          {
+            "ticket": 1,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 3600
+            }
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 7200
+            }
+          },
+          {
+            "ticket": 3,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 10800
+            }
+          },
+          {
+            "ticket": 4,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 14400
+            }
+          },
+          {
+            "ticket": 5,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 18000
+            }
+          },
+          {
+            "ticket": 6,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 21600
+            }
+          },
+          {
+            "ticket": 7,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 25200
+            }
+          },
+          {
+            "ticket": 8,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 28800
+            }
+          },
+          {
+            "ticket": 9,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 32400
+            }
+          },
+          {
+            "ticket": 10,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 36000
+            }
+          },
+          {
+            "ticket": 11,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 39600
+            }
+          },
+          {
+            "ticket": 12,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 43200
+            }
+          },
+          {
+            "ticket": 13,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 46800
+            }
+          },
+          {
+            "ticket": 14,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 50400
+            }
+          },
+          {
+            "ticket": 15,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 54000
+            }
+          },
+          {
+            "ticket": 16,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 57600
+            }
+          },
+          {
+            "ticket": 17,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 61200
+            }
+          },
+          {
+            "ticket": 18,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 64800
+            }
+          },
+          {
+            "ticket": 19,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 68400
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "cv",
+          "op": "approx",
+          "value": 0,
+          "accuracy": 0.001,
+          "line": 148,
+          "derived": false
+        },
+        {
+          "path": "windowSize",
+          "op": "eq",
+          "value": 5,
+          "line": 130,
+          "derived": true
+        },
+        {
+          "path": "windowRates.count",
+          "op": "eq",
+          "value": 16,
+          "line": 130,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Sliding windows of size max(5, n/4) over ascending close order; win rate per window as a 0-1 fraction; cv = sigma/mean (1 when mean = 0)."
+    },
+    {
+      "id": "AnalyticsComponentTests.testPerfectPositiveCorrelation",
+      "line": 153,
+      "subject": "PairCorrelation (Pearson)",
+      "kind": "component",
+      "input": {
+        "series1": {
+          "d1": 10.0,
+          "d2": 20.0,
+          "d3": 30.0,
+          "d4": 40.0,
+          "d5": 50.0
+        },
+        "series2": {
+          "d1": 10.0,
+          "d2": 20.0,
+          "d3": 30.0,
+          "d4": 40.0,
+          "d5": 50.0
+        }
+      },
+      "expect": [
+        {
+          "path": "corr",
+          "op": "approx",
+          "value": 1.0,
+          "accuracy": 0.001,
+          "line": 157,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Pearson helper defined in the test (line 496): needs >= 5 common keys, else 0. Key order comes from a Set, so the sums' order is unspecified."
+    },
+    {
+      "id": "AnalyticsComponentTests.testPerfectNegativeCorrelation",
+      "line": 160,
+      "subject": "PairCorrelation (Pearson)",
+      "kind": "component",
+      "input": {
+        "series1": {
+          "d1": 10.0,
+          "d2": 20.0,
+          "d3": 30.0,
+          "d4": 40.0,
+          "d5": 50.0
+        },
+        "series2": {
+          "d1": 50.0,
+          "d2": 40.0,
+          "d3": 30.0,
+          "d4": 20.0,
+          "d5": 10.0
+        }
+      },
+      "expect": [
+        {
+          "path": "corr",
+          "op": "approx",
+          "value": -1.0,
+          "accuracy": 0.001,
+          "line": 164,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Pearson helper defined in the test (line 496): needs >= 5 common keys, else 0. Key order comes from a Set, so the sums' order is unspecified."
+    },
+    {
+      "id": "AnalyticsComponentTests.testWeakCorrelation",
+      "line": 167,
+      "subject": "PairCorrelation (Pearson)",
+      "kind": "component",
+      "input": {
+        "series1": {
+          "d1": 10.0,
+          "d2": 20.0,
+          "d3": 30.0,
+          "d4": 40.0,
+          "d5": 50.0
+        },
+        "series2": {
+          "d1": 5.0,
+          "d2": 30.0,
+          "d3": 10.0,
+          "d4": 35.0,
+          "d5": 15.0
+        }
+      },
+      "expect": [
+        {
+          "path": "abs(corr)",
+          "op": "lt",
+          "value": 0.8,
+          "line": 172,
+          "derived": false
+        },
+        {
+          "path": "corr",
+          "op": "approx",
+          "value": 0.30542361089076303,
+          "accuracy": 1e-09,
+          "line": 167,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Pearson helper defined in the test (line 496): needs >= 5 common keys, else 0. Key order comes from a Set, so the sums' order is unspecified."
+    },
+    {
+      "id": "AnalyticsComponentTests.testCorrelationInsufficientData",
+      "line": 175,
+      "subject": "PairCorrelation (Pearson)",
+      "kind": "component",
+      "input": {
+        "series1": {
+          "d1": 10.0,
+          "d2": 20.0
+        },
+        "series2": {
+          "d1": 10.0,
+          "d2": 20.0
+        }
+      },
+      "expect": [
+        {
+          "path": "corr",
+          "op": "eq",
+          "value": 0,
+          "line": 180,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Pearson helper defined in the test (line 496): needs >= 5 common keys, else 0. Key order comes from a Set, so the sums' order is unspecified. PARITY TRAP: the app's PairCorrelation needs only >= 2 common days (Appendix A), so the real component gives 1.0 for this input; the 0 is the test helper's rule only."
+    },
+    {
+      "id": "AnalyticsComponentTests.testEarlyExitDetection",
+      "line": 185,
+      "subject": "PostCloseAnalysis.earlyExitPercent",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 0,
+            "netProfit": 50,
+            "postClose30m": 15
+          },
+          {
+            "ticket": 1,
+            "netProfit": 50,
+            "postClose30m": 15
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50,
+            "postClose30m": 15
+          },
+          {
+            "ticket": 3,
+            "netProfit": 50,
+            "postClose30m": 15
+          },
+          {
+            "ticket": 4,
+            "netProfit": 50,
+            "postClose30m": 15
+          },
+          {
+            "ticket": 5,
+            "netProfit": 50,
+            "postClose30m": 5
+          },
+          {
+            "ticket": 6,
+            "netProfit": 50,
+            "postClose30m": 5
+          },
+          {
+            "ticket": 7,
+            "netProfit": 50,
+            "postClose30m": 5
+          },
+          {
+            "ticket": 8,
+            "netProfit": 50,
+            "postClose30m": 5
+          },
+          {
+            "ticket": 9,
+            "netProfit": 50,
+            "postClose30m": 5
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "earlyExitPct",
+          "op": "approx",
+          "value": 50,
+          "accuracy": 0.01,
+          "line": 199,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; early exits = wins with postClose30m > 10, as % of wins (same rule as PostCloseAnalysis)."
+    },
+    {
+      "id": "AnalyticsComponentTests.testPostCloseContinuationAverage",
+      "line": 202,
+      "subject": "PostCloseAnalysis (averages)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 50,
+            "postClose15m": 10,
+            "postClose30m": 20
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50,
+            "postClose15m": 5,
+            "postClose30m": 15
+          },
+          {
+            "ticket": 3,
+            "netProfit": -30,
+            "postClose15m": 3,
+            "postClose30m": 8
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "avg15",
+          "op": "approx",
+          "value": 6.0,
+          "accuracy": 0.01,
+          "line": 212,
+          "derived": false
+        },
+        {
+          "path": "avg30",
+          "op": "approx",
+          "value": 14.333,
+          "accuracy": 0.01,
+          "line": 213,
+          "derived": false
+        },
+        {
+          "path": "avg30",
+          "op": "approx",
+          "value": 14.333333333333334,
+          "accuracy": 1e-09,
+          "line": 202,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula"
+    },
+    {
+      "id": "AnalyticsComponentTests.testDurationBucketAssignment",
+      "line": 218,
+      "subject": "DurationAnalysis (buckets)",
+      "kind": "component",
+      "input": {
+        "buckets": [
+          {
+            "label": "0-5m",
+            "min": 0,
+            "max": 5
+          },
+          {
+            "label": "5-15m",
+            "min": 6,
+            "max": 15
+          },
+          {
+            "label": "15-30m",
+            "min": 16,
+            "max": 30
+          },
+          {
+            "label": "30-60m",
+            "min": 31,
+            "max": 60
+          },
+          {
+            "label": "1-2h",
+            "min": 61,
+            "max": 120
+          },
+          {
+            "label": "2h+",
+            "min": 121,
+            "max": 999999
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "buckets[0].contains(3)",
+          "op": "true",
+          "line": 228,
+          "derived": false
+        },
+        {
+          "path": "buckets[1].contains(10)",
+          "op": "true",
+          "line": 229,
+          "derived": false
+        },
+        {
+          "path": "buckets[2].contains(25)",
+          "op": "true",
+          "line": 230,
+          "derived": false
+        },
+        {
+          "path": "buckets[3].contains(45)",
+          "op": "true",
+          "line": 231,
+          "derived": false
+        },
+        {
+          "path": "buckets[4].contains(90)",
+          "op": "true",
+          "line": 232,
+          "derived": false
+        },
+        {
+          "path": "buckets[5].contains(180)",
+          "op": "true",
+          "line": 233,
+          "derived": false
+        },
+        {
+          "path": "buckets[0].contains(6)",
+          "op": "false",
+          "line": 234,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; closed integer ranges (minutes) copied from DurationAnalysis; labels as in the app."
+    },
+    {
+      "id": "AnalyticsComponentTests.testMFEToMAERatio",
+      "line": 239,
+      "subject": "MAEMFEChart (ratio)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 50,
+            "maePips": 10,
+            "mfePips": 30
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50,
+            "maePips": 5,
+            "mfePips": 20
+          },
+          {
+            "ticket": 3,
+            "netProfit": -30,
+            "maePips": 15,
+            "mfePips": 10
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "avgMAE",
+          "op": "approx",
+          "value": 10.0,
+          "accuracy": 0.01,
+          "line": 250,
+          "derived": false
+        },
+        {
+          "path": "avgMFE",
+          "op": "approx",
+          "value": 20.0,
+          "accuracy": 0.01,
+          "line": 251,
+          "derived": false
+        },
+        {
+          "path": "ratio",
+          "op": "approx",
+          "value": 2.0,
+          "accuracy": 0.01,
+          "line": 252,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; ratio = avgMFE / avgMAE over all trades (the component also needs n >= 5)."
+    },
+    {
+      "id": "AnalyticsComponentTests.testMFEToMAERatioZeroMAE",
+      "line": 255,
+      "subject": "MAEMFEChart (ratio)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 50,
+            "maePips": 0,
+            "mfePips": 20
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "ratio",
+          "op": "eq",
+          "value": 0,
+          "line": 262,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; ratio is 0 when avgMAE is 0."
+    },
+    {
+      "id": "AnalyticsComponentTests.testDrawdownRecoveryPeriods",
+      "line": 267,
+      "subject": "DrawdownRecovery (periods)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 0,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 0
+            }
+          },
+          {
+            "ticket": 1,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 3600
+            }
+          },
+          {
+            "ticket": 2,
+            "netProfit": -100,
+            "closeTime": {
+              "relative_seconds": 7200
+            }
+          },
+          {
+            "ticket": 3,
+            "netProfit": -50,
+            "closeTime": {
+              "relative_seconds": 10800
+            }
+          },
+          {
+            "ticket": 4,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 14400
+            }
+          },
+          {
+            "ticket": 5,
+            "netProfit": 100,
+            "closeTime": {
+              "relative_seconds": 18000
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "drawdownPeriods.count",
+          "op": "eq",
+          "value": 1,
+          "line": 297,
+          "derived": false
+        },
+        {
+          "path": "drawdownPeriods[0]",
+          "op": "eq",
+          "value": 3,
+          "line": 298,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Counts consecutive trades with cumulative P&L below the running peak (peak starts at 0, a new high is cumulative >= peak). Not the DrawdownRecovery component's algorithm (that one needs n >= 20 and measures index spans, D-20)."
+    },
+    {
+      "id": "AnalyticsComponentTests.testPositionSizingCalculation",
+      "line": 303,
+      "subject": "PositionSizer",
+      "kind": "component",
+      "input": {
+        "balance": 10000.0,
+        "riskPct": 1.0,
+        "avgSL": 20.0,
+        "pipValuePerLot": 10.0
+      },
+      "expect": [
+        {
+          "path": "riskPerTrade",
+          "op": "approx",
+          "value": 100.0,
+          "accuracy": 0.01,
+          "line": 316,
+          "derived": false
+        },
+        {
+          "path": "lots",
+          "op": "approx",
+          "value": 0.5,
+          "accuracy": 0.01,
+          "line": 317,
+          "derived": false
+        },
+        {
+          "path": "PositionSizer.suggestedLots",
+          "op": "approx",
+          "value": 0.5,
+          "accuracy": 1e-09,
+          "line": 303,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; lots = balance x riskPct/100 / (avgSL x pipValuePerLot). Derived PositionSizer.suggestedLots applies the component's rounding: round-half-away(risk / (avgSL x 10) x 100) / 100."
+    },
+    {
+      "id": "AnalyticsComponentTests.testPositionSizingSmallAccount",
+      "line": 320,
+      "subject": "PositionSizer",
+      "kind": "component",
+      "input": {
+        "balance": 1000.0,
+        "riskPct": 2.0,
+        "avgSL": 30.0,
+        "pipValuePerLot": 10.0
+      },
+      "expect": [
+        {
+          "path": "riskPerTrade",
+          "op": "approx",
+          "value": 20.0,
+          "accuracy": 0.01,
+          "line": 331,
+          "derived": false
+        },
+        {
+          "path": "lots",
+          "op": "approx",
+          "value": 0.067,
+          "accuracy": 0.01,
+          "line": 332,
+          "derived": false
+        },
+        {
+          "path": "lots",
+          "op": "approx",
+          "value": 0.06666666666666667,
+          "accuracy": 1e-09,
+          "line": 320,
+          "derived": true
+        },
+        {
+          "path": "PositionSizer.suggestedLots",
+          "op": "approx",
+          "value": 0.07,
+          "accuracy": 1e-09,
+          "line": 320,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Unrounded lots = 0.0667; the component rounds to 0.01 lots half away from zero (0.07)."
+    },
+    {
+      "id": "AnalyticsComponentTests.testExpectancyProjection",
+      "line": 337,
+      "subject": "ExpectancyCurve (projection)",
+      "kind": "component",
+      "input": {
+        "expectancy": 15.0,
+        "tradeCount": 50
+      },
+      "expect": [
+        {
+          "path": "projected",
+          "op": "approx",
+          "value": 750.0,
+          "accuracy": 0.01,
+          "line": 342,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; projected = expectancy x tradeCount."
+    },
+    {
+      "id": "AnalyticsComponentTests.testGrowthProjectionWeekly",
+      "line": 345,
+      "subject": "GrowthProjection",
+      "kind": "component",
+      "input": {
+        "tradesPerWeek": 5.0,
+        "expectancy": 15.0,
+        "weeks": 24
+      },
+      "expect": [
+        {
+          "path": "projected",
+          "op": "approx",
+          "value": 1800.0,
+          "accuracy": 0.01,
+          "line": 352,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; expected = tradesPerWeek x expectancy x weeks."
+    },
+    {
+      "id": "AnalyticsComponentTests.testSequenceTransitionAfterWin",
+      "line": 410,
+      "subject": "SequenceAnalysis (transitions)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 0,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 0
+            }
+          },
+          {
+            "ticket": 1,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 3600
+            }
+          },
+          {
+            "ticket": 2,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 7200
+            }
+          },
+          {
+            "ticket": 3,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 10800
+            }
+          },
+          {
+            "ticket": 4,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 14400
+            }
+          },
+          {
+            "ticket": 5,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 18000
+            }
+          },
+          {
+            "ticket": 6,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 21600
+            }
+          },
+          {
+            "ticket": 7,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 25200
+            }
+          },
+          {
+            "ticket": 8,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 28800
+            }
+          },
+          {
+            "ticket": 9,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 32400
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "ww + wl",
+          "op": "eq",
+          "value": 6,
+          "line": 429,
+          "derived": false
+        },
+        {
+          "path": "ww",
+          "op": "eq",
+          "value": 3,
+          "line": 410,
+          "derived": true
+        },
+        {
+          "path": "wl",
+          "op": "eq",
+          "value": 3,
+          "line": 410,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Ascending close order; a transition i-1 -> i counts when trade i-1 is a win (the component also needs n >= 20)."
+    },
+    {
+      "id": "AnalyticsComponentTests.testSequenceTransitionAfterLoss",
+      "line": 432,
+      "subject": "SequenceAnalysis (transitions)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 0,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 0
+            }
+          },
+          {
+            "ticket": 1,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 3600
+            }
+          },
+          {
+            "ticket": 2,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 7200
+            }
+          },
+          {
+            "ticket": 3,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 10800
+            }
+          },
+          {
+            "ticket": 4,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 14400
+            }
+          },
+          {
+            "ticket": 5,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 18000
+            }
+          },
+          {
+            "ticket": 6,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 21600
+            }
+          },
+          {
+            "ticket": 7,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 25200
+            }
+          },
+          {
+            "ticket": 8,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 28800
+            }
+          },
+          {
+            "ticket": 9,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 32400
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "ll",
+          "op": "eq",
+          "value": 9,
+          "line": 444,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; A non-win (loss or breakeven) followed by a non-win counts as LL."
+    },
+    {
+      "id": "AnalyticsComponentTests.testDirectionalSplit",
+      "line": 449,
+      "subject": "DirectionalEdge (P&L by direction)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 0,
+            "direction": "BUY",
+            "netProfit": 50
+          },
+          {
+            "ticket": 1,
+            "direction": "BUY",
+            "netProfit": 50
+          },
+          {
+            "ticket": 2,
+            "direction": "BUY",
+            "netProfit": 50
+          },
+          {
+            "ticket": 3,
+            "direction": "BUY",
+            "netProfit": 50
+          },
+          {
+            "ticket": 4,
+            "direction": "BUY",
+            "netProfit": 50
+          },
+          {
+            "ticket": 5,
+            "direction": "SELL",
+            "netProfit": -20
+          },
+          {
+            "ticket": 6,
+            "direction": "SELL",
+            "netProfit": -20
+          },
+          {
+            "ticket": 7,
+            "direction": "SELL",
+            "netProfit": -20
+          },
+          {
+            "ticket": 8,
+            "direction": "SELL",
+            "netProfit": -20
+          },
+          {
+            "ticket": 9,
+            "direction": "SELL",
+            "netProfit": -20
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "buyPnL",
+          "op": "approx",
+          "value": 250,
+          "accuracy": 0.01,
+          "line": 463,
+          "derived": false
+        },
+        {
+          "path": "sellPnL",
+          "op": "approx",
+          "value": -100,
+          "accuracy": 0.01,
+          "line": 464,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula"
+    },
+    {
+      "id": "AnalyticsComponentTests.testAvgSlippageCalculation",
+      "line": 469,
+      "subject": "SlippageAnalysis (average)",
+      "kind": "component",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 50
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50
+          },
+          {
+            "ticket": 3,
+            "netProfit": -30
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "avg",
+          "op": "approx",
+          "value": 0.5,
+          "accuracy": 0.01,
+          "line": 478,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; Mean slippagePips over all trades (helper default 0.5). The component averages only trades with slippage > 0 (same result here)."
+    },
+    {
+      "id": "AnalyticsComponentTests.testBenchmarkWinRateComparison",
+      "line": 483,
+      "subject": "BenchmarkComparison (status band)",
+      "kind": "component",
+      "input": {
+        "winRate": 60.0,
+        "benchmark": 45.0
+      },
+      "expect": [
+        {
+          "path": "isAbove",
+          "op": "true",
+          "line": 491,
+          "derived": false
+        },
+        {
+          "path": "threshold",
+          "op": "approx",
+          "value": 4.5,
+          "accuracy": 1e-09,
+          "line": 483,
+          "derived": true
+        },
+        {
+          "path": "diff",
+          "op": "eq",
+          "value": 15.0,
+          "line": 483,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "test re-implements formula; above when winRate - benchmark > benchmark x 0.1 (the +/-10% status band)."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "AnalyticsComponentTests.testPDFExporterCreatesData",
+      "line": 357,
+      "reason": "PDF export: only asserts the PDF file has more than 100 bytes (rendering, not math)."
+    },
+    {
+      "id": "AnalyticsComponentTests.testDashboardPDFExport",
+      "line": 374,
+      "reason": "PDF export: only asserts the PDF file has more than 100 bytes (rendering, not math)."
+    }
+  ]
+}

@@ -32,6 +32,8 @@ here reproduces Swift and says which Swift line it matches.
    Greenwick: ET). Use `ctx.localCalendar` only where the Mac uses `Calendar.current` in
    Greenwick (PeriodComparison, GrowthProjection, EventImpactProfiler day span). Use `ctx.now`,
    never `Date.now()`, and `ctx.rng`, never `Math.random()`.
+   Text the Mac formats with `Locale.current` (currency through `asCurrency`, `DateFormatter`
+   month names through `monthAbbreviation`) takes `ctx.locale`; never hard-code a locale.
 4. For brand-shared components use the neutral accessors (`quantity`, `maeOf`, `mfeOf`,
    `slDist`, `slippage`, `sessionLabel`, `dayLabel`).
 5. Unknown MAE/MFE: `maeOf(t, ctx.compat)` returns 0 in `swift` compat (the Mac) and `null` in
@@ -52,7 +54,7 @@ here reproduces Swift and says which Swift line it matches.
 | `String(format: "%.2f")` | exact binary value, ties to even, "-0.00", "nan"/"inf" | `toFixed` ties up, "0.00", exponent at 1e21 | `formatFixed`, `swiftFormat` |
 | Currency formatter | ICU: shortest digits, then half-even (2.675 → "2.68") | — | `asCurrency` |
 | `.rounded()` | half away from zero | `Math.round` half up (−2.5 → −2) | `swiftRounded` |
-| `max(by:)` / `min(by:)` | max returns the **last** tie, min the **first** | — | `maxBy`, `minBy` |
+| `max(by:)` / `min(by:)` | both return the **first** tie (max replaces only on `result < e`; confirmed by Tier B) | — | `maxBy`, `minBy` |
 | `max(x, y)` / `[Double].max()` with NaN | NaN handled asymmetrically | `Math.max` returns NaN | `swiftMax`, `seqMax` |
 | Sort | stable | stable (ES2019), but needs a 3-way comparator | `stableSorted(items, less)` |
 | Dictionary order | random per process | — | `groupByFirstAppearance` (desktop tie-break) |
@@ -78,6 +80,15 @@ few ulps, well inside the 1e-9 tolerance.
 `pnpm --filter @dojix-desktop/core test` runs Vitest with v8 coverage (thresholds: 90 % lines,
 statements and functions, 85 % branches). Swift unit tests that cover the same behaviour are
 ported and cite their file. `properties.test.ts` runs fast-check over hostile input.
-`parity/parity.test.ts` compares every `golden/reference/**` value it can resolve; it skips
-with a reason until Phase 0 commits reference files and fixture inputs
-(`golden/fixtures/<brand>/<fixture>.trades.json` = `{ "trades": StoredTrade[] }`).
+`parity/parity.test.ts` is the parity gate (golden/README.md "Using the references"):
+
+- input `golden/fixtures/<brand>/<fixture>.trades.json` (the Mac's stored journal);
+- context from the reference itself (`referenceContext`: "now", zone, locale, first weekday,
+  minimum days in the first week), `compat: "swift"`;
+- SPEC §10.1 equality (`compareParity`, 1e-9 relative for doubles, exact otherwise);
+- the reference's `nondeterministic` paths are compared as multisets and only warn (a test
+  annotation); `skipped` values are not compared; F8 (manifest `compare: false`) never is;
+- the same values in `fixed` compat may differ from the Mac only where `golden/divergences.yaml`
+  covers the path;
+- `import.parsed` / `import.journal` and `TicketKeyCounter` are compared by
+  packages/importers/src/golden.test.ts; the F9 scale sets have no stored journal to compare.

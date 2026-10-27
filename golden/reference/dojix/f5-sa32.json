@@ -1,0 +1,6157 @@
+{
+ "schema": 1,
+ "brand": "dojix",
+ "fixture": "dojix/f5-sa32",
+ "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+ "xcode": "Xcode 16.4",
+ "swift": "6.1+",
+ "tz": "GMT",
+ "locale": "en_US_POSIX",
+ "firstWeekday": 1,
+ "minimumDaysInFirstWeek": 1,
+ "import": {
+  "kind": "file",
+  "saDirect": {
+   "count": 12
+  },
+  "detect": {
+   "headers": [
+    "Ticket",
+    "Symbol",
+    "Direction",
+    "Lots",
+    "OpenTime",
+    "CloseTime",
+    "DurationMin",
+    "OpenPrice",
+    "ClosePrice",
+    "SL",
+    "TP",
+    "NetProfit",
+    "MAE_Pips",
+    "MFE_Pips",
+    "RMultiple",
+    "Session",
+    "DayOfWeek",
+    "Hour",
+    "RangeSize",
+    "SweepDepth",
+    "UsedFVG",
+    "VolRegime",
+    "HitBreakeven",
+    "ScaledIn",
+    "Magic",
+    "Comment",
+    "TimeToMFE_Min",
+    "SLDist_Pips",
+    "Slippage_Pips",
+    "PostClose15m",
+    "PostClose30m",
+    "BiasAtEntry"
+   ],
+   "mapping": null,
+   "platform": "StrategyAnalytics (MT5)",
+   "sampleRows": [
+    [
+     "51000114",
+     "AUDUSD",
+     "BUY",
+     "1.5",
+     "2026.06.01 20:34:50",
+     "2026.06.01 21:48:37",
+     "73",
+     "0.66242",
+     "0.66377",
+     "0.66075",
+     "0.66576",
+     "203.09",
+     "1.3",
+     "16.2",
+     "0.81",
+     "NY",
+     "Mon",
+     "20",
+     "32.5",
+     "0.9",
+     "NO",
+     "HIGH",
+     "NO",
+     "NO",
+     "7001",
+     "fictional",
+     "72",
+     "16.7",
+     "0.7",
+     "5.8",
+     "7.9",
+     "WITH"
+    ],
+    [
+     "51000123",
+     "EURUSD",
+     "SELL",
+     "0.01",
+     "2026.06.02 15:19:39",
+     "2026.06.02 15:50:43",
+     "31",
+     "1.06928",
+     "1.06574",
+     "1.07286",
+     "1.06212",
+     "3.53",
+     "9.9",
+     "44.4",
+     "0.99",
+     "NY_OVERLAP",
+     "Tue",
+     "15",
+     "33.8",
+     "2.6",
+     "NO",
+     "MED",
+     "NO",
+     "NO",
+     "7001",
+     "fictional",
+     "7",
+     "35.8",
+     "0.3",
+     "-1",
+     "13.3",
+     "NEUTRAL"
+    ],
+    [
+     "51000001",
+     "AUDUSD",
+     "BUY",
+     "0.01",
+     "2026.06.02 09:43:32",
+     "2026.06.02 21:47:08",
+     "723",
+     "0.67035",
+     "0.67995",
+     "0.66772",
+     "0.67561",
+     "9.59",
+     "1",
+     "119.2",
+     "3.65",
+     "LONDON",
+     "Tue",
+     "9",
+     "10.8",
+     "1.2",
+     "NO",
+     "HIGH",
+     "NO",
+     "NO",
+     "7004",
+     "fictional",
+     "435",
+     "26.3",
+     "0.1",
+     "-0.2",
+     "8.9",
+     "AGAINST"
+    ],
+    [
+     "51000094",
+     "EURUSD",
+     "SELL",
+     "3",
+     "2026.06.09 10:40:35",
+     "2026.06.09 11:15:00",
+     "34",
+     "1.08372",
+     "1.08194",
+     "1.08631",
+     "1.07854",
+     "536.16",
+     "12.1",
+     "29.7",
+     "0.69",
+     "LONDON",
+     "Tue",
+     "10",
+     "11.9",
+     "5.8",
+     "NO",
+     "MED",
+     "NO",
+     "NO",
+     "7001",
+     "fictional",
+     "27",
+     "25.9",
+     "1.8",
+     "10.1",
+     "-4.9",
+     "AGAINST"
+    ],
+    [
+     "51000097",
+     "GBPUSD",
+     "BUY",
+     "1",
+     "2026.06.09 11:08:34",
+     "2026.06.09 11:48:03",
+     "39",
+     "1.25524",
+     "1.25246",
+     "1.25246",
+     "1.26080",
+     "-278.20",
+     "38.1",
+     "5",
+     "-1",
+     "LONDON",
+     "Tue",
+     "11",
+     "38.8",
+     "3.9",
+     "NO",
+     "MED",
+     "NO",
+     "NO",
+     "7004",
+     "fictional",
+     "34",
+     "27.8",
+     "2.1",
+     "3.7",
+     "-8.1",
+     "WITH"
+    ]
+   ]
+  },
+  "route": "sa32 (detected)",
+  "parsedCount": 12,
+  "parsed": [
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "0.66377",
+    "closeTime": "2026-06-01T21:48:37.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "AUDUSD|BUY|1.50000000|1780346090.0|1780350517.0|0.66242|0.66377|203.09",
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 73,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 20,
+    "id": null,
+    "lots": 1.5,
+    "maePips": 1.3,
+    "magic": 7001,
+    "mfePips": 16.2,
+    "netProfit": "203.09",
+    "notes": "",
+    "openPrice": "0.66242",
+    "openTime": "2026-06-01T20:34:50.000Z",
+    "postClose15m": 5.8,
+    "postClose30m": 7.9,
+    "rMultiple": 0.81,
+    "rangeSize": 32.5,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY",
+    "sl": "0.66075",
+    "slDistPips": 16.7,
+    "slippagePips": 0.7,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 0.9,
+    "symbol": "AUDUSD",
+    "tags": "",
+    "ticket": "51000114",
+    "timeToMFEMin": 72,
+    "tp": "0.66576",
+    "usedFVG": false,
+    "volRegime": "HIGH"
+   },
+   {
+    "biasAtEntry": "NEUTRAL",
+    "checklistData": "",
+    "closePrice": "1.06574",
+    "closeTime": "2026-06-02T15:50:43.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURUSD|SELL|0.01000000|1780413579.0|1780415443.0|1.06928|1.06574|3.53",
+    "dayOfWeek": "Tue",
+    "direction": "SELL",
+    "durationMin": 31,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 15,
+    "id": null,
+    "lots": 0.01,
+    "maePips": 9.9,
+    "magic": 7001,
+    "mfePips": 44.4,
+    "netProfit": "3.53",
+    "notes": "",
+    "openPrice": "1.06928",
+    "openTime": "2026-06-02T15:19:39.000Z",
+    "postClose15m": -1,
+    "postClose30m": 13.3,
+    "rMultiple": 0.99,
+    "rangeSize": 33.8,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY_OVERLAP",
+    "sl": "1.07286",
+    "slDistPips": 35.8,
+    "slippagePips": 0.3,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 2.6,
+    "symbol": "EURUSD",
+    "tags": "",
+    "ticket": "51000123",
+    "timeToMFEMin": 7,
+    "tp": "1.06212",
+    "usedFVG": false,
+    "volRegime": "MED"
+   },
+   {
+    "biasAtEntry": "AGAINST",
+    "checklistData": "",
+    "closePrice": "0.67995",
+    "closeTime": "2026-06-02T21:47:08.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "AUDUSD|BUY|0.01000000|1780393412.0|1780436828.0|0.67035|0.67995|9.59",
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 723,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 9,
+    "id": null,
+    "lots": 0.01,
+    "maePips": 1,
+    "magic": 7004,
+    "mfePips": 119.2,
+    "netProfit": "9.59",
+    "notes": "",
+    "openPrice": "0.67035",
+    "openTime": "2026-06-02T09:43:32.000Z",
+    "postClose15m": -0.2,
+    "postClose30m": 8.9,
+    "rMultiple": 3.65,
+    "rangeSize": 10.8,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "LONDON",
+    "sl": "0.66772",
+    "slDistPips": 26.3,
+    "slippagePips": 0.1,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 1.2,
+    "symbol": "AUDUSD",
+    "tags": "",
+    "ticket": "51000001",
+    "timeToMFEMin": 435,
+    "tp": "0.67561",
+    "usedFVG": false,
+    "volRegime": "HIGH"
+   },
+   {
+    "biasAtEntry": "AGAINST",
+    "checklistData": "",
+    "closePrice": "1.08194",
+    "closeTime": "2026-06-09T11:15:00.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURUSD|SELL|3.00000000|1781001635.0|1781003700.0|1.08372|1.08194|536.16",
+    "dayOfWeek": "Tue",
+    "direction": "SELL",
+    "durationMin": 34,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 10,
+    "id": null,
+    "lots": 3,
+    "maePips": 12.1,
+    "magic": 7001,
+    "mfePips": 29.7,
+    "netProfit": "536.16",
+    "notes": "",
+    "openPrice": "1.08372",
+    "openTime": "2026-06-09T10:40:35.000Z",
+    "postClose15m": 10.1,
+    "postClose30m": -4.9,
+    "rMultiple": 0.69,
+    "rangeSize": 11.9,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "LONDON",
+    "sl": "1.08631",
+    "slDistPips": 25.9,
+    "slippagePips": 1.8,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 5.8,
+    "symbol": "EURUSD",
+    "tags": "",
+    "ticket": "51000094",
+    "timeToMFEMin": 27,
+    "tp": "1.07854",
+    "usedFVG": false,
+    "volRegime": "MED"
+   },
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "1.25246",
+    "closeTime": "2026-06-09T11:48:03.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "GBPUSD|BUY|1.00000000|1781003314.0|1781005683.0|1.25524|1.25246|-278.2",
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 39,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 11,
+    "id": null,
+    "lots": 1,
+    "maePips": 38.1,
+    "magic": 7004,
+    "mfePips": 5,
+    "netProfit": "-278.2",
+    "notes": "",
+    "openPrice": "1.25524",
+    "openTime": "2026-06-09T11:08:34.000Z",
+    "postClose15m": 3.7,
+    "postClose30m": -8.1,
+    "rMultiple": -1,
+    "rangeSize": 38.8,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "LONDON",
+    "sl": "1.25246",
+    "slDistPips": 27.8,
+    "slippagePips": 2.1,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 3.9,
+    "symbol": "GBPUSD",
+    "tags": "",
+    "ticket": "51000097",
+    "timeToMFEMin": 34,
+    "tp": "1.2608",
+    "usedFVG": false,
+    "volRegime": "MED"
+   },
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "1.08826",
+    "closeTime": "2026-06-15T21:31:48.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURUSD|BUY|1.50000000|1781552543.0|1781559108.0|1.09099|1.08826|-409.87",
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 109,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 19,
+    "id": null,
+    "lots": 1.5,
+    "maePips": 40.6,
+    "magic": 7002,
+    "mfePips": 1.3,
+    "netProfit": "-409.87",
+    "notes": "",
+    "openPrice": "1.09099",
+    "openTime": "2026-06-15T19:42:23.000Z",
+    "postClose15m": -7.1,
+    "postClose30m": -7.6,
+    "rMultiple": -1,
+    "rangeSize": 26.4,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY",
+    "sl": "1.08826",
+    "slDistPips": 27.3,
+    "slippagePips": 2,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 6.6,
+    "symbol": "EURUSD",
+    "tags": "",
+    "ticket": "51000170",
+    "timeToMFEMin": 15,
+    "tp": "1.09645",
+    "usedFVG": true,
+    "volRegime": "MED"
+   },
+   {
+    "biasAtEntry": "AGAINST",
+    "checklistData": "",
+    "closePrice": "0.66249",
+    "closeTime": "2026-06-16T06:59:40.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "AUDUSD|BUY|0.02000000|1781592176.0|1781593180.0|0.66627|0.66249|-7.58",
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 16,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 6,
+    "id": null,
+    "lots": 0.02,
+    "maePips": 49.4,
+    "magic": 7002,
+    "mfePips": 32.9,
+    "netProfit": "-7.58",
+    "notes": "",
+    "openPrice": "0.66627",
+    "openTime": "2026-06-16T06:42:56.000Z",
+    "postClose15m": 2.5,
+    "postClose30m": 14,
+    "rMultiple": -1.08,
+    "rangeSize": 50.7,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "ASIAN",
+    "sl": "0.66277",
+    "slDistPips": 35,
+    "slippagePips": 1.7,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 1.4,
+    "symbol": "AUDUSD",
+    "tags": "",
+    "ticket": "51000218",
+    "timeToMFEMin": 5,
+    "tp": "0.67327",
+    "usedFVG": true,
+    "volRegime": "LOW"
+   },
+   {
+    "biasAtEntry": "NEUTRAL",
+    "checklistData": "",
+    "closePrice": "151.864",
+    "closeTime": "2026-06-18T21:24:17.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "USDJPY|BUY|1.50000000|1781813827.0|1781817857.0|152.102|151.864|-236.11",
+    "dayOfWeek": "Thu",
+    "direction": "BUY",
+    "durationMin": 67,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 20,
+    "id": null,
+    "lots": 1.5,
+    "maePips": 24.1,
+    "magic": 7003,
+    "mfePips": 14.5,
+    "netProfit": "-236.11",
+    "notes": "",
+    "openPrice": "152.102",
+    "openTime": "2026-06-18T20:17:07.000Z",
+    "postClose15m": 11.1,
+    "postClose30m": -0.4,
+    "rMultiple": -0.93,
+    "rangeSize": 16.1,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY",
+    "sl": "151.846",
+    "slDistPips": 25.6,
+    "slippagePips": 0.6,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 6.3,
+    "symbol": "USDJPY",
+    "tags": "",
+    "ticket": "51000083",
+    "timeToMFEMin": 27,
+    "tp": "152.614",
+    "usedFVG": false,
+    "volRegime": "LOW"
+   },
+   {
+    "biasAtEntry": "AGAINST",
+    "checklistData": "",
+    "closePrice": "0.65737",
+    "closeTime": "2026-06-22T20:18:26.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "AUDUSD|BUY|0.20000000|1782153761.0|1782159506.0|0.65247|0.65737|97.91",
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 95,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 18,
+    "id": null,
+    "lots": 0.2,
+    "maePips": 2.9,
+    "magic": 7001,
+    "mfePips": 53.1,
+    "netProfit": "97.91",
+    "notes": "",
+    "openPrice": "0.65247",
+    "openTime": "2026-06-22T18:42:41.000Z",
+    "postClose15m": -0.4,
+    "postClose30m": 3.6,
+    "rMultiple": 3.14,
+    "rangeSize": 20.6,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY",
+    "sl": "0.65091",
+    "slDistPips": 15.6,
+    "slippagePips": 0.6,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 4.5,
+    "symbol": "AUDUSD",
+    "tags": "",
+    "ticket": "51000025",
+    "timeToMFEMin": 80,
+    "tp": "0.65559",
+    "usedFVG": false,
+    "volRegime": "HIGH"
+   },
+   {
+    "biasAtEntry": "NEUTRAL",
+    "checklistData": "",
+    "closePrice": "1.07804",
+    "closeTime": "2026-06-23T01:48:03.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURUSD|BUY|0.20000000|1782177023.0|1782179283.0|1.07409|1.07804|78.82",
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 37,
+    "emotion": "",
+    "hitBreakeven": true,
+    "hour": 1,
+    "id": null,
+    "lots": 0.2,
+    "maePips": 2.9,
+    "magic": 7001,
+    "mfePips": 53.5,
+    "netProfit": "78.82",
+    "notes": "",
+    "openPrice": "1.07409",
+    "openTime": "2026-06-23T01:10:23.000Z",
+    "postClose15m": 8.8,
+    "postClose30m": 9.3,
+    "rMultiple": 2.63,
+    "rangeSize": 44.4,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "ASIAN",
+    "sl": "1.07259",
+    "slDistPips": 15,
+    "slippagePips": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 3.4,
+    "symbol": "EURUSD",
+    "tags": "",
+    "ticket": "51000157",
+    "timeToMFEMin": 27,
+    "tp": "1.07709",
+    "usedFVG": true,
+    "volRegime": "LOW"
+   },
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "165.067",
+    "closeTime": "2026-06-24T12:45:26.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURJPY|BUY|0.25000000|1782251226.0|1782305126.0|165.067|165.067|0",
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 898,
+    "emotion": "",
+    "hitBreakeven": true,
+    "hour": 21,
+    "id": null,
+    "lots": 0.25,
+    "maePips": 10.1,
+    "magic": 7004,
+    "mfePips": 3.3,
+    "netProfit": "0",
+    "notes": "",
+    "openPrice": "165.067",
+    "openTime": "2026-06-23T21:47:06.000Z",
+    "postClose15m": 8.9,
+    "postClose30m": 11.4,
+    "rMultiple": 0,
+    "rangeSize": 67.3,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY",
+    "sl": "164.687",
+    "slDistPips": 38,
+    "slippagePips": 2,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 4.1,
+    "symbol": "EURJPY",
+    "tags": "",
+    "ticket": "51000065",
+    "timeToMFEMin": 552,
+    "tp": "165.827",
+    "usedFVG": false,
+    "volRegime": "HIGH"
+   },
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "1.25107",
+    "closeTime": "2026-06-26T00:34:21.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "GBPUSD|SELL|0.50000000|1782427830.0|1782434061.0|1.26014|1.25107|453.75",
+    "dayOfWeek": "Thu",
+    "direction": "SELL",
+    "durationMin": 103,
+    "emotion": "",
+    "hitBreakeven": true,
+    "hour": 22,
+    "id": null,
+    "lots": 0.5,
+    "maePips": 7.3,
+    "magic": 7002,
+    "mfePips": 93.9,
+    "netProfit": "453.75",
+    "notes": "",
+    "openPrice": "1.26014",
+    "openTime": "2026-06-25T22:50:30.000Z",
+    "postClose15m": 10.6,
+    "postClose30m": -4.8,
+    "rMultiple": 2.75,
+    "rangeSize": 48.5,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "LATE",
+    "sl": "1.26344",
+    "slDistPips": 33,
+    "slippagePips": 1.2,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 1.8,
+    "symbol": "GBPUSD",
+    "tags": "",
+    "ticket": "51000209",
+    "timeToMFEMin": 81,
+    "tp": "1.25354",
+    "usedFVG": false,
+    "volRegime": "HIGH"
+   }
+  ],
+  "inserted": 12,
+  "reimportInserted": 0,
+  "journalCount": 12,
+  "journal": [
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "1.25107",
+    "closeTime": "2026-06-26T00:34:21.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "GBPUSD|SELL|0.50000000|1782427830.0|1782434061.0|1.26014|1.25107|453.75",
+    "dayOfWeek": "Thu",
+    "direction": "SELL",
+    "durationMin": 103,
+    "emotion": "",
+    "hitBreakeven": true,
+    "hour": 22,
+    "id": 12,
+    "lots": 0.5,
+    "maePips": 7.3,
+    "magic": 7002,
+    "mfePips": 93.9,
+    "netProfit": "453.75",
+    "notes": "",
+    "openPrice": "1.26014",
+    "openTime": "2026-06-25T22:50:30.000Z",
+    "postClose15m": 10.6,
+    "postClose30m": -4.8,
+    "rMultiple": 2.75,
+    "rangeSize": 48.5,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "LATE",
+    "sl": "1.26344",
+    "slDistPips": 33,
+    "slippagePips": 1.2,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 1.8,
+    "symbol": "GBPUSD",
+    "tags": "",
+    "ticket": "51000209",
+    "timeToMFEMin": 81,
+    "tp": "1.25354",
+    "usedFVG": false,
+    "volRegime": "HIGH"
+   },
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "165.067",
+    "closeTime": "2026-06-24T12:45:26.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURJPY|BUY|0.25000000|1782251226.0|1782305126.0|165.067|165.067|0",
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 898,
+    "emotion": "",
+    "hitBreakeven": true,
+    "hour": 21,
+    "id": 11,
+    "lots": 0.25,
+    "maePips": 10.1,
+    "magic": 7004,
+    "mfePips": 3.3,
+    "netProfit": "0",
+    "notes": "",
+    "openPrice": "165.067",
+    "openTime": "2026-06-23T21:47:06.000Z",
+    "postClose15m": 8.9,
+    "postClose30m": 11.4,
+    "rMultiple": 0,
+    "rangeSize": 67.3,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY",
+    "sl": "164.687",
+    "slDistPips": 38,
+    "slippagePips": 2,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 4.1,
+    "symbol": "EURJPY",
+    "tags": "",
+    "ticket": "51000065",
+    "timeToMFEMin": 552,
+    "tp": "165.827",
+    "usedFVG": false,
+    "volRegime": "HIGH"
+   },
+   {
+    "biasAtEntry": "NEUTRAL",
+    "checklistData": "",
+    "closePrice": "1.07804",
+    "closeTime": "2026-06-23T01:48:03.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURUSD|BUY|0.20000000|1782177023.0|1782179283.0|1.07409|1.07804|78.82",
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 37,
+    "emotion": "",
+    "hitBreakeven": true,
+    "hour": 1,
+    "id": 10,
+    "lots": 0.2,
+    "maePips": 2.9,
+    "magic": 7001,
+    "mfePips": 53.5,
+    "netProfit": "78.82",
+    "notes": "",
+    "openPrice": "1.07409",
+    "openTime": "2026-06-23T01:10:23.000Z",
+    "postClose15m": 8.8,
+    "postClose30m": 9.3,
+    "rMultiple": 2.63,
+    "rangeSize": 44.4,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "ASIAN",
+    "sl": "1.07259",
+    "slDistPips": 15,
+    "slippagePips": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 3.4,
+    "symbol": "EURUSD",
+    "tags": "",
+    "ticket": "51000157",
+    "timeToMFEMin": 27,
+    "tp": "1.07709",
+    "usedFVG": true,
+    "volRegime": "LOW"
+   },
+   {
+    "biasAtEntry": "AGAINST",
+    "checklistData": "",
+    "closePrice": "0.65737",
+    "closeTime": "2026-06-22T20:18:26.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "AUDUSD|BUY|0.20000000|1782153761.0|1782159506.0|0.65247|0.65737|97.91",
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 95,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 18,
+    "id": 9,
+    "lots": 0.2,
+    "maePips": 2.9,
+    "magic": 7001,
+    "mfePips": 53.1,
+    "netProfit": "97.91",
+    "notes": "",
+    "openPrice": "0.65247",
+    "openTime": "2026-06-22T18:42:41.000Z",
+    "postClose15m": -0.4,
+    "postClose30m": 3.6,
+    "rMultiple": 3.14,
+    "rangeSize": 20.6,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY",
+    "sl": "0.65091",
+    "slDistPips": 15.6,
+    "slippagePips": 0.6,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 4.5,
+    "symbol": "AUDUSD",
+    "tags": "",
+    "ticket": "51000025",
+    "timeToMFEMin": 80,
+    "tp": "0.65559",
+    "usedFVG": false,
+    "volRegime": "HIGH"
+   },
+   {
+    "biasAtEntry": "NEUTRAL",
+    "checklistData": "",
+    "closePrice": "151.864",
+    "closeTime": "2026-06-18T21:24:17.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "USDJPY|BUY|1.50000000|1781813827.0|1781817857.0|152.102|151.864|-236.11",
+    "dayOfWeek": "Thu",
+    "direction": "BUY",
+    "durationMin": 67,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 20,
+    "id": 8,
+    "lots": 1.5,
+    "maePips": 24.1,
+    "magic": 7003,
+    "mfePips": 14.5,
+    "netProfit": "-236.11",
+    "notes": "",
+    "openPrice": "152.102",
+    "openTime": "2026-06-18T20:17:07.000Z",
+    "postClose15m": 11.1,
+    "postClose30m": -0.4,
+    "rMultiple": -0.93,
+    "rangeSize": 16.1,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY",
+    "sl": "151.846",
+    "slDistPips": 25.6,
+    "slippagePips": 0.6,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 6.3,
+    "symbol": "USDJPY",
+    "tags": "",
+    "ticket": "51000083",
+    "timeToMFEMin": 27,
+    "tp": "152.614",
+    "usedFVG": false,
+    "volRegime": "LOW"
+   },
+   {
+    "biasAtEntry": "AGAINST",
+    "checklistData": "",
+    "closePrice": "0.66249",
+    "closeTime": "2026-06-16T06:59:40.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "AUDUSD|BUY|0.02000000|1781592176.0|1781593180.0|0.66627|0.66249|-7.58",
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 16,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 6,
+    "id": 7,
+    "lots": 0.02,
+    "maePips": 49.4,
+    "magic": 7002,
+    "mfePips": 32.9,
+    "netProfit": "-7.58",
+    "notes": "",
+    "openPrice": "0.66627",
+    "openTime": "2026-06-16T06:42:56.000Z",
+    "postClose15m": 2.5,
+    "postClose30m": 14,
+    "rMultiple": -1.08,
+    "rangeSize": 50.7,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "ASIAN",
+    "sl": "0.66277",
+    "slDistPips": 35,
+    "slippagePips": 1.7,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 1.4,
+    "symbol": "AUDUSD",
+    "tags": "",
+    "ticket": "51000218",
+    "timeToMFEMin": 5,
+    "tp": "0.67327",
+    "usedFVG": true,
+    "volRegime": "LOW"
+   },
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "1.08826",
+    "closeTime": "2026-06-15T21:31:48.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURUSD|BUY|1.50000000|1781552543.0|1781559108.0|1.09099|1.08826|-409.87",
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 109,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 19,
+    "id": 6,
+    "lots": 1.5,
+    "maePips": 40.6,
+    "magic": 7002,
+    "mfePips": 1.3,
+    "netProfit": "-409.87",
+    "notes": "",
+    "openPrice": "1.09099",
+    "openTime": "2026-06-15T19:42:23.000Z",
+    "postClose15m": -7.1,
+    "postClose30m": -7.6,
+    "rMultiple": -1,
+    "rangeSize": 26.4,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY",
+    "sl": "1.08826",
+    "slDistPips": 27.3,
+    "slippagePips": 2,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 6.6,
+    "symbol": "EURUSD",
+    "tags": "",
+    "ticket": "51000170",
+    "timeToMFEMin": 15,
+    "tp": "1.09645",
+    "usedFVG": true,
+    "volRegime": "MED"
+   },
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "1.25246",
+    "closeTime": "2026-06-09T11:48:03.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "GBPUSD|BUY|1.00000000|1781003314.0|1781005683.0|1.25524|1.25246|-278.2",
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 39,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 11,
+    "id": 5,
+    "lots": 1,
+    "maePips": 38.1,
+    "magic": 7004,
+    "mfePips": 5,
+    "netProfit": "-278.2",
+    "notes": "",
+    "openPrice": "1.25524",
+    "openTime": "2026-06-09T11:08:34.000Z",
+    "postClose15m": 3.7,
+    "postClose30m": -8.1,
+    "rMultiple": -1,
+    "rangeSize": 38.8,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "LONDON",
+    "sl": "1.25246",
+    "slDistPips": 27.8,
+    "slippagePips": 2.1,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 3.9,
+    "symbol": "GBPUSD",
+    "tags": "",
+    "ticket": "51000097",
+    "timeToMFEMin": 34,
+    "tp": "1.2608",
+    "usedFVG": false,
+    "volRegime": "MED"
+   },
+   {
+    "biasAtEntry": "AGAINST",
+    "checklistData": "",
+    "closePrice": "1.08194",
+    "closeTime": "2026-06-09T11:15:00.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURUSD|SELL|3.00000000|1781001635.0|1781003700.0|1.08372|1.08194|536.16",
+    "dayOfWeek": "Tue",
+    "direction": "SELL",
+    "durationMin": 34,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 10,
+    "id": 4,
+    "lots": 3,
+    "maePips": 12.1,
+    "magic": 7001,
+    "mfePips": 29.7,
+    "netProfit": "536.16",
+    "notes": "",
+    "openPrice": "1.08372",
+    "openTime": "2026-06-09T10:40:35.000Z",
+    "postClose15m": 10.1,
+    "postClose30m": -4.9,
+    "rMultiple": 0.69,
+    "rangeSize": 11.9,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "LONDON",
+    "sl": "1.08631",
+    "slDistPips": 25.9,
+    "slippagePips": 1.8,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 5.8,
+    "symbol": "EURUSD",
+    "tags": "",
+    "ticket": "51000094",
+    "timeToMFEMin": 27,
+    "tp": "1.07854",
+    "usedFVG": false,
+    "volRegime": "MED"
+   },
+   {
+    "biasAtEntry": "AGAINST",
+    "checklistData": "",
+    "closePrice": "0.67995",
+    "closeTime": "2026-06-02T21:47:08.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "AUDUSD|BUY|0.01000000|1780393412.0|1780436828.0|0.67035|0.67995|9.59",
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 723,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 9,
+    "id": 3,
+    "lots": 0.01,
+    "maePips": 1,
+    "magic": 7004,
+    "mfePips": 119.2,
+    "netProfit": "9.59",
+    "notes": "",
+    "openPrice": "0.67035",
+    "openTime": "2026-06-02T09:43:32.000Z",
+    "postClose15m": -0.2,
+    "postClose30m": 8.9,
+    "rMultiple": 3.65,
+    "rangeSize": 10.8,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "LONDON",
+    "sl": "0.66772",
+    "slDistPips": 26.3,
+    "slippagePips": 0.1,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 1.2,
+    "symbol": "AUDUSD",
+    "tags": "",
+    "ticket": "51000001",
+    "timeToMFEMin": 435,
+    "tp": "0.67561",
+    "usedFVG": false,
+    "volRegime": "HIGH"
+   },
+   {
+    "biasAtEntry": "NEUTRAL",
+    "checklistData": "",
+    "closePrice": "1.06574",
+    "closeTime": "2026-06-02T15:50:43.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURUSD|SELL|0.01000000|1780413579.0|1780415443.0|1.06928|1.06574|3.53",
+    "dayOfWeek": "Tue",
+    "direction": "SELL",
+    "durationMin": 31,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 15,
+    "id": 2,
+    "lots": 0.01,
+    "maePips": 9.9,
+    "magic": 7001,
+    "mfePips": 44.4,
+    "netProfit": "3.53",
+    "notes": "",
+    "openPrice": "1.06928",
+    "openTime": "2026-06-02T15:19:39.000Z",
+    "postClose15m": -1,
+    "postClose30m": 13.3,
+    "rMultiple": 0.99,
+    "rangeSize": 33.8,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY_OVERLAP",
+    "sl": "1.07286",
+    "slDistPips": 35.8,
+    "slippagePips": 0.3,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 2.6,
+    "symbol": "EURUSD",
+    "tags": "",
+    "ticket": "51000123",
+    "timeToMFEMin": 7,
+    "tp": "1.06212",
+    "usedFVG": false,
+    "volRegime": "MED"
+   },
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "0.66377",
+    "closeTime": "2026-06-01T21:48:37.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "AUDUSD|BUY|1.50000000|1780346090.0|1780350517.0|0.66242|0.66377|203.09",
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 73,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 20,
+    "id": 1,
+    "lots": 1.5,
+    "maePips": 1.3,
+    "magic": 7001,
+    "mfePips": 16.2,
+    "netProfit": "203.09",
+    "notes": "",
+    "openPrice": "0.66242",
+    "openTime": "2026-06-01T20:34:50.000Z",
+    "postClose15m": 5.8,
+    "postClose30m": 7.9,
+    "rMultiple": 0.81,
+    "rangeSize": 32.5,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "NY",
+    "sl": "0.66075",
+    "slDistPips": 16.7,
+    "slippagePips": 0.7,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 0.9,
+    "symbol": "AUDUSD",
+    "tags": "",
+    "ticket": "51000114",
+    "timeToMFEMin": 72,
+    "tp": "0.66576",
+    "usedFVG": false,
+    "volRegime": "HIGH"
+   }
+  ]
+ },
+ "outputs": {
+  "Metrics.averageDuration": 185,
+  "Metrics.averageLoss": 232.94,
+  "Metrics.averageMAE": 16.641666666666666,
+  "Metrics.averageMFE": 38.916666666666664,
+  "Metrics.averageRMultiple": 0.8875000000000001,
+  "Metrics.averageWin": 197.54999999999998,
+  "Metrics.bestTrade": 536.1600000000001,
+  "Metrics.calmarRatio": 0.4841268137717869,
+  "Metrics.currentStreak": 3,
+  "Metrics.expectancy": 18.179166666666674,
+  "Metrics.grossLoss": 931.76,
+  "Metrics.grossProfit": 1382.85,
+  "Metrics.losses": 4,
+  "Metrics.maxDrawdown": 931.76,
+  "Metrics.maxLossStreak": 4,
+  "Metrics.maxWinStreak": 4,
+  "Metrics.netProfitAfterCosts": 451.09000000000015,
+  "Metrics.profitFactor": 1.4841268137717867,
+  "Metrics.sharpeRatio": 0.14252670685767752,
+  "Metrics.totalCommissions": 0,
+  "Metrics.totalCosts": 0,
+  "Metrics.totalProfit": 451.09000000000015,
+  "Metrics.totalSwap": 0,
+  "Metrics.totalTrades": 12,
+  "Metrics.winRate": 58.333333333333336,
+  "Metrics.wins": 7,
+  "Metrics.worstTrade": -409.87,
+  "Metrics.edgeByHour": [
+   {
+    "category": "Hour",
+    "label": "10:00",
+    "profit": 536.1600000000001,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Hour",
+    "label": "22:00",
+    "profit": 453.75,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Hour",
+    "label": "18:00",
+    "profit": 97.91,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Hour",
+    "label": "1:00",
+    "profit": 78.82000000000001,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Hour",
+    "label": "9:00",
+    "profit": 9.59,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Hour",
+    "label": "15:00",
+    "profit": 3.53,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Hour",
+    "label": "21:00",
+    "profit": 0,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "category": "Hour",
+    "label": "6:00",
+    "profit": -7.58,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "category": "Hour",
+    "label": "20:00",
+    "profit": -33.01999999999998,
+    "tradeCount": 2,
+    "winRate": 50
+   },
+   {
+    "category": "Hour",
+    "label": "11:00",
+    "profit": -278.2,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "category": "Hour",
+    "label": "19:00",
+    "profit": -409.87,
+    "tradeCount": 1,
+    "winRate": 0
+   }
+  ],
+  "Metrics.edgeBySession": [
+   {
+    "category": "Session",
+    "label": "Late",
+    "profit": 453.75,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Session",
+    "label": "London",
+    "profit": 267.55000000000007,
+    "tradeCount": 3,
+    "winRate": 66.66666666666666
+   },
+   {
+    "category": "Session",
+    "label": "Asian",
+    "profit": 71.24000000000001,
+    "tradeCount": 2,
+    "winRate": 50
+   },
+   {
+    "category": "Session",
+    "label": "NY Overlap",
+    "profit": 3.53,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Session",
+    "label": "New York",
+    "profit": -344.9799999999999,
+    "tradeCount": 5,
+    "winRate": 40
+   }
+  ],
+  "Metrics.edgeByDay": [
+   {
+    "category": "Day",
+    "label": "Tue",
+    "profit": 342.32000000000005,
+    "tradeCount": 7,
+    "winRate": 57.14285714285714
+   },
+   {
+    "category": "Day",
+    "label": "Thu",
+    "profit": 217.64000000000001,
+    "tradeCount": 2,
+    "winRate": 50
+   },
+   {
+    "category": "Day",
+    "label": "Mon",
+    "profit": -108.87000000000003,
+    "tradeCount": 3,
+    "winRate": 66.66666666666666
+   }
+  ],
+  "Metrics.edgeByPair": [
+   {
+    "category": "Pair",
+    "label": "AUDUSD",
+    "profit": 303.01,
+    "tradeCount": 4,
+    "winRate": 75
+   },
+   {
+    "category": "Pair",
+    "label": "EURUSD",
+    "profit": 208.64000000000007,
+    "tradeCount": 4,
+    "winRate": 75
+   },
+   {
+    "category": "Pair",
+    "label": "GBPUSD",
+    "profit": 175.55,
+    "tradeCount": 2,
+    "winRate": 50
+   },
+   {
+    "category": "Pair",
+    "label": "EURJPY",
+    "profit": 0,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "category": "Pair",
+    "label": "USDJPY",
+    "profit": -236.10999999999999,
+    "tradeCount": 1,
+    "winRate": 0
+   }
+  ],
+  "Metrics.edgeByBias": [
+   {
+    "category": "Bias",
+    "label": "AGAINST",
+    "profit": 636.0800000000002,
+    "tradeCount": 4,
+    "winRate": 75
+   },
+   {
+    "category": "Bias",
+    "label": "WITH",
+    "profit": -31.22999999999999,
+    "tradeCount": 5,
+    "winRate": 40
+   },
+   {
+    "category": "Bias",
+    "label": "NEUTRAL",
+    "profit": -153.75999999999996,
+    "tradeCount": 3,
+    "winRate": 66.66666666666666
+   }
+  ],
+  "Metrics.edgeByVolRegime": [
+   {
+    "category": "Volatility",
+    "label": "HIGH",
+    "profit": 764.34,
+    "tradeCount": 5,
+    "winRate": 80
+   },
+   {
+    "category": "Volatility",
+    "label": "MED",
+    "profit": -148.37999999999985,
+    "tradeCount": 4,
+    "winRate": 50
+   },
+   {
+    "category": "Volatility",
+    "label": "LOW",
+    "profit": -164.86999999999998,
+    "tradeCount": 3,
+    "winRate": 33.33333333333333
+   }
+  ],
+  "Metrics.allEdgeConditions[tradingDays=21]": [
+   {
+    "dimension": "Hour",
+    "expectancy": -409.87,
+    "id": "Hour_19:00",
+    "label": "19:00",
+    "monthlyImpact": -409.87,
+    "profit": -409.87,
+    "profitFactor": 0,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "dimension": "Hour",
+    "expectancy": 78.82000000000001,
+    "id": "Hour_1:00",
+    "label": "1:00",
+    "monthlyImpact": 78.82000000000001,
+    "profit": 78.82000000000001,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Hour",
+    "expectancy": 0,
+    "id": "Hour_21:00",
+    "label": "21:00",
+    "monthlyImpact": 0,
+    "profit": 0,
+    "profitFactor": 0,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "dimension": "Hour",
+    "expectancy": -7.58,
+    "id": "Hour_6:00",
+    "label": "6:00",
+    "monthlyImpact": -7.58,
+    "profit": -7.58,
+    "profitFactor": 0,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "dimension": "Hour",
+    "expectancy": -278.2,
+    "id": "Hour_11:00",
+    "label": "11:00",
+    "monthlyImpact": -278.2,
+    "profit": -278.2,
+    "profitFactor": 0,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "dimension": "Hour",
+    "expectancy": 453.75,
+    "id": "Hour_22:00",
+    "label": "22:00",
+    "monthlyImpact": 453.75,
+    "profit": 453.75,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Hour",
+    "expectancy": 536.1600000000001,
+    "id": "Hour_10:00",
+    "label": "10:00",
+    "monthlyImpact": 536.1600000000001,
+    "profit": 536.1600000000001,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Hour",
+    "expectancy": 97.91,
+    "id": "Hour_18:00",
+    "label": "18:00",
+    "monthlyImpact": 97.91,
+    "profit": 97.91,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Hour",
+    "expectancy": 9.59,
+    "id": "Hour_9:00",
+    "label": "9:00",
+    "monthlyImpact": 9.59,
+    "profit": 9.59,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Hour",
+    "expectancy": -16.50999999999999,
+    "id": "Hour_20:00",
+    "label": "20:00",
+    "monthlyImpact": -33.01999999999998,
+    "profit": -33.01999999999998,
+    "profitFactor": 0.8601499301173182,
+    "tradeCount": 2,
+    "winRate": 50
+   },
+   {
+    "dimension": "Hour",
+    "expectancy": 3.53,
+    "id": "Hour_15:00",
+    "label": "15:00",
+    "monthlyImpact": 3.53,
+    "profit": 3.53,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Day",
+    "expectancy": -36.29000000000008,
+    "id": "Day_Mon",
+    "label": "Mon",
+    "monthlyImpact": -108.87000000000003,
+    "profit": -108.87000000000003,
+    "profitFactor": 0.7343791934027862,
+    "tradeCount": 3,
+    "winRate": 66.66666666666666
+   },
+   {
+    "dimension": "Day",
+    "expectancy": 28.490000000000016,
+    "id": "Day_Tue",
+    "label": "Tue",
+    "monthlyImpact": 342.32000000000005,
+    "profit": 342.32000000000005,
+    "profitFactor": 2.1978444957659744,
+    "tradeCount": 7,
+    "winRate": 57.14285714285714
+   },
+   {
+    "dimension": "Day",
+    "expectancy": 108.82000000000001,
+    "id": "Day_Thu",
+    "label": "Thu",
+    "monthlyImpact": 217.64000000000001,
+    "profit": 217.64000000000001,
+    "profitFactor": 1.9217737495235272,
+    "tradeCount": 2,
+    "winRate": 50
+   },
+   {
+    "dimension": "Session",
+    "expectancy": 453.75,
+    "id": "Session_Late",
+    "label": "Late",
+    "monthlyImpact": 453.75,
+    "profit": 453.75,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Session",
+    "expectancy": 89.18333333333328,
+    "id": "Session_London",
+    "label": "London",
+    "monthlyImpact": 267.55000000000007,
+    "profit": 267.55000000000007,
+    "profitFactor": 1.961718188353703,
+    "tradeCount": 3,
+    "winRate": 66.66666666666666
+   },
+   {
+    "dimension": "Session",
+    "expectancy": 35.620000000000005,
+    "id": "Session_Asian",
+    "label": "Asian",
+    "monthlyImpact": 71.24000000000001,
+    "profit": 71.24000000000001,
+    "profitFactor": 10.398416886543536,
+    "tradeCount": 2,
+    "winRate": 50
+   },
+   {
+    "dimension": "Session",
+    "expectancy": -133.594,
+    "id": "Session_New York",
+    "label": "New York",
+    "monthlyImpact": -344.9799999999999,
+    "profit": -344.9799999999999,
+    "profitFactor": 0.4659586984117155,
+    "tradeCount": 5,
+    "winRate": 40
+   },
+   {
+    "dimension": "Session",
+    "expectancy": 3.53,
+    "id": "Session_NY Overlap",
+    "label": "NY Overlap",
+    "monthlyImpact": 3.53,
+    "profit": 3.53,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Pair",
+    "expectancy": 52.160000000000025,
+    "id": "Pair_EURUSD",
+    "label": "EURUSD",
+    "monthlyImpact": 208.64000000000007,
+    "profit": 208.64000000000007,
+    "profitFactor": 1.5090394515334133,
+    "tradeCount": 4,
+    "winRate": 75
+   },
+   {
+    "dimension": "Pair",
+    "expectancy": 75.75250000000001,
+    "id": "Pair_AUDUSD",
+    "label": "AUDUSD",
+    "monthlyImpact": 303.01,
+    "profit": 303.01,
+    "profitFactor": 40.97493403693932,
+    "tradeCount": 4,
+    "winRate": 75
+   },
+   {
+    "dimension": "Pair",
+    "expectancy": 87.775,
+    "id": "Pair_GBPUSD",
+    "label": "GBPUSD",
+    "monthlyImpact": 175.55,
+    "profit": 175.55,
+    "profitFactor": 1.631020848310568,
+    "tradeCount": 2,
+    "winRate": 50
+   },
+   {
+    "dimension": "Pair",
+    "expectancy": -236.10999999999999,
+    "id": "Pair_USDJPY",
+    "label": "USDJPY",
+    "monthlyImpact": -236.10999999999999,
+    "profit": -236.10999999999999,
+    "profitFactor": 0,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "dimension": "Pair",
+    "expectancy": 0,
+    "id": "Pair_EURJPY",
+    "label": "EURJPY",
+    "monthlyImpact": 0,
+    "profit": 0,
+    "profitFactor": 0,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "dimension": "Volatility",
+    "expectancy": -54.95666666666668,
+    "id": "Volatility_LOW",
+    "label": "LOW",
+    "monthlyImpact": -164.86999999999998,
+    "profit": -164.86999999999998,
+    "profitFactor": 0.3234437194796668,
+    "tradeCount": 3,
+    "winRate": 33.33333333333333
+   },
+   {
+    "dimension": "Volatility",
+    "expectancy": -37.09499999999997,
+    "id": "Volatility_MED",
+    "label": "MED",
+    "monthlyImpact": -148.37999999999985,
+    "profit": -148.37999999999985,
+    "profitFactor": 0.7843533361431251,
+    "tradeCount": 4,
+    "winRate": 50
+   },
+   {
+    "dimension": "Volatility",
+    "expectancy": 152.86800000000002,
+    "id": "Volatility_HIGH",
+    "label": "HIGH",
+    "monthlyImpact": 764.34,
+    "profit": 764.34,
+    "profitFactor": "Infinity",
+    "tradeCount": 5,
+    "winRate": 80
+   },
+   {
+    "dimension": "Bias",
+    "expectancy": 159.02,
+    "id": "Bias_AGAINST",
+    "label": "AGAINST",
+    "monthlyImpact": 636.0800000000002,
+    "profit": 636.0800000000002,
+    "profitFactor": 84.91556728232192,
+    "tradeCount": 4,
+    "winRate": 75
+   },
+   {
+    "dimension": "Bias",
+    "expectancy": -75.05299999999994,
+    "id": "Bias_WITH",
+    "label": "WITH",
+    "monthlyImpact": -31.22999999999999,
+    "profit": -31.22999999999999,
+    "profitFactor": 0.9546121760867355,
+    "tradeCount": 5,
+    "winRate": 40
+   },
+   {
+    "dimension": "Bias",
+    "expectancy": -51.253333333333366,
+    "id": "Bias_NEUTRAL",
+    "label": "NEUTRAL",
+    "monthlyImpact": -153.75999999999996,
+    "profit": -153.75999999999996,
+    "profitFactor": 0.3487781118969972,
+    "tradeCount": 3,
+    "winRate": 66.66666666666666
+   }
+  ],
+  "Metrics.confidence": [
+   {
+    "actionable": false,
+    "level": {
+     "$case": "insufficient",
+     "label": "Insufficient",
+     "icon": "exclamationmark.triangle.fill"
+    },
+    "n": 0
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "insufficient",
+     "label": "Insufficient",
+     "icon": "exclamationmark.triangle.fill"
+    },
+    "n": 1
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "insufficient",
+     "label": "Insufficient",
+     "icon": "exclamationmark.triangle.fill"
+    },
+    "n": 9
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "low",
+     "label": "Low confidence",
+     "icon": "info.circle.fill"
+    },
+    "n": 10
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "low",
+     "label": "Low confidence",
+     "icon": "info.circle.fill"
+    },
+    "n": 29
+   },
+   {
+    "actionable": true,
+    "level": {
+     "$case": "significant",
+     "label": "Significant",
+     "icon": "checkmark.seal.fill"
+    },
+    "n": 30
+   },
+   {
+    "actionable": true,
+    "level": {
+     "$case": "significant",
+     "label": "Significant",
+     "icon": "checkmark.seal.fill"
+    },
+    "n": 31
+   },
+   {
+    "actionable": true,
+    "level": {
+     "$case": "significant",
+     "label": "Significant",
+     "icon": "checkmark.seal.fill"
+    },
+    "n": 100
+   }
+  ],
+  "TradeGrader.grades": [
+   {
+    "grade": {
+     "executionScore": 16,
+     "managementScore": 25,
+     "overall": "B",
+     "rScore": 22,
+     "timingScore": 8,
+     "total": 71
+    },
+    "ticket": "51000209"
+   },
+   {
+    "grade": {
+     "executionScore": 4,
+     "managementScore": 6,
+     "overall": "F",
+     "rScore": 8,
+     "timingScore": 16,
+     "total": 34
+    },
+    "ticket": "51000065"
+   },
+   {
+    "grade": {
+     "executionScore": 25,
+     "managementScore": 13,
+     "overall": "B",
+     "rScore": 22,
+     "timingScore": 8,
+     "total": 68
+    },
+    "ticket": "51000157"
+   },
+   {
+    "grade": {
+     "executionScore": 18,
+     "managementScore": 20,
+     "overall": "B",
+     "rScore": 25,
+     "timingScore": 11,
+     "total": 74
+    },
+    "ticket": "51000025"
+   },
+   {
+    "grade": {
+     "executionScore": 6,
+     "managementScore": 14,
+     "overall": "D",
+     "rScore": 3,
+     "timingScore": 13,
+     "total": 36
+    },
+    "ticket": "51000083"
+   },
+   {
+    "grade": {
+     "executionScore": 9,
+     "managementScore": 10,
+     "overall": "F",
+     "rScore": 0,
+     "timingScore": 6,
+     "total": 25
+    },
+    "ticket": "51000218"
+   },
+   {
+    "grade": {
+     "executionScore": 9,
+     "managementScore": 14,
+     "overall": "D",
+     "rScore": 3,
+     "timingScore": 16,
+     "total": 42
+    },
+    "ticket": "51000170"
+   },
+   {
+    "grade": {
+     "executionScore": 3,
+     "managementScore": 10,
+     "overall": "D",
+     "rScore": 3,
+     "timingScore": 22,
+     "total": 38
+    },
+    "ticket": "51000097"
+   },
+   {
+    "grade": {
+     "executionScore": 13,
+     "managementScore": 12,
+     "overall": "C",
+     "rScore": 13,
+     "timingScore": 17,
+     "total": 55
+    },
+    "ticket": "51000094"
+   },
+   {
+    "grade": {
+     "executionScore": 20,
+     "managementScore": 8,
+     "overall": "B",
+     "rScore": 25,
+     "timingScore": 20,
+     "total": 73
+    },
+    "ticket": "51000001"
+   },
+   {
+    "grade": {
+     "executionScore": 20,
+     "managementScore": 8,
+     "overall": "C",
+     "rScore": 13,
+     "timingScore": 19,
+     "total": 60
+    },
+    "ticket": "51000123"
+   },
+   {
+    "grade": {
+     "executionScore": 18,
+     "managementScore": 12,
+     "overall": "C",
+     "rScore": 13,
+     "timingScore": 16,
+     "total": 59
+    },
+    "ticket": "51000114"
+   }
+  ],
+  "StrategyCheckpoints.split": [
+   {
+    "after": {
+     "avgR": 1.085,
+     "expectancy": 44.1575,
+     "maxDrawdown": 243.69,
+     "profitFactor": 2.587221469900283,
+     "sharpe": 0.3142086903688703,
+     "tradeCount": 6,
+     "winRate": 50
+    },
+    "afterCount": 6,
+    "before": {
+     "avgR": 0.6900000000000001,
+     "expectancy": 10.716666666666626,
+     "maxDrawdown": 688.0699999999999,
+     "profitFactor": 1.0934497943523191,
+     "sharpe": 0.034662681994588065,
+     "tradeCount": 6,
+     "winRate": 66.66666666666666
+    },
+    "beforeCount": 6,
+    "date": "2026-06-16T06:59:40.000Z"
+   }
+  ],
+  "Trade.derived": [
+   {
+    "ticket": "51000209",
+    "storageViolations": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 453.75,
+    "directionSymbol": "↓",
+    "pairDisplay": "GBP/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "453.75",
+    "profitAfterCostsDouble": 453.75,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "GBP",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 96.64536741214057,
+    "moneyLeftOnTable": 3.1500000000000057,
+    "open": {
+     "utcHour": 22,
+     "tradingSession": "LATE",
+     "activeTradingSessions": [
+      "LATE"
+     ],
+     "shortDayName": "Thu",
+     "tradeDisplayString": "Jun 25, 22:50",
+     "timeToNextSession": 4200
+    },
+    "close": {
+     "utcHour": 0,
+     "tradingSession": "ASIAN",
+     "activeTradingSessions": [
+      "ASIAN"
+     ],
+     "shortDayName": "Fri",
+     "tradeDisplayString": "Jun 26, 00:34",
+     "timeToNextSession": 23160
+    }
+   },
+   {
+    "ticket": "51000065",
+    "storageViolations": [],
+    "isWin": false,
+    "isLoss": false,
+    "profitDouble": 0,
+    "directionSymbol": "↑",
+    "pairDisplay": "EUR/JPY",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "0",
+    "profitAfterCostsDouble": 0,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "EUR",
+    "quoteCurrency": "JPY",
+    "exitEfficiency": 0,
+    "moneyLeftOnTable": null,
+    "open": {
+     "utcHour": 21,
+     "tradingSession": "LATE",
+     "activeTradingSessions": [
+      "LATE"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 23, 21:47",
+     "timeToNextSession": 7980
+    },
+    "close": {
+     "utcHour": 12,
+     "tradingSession": "NY_OVERLAP",
+     "activeTradingSessions": [
+      "LONDON",
+      "NY"
+     ],
+     "shortDayName": "Wed",
+     "tradeDisplayString": "Jun 24, 12:45",
+     "timeToNextSession": 11700
+    }
+   },
+   {
+    "ticket": "51000157",
+    "storageViolations": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 78.82000000000001,
+    "directionSymbol": "↑",
+    "pairDisplay": "EUR/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "78.82",
+    "profitAfterCostsDouble": 78.82000000000001,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "EUR",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 73.73831775700934,
+    "moneyLeftOnTable": 14.050000000000004,
+    "open": {
+     "utcHour": 1,
+     "tradingSession": "ASIAN",
+     "activeTradingSessions": [
+      "ASIAN"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 23, 01:10",
+     "timeToNextSession": 21000
+    },
+    "close": {
+     "utcHour": 1,
+     "tradingSession": "ASIAN",
+     "activeTradingSessions": [
+      "ASIAN"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 23, 01:48",
+     "timeToNextSession": 18720
+    }
+   },
+   {
+    "ticket": "51000025",
+    "storageViolations": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 97.91,
+    "directionSymbol": "↑",
+    "pairDisplay": "AUD/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "97.91",
+    "profitAfterCostsDouble": 97.91,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "AUD",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 92.24858757062147,
+    "moneyLeftOnTable": 4.116,
+    "open": {
+     "utcHour": 18,
+     "tradingSession": "NY",
+     "activeTradingSessions": [
+      "NY"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Jun 22, 18:42",
+     "timeToNextSession": 8280
+    },
+    "close": {
+     "utcHour": 20,
+     "tradingSession": "NY",
+     "activeTradingSessions": [
+      "NY"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Jun 22, 20:18",
+     "timeToNextSession": 2520
+    }
+   },
+   {
+    "ticket": "51000083",
+    "storageViolations": [],
+    "isWin": false,
+    "isLoss": true,
+    "profitDouble": -236.10999999999999,
+    "directionSymbol": "↑",
+    "pairDisplay": "USD/JPY",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "-236.11",
+    "profitAfterCostsDouble": -236.10999999999999,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "USD",
+    "quoteCurrency": "JPY",
+    "exitEfficiency": 0,
+    "moneyLeftOnTable": null,
+    "open": {
+     "utcHour": 20,
+     "tradingSession": "NY",
+     "activeTradingSessions": [
+      "NY"
+     ],
+     "shortDayName": "Thu",
+     "tradeDisplayString": "Jun 18, 20:17",
+     "timeToNextSession": 2580
+    },
+    "close": {
+     "utcHour": 21,
+     "tradingSession": "LATE",
+     "activeTradingSessions": [
+      "LATE"
+     ],
+     "shortDayName": "Thu",
+     "tradeDisplayString": "Jun 18, 21:24",
+     "timeToNextSession": 9360
+    }
+   },
+   {
+    "ticket": "51000218",
+    "storageViolations": [],
+    "isWin": false,
+    "isLoss": true,
+    "profitDouble": -7.58,
+    "directionSymbol": "↑",
+    "pairDisplay": "AUD/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "-7.58",
+    "profitAfterCostsDouble": -7.58,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "AUD",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 0,
+    "moneyLeftOnTable": null,
+    "open": {
+     "utcHour": 6,
+     "tradingSession": "ASIAN",
+     "activeTradingSessions": [
+      "ASIAN"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 16, 06:42",
+     "timeToNextSession": 1080
+    },
+    "close": {
+     "utcHour": 6,
+     "tradingSession": "ASIAN",
+     "activeTradingSessions": [
+      "ASIAN"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 16, 06:59",
+     "timeToNextSession": 60
+    }
+   },
+   {
+    "ticket": "51000170",
+    "storageViolations": [],
+    "isWin": false,
+    "isLoss": true,
+    "profitDouble": -409.87,
+    "directionSymbol": "↑",
+    "pairDisplay": "EUR/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "-409.87",
+    "profitAfterCostsDouble": -409.87,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "EUR",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 0,
+    "moneyLeftOnTable": null,
+    "open": {
+     "utcHour": 19,
+     "tradingSession": "NY",
+     "activeTradingSessions": [
+      "NY"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Jun 15, 19:42",
+     "timeToNextSession": 4680
+    },
+    "close": {
+     "utcHour": 21,
+     "tradingSession": "LATE",
+     "activeTradingSessions": [
+      "LATE"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Jun 15, 21:31",
+     "timeToNextSession": 8940
+    }
+   },
+   {
+    "ticket": "51000097",
+    "storageViolations": [],
+    "isWin": false,
+    "isLoss": true,
+    "profitDouble": -278.2,
+    "directionSymbol": "↑",
+    "pairDisplay": "GBP/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "-278.2",
+    "profitAfterCostsDouble": -278.2,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "GBP",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 0,
+    "moneyLeftOnTable": null,
+    "open": {
+     "utcHour": 11,
+     "tradingSession": "LONDON",
+     "activeTradingSessions": [
+      "LONDON"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 9, 11:08",
+     "timeToNextSession": 3120
+    },
+    "close": {
+     "utcHour": 11,
+     "tradingSession": "LONDON",
+     "activeTradingSessions": [
+      "LONDON"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 9, 11:48",
+     "timeToNextSession": 720
+    }
+   },
+   {
+    "ticket": "51000094",
+    "storageViolations": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 536.1600000000001,
+    "directionSymbol": "↓",
+    "pairDisplay": "EUR/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "536.16",
+    "profitAfterCostsDouble": 536.1600000000001,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "EUR",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 60.17171717171716,
+    "moneyLeftOnTable": 11.829,
+    "open": {
+     "utcHour": 10,
+     "tradingSession": "LONDON",
+     "activeTradingSessions": [
+      "LONDON"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 9, 10:40",
+     "timeToNextSession": 4800
+    },
+    "close": {
+     "utcHour": 11,
+     "tradingSession": "LONDON",
+     "activeTradingSessions": [
+      "LONDON"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 9, 11:15",
+     "timeToNextSession": 2700
+    }
+   },
+   {
+    "ticket": "51000001",
+    "storageViolations": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 9.59,
+    "directionSymbol": "↑",
+    "pairDisplay": "AUD/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "9.59",
+    "profitAfterCostsDouble": 9.59,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "AUD",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 80.53271812080537,
+    "moneyLeftOnTable": 23.205,
+    "open": {
+     "utcHour": 9,
+     "tradingSession": "LONDON",
+     "activeTradingSessions": [
+      "LONDON"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 2, 09:43",
+     "timeToNextSession": 8220
+    },
+    "close": {
+     "utcHour": 21,
+     "tradingSession": "LATE",
+     "activeTradingSessions": [
+      "LATE"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 2, 21:47",
+     "timeToNextSession": 7980
+    }
+   },
+   {
+    "ticket": "51000123",
+    "storageViolations": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 3.53,
+    "directionSymbol": "↓",
+    "pairDisplay": "EUR/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "3.53",
+    "profitAfterCostsDouble": 3.53,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "EUR",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 79.82432432432432,
+    "moneyLeftOnTable": 8.957999999999998,
+    "open": {
+     "utcHour": 15,
+     "tradingSession": "NY_OVERLAP",
+     "activeTradingSessions": [
+      "LONDON",
+      "NY"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 2, 15:19",
+     "timeToNextSession": 2460
+    },
+    "close": {
+     "utcHour": 15,
+     "tradingSession": "NY_OVERLAP",
+     "activeTradingSessions": [
+      "LONDON",
+      "NY"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Jun 2, 15:50",
+     "timeToNextSession": 600
+    }
+   },
+   {
+    "ticket": "51000114",
+    "storageViolations": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 203.09,
+    "directionSymbol": "↑",
+    "pairDisplay": "AUD/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "203.09",
+    "profitAfterCostsDouble": 203.09,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "AUD",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 83.50000000000001,
+    "moneyLeftOnTable": 2.6729999999999983,
+    "open": {
+     "utcHour": 20,
+     "tradingSession": "NY",
+     "activeTradingSessions": [
+      "NY"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Jun 1, 20:34",
+     "timeToNextSession": 1560
+    },
+    "close": {
+     "utcHour": 21,
+     "tradingSession": "LATE",
+     "activeTradingSessions": [
+      "LATE"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Jun 1, 21:48",
+     "timeToNextSession": 7920
+    }
+   }
+  ],
+  "BehavioralAnalytics.report": null,
+  "BenchmarkComparison.comparisons": [
+   {
+    "benchmark": "45.0%",
+    "metric": "Win Rate",
+    "status": {
+     "$case": "above",
+     "icon": "chevron.up.circle.fill"
+    },
+    "yours": "58.3%"
+   },
+   {
+    "benchmark": "1.30",
+    "metric": "Profit Factor",
+    "status": {
+     "$case": "above",
+     "icon": "chevron.up.circle.fill"
+    },
+    "yours": "1.48"
+   },
+   {
+    "benchmark": "0.30R",
+    "metric": "Avg R-Multiple",
+    "status": {
+     "$case": "above",
+     "icon": "chevron.up.circle.fill"
+    },
+    "yours": "0.89R"
+   },
+   {
+    "benchmark": "0.50",
+    "metric": "Sharpe Ratio",
+    "status": {
+     "$case": "below",
+     "icon": "chevron.down.circle.fill"
+    },
+    "yours": "0.14"
+   },
+   {
+    "benchmark": "30%",
+    "metric": "Max Drawdown %",
+    "status": {
+     "$case": "below",
+     "icon": "chevron.down.circle.fill"
+    },
+    "yours": "207%"
+   }
+  ],
+  "CalendarCorrelation.analysis": {
+   "eventBreakdown": {},
+   "eventDayAvgPnL": 0,
+   "eventDayAvgR": 0,
+   "eventDayTrades": [],
+   "eventDayWinRate": 0,
+   "quietDayAvgPnL": 37.59083333333334,
+   "quietDayAvgR": 0.9681818181818183,
+   "quietDayTrades": [
+    "#51000209",
+    "#51000065",
+    "#51000157",
+    "#51000025",
+    "#51000083",
+    "#51000218",
+    "#51000170",
+    "#51000097",
+    "#51000094",
+    "#51000001",
+    "#51000123",
+    "#51000114"
+   ],
+   "quietDayWinRate": 0.5833333333333334
+  },
+  "ChecklistAnalytics.clTrades": [],
+  "ChecklistAnalytics.hasData": false,
+  "ChecklistAnalytics.ruleStats": [],
+  "ChecklistAnalytics.overallCompliance": 0,
+  "ChecklistAnalytics.allFollowedAvg": 0,
+  "ChecklistAnalytics.anyBrokenAvg": 0,
+  "CommissionAnalytics.hasCostData": false,
+  "CommissionAnalytics.totalCommissions": 0,
+  "CommissionAnalytics.totalSwap": 0,
+  "CommissionAnalytics.totalCosts": 0,
+  "CommissionAnalytics.avgCostPerTrade": 0,
+  "CommissionAnalytics.grossProfit": 1382.85,
+  "CommissionAnalytics.costPercent": 0,
+  "CommissionAnalytics.symbolCosts": [
+   {
+    "costPerLot": 0,
+    "symbol": "EURUSD",
+    "totalCosts": 0,
+    "totalLots": 4.71
+   },
+   {
+    "costPerLot": 0,
+    "symbol": "AUDUSD",
+    "totalCosts": 0,
+    "totalLots": 1.73
+   },
+   {
+    "costPerLot": 0,
+    "symbol": "GBPUSD",
+    "totalCosts": 0,
+    "totalLots": 1.5
+   },
+   {
+    "costPerLot": 0,
+    "symbol": "USDJPY",
+    "totalCosts": 0,
+    "totalLots": 1.5
+   },
+   {
+    "costPerLot": 0,
+    "symbol": "EURJPY",
+    "totalCosts": 0,
+    "totalLots": 0.25
+   }
+  ],
+  "ConsistencyScore.dimensions": [
+   {
+    "detail": "Win rate varies significantly between periods",
+    "name": "Win Rate",
+    "score": 56.966851708806466
+   },
+   {
+    "detail": "Profit factor differs significantly between halves",
+    "name": "P/F Stability",
+    "score": 42.26347868064279
+   },
+   {
+    "detail": "Avg 8 trades to recover from drawdowns",
+    "name": "Recovery",
+    "score": 0
+   },
+   {
+    "detail": "Lot sizes vary widely — sign of revenge trading",
+    "name": "Sizing",
+    "score": 0
+   },
+   {
+    "detail": "Trading across too many hours — pick a session",
+    "name": "Timing",
+    "score": 65.00000000000001
+   }
+  ],
+  "ConsistencyScore.overallScore": 32.84606607788985,
+  "ConsistencyScore.grade": {
+   "$case": "f",
+   "label": "F"
+  },
+  "DailyBrief.signals": [
+   {
+    "detail": "$ 931.76 max DD vs $ 451.09 total P&L. Tighten stops.",
+    "icon": "arrow.down.circle.fill",
+    "priority": 0,
+    "title": "Drawdown exceeds total profit",
+    "value": null
+   },
+   {
+    "detail": "1 trades at 0.0% WR. Consider sitting out or reducing size.",
+    "icon": "xmark.circle.fill",
+    "priority": 1,
+    "title": "USDJPY is costing you -$ 236.11",
+    "value": null
+   },
+   {
+    "detail": "4 trades, 75.0% win rate.",
+    "icon": "star.fill",
+    "priority": 3,
+    "title": "AUDUSD is your top performer",
+    "value": "$ 303.01"
+   }
+  ],
+  "DailyBrief.generateSignals": [
+   {
+    "detail": "$ 931.76 max DD vs $ 451.09 total P&L. Tighten stops.",
+    "icon": "arrow.down.circle.fill",
+    "priority": 0,
+    "title": "Drawdown exceeds total profit",
+    "value": null
+   },
+   {
+    "detail": "1 trades at 0.0% WR. Consider sitting out or reducing size.",
+    "icon": "xmark.circle.fill",
+    "priority": 1,
+    "title": "USDJPY is costing you -$ 236.11",
+    "value": null
+   },
+   {
+    "detail": "4 trades, 75.0% win rate.",
+    "icon": "star.fill",
+    "priority": 3,
+    "title": "AUDUSD is your top performer",
+    "value": "$ 303.01"
+   }
+  ],
+  "DataQuality.issues": [
+   {
+    "count": 1,
+    "message": "Trades with missing R-multiple (no SL set?)",
+    "severity": {
+     "$case": "warning",
+     "icon": "exclamationmark.triangle.fill"
+    }
+   }
+  ],
+  "DayOfWeekChart.data": [
+   {
+    "day": "Mon",
+    "id": "Mon",
+    "profit": -108.87000000000003,
+    "tradeCount": 3,
+    "winRate": 66.66666666666666
+   },
+   {
+    "day": "Tue",
+    "id": "Tue",
+    "profit": 342.32000000000005,
+    "tradeCount": 7,
+    "winRate": 57.14285714285714
+   },
+   {
+    "day": "Thu",
+    "id": "Thu",
+    "profit": 217.64000000000001,
+    "tradeCount": 2,
+    "winRate": 50
+   }
+  ],
+  "DirectionalEdge.buyTrades": [
+   "#51000065",
+   "#51000157",
+   "#51000025",
+   "#51000083",
+   "#51000218",
+   "#51000170",
+   "#51000097",
+   "#51000001",
+   "#51000114"
+  ],
+  "DirectionalEdge.sellTrades": [
+   "#51000209",
+   "#51000094",
+   "#51000123"
+  ],
+  "DirectionalEdge.buyStats": {
+   "avgPnL": -60.2611111111111,
+   "avgR": 0.6911111111111112,
+   "count": 9,
+   "totalPnL": -542.3499999999999,
+   "winRate": 44.44444444444444
+  },
+  "DirectionalEdge.sellStats": {
+   "avgPnL": 331.1466666666667,
+   "avgR": 1.4766666666666666,
+   "count": 3,
+   "totalPnL": 993.44,
+   "winRate": 100
+  },
+  "DrawdownChart.drawdownData": [
+   {
+    "date": "2026-06-01T21:48:37.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-06-02T15:50:43.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-06-02T21:47:08.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-06-09T11:15:00.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-06-09T11:48:03.000Z",
+    "drawdown": -278.2
+   },
+   {
+    "date": "2026-06-15T21:31:48.000Z",
+    "drawdown": -688.0699999999999
+   },
+   {
+    "date": "2026-06-16T06:59:40.000Z",
+    "drawdown": -695.65
+   },
+   {
+    "date": "2026-06-18T21:24:17.000Z",
+    "drawdown": -931.76
+   },
+   {
+    "date": "2026-06-22T20:18:26.000Z",
+    "drawdown": -833.85
+   },
+   {
+    "date": "2026-06-23T01:48:03.000Z",
+    "drawdown": -755.03
+   },
+   {
+    "date": "2026-06-24T12:45:26.000Z",
+    "drawdown": -755.03
+   },
+   {
+    "date": "2026-06-26T00:34:21.000Z",
+    "drawdown": -301.28
+   }
+  ],
+  "DrawdownRecovery.sortedTrades": [
+   "#51000114",
+   "#51000123",
+   "#51000001",
+   "#51000094",
+   "#51000097",
+   "#51000170",
+   "#51000218",
+   "#51000083",
+   "#51000025",
+   "#51000157",
+   "#51000065",
+   "#51000209"
+  ],
+  "DrawdownRecovery.equityCurve": [],
+  "DrawdownRecovery.drawdownEvents": [],
+  "DrawdownRecovery.avgRecoveryTrades": 0,
+  "DrawdownRecovery.deepestEvent": null,
+  "DrawdownRecovery.longestEvent": null,
+  "DrawdownRecovery.isCurrentlyInDrawdown": false,
+  "DrawdownRecovery.percentTimeInDrawdown": 0,
+  "DrawdownRecovery.drawdownPhaseStats": {
+   "avgLotSize": 0,
+   "pairBreakdown": [],
+   "sessionBreakdown": [],
+   "tradeCount": 0,
+   "winRate": 0
+  },
+  "DrawdownRecovery.recoveryPhaseStats": {
+   "avgLotSize": 0,
+   "pairBreakdown": [],
+   "sessionBreakdown": [],
+   "tradeCount": 0,
+   "winRate": 0
+  },
+  "DrawdownRecovery.drawdownPhaseTrades": [],
+  "DrawdownRecovery.recoveryPhaseTrades": [],
+  "DurationAnalysis.buckets": [
+   {
+    "avgR": -1.08,
+    "id": "15-30m",
+    "label": "15-30m",
+    "profit": -7.58,
+    "tradeCount": 1,
+    "winRate": 0
+   },
+   {
+    "avgR": 0.8274999999999999,
+    "id": "30-60m",
+    "label": "30-60m",
+    "profit": 340.31000000000006,
+    "tradeCount": 4,
+    "winRate": 75
+   },
+   {
+    "avgR": 0.9540000000000003,
+    "id": "1-2h",
+    "label": "1-2h",
+    "profit": 108.76999999999995,
+    "tradeCount": 5,
+    "winRate": 60
+   },
+   {
+    "avgR": 1.825,
+    "id": "2h+",
+    "label": "2h+",
+    "profit": 9.59,
+    "tradeCount": 2,
+    "winRate": 50
+   }
+  ],
+  "EdgeDecayMonitor.sorted": [
+   "#51000114",
+   "#51000123",
+   "#51000001",
+   "#51000094",
+   "#51000097",
+   "#51000170",
+   "#51000218",
+   "#51000083",
+   "#51000025",
+   "#51000157",
+   "#51000065",
+   "#51000209"
+  ],
+  "EdgeDecayMonitor.rollingData": [],
+  "EdgeDecayMonitor.status": {
+   "$case": "healthy",
+   "label": "Healthy",
+   "icon": "checkmark.seal.fill"
+  },
+  "EdgeDecayMonitor.diagnoses": [],
+  "EmotionalAnalytics.metrics": null,
+  "EventImpactProfiler.results": [],
+  "EventImpactProfiler.tradingMonths": 4,
+  "ExitAnalysis.validTrades": [
+   "#51000209",
+   "#51000065",
+   "#51000157",
+   "#51000025",
+   "#51000083",
+   "#51000218",
+   "#51000170",
+   "#51000097",
+   "#51000094",
+   "#51000001",
+   "#51000123",
+   "#51000114"
+  ],
+  "ExitAnalysis.avgExitEfficiency": 47.22175269638486,
+  "ExitAnalysis.totalMoneyLeftOnTable": 67.98100000000001,
+  "ExitAnalysis.winners": [
+   "#51000209",
+   "#51000157",
+   "#51000025",
+   "#51000094",
+   "#51000001",
+   "#51000123",
+   "#51000114"
+  ],
+  "ExitAnalysis.earlyExitPercent": 57.14285714285714,
+  "ExitAnalysis.avgPostClose15m": 4.814285714285715,
+  "ExitAnalysis.avgPostClose30m": 4.757142857142858,
+  "ExitAnalysis.distributionBuckets": [
+   {
+    "count": 5,
+    "id": "0-20%",
+    "label": "0-20%"
+   },
+   {
+    "count": 0,
+    "id": "20-40%",
+    "label": "20-40%"
+   },
+   {
+    "count": 0,
+    "id": "40-60%",
+    "label": "40-60%"
+   },
+   {
+    "count": 3,
+    "id": "60-80%",
+    "label": "60-80%"
+   },
+   {
+    "count": 4,
+    "id": "80-100%",
+    "label": "80-100%"
+   }
+  ],
+  "ExitAnalysis.exitsEarly": true,
+  "ExitAnalysis.insightText": "Exiting way too early — capturing less than half of available moves",
+  "ExpectancyCurve.projectionPoints": [
+   {
+    "actual": 203.09,
+    "projected": 18.179166666666674,
+    "trade": 1
+   },
+   {
+    "actual": 206.62,
+    "projected": 36.35833333333335,
+    "trade": 2
+   },
+   {
+    "actual": 216.21,
+    "projected": 54.53750000000002,
+    "trade": 3
+   },
+   {
+    "actual": 752.3700000000001,
+    "projected": 72.7166666666667,
+    "trade": 4
+   },
+   {
+    "actual": 474.17000000000013,
+    "projected": 90.89583333333337,
+    "trade": 5
+   },
+   {
+    "actual": 64.30000000000013,
+    "projected": 109.07500000000005,
+    "trade": 6
+   },
+   {
+    "actual": 56.72000000000013,
+    "projected": 127.25416666666672,
+    "trade": 7
+   },
+   {
+    "actual": -179.38999999999987,
+    "projected": 145.4333333333334,
+    "trade": 8
+   },
+   {
+    "actual": -81.47999999999988,
+    "projected": 163.61250000000007,
+    "trade": 9
+   },
+   {
+    "actual": -2.6599999999998687,
+    "projected": 181.79166666666674,
+    "trade": 10
+   },
+   {
+    "actual": -2.6599999999998687,
+    "projected": 199.97083333333342,
+    "trade": 11
+   },
+   {
+    "actual": 451.09000000000015,
+    "projected": 218.1500000000001,
+    "trade": 12
+   }
+  ],
+  "ExpectancyCurve.deviation": "+107% vs expected",
+  "GradeDistribution.gradeData": [
+   {
+    "count": 4,
+    "grade": "B",
+    "id": "B",
+    "percent": 33.33333333333333
+   },
+   {
+    "count": 3,
+    "grade": "C",
+    "id": "C",
+    "percent": 25
+   },
+   {
+    "count": 3,
+    "grade": "D",
+    "id": "D",
+    "percent": 25
+   },
+   {
+    "count": 2,
+    "grade": "F",
+    "id": "F",
+    "percent": 16.666666666666664
+   }
+  ],
+  "GradeDistribution.averageScore": 52.916666666666664,
+  "GrowthProjection.tradesPerWeek": 4,
+  "GrowthProjection.projectionData": [
+   {
+    "conservative": 0,
+    "expected": 0,
+    "optimistic": 0,
+    "week": 0
+   },
+   {
+    "conservative": 43.63000000000002,
+    "expected": 72.7166666666667,
+    "optimistic": 101.80333333333337,
+    "week": 1
+   },
+   {
+    "conservative": 87.26000000000003,
+    "expected": 145.4333333333334,
+    "optimistic": 203.60666666666674,
+    "week": 2
+   },
+   {
+    "conservative": 130.89000000000004,
+    "expected": 218.1500000000001,
+    "optimistic": 305.4100000000001,
+    "week": 3
+   },
+   {
+    "conservative": 174.52000000000007,
+    "expected": 290.8666666666668,
+    "optimistic": 407.2133333333335,
+    "week": 4
+   },
+   {
+    "conservative": 218.1500000000001,
+    "expected": 363.5833333333335,
+    "optimistic": 509.0166666666668,
+    "week": 5
+   },
+   {
+    "conservative": 261.7800000000001,
+    "expected": 436.3000000000002,
+    "optimistic": 610.8200000000002,
+    "week": 6
+   },
+   {
+    "conservative": 305.41000000000014,
+    "expected": 509.0166666666669,
+    "optimistic": 712.6233333333336,
+    "week": 7
+   },
+   {
+    "conservative": 349.04000000000013,
+    "expected": 581.7333333333336,
+    "optimistic": 814.426666666667,
+    "week": 8
+   },
+   {
+    "conservative": 392.67000000000013,
+    "expected": 654.4500000000003,
+    "optimistic": 916.2300000000004,
+    "week": 9
+   },
+   {
+    "conservative": 436.3000000000002,
+    "expected": 727.166666666667,
+    "optimistic": 1018.0333333333336,
+    "week": 10
+   },
+   {
+    "conservative": 479.9300000000002,
+    "expected": 799.8833333333337,
+    "optimistic": 1119.836666666667,
+    "week": 11
+   },
+   {
+    "conservative": 523.5600000000002,
+    "expected": 872.6000000000004,
+    "optimistic": 1221.6400000000003,
+    "week": 12
+   },
+   {
+    "conservative": 567.1900000000002,
+    "expected": 945.3166666666671,
+    "optimistic": 1323.4433333333338,
+    "week": 13
+   },
+   {
+    "conservative": 610.8200000000003,
+    "expected": 1018.0333333333338,
+    "optimistic": 1425.2466666666671,
+    "week": 14
+   },
+   {
+    "conservative": 654.4500000000003,
+    "expected": 1090.7500000000005,
+    "optimistic": 1527.0500000000006,
+    "week": 15
+   },
+   {
+    "conservative": 698.0800000000003,
+    "expected": 1163.4666666666672,
+    "optimistic": 1628.853333333334,
+    "week": 16
+   },
+   {
+    "conservative": 741.7100000000003,
+    "expected": 1236.1833333333338,
+    "optimistic": 1730.6566666666672,
+    "week": 17
+   },
+   {
+    "conservative": 785.3400000000003,
+    "expected": 1308.9000000000005,
+    "optimistic": 1832.4600000000007,
+    "week": 18
+   },
+   {
+    "conservative": 828.9700000000004,
+    "expected": 1381.6166666666672,
+    "optimistic": 1934.263333333334,
+    "week": 19
+   },
+   {
+    "conservative": 872.6000000000004,
+    "expected": 1454.333333333334,
+    "optimistic": 2036.0666666666673,
+    "week": 20
+   },
+   {
+    "conservative": 916.2300000000004,
+    "expected": 1527.0500000000006,
+    "optimistic": 2137.870000000001,
+    "week": 21
+   },
+   {
+    "conservative": 959.8600000000004,
+    "expected": 1599.7666666666673,
+    "optimistic": 2239.673333333334,
+    "week": 22
+   },
+   {
+    "conservative": 1003.4900000000004,
+    "expected": 1672.483333333334,
+    "optimistic": 2341.4766666666674,
+    "week": 23
+   },
+   {
+    "conservative": 1047.1200000000003,
+    "expected": 1745.2000000000007,
+    "optimistic": 2443.2800000000007,
+    "week": 24
+   }
+  ],
+  "GrowthProjection[months3].tradesPerWeek": 4,
+  "GrowthProjection[months3].projectionData": [
+   {
+    "conservative": 0,
+    "expected": 0,
+    "optimistic": 0,
+    "week": 0
+   },
+   {
+    "conservative": 43.63000000000002,
+    "expected": 72.7166666666667,
+    "optimistic": 101.80333333333337,
+    "week": 1
+   },
+   {
+    "conservative": 87.26000000000003,
+    "expected": 145.4333333333334,
+    "optimistic": 203.60666666666674,
+    "week": 2
+   },
+   {
+    "conservative": 130.89000000000004,
+    "expected": 218.1500000000001,
+    "optimistic": 305.4100000000001,
+    "week": 3
+   },
+   {
+    "conservative": 174.52000000000007,
+    "expected": 290.8666666666668,
+    "optimistic": 407.2133333333335,
+    "week": 4
+   },
+   {
+    "conservative": 218.1500000000001,
+    "expected": 363.5833333333335,
+    "optimistic": 509.0166666666668,
+    "week": 5
+   },
+   {
+    "conservative": 261.7800000000001,
+    "expected": 436.3000000000002,
+    "optimistic": 610.8200000000002,
+    "week": 6
+   },
+   {
+    "conservative": 305.41000000000014,
+    "expected": 509.0166666666669,
+    "optimistic": 712.6233333333336,
+    "week": 7
+   },
+   {
+    "conservative": 349.04000000000013,
+    "expected": 581.7333333333336,
+    "optimistic": 814.426666666667,
+    "week": 8
+   },
+   {
+    "conservative": 392.67000000000013,
+    "expected": 654.4500000000003,
+    "optimistic": 916.2300000000004,
+    "week": 9
+   },
+   {
+    "conservative": 436.3000000000002,
+    "expected": 727.166666666667,
+    "optimistic": 1018.0333333333336,
+    "week": 10
+   },
+   {
+    "conservative": 479.9300000000002,
+    "expected": 799.8833333333337,
+    "optimistic": 1119.836666666667,
+    "week": 11
+   },
+   {
+    "conservative": 523.5600000000002,
+    "expected": 872.6000000000004,
+    "optimistic": 1221.6400000000003,
+    "week": 12
+   }
+  ],
+  "GrowthProjection[months12].tradesPerWeek": 4,
+  "GrowthProjection[months12].projectionData": [
+   {
+    "conservative": 0,
+    "expected": 0,
+    "optimistic": 0,
+    "week": 0
+   },
+   {
+    "conservative": 43.63000000000002,
+    "expected": 72.7166666666667,
+    "optimistic": 101.80333333333337,
+    "week": 1
+   },
+   {
+    "conservative": 87.26000000000003,
+    "expected": 145.4333333333334,
+    "optimistic": 203.60666666666674,
+    "week": 2
+   },
+   {
+    "conservative": 130.89000000000004,
+    "expected": 218.1500000000001,
+    "optimistic": 305.4100000000001,
+    "week": 3
+   },
+   {
+    "conservative": 174.52000000000007,
+    "expected": 290.8666666666668,
+    "optimistic": 407.2133333333335,
+    "week": 4
+   },
+   {
+    "conservative": 218.1500000000001,
+    "expected": 363.5833333333335,
+    "optimistic": 509.0166666666668,
+    "week": 5
+   },
+   {
+    "conservative": 261.7800000000001,
+    "expected": 436.3000000000002,
+    "optimistic": 610.8200000000002,
+    "week": 6
+   },
+   {
+    "conservative": 305.41000000000014,
+    "expected": 509.0166666666669,
+    "optimistic": 712.6233333333336,
+    "week": 7
+   },
+   {
+    "conservative": 349.04000000000013,
+    "expected": 581.7333333333336,
+    "optimistic": 814.426666666667,
+    "week": 8
+   },
+   {
+    "conservative": 392.67000000000013,
+    "expected": 654.4500000000003,
+    "optimistic": 916.2300000000004,
+    "week": 9
+   },
+   {
+    "conservative": 436.3000000000002,
+    "expected": 727.166666666667,
+    "optimistic": 1018.0333333333336,
+    "week": 10
+   },
+   {
+    "conservative": 479.9300000000002,
+    "expected": 799.8833333333337,
+    "optimistic": 1119.836666666667,
+    "week": 11
+   },
+   {
+    "conservative": 523.5600000000002,
+    "expected": 872.6000000000004,
+    "optimistic": 1221.6400000000003,
+    "week": 12
+   },
+   {
+    "conservative": 567.1900000000002,
+    "expected": 945.3166666666671,
+    "optimistic": 1323.4433333333338,
+    "week": 13
+   },
+   {
+    "conservative": 610.8200000000003,
+    "expected": 1018.0333333333338,
+    "optimistic": 1425.2466666666671,
+    "week": 14
+   },
+   {
+    "conservative": 654.4500000000003,
+    "expected": 1090.7500000000005,
+    "optimistic": 1527.0500000000006,
+    "week": 15
+   },
+   {
+    "conservative": 698.0800000000003,
+    "expected": 1163.4666666666672,
+    "optimistic": 1628.853333333334,
+    "week": 16
+   },
+   {
+    "conservative": 741.7100000000003,
+    "expected": 1236.1833333333338,
+    "optimistic": 1730.6566666666672,
+    "week": 17
+   },
+   {
+    "conservative": 785.3400000000003,
+    "expected": 1308.9000000000005,
+    "optimistic": 1832.4600000000007,
+    "week": 18
+   },
+   {
+    "conservative": 828.9700000000004,
+    "expected": 1381.6166666666672,
+    "optimistic": 1934.263333333334,
+    "week": 19
+   },
+   {
+    "conservative": 872.6000000000004,
+    "expected": 1454.333333333334,
+    "optimistic": 2036.0666666666673,
+    "week": 20
+   },
+   {
+    "conservative": 916.2300000000004,
+    "expected": 1527.0500000000006,
+    "optimistic": 2137.870000000001,
+    "week": 21
+   },
+   {
+    "conservative": 959.8600000000004,
+    "expected": 1599.7666666666673,
+    "optimistic": 2239.673333333334,
+    "week": 22
+   },
+   {
+    "conservative": 1003.4900000000004,
+    "expected": 1672.483333333334,
+    "optimistic": 2341.4766666666674,
+    "week": 23
+   },
+   {
+    "conservative": 1047.1200000000003,
+    "expected": 1745.2000000000007,
+    "optimistic": 2443.2800000000007,
+    "week": 24
+   },
+   {
+    "conservative": 1090.7500000000005,
+    "expected": 1817.9166666666674,
+    "optimistic": 2545.0833333333344,
+    "week": 25
+   },
+   {
+    "conservative": 1134.3800000000003,
+    "expected": 1890.6333333333341,
+    "optimistic": 2646.8866666666677,
+    "week": 26
+   },
+   {
+    "conservative": 1178.0100000000004,
+    "expected": 1963.3500000000008,
+    "optimistic": 2748.690000000001,
+    "week": 27
+   },
+   {
+    "conservative": 1221.6400000000006,
+    "expected": 2036.0666666666675,
+    "optimistic": 2850.4933333333342,
+    "week": 28
+   },
+   {
+    "conservative": 1265.2700000000004,
+    "expected": 2108.783333333334,
+    "optimistic": 2952.2966666666675,
+    "week": 29
+   },
+   {
+    "conservative": 1308.9000000000005,
+    "expected": 2181.500000000001,
+    "optimistic": 3054.1000000000013,
+    "week": 30
+   },
+   {
+    "conservative": 1352.5300000000004,
+    "expected": 2254.2166666666676,
+    "optimistic": 3155.9033333333346,
+    "week": 31
+   },
+   {
+    "conservative": 1396.1600000000005,
+    "expected": 2326.9333333333343,
+    "optimistic": 3257.706666666668,
+    "week": 32
+   },
+   {
+    "conservative": 1439.7900000000006,
+    "expected": 2399.650000000001,
+    "optimistic": 3359.510000000001,
+    "week": 33
+   },
+   {
+    "conservative": 1483.4200000000005,
+    "expected": 2472.3666666666677,
+    "optimistic": 3461.3133333333344,
+    "week": 34
+   },
+   {
+    "conservative": 1527.0500000000006,
+    "expected": 2545.0833333333344,
+    "optimistic": 3563.116666666668,
+    "week": 35
+   },
+   {
+    "conservative": 1570.6800000000005,
+    "expected": 2617.800000000001,
+    "optimistic": 3664.9200000000014,
+    "week": 36
+   },
+   {
+    "conservative": 1614.3100000000006,
+    "expected": 2690.516666666668,
+    "optimistic": 3766.7233333333347,
+    "week": 37
+   },
+   {
+    "conservative": 1657.9400000000007,
+    "expected": 2763.2333333333345,
+    "optimistic": 3868.526666666668,
+    "week": 38
+   },
+   {
+    "conservative": 1701.5700000000006,
+    "expected": 2835.950000000001,
+    "optimistic": 3970.3300000000013,
+    "week": 39
+   },
+   {
+    "conservative": 1745.2000000000007,
+    "expected": 2908.666666666668,
+    "optimistic": 4072.1333333333346,
+    "week": 40
+   },
+   {
+    "conservative": 1788.8300000000006,
+    "expected": 2981.3833333333346,
+    "optimistic": 4173.936666666668,
+    "week": 41
+   },
+   {
+    "conservative": 1832.4600000000007,
+    "expected": 3054.1000000000013,
+    "optimistic": 4275.740000000002,
+    "week": 42
+   },
+   {
+    "conservative": 1876.0900000000006,
+    "expected": 3126.816666666668,
+    "optimistic": 4377.543333333335,
+    "week": 43
+   },
+   {
+    "conservative": 1919.7200000000007,
+    "expected": 3199.5333333333347,
+    "optimistic": 4479.346666666668,
+    "week": 44
+   },
+   {
+    "conservative": 1963.3500000000008,
+    "expected": 3272.2500000000014,
+    "optimistic": 4581.1500000000015,
+    "week": 45
+   },
+   {
+    "conservative": 2006.9800000000007,
+    "expected": 3344.966666666668,
+    "optimistic": 4682.953333333335,
+    "week": 46
+   },
+   {
+    "conservative": 2050.6100000000006,
+    "expected": 3417.6833333333348,
+    "optimistic": 4784.756666666668,
+    "week": 47
+   },
+   {
+    "conservative": 2094.2400000000007,
+    "expected": 3490.4000000000015,
+    "optimistic": 4886.560000000001,
+    "week": 48
+   }
+  ],
+  "HourlyPnLChart.hourlyData": [
+   {
+    "count": 1,
+    "hour": 1,
+    "pnl": 78.82000000000001
+   },
+   {
+    "count": 1,
+    "hour": 6,
+    "pnl": -7.58
+   },
+   {
+    "count": 1,
+    "hour": 9,
+    "pnl": 9.59
+   },
+   {
+    "count": 1,
+    "hour": 10,
+    "pnl": 536.1600000000001
+   },
+   {
+    "count": 1,
+    "hour": 11,
+    "pnl": -278.2
+   },
+   {
+    "count": 1,
+    "hour": 15,
+    "pnl": 3.53
+   },
+   {
+    "count": 1,
+    "hour": 18,
+    "pnl": 97.91
+   },
+   {
+    "count": 1,
+    "hour": 19,
+    "pnl": -409.87
+   },
+   {
+    "count": 2,
+    "hour": 20,
+    "pnl": -33.01999999999998
+   },
+   {
+    "count": 1,
+    "hour": 21,
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "hour": 22,
+    "pnl": 453.75
+   }
+  ],
+  "ImprovementTracker.rollingMetrics": [],
+  "ImprovementTracker.trend": {
+   "$case": "insufficient",
+   "label": "Need more data",
+   "icon": "questionmark.circle"
+  },
+  "ImprovementTracker.insightText": "Keep trading to build enough history for trend detection",
+  "KillZoneOptimizer.tradingDays": 9,
+  "KillZoneOptimizer.hourlyStats": [
+   {
+    "count": 0,
+    "hour": 0,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 1,
+    "hour": 1,
+    "pnl": 78.82000000000001,
+    "winRate": 100
+   },
+   {
+    "count": 0,
+    "hour": 2,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 3,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 4,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 5,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 1,
+    "hour": 6,
+    "pnl": -7.58,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 7,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 8,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 1,
+    "hour": 9,
+    "pnl": 9.59,
+    "winRate": 100
+   },
+   {
+    "count": 1,
+    "hour": 10,
+    "pnl": 536.1600000000001,
+    "winRate": 100
+   },
+   {
+    "count": 1,
+    "hour": 11,
+    "pnl": -278.2,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 12,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 13,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 14,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 1,
+    "hour": 15,
+    "pnl": 3.53,
+    "winRate": 100
+   },
+   {
+    "count": 0,
+    "hour": 16,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 17,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 1,
+    "hour": 18,
+    "pnl": 97.91,
+    "winRate": 100
+   },
+   {
+    "count": 1,
+    "hour": 19,
+    "pnl": -409.87,
+    "winRate": 0
+   },
+   {
+    "count": 2,
+    "hour": 20,
+    "pnl": -33.01999999999998,
+    "winRate": 50
+   },
+   {
+    "count": 1,
+    "hour": 21,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 1,
+    "hour": 22,
+    "pnl": 453.75,
+    "winRate": 100
+   },
+   {
+    "count": 0,
+    "hour": 23,
+    "pnl": 0,
+    "winRate": 0
+   }
+  ],
+  "KillZoneOptimizer.recommendWindows": [],
+  "KillZoneOptimizer.avoidWindows": [],
+  "KillZoneOptimizer.topWindowMonthlyPnL": 0,
+  "LotSizeAnalysis.avgLotsWins": 0.7742857142857142,
+  "LotSizeAnalysis.avgLotsLosses": 1.005,
+  "MAEMFEChart.captureRatio": 0.64692005710207,
+  "MAEMFEChart.avgMAE": 16.641666666666666,
+  "MAEMFEChart.avgMFE": 38.916666666666664,
+  "MAEMFEChart.mfeToMaeRatio": 2.3385077616424637,
+  "MAEMFEChart.insightText": "Good trade management — 2:1+ favorable ratio",
+  "MAEMFEChart.insightIcon": "checkmark.circle",
+  "MonteCarloSimulation.result": null,
+  "MonthlyReturns.monthlyData": [
+   {
+    "id": "2026-06",
+    "month": 6,
+    "profit": 451.09000000000015,
+    "tradeCount": 12,
+    "winRate": 58.333333333333336,
+    "year": 2026
+   }
+  ],
+  "MonthlyReturns.years": [
+   2026
+  ],
+  "NetCurrencyExposure.exposures": [
+   {
+    "currency": "JPY",
+    "netLots": -1.75
+   },
+   {
+    "currency": "AUD",
+    "netLots": 1.73
+   },
+   {
+    "currency": "EUR",
+    "netLots": -1.06
+   },
+   {
+    "currency": "USD",
+    "netLots": 0.5800000000000001
+   },
+   {
+    "currency": "GBP",
+    "netLots": 0.5
+   }
+  ],
+  "NetCurrencyExposure.maxAbsExposure": 1.75,
+  "NetCurrencyExposure.totalAbsExposure": 5.62,
+  "NetCurrencyExposure.concentration": {
+   "currency": "JPY",
+   "percent": 31.13879003558719
+  },
+  "NetCurrencyExposure.correlatedInsights": [
+   {
+    "currency": "JPY",
+    "direction": "short",
+    "pairs": [
+     "EURJPY",
+     "USDJPY"
+    ]
+   },
+   {
+    "currency": "EUR",
+    "direction": "long",
+    "pairs": [
+     "EURJPY",
+     "EURUSD"
+    ]
+   },
+   {
+    "currency": "USD",
+    "direction": "long",
+    "pairs": [
+     "EURUSD",
+     "GBPUSD",
+     "USDJPY"
+    ]
+   },
+   {
+    "currency": "USD",
+    "direction": "short",
+    "pairs": [
+     "AUDUSD",
+     "EURUSD",
+     "GBPUSD"
+    ]
+   }
+  ],
+  "PairAnalytics.pairGroups": [
+   {
+    "symbol": "AUDUSD",
+    "trades": [
+     "#51000025",
+     "#51000218",
+     "#51000001",
+     "#51000114"
+    ]
+   },
+   {
+    "symbol": "EURUSD",
+    "trades": [
+     "#51000157",
+     "#51000170",
+     "#51000094",
+     "#51000123"
+    ]
+   },
+   {
+    "symbol": "GBPUSD",
+    "trades": [
+     "#51000209",
+     "#51000097"
+    ]
+   },
+   {
+    "symbol": "EURJPY",
+    "trades": [
+     "#51000065"
+    ]
+   },
+   {
+    "symbol": "USDJPY",
+    "trades": [
+     "#51000083"
+    ]
+   }
+  ],
+  "PairCorrelation.pairs": [
+   "AUDUSD",
+   "EURJPY",
+   "EURUSD",
+   "GBPUSD",
+   "USDJPY"
+  ],
+  "PairCorrelation.pairDailyPnL": {
+   "allDates": [
+    "2026-06-01",
+    "2026-06-02",
+    "2026-06-09",
+    "2026-06-15",
+    "2026-06-16",
+    "2026-06-18",
+    "2026-06-22",
+    "2026-06-23",
+    "2026-06-24",
+    "2026-06-26"
+   ],
+   "data": {
+    "AUDUSD": {
+     "2026-06-01": 203.09,
+     "2026-06-02": 9.59,
+     "2026-06-16": -7.58,
+     "2026-06-22": 97.91
+    },
+    "EURJPY": {
+     "2026-06-24": 0
+    },
+    "EURUSD": {
+     "2026-06-02": 3.53,
+     "2026-06-09": 536.1600000000001,
+     "2026-06-15": -409.87,
+     "2026-06-23": 78.82000000000001
+    },
+    "GBPUSD": {
+     "2026-06-09": -278.2,
+     "2026-06-26": 453.75
+    },
+    "USDJPY": {
+     "2026-06-18": -236.10999999999999
+    }
+   }
+  },
+  "PairCorrelation.correlationMatrix": [
+   [
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    1
+   ]
+  ],
+  "PairCorrelation.dataQualitySummary": {
+   "maxOverlap": 1,
+   "sufficient": 0,
+   "total": 10
+  },
+  "PerformanceSummary.calendar": {
+   "firstWeekday": 1,
+   "identifier": "gregorian",
+   "locale": "en_US_POSIX",
+   "minimumDaysInFirstWeek": 1,
+   "timeZone": "GMT"
+  },
+  "PerformanceSummary.thisWeekTrades": [],
+  "PerformanceSummary.thisMonthTrades": [],
+  "PerformanceSummary.lastMonthTrades": [],
+  "PeriodComparison.currentPeriodTrades": [],
+  "PeriodComparison.previousPeriodTrades": [],
+  "PeriodComparison.comparisons": [
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "pnl",
+    "isPositiveGood": true,
+    "label": "P&L",
+    "previous": "$ 0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.0%",
+    "id": "wr",
+    "isPositiveGood": true,
+    "label": "Win Rate",
+    "previous": "0.0%"
+   },
+   {
+    "change": 0,
+    "current": "0.00",
+    "id": "pf",
+    "isPositiveGood": true,
+    "label": "Profit Factor",
+    "previous": "0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.00R",
+    "id": "avgr",
+    "isPositiveGood": true,
+    "label": "Avg R",
+    "previous": "0.00R"
+   },
+   {
+    "change": 0,
+    "current": "0",
+    "id": "trades",
+    "isPositiveGood": true,
+    "label": "Trades",
+    "previous": "0"
+   },
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "dd",
+    "isPositiveGood": false,
+    "label": "Max DD",
+    "previous": "$ 0.00"
+   }
+  ],
+  "PeriodComparison[week].currentPeriodTrades": [],
+  "PeriodComparison[week].previousPeriodTrades": [],
+  "PeriodComparison[week].comparisons": [
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "pnl",
+    "isPositiveGood": true,
+    "label": "P&L",
+    "previous": "$ 0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.0%",
+    "id": "wr",
+    "isPositiveGood": true,
+    "label": "Win Rate",
+    "previous": "0.0%"
+   },
+   {
+    "change": 0,
+    "current": "0.00",
+    "id": "pf",
+    "isPositiveGood": true,
+    "label": "Profit Factor",
+    "previous": "0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.00R",
+    "id": "avgr",
+    "isPositiveGood": true,
+    "label": "Avg R",
+    "previous": "0.00R"
+   },
+   {
+    "change": 0,
+    "current": "0",
+    "id": "trades",
+    "isPositiveGood": true,
+    "label": "Trades",
+    "previous": "0"
+   },
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "dd",
+    "isPositiveGood": false,
+    "label": "Max DD",
+    "previous": "$ 0.00"
+   }
+  ],
+  "PeriodComparison[quarter].currentPeriodTrades": [],
+  "PeriodComparison[quarter].previousPeriodTrades": [
+   "#51000209",
+   "#51000065",
+   "#51000157",
+   "#51000025",
+   "#51000083",
+   "#51000218",
+   "#51000170",
+   "#51000097",
+   "#51000094",
+   "#51000001",
+   "#51000123",
+   "#51000114"
+  ],
+  "PeriodComparison[quarter].comparisons": [
+   {
+    "change": -100,
+    "current": "$ 0.00",
+    "id": "pnl",
+    "isPositiveGood": true,
+    "label": "P&L",
+    "previous": "$ 451.09"
+   },
+   {
+    "change": -58.333333333333336,
+    "current": "0.0%",
+    "id": "wr",
+    "isPositiveGood": true,
+    "label": "Win Rate",
+    "previous": "58.3%"
+   },
+   {
+    "change": -100,
+    "current": "0.00",
+    "id": "pf",
+    "isPositiveGood": true,
+    "label": "Profit Factor",
+    "previous": "1.48"
+   },
+   {
+    "change": -0.8875000000000001,
+    "current": "0.00R",
+    "id": "avgr",
+    "isPositiveGood": true,
+    "label": "Avg R",
+    "previous": "0.89R"
+   },
+   {
+    "change": -100,
+    "current": "0",
+    "id": "trades",
+    "isPositiveGood": true,
+    "label": "Trades",
+    "previous": "12"
+   },
+   {
+    "change": -100,
+    "current": "$ 0.00",
+    "id": "dd",
+    "isPositiveGood": false,
+    "label": "Max DD",
+    "previous": "$ 931.76"
+   }
+  ],
+  "PlaybookCatalog.setups": [],
+  "PlaybookCatalog.keepSetups": [],
+  "PlaybookCatalog.reviewSetups": [],
+  "PlaybookCatalog.dropSetups": [],
+  "PositionSizer.balance": 10000,
+  "PositionSizer.riskPerTrade": 100,
+  "PositionSizer.avgSLPips": 26.833333333333332,
+  "PositionSizer.suggestedLots": 0.37,
+  "PositionSizer.currentAvgLots": 0.8075,
+  "PositionSizer.isSizingAligned": false,
+  "PositionSizer[balance25k_risk2].balance": 25000,
+  "PositionSizer[balance25k_risk2].riskPerTrade": 500,
+  "PositionSizer[balance25k_risk2].avgSLPips": 26.833333333333332,
+  "PositionSizer[balance25k_risk2].suggestedLots": 1.86,
+  "PositionSizer[balance25k_risk2].currentAvgLots": 0.8075,
+  "PositionSizer[balance25k_risk2].isSizingAligned": false,
+  "PostCloseAnalysis.avgPostClose15m": 4.3999999999999995,
+  "PostCloseAnalysis.avgPostClose30m": 3.5500000000000003,
+  "PostCloseAnalysis.earlyExitCount": 1,
+  "PostCloseAnalysis.earlyExitPercent": 14.285714285714285,
+  "PostCloseAnalysis.winContinuation": [
+   {
+    "avgPips": 4.814285714285715,
+    "label": "Winners",
+    "timeframe": "15m"
+   },
+   {
+    "avgPips": 4.757142857142858,
+    "label": "Winners",
+    "timeframe": "30m"
+   }
+  ],
+  "PostCloseAnalysis.lossContinuation": [
+   {
+    "avgPips": 2.55,
+    "label": "Losers",
+    "timeframe": "15m"
+   },
+   {
+    "avgPips": -0.5249999999999999,
+    "label": "Losers",
+    "timeframe": "30m"
+   }
+  ],
+  "PropFirmTracker.totalPnL": 451.09000000000015,
+  "PropFirmTracker.currentBalance": 100451.09,
+  "PropFirmTracker.profitTargetDollars": 8000,
+  "PropFirmTracker.maxDailyLossDollars": 5000,
+  "PropFirmTracker.maxDrawdownDollars": 10000,
+  "PropFirmTracker.dailyPnL": 0,
+  "PropFirmTracker.maxDrawdown": 931.76,
+  "PropFirmTracker.dailyLossBreached": false,
+  "PropFirmTracker.drawdownBreached": false,
+  "PropFirmTracker.tradingDays": 10,
+  "PropFirmTracker[custom].totalPnL": 451.09000000000015,
+  "PropFirmTracker[custom].currentBalance": 50451.09,
+  "PropFirmTracker[custom].profitTargetDollars": 5000,
+  "PropFirmTracker[custom].maxDailyLossDollars": 2000,
+  "PropFirmTracker[custom].maxDrawdownDollars": 4000,
+  "PropFirmTracker[custom].dailyPnL": 0,
+  "PropFirmTracker[custom].maxDrawdown": 931.76,
+  "PropFirmTracker[custom].dailyLossBreached": false,
+  "PropFirmTracker[custom].drawdownBreached": false,
+  "PropFirmTracker[custom].tradingDays": 10,
+  "QuickInsight.insight": {
+   "icon": "clock.fill",
+   "message": "$ 453.75 across 1 trades with 100.0% win rate.",
+   "title": "Late is your strongest session"
+  },
+  "QuickInsight.generateInsight": {
+   "icon": "clock.fill",
+   "message": "$ 453.75 across 1 trades with 100.0% win rate.",
+   "title": "Late is your strongest session"
+  },
+  "QuickInsight.allInsights": [
+   {
+    "icon": "clock.fill",
+    "message": "$ 453.75 across 1 trades with 100.0% win rate.",
+    "title": "Late is your strongest session"
+   },
+   {
+    "icon": "exclamationmark.triangle.fill",
+    "message": "-$ 344.98 over 5 trades. Consider reducing size or sitting out.",
+    "title": "New York is costing you"
+   },
+   {
+    "icon": "arrow.left.arrow.right.circle.fill",
+    "message": "$ 303.01 profit, 75.0% win rate across 4 trades.",
+    "title": "AUDUSD is your top pair"
+   },
+   {
+    "icon": "arrow.down.circle.fill",
+    "message": "$ 931.76 drawdown vs $ 451.09 total. Tighten risk management.",
+    "title": "Max drawdown exceeds total profit"
+   },
+   {
+    "icon": "calendar",
+    "message": "$ 342.32 with 57.1% win rate. Consider focusing effort here.",
+    "title": "Tue is your best trading day"
+   }
+  ],
+  "RMultipleChart.buckets": [
+   {
+    "count": 1,
+    "midpoint": -1.25,
+    "range": "-1.5R"
+   },
+   {
+    "count": 3,
+    "midpoint": -0.75,
+    "range": "-1.0R"
+   },
+   {
+    "count": 1,
+    "midpoint": 0.25,
+    "range": "0.0R"
+   },
+   {
+    "count": 3,
+    "midpoint": 0.75,
+    "range": "0.5R"
+   },
+   {
+    "count": 4,
+    "midpoint": 51,
+    "range": ">2R"
+   }
+  ],
+  "RMultipleChart.avgR": 0.8875000000000001,
+  "RMultipleChart.medianR": 0.75,
+  "RMultipleChart.bestR": 3.65,
+  "RMultipleChart.worstR": -1.08,
+  "RiskOfRuin.winRate": 0.5833333333333334,
+  "RiskOfRuin.avgWin": 197.54999999999998,
+  "RiskOfRuin.avgLoss": 232.94,
+  "RiskOfRuin.rewardRiskRatio": 0.8480724650124495,
+  "RiskOfRuin.riskOfRuin": 0.043803052848764616,
+  "RiskOfRuin.kellyFraction": 0.09202311651058809,
+  "RiskOfRuin.rorLevel": {
+   "$case": "low",
+   "label": "Low",
+   "icon": "shield.fill"
+  },
+  "RiskOfRuin.insightIcon": "checkmark.circle",
+  "RiskOfRuin.insightText": "Good risk management — consider maintaining current position sizing",
+  "SequenceAnalysis.sortedTrades": [
+   "#51000114",
+   "#51000123",
+   "#51000001",
+   "#51000094",
+   "#51000097",
+   "#51000170",
+   "#51000218",
+   "#51000083",
+   "#51000025",
+   "#51000157",
+   "#51000065",
+   "#51000209"
+  ],
+  "SequenceAnalysis.stats": null,
+  "SessionHeatmap.dateRangeLabel": "Jun 1 – Jun 26, 2026 · 11 active hours · 12 trades",
+  "SessionHeatmap.heatmapData": [
+   {
+    "day": "Mon",
+    "hour": 1,
+    "id": "Mon-1",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Mon",
+    "hour": 6,
+    "id": "Mon-6",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Mon",
+    "hour": 9,
+    "id": "Mon-9",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Mon",
+    "hour": 10,
+    "id": "Mon-10",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Mon",
+    "hour": 11,
+    "id": "Mon-11",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Mon",
+    "hour": 15,
+    "id": "Mon-15",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Mon",
+    "hour": 18,
+    "id": "Mon-18",
+    "profit": 97.91,
+    "tradeCount": 1
+   },
+   {
+    "day": "Mon",
+    "hour": 19,
+    "id": "Mon-19",
+    "profit": -409.87,
+    "tradeCount": 1
+   },
+   {
+    "day": "Mon",
+    "hour": 20,
+    "id": "Mon-20",
+    "profit": 203.09,
+    "tradeCount": 1
+   },
+   {
+    "day": "Mon",
+    "hour": 21,
+    "id": "Mon-21",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Mon",
+    "hour": 22,
+    "id": "Mon-22",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Tue",
+    "hour": 1,
+    "id": "Tue-1",
+    "profit": 78.82000000000001,
+    "tradeCount": 1
+   },
+   {
+    "day": "Tue",
+    "hour": 6,
+    "id": "Tue-6",
+    "profit": -7.58,
+    "tradeCount": 1
+   },
+   {
+    "day": "Tue",
+    "hour": 9,
+    "id": "Tue-9",
+    "profit": 9.59,
+    "tradeCount": 1
+   },
+   {
+    "day": "Tue",
+    "hour": 10,
+    "id": "Tue-10",
+    "profit": 536.1600000000001,
+    "tradeCount": 1
+   },
+   {
+    "day": "Tue",
+    "hour": 11,
+    "id": "Tue-11",
+    "profit": -278.2,
+    "tradeCount": 1
+   },
+   {
+    "day": "Tue",
+    "hour": 15,
+    "id": "Tue-15",
+    "profit": 3.53,
+    "tradeCount": 1
+   },
+   {
+    "day": "Tue",
+    "hour": 18,
+    "id": "Tue-18",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Tue",
+    "hour": 19,
+    "id": "Tue-19",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Tue",
+    "hour": 20,
+    "id": "Tue-20",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Tue",
+    "hour": 21,
+    "id": "Tue-21",
+    "profit": 0,
+    "tradeCount": 1
+   },
+   {
+    "day": "Tue",
+    "hour": 22,
+    "id": "Tue-22",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 1,
+    "id": "Wed-1",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 6,
+    "id": "Wed-6",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 9,
+    "id": "Wed-9",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 10,
+    "id": "Wed-10",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 11,
+    "id": "Wed-11",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 15,
+    "id": "Wed-15",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 18,
+    "id": "Wed-18",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 19,
+    "id": "Wed-19",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 20,
+    "id": "Wed-20",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 21,
+    "id": "Wed-21",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 22,
+    "id": "Wed-22",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 1,
+    "id": "Thu-1",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 6,
+    "id": "Thu-6",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 9,
+    "id": "Thu-9",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 10,
+    "id": "Thu-10",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 11,
+    "id": "Thu-11",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 15,
+    "id": "Thu-15",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 18,
+    "id": "Thu-18",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 19,
+    "id": "Thu-19",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 20,
+    "id": "Thu-20",
+    "profit": -236.10999999999999,
+    "tradeCount": 1
+   },
+   {
+    "day": "Thu",
+    "hour": 21,
+    "id": "Thu-21",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 22,
+    "id": "Thu-22",
+    "profit": 453.75,
+    "tradeCount": 1
+   },
+   {
+    "day": "Fri",
+    "hour": 1,
+    "id": "Fri-1",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 6,
+    "id": "Fri-6",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 9,
+    "id": "Fri-9",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 10,
+    "id": "Fri-10",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 11,
+    "id": "Fri-11",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 15,
+    "id": "Fri-15",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 18,
+    "id": "Fri-18",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 19,
+    "id": "Fri-19",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 20,
+    "id": "Fri-20",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 21,
+    "id": "Fri-21",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 22,
+    "id": "Fri-22",
+    "profit": 0,
+    "tradeCount": 0
+   }
+  ],
+  "SessionHeatmap.sortedActiveHours": [
+   1,
+   6,
+   9,
+   10,
+   11,
+   15,
+   18,
+   19,
+   20,
+   21,
+   22
+  ],
+  "SessionHeatmap.maxAbsProfit": 536.1600000000001,
+  "SessionIntelligence.sessionData": [
+   {
+    "avgR": 0.7749999999999999,
+    "id": "ASIAN",
+    "profit": 71.24000000000001,
+    "profitFactor": 10.398416886543536,
+    "recommendation": {
+     "$case": "neutral",
+     "label": "OK",
+     "icon": "minus.circle"
+    },
+    "session": "ASIAN",
+    "tradeCount": 2,
+    "winRate": 50
+   },
+   {
+    "avgR": 1.1133333333333333,
+    "id": "LONDON",
+    "profit": 267.55000000000007,
+    "profitFactor": 1.961718188353703,
+    "recommendation": {
+     "$case": "neutral",
+     "label": "OK",
+     "icon": "minus.circle"
+    },
+    "session": "LONDON",
+    "tradeCount": 3,
+    "winRate": 66.66666666666666
+   },
+   {
+    "avgR": 0.99,
+    "id": "NY_OVERLAP",
+    "profit": 3.53,
+    "profitFactor": "Infinity",
+    "recommendation": {
+     "$case": "neutral",
+     "label": "OK",
+     "icon": "minus.circle"
+    },
+    "session": "NY_OVERLAP",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "avgR": 0.404,
+    "id": "NY",
+    "profit": -344.9799999999999,
+    "profitFactor": 0.4659586984117155,
+    "recommendation": {
+     "$case": "neutral",
+     "label": "OK",
+     "icon": "minus.circle"
+    },
+    "session": "NY",
+    "tradeCount": 5,
+    "winRate": 40
+   },
+   {
+    "avgR": 2.75,
+    "id": "LATE",
+    "profit": 453.75,
+    "profitFactor": "Infinity",
+    "recommendation": {
+     "$case": "neutral",
+     "label": "OK",
+     "icon": "minus.circle"
+    },
+    "session": "LATE",
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "SessionRankingCard.sessions": [
+   {
+    "name": "Late",
+    "pnl": 453.75,
+    "rank": 1,
+    "trades": 1,
+    "winRate": 100
+   },
+   {
+    "name": "London",
+    "pnl": 267.55000000000007,
+    "rank": 2,
+    "trades": 3,
+    "winRate": 66.66666666666666
+   },
+   {
+    "name": "Asian",
+    "pnl": 71.24000000000001,
+    "rank": 3,
+    "trades": 2,
+    "winRate": 50
+   },
+   {
+    "name": "NY Overlap",
+    "pnl": 3.53,
+    "rank": 4,
+    "trades": 1,
+    "winRate": 100
+   },
+   {
+    "name": "New York",
+    "pnl": -344.9799999999999,
+    "rank": 5,
+    "trades": 5,
+    "winRate": 40
+   }
+  ],
+  "ShareableSummary.summaryText": "📊 Dojix Daily Summary\n─────────────────────\nP&L: +$ 451.09 | 12 trades\nWin Rate: 58.3% (7W/4L)\nPF: 1.48 | Exp: $ 18.18\nAvg R: 0.89R | Sharpe: 0.14\nStreak: 🔥 3W\n─────────────────────\nvia Dojix",
+  "SlippageAnalysis.tradesWithSlippage": [
+   "#51000209",
+   "#51000065",
+   "#51000025",
+   "#51000083",
+   "#51000218",
+   "#51000170",
+   "#51000097",
+   "#51000094",
+   "#51000001",
+   "#51000123",
+   "#51000114"
+  ],
+  "SlippageAnalysis.avgSlippage": 1.1909090909090911,
+  "SlippageAnalysis.totalSlippageCost": 137.07999999999998,
+  "SlippageAnalysis.highSlippageTrades": 0,
+  "SlippageAnalysis.buckets": [
+   {
+    "avgPnL": 30.646666666666672,
+    "count": 3,
+    "id": "0-0.5",
+    "label": "0-0.5"
+   },
+   {
+    "avgPnL": 21.630000000000006,
+    "count": 3,
+    "id": "0.5-1",
+    "label": "0.5-1"
+   },
+   {
+    "avgPnL": 114.492,
+    "count": 5,
+    "id": "1-2",
+    "label": "1-2"
+   },
+   {
+    "avgPnL": -229.35666666666665,
+    "count": 3,
+    "id": "2-3",
+    "label": "2-3"
+   },
+   {
+    "avgPnL": 0,
+    "count": 0,
+    "id": "3+",
+    "label": "3+"
+   }
+  ],
+  "StreakCard.sortedTrades": [
+   "#51000114",
+   "#51000123",
+   "#51000001",
+   "#51000094",
+   "#51000097",
+   "#51000170",
+   "#51000218",
+   "#51000083",
+   "#51000025",
+   "#51000157",
+   "#51000065",
+   "#51000209"
+  ],
+  "StreakCard.currentStreak": 1,
+  "StreakCard.bestWinStreak": 4,
+  "StreakCard.bestLossStreak": 4,
+  "StreakCard.recentResults": [
+   true,
+   true,
+   false,
+   false,
+   false,
+   false,
+   true,
+   true,
+   false,
+   true
+  ],
+  "StreakTimeline.segments": [
+   {
+    "count": 4,
+    "isWin": true,
+    "startIndex": 0
+   },
+   {
+    "count": 4,
+    "isWin": false,
+    "startIndex": 4
+   },
+   {
+    "count": 2,
+    "isWin": true,
+    "startIndex": 8
+   },
+   {
+    "count": 1,
+    "isWin": false,
+    "startIndex": 10
+   },
+   {
+    "count": 1,
+    "isWin": true,
+    "startIndex": 11
+   }
+  ],
+  "TagAnalytics.tagData": [],
+  "TagAnalytics.taggedTradeCount": 0,
+  "TimeToMFEAnalysis.validTrades": [
+   "#51000209",
+   "#51000065",
+   "#51000157",
+   "#51000025",
+   "#51000083",
+   "#51000218",
+   "#51000170",
+   "#51000097",
+   "#51000094",
+   "#51000001",
+   "#51000123",
+   "#51000114"
+  ],
+  "TimeToMFEAnalysis.buckets": [
+   {
+    "count": 1,
+    "id": "0-5m",
+    "label": "0-5m"
+   },
+   {
+    "count": 2,
+    "id": "5-15m",
+    "label": "5-15m"
+   },
+   {
+    "count": 3,
+    "id": "15-30m",
+    "label": "15-30m"
+   },
+   {
+    "count": 1,
+    "id": "30-60m",
+    "label": "30-60m"
+   },
+   {
+    "count": 5,
+    "id": "1h+",
+    "label": "1h+"
+   }
+  ],
+  "TimeToMFEAnalysis.medianTimeToMFE": 30,
+  "TimeToMFEAnalysis.avgHoldTime": 185,
+  "TimeToMFEAnalysis.avgExitEfficiency": 47.22175269638486,
+  "TimeToMFEAnalysis.isOverholding": true,
+  "TradeCalendar.calendar": {
+   "firstWeekday": 1,
+   "identifier": "gregorian",
+   "locale": "en_US_POSIX",
+   "minimumDaysInFirstWeek": 1,
+   "timeZone": "GMT"
+  },
+  "TradeCalendar.dailyPnL": {
+   "2026-06-01T00:00:00.000Z": 203.09,
+   "2026-06-02T00:00:00.000Z": 13.12,
+   "2026-06-09T00:00:00.000Z": 257.9600000000001,
+   "2026-06-15T00:00:00.000Z": -409.87,
+   "2026-06-16T00:00:00.000Z": -7.58,
+   "2026-06-18T00:00:00.000Z": -236.10999999999999,
+   "2026-06-22T00:00:00.000Z": 97.91,
+   "2026-06-23T00:00:00.000Z": 78.82000000000001,
+   "2026-06-24T00:00:00.000Z": 0,
+   "2026-06-26T00:00:00.000Z": 453.75
+  },
+  "TradeCalendar.daysInMonth": [
+   "2026-10-01T00:00:00.000Z",
+   "2026-10-02T00:00:00.000Z",
+   "2026-10-03T00:00:00.000Z",
+   "2026-10-04T00:00:00.000Z",
+   "2026-10-05T00:00:00.000Z",
+   "2026-10-06T00:00:00.000Z",
+   "2026-10-07T00:00:00.000Z",
+   "2026-10-08T00:00:00.000Z",
+   "2026-10-09T00:00:00.000Z",
+   "2026-10-10T00:00:00.000Z",
+   "2026-10-11T00:00:00.000Z",
+   "2026-10-12T00:00:00.000Z",
+   "2026-10-13T00:00:00.000Z",
+   "2026-10-14T00:00:00.000Z",
+   "2026-10-15T00:00:00.000Z",
+   "2026-10-16T00:00:00.000Z",
+   "2026-10-17T00:00:00.000Z",
+   "2026-10-18T00:00:00.000Z",
+   "2026-10-19T00:00:00.000Z",
+   "2026-10-20T00:00:00.000Z",
+   "2026-10-21T00:00:00.000Z",
+   "2026-10-22T00:00:00.000Z",
+   "2026-10-23T00:00:00.000Z",
+   "2026-10-24T00:00:00.000Z",
+   "2026-10-25T00:00:00.000Z",
+   "2026-10-26T00:00:00.000Z",
+   "2026-10-27T00:00:00.000Z",
+   "2026-10-28T00:00:00.000Z",
+   "2026-10-29T00:00:00.000Z",
+   "2026-10-30T00:00:00.000Z",
+   "2026-10-31T00:00:00.000Z"
+  ],
+  "TradeCalendar.firstWeekdayOffset": 4,
+  "TradeCalendar[lastTradeMonth].calendar": {
+   "firstWeekday": 1,
+   "identifier": "gregorian",
+   "locale": "en_US_POSIX",
+   "minimumDaysInFirstWeek": 1,
+   "timeZone": "GMT"
+  },
+  "TradeCalendar[lastTradeMonth].dailyPnL": {
+   "2026-06-01T00:00:00.000Z": 203.09,
+   "2026-06-02T00:00:00.000Z": 13.12,
+   "2026-06-09T00:00:00.000Z": 257.9600000000001,
+   "2026-06-15T00:00:00.000Z": -409.87,
+   "2026-06-16T00:00:00.000Z": -7.58,
+   "2026-06-18T00:00:00.000Z": -236.10999999999999,
+   "2026-06-22T00:00:00.000Z": 97.91,
+   "2026-06-23T00:00:00.000Z": 78.82000000000001,
+   "2026-06-24T00:00:00.000Z": 0,
+   "2026-06-26T00:00:00.000Z": 453.75
+  },
+  "TradeCalendar[lastTradeMonth].daysInMonth": [
+   "2026-06-01T00:00:00.000Z",
+   "2026-06-02T00:00:00.000Z",
+   "2026-06-03T00:00:00.000Z",
+   "2026-06-04T00:00:00.000Z",
+   "2026-06-05T00:00:00.000Z",
+   "2026-06-06T00:00:00.000Z",
+   "2026-06-07T00:00:00.000Z",
+   "2026-06-08T00:00:00.000Z",
+   "2026-06-09T00:00:00.000Z",
+   "2026-06-10T00:00:00.000Z",
+   "2026-06-11T00:00:00.000Z",
+   "2026-06-12T00:00:00.000Z",
+   "2026-06-13T00:00:00.000Z",
+   "2026-06-14T00:00:00.000Z",
+   "2026-06-15T00:00:00.000Z",
+   "2026-06-16T00:00:00.000Z",
+   "2026-06-17T00:00:00.000Z",
+   "2026-06-18T00:00:00.000Z",
+   "2026-06-19T00:00:00.000Z",
+   "2026-06-20T00:00:00.000Z",
+   "2026-06-21T00:00:00.000Z",
+   "2026-06-22T00:00:00.000Z",
+   "2026-06-23T00:00:00.000Z",
+   "2026-06-24T00:00:00.000Z",
+   "2026-06-25T00:00:00.000Z",
+   "2026-06-26T00:00:00.000Z",
+   "2026-06-27T00:00:00.000Z",
+   "2026-06-28T00:00:00.000Z",
+   "2026-06-29T00:00:00.000Z",
+   "2026-06-30T00:00:00.000Z"
+  ],
+  "TradeCalendar[lastTradeMonth].firstWeekdayOffset": 1,
+  "TradeComparison.bestTrade": "#51000094",
+  "TradeComparison.worstTrade": "#51000170",
+  "TradeTimeHeatmap.cells": [
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 0,
+    "id": "Mon-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 1,
+    "id": "Mon-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 2,
+    "id": "Mon-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 3,
+    "id": "Mon-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 4,
+    "id": "Mon-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 5,
+    "id": "Mon-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 6,
+    "id": "Mon-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 7,
+    "id": "Mon-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 8,
+    "id": "Mon-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 9,
+    "id": "Mon-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 10,
+    "id": "Mon-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 11,
+    "id": "Mon-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 12,
+    "id": "Mon-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 13,
+    "id": "Mon-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 14,
+    "id": "Mon-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 15,
+    "id": "Mon-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 16,
+    "id": "Mon-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 17,
+    "id": "Mon-17",
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "day": "Mon",
+    "hour": 18,
+    "id": "Mon-18",
+    "pnl": 97.91
+   },
+   {
+    "count": 1,
+    "day": "Mon",
+    "hour": 19,
+    "id": "Mon-19",
+    "pnl": -409.87
+   },
+   {
+    "count": 1,
+    "day": "Mon",
+    "hour": 20,
+    "id": "Mon-20",
+    "pnl": 203.09
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 21,
+    "id": "Mon-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 22,
+    "id": "Mon-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 23,
+    "id": "Mon-23",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 0,
+    "id": "Tue-0",
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "day": "Tue",
+    "hour": 1,
+    "id": "Tue-1",
+    "pnl": 78.82000000000001
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 2,
+    "id": "Tue-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 3,
+    "id": "Tue-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 4,
+    "id": "Tue-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 5,
+    "id": "Tue-5",
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "day": "Tue",
+    "hour": 6,
+    "id": "Tue-6",
+    "pnl": -7.58
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 7,
+    "id": "Tue-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 8,
+    "id": "Tue-8",
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "day": "Tue",
+    "hour": 9,
+    "id": "Tue-9",
+    "pnl": 9.59
+   },
+   {
+    "count": 1,
+    "day": "Tue",
+    "hour": 10,
+    "id": "Tue-10",
+    "pnl": 536.1600000000001
+   },
+   {
+    "count": 1,
+    "day": "Tue",
+    "hour": 11,
+    "id": "Tue-11",
+    "pnl": -278.2
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 12,
+    "id": "Tue-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 13,
+    "id": "Tue-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 14,
+    "id": "Tue-14",
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "day": "Tue",
+    "hour": 15,
+    "id": "Tue-15",
+    "pnl": 3.53
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 16,
+    "id": "Tue-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 17,
+    "id": "Tue-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 18,
+    "id": "Tue-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 19,
+    "id": "Tue-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 20,
+    "id": "Tue-20",
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "day": "Tue",
+    "hour": 21,
+    "id": "Tue-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 22,
+    "id": "Tue-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 23,
+    "id": "Tue-23",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 0,
+    "id": "Wed-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 1,
+    "id": "Wed-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 2,
+    "id": "Wed-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 3,
+    "id": "Wed-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 4,
+    "id": "Wed-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 5,
+    "id": "Wed-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 6,
+    "id": "Wed-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 7,
+    "id": "Wed-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 8,
+    "id": "Wed-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 9,
+    "id": "Wed-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 10,
+    "id": "Wed-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 11,
+    "id": "Wed-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 12,
+    "id": "Wed-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 13,
+    "id": "Wed-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 14,
+    "id": "Wed-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 15,
+    "id": "Wed-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 16,
+    "id": "Wed-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 17,
+    "id": "Wed-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 18,
+    "id": "Wed-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 19,
+    "id": "Wed-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 20,
+    "id": "Wed-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 21,
+    "id": "Wed-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 22,
+    "id": "Wed-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 23,
+    "id": "Wed-23",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 0,
+    "id": "Thu-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 1,
+    "id": "Thu-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 2,
+    "id": "Thu-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 3,
+    "id": "Thu-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 4,
+    "id": "Thu-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 5,
+    "id": "Thu-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 6,
+    "id": "Thu-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 7,
+    "id": "Thu-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 8,
+    "id": "Thu-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 9,
+    "id": "Thu-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 10,
+    "id": "Thu-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 11,
+    "id": "Thu-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 12,
+    "id": "Thu-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 13,
+    "id": "Thu-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 14,
+    "id": "Thu-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 15,
+    "id": "Thu-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 16,
+    "id": "Thu-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 17,
+    "id": "Thu-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 18,
+    "id": "Thu-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 19,
+    "id": "Thu-19",
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "day": "Thu",
+    "hour": 20,
+    "id": "Thu-20",
+    "pnl": -236.10999999999999
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 21,
+    "id": "Thu-21",
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "day": "Thu",
+    "hour": 22,
+    "id": "Thu-22",
+    "pnl": 453.75
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 23,
+    "id": "Thu-23",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 0,
+    "id": "Fri-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 1,
+    "id": "Fri-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 2,
+    "id": "Fri-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 3,
+    "id": "Fri-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 4,
+    "id": "Fri-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 5,
+    "id": "Fri-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 6,
+    "id": "Fri-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 7,
+    "id": "Fri-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 8,
+    "id": "Fri-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 9,
+    "id": "Fri-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 10,
+    "id": "Fri-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 11,
+    "id": "Fri-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 12,
+    "id": "Fri-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 13,
+    "id": "Fri-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 14,
+    "id": "Fri-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 15,
+    "id": "Fri-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 16,
+    "id": "Fri-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 17,
+    "id": "Fri-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 18,
+    "id": "Fri-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 19,
+    "id": "Fri-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 20,
+    "id": "Fri-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 21,
+    "id": "Fri-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 22,
+    "id": "Fri-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 23,
+    "id": "Fri-23",
+    "pnl": 0
+   }
+  ],
+  "TradeTimeHeatmap.maxAbsPnL": 536.1600000000001,
+  "WeeklyHeatmap.weeklyData": [
+   {
+    "id": "2026-W23",
+    "profit": 216.21,
+    "tradeCount": 3,
+    "weekStart": "2026-05-31T00:00:00.000Z",
+    "winRate": 100
+   },
+   {
+    "id": "2026-W24",
+    "profit": 257.9600000000001,
+    "tradeCount": 2,
+    "weekStart": "2026-06-07T00:00:00.000Z",
+    "winRate": 50
+   },
+   {
+    "id": "2026-W25",
+    "profit": -653.56,
+    "tradeCount": 3,
+    "weekStart": "2026-06-14T00:00:00.000Z",
+    "winRate": 0
+   },
+   {
+    "id": "2026-W26",
+    "profit": 630.48,
+    "tradeCount": 4,
+    "weekStart": "2026-06-21T00:00:00.000Z",
+    "winRate": 75
+   }
+  ],
+  "WeeklyHeatmap.maxAbsProfit": 653.56,
+  "WeeklyHeatmap.calculateStreak": 1,
+  "WhatToCutAdvisor.tradingDays": 10,
+  "WhatToCutAdvisor.negativeConditions": [],
+  "WhatToCutAdvisor.totalPotentialSavings": 0,
+  "WhatToCutAdvisor.worstCondition": null,
+  "WhatToCutAdvisor.hasEnoughData": false,
+  "WinLossDistribution.buckets": [
+   {
+    "count": 1,
+    "isProfit": false,
+    "range": "-428"
+   },
+   {
+    "count": 2,
+    "isProfit": false,
+    "range": "-321"
+   },
+   {
+    "count": 1,
+    "isProfit": false,
+    "range": "-107"
+   },
+   {
+    "count": 5,
+    "isProfit": true,
+    "range": "0"
+   },
+   {
+    "count": 1,
+    "isProfit": true,
+    "range": "107"
+   },
+   {
+    "count": 1,
+    "isProfit": true,
+    "range": "428"
+   }
+  ]
+ },
+ "skipped": {},
+ "now": "2026-10-27T22:15:11.084Z",
+ "environment": {
+  "tz": "UTC",
+  "locale": "en_US_POSIX",
+  "deterministicHashing": true
+ },
+ "nondeterministic": [
+  "outputs.CommissionAnalytics.symbolCosts",
+  "outputs.Metrics.allEdgeConditions[tradingDays=21]"
+ ]
+}

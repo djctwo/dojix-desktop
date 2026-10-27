@@ -135,7 +135,7 @@ describe("MonteCarloSimulation", () => {
     expect(monteCarloShuffleInvariantViolations({ ...bad, bands: [{ label: "x", points: [], opacity: 0 }] }, 1)).toContain("x.end");
   });
 
-  it("serves Greenwick and registers with the 15-trade guard; no member is parity-compared", () => {
+  it("serves Greenwick and registers with the 15-trade guard; parity reads `result`", () => {
     const st = createEngineContext({ brand: "greenwick", now: 0, compat: "swift" });
     const trades = Array.from({ length: 15 }, (_, i) => stTrade({ netProfit: i % 3 === 0 ? "-40" : "25", closeTime: Date.UTC(2026, 9, 1 + i, 18) }));
     const m = computeMonteCarloSimulation(st, trades);
@@ -143,7 +143,11 @@ describe("MonteCarloSimulation", () => {
     const reg = new AnalyticsRegistry().register(monteCarloSimulationComponent);
     expect(reg.run("MonteCarloSimulation", st, trades.slice(1))).toBeNull();
     expect(reg.run("MonteCarloSimulation", st, trades)).not.toBeNull();
-    expect(monteCarloSimulationParity.members).toEqual({});
+    expect(Object.keys(monteCarloSimulationParity.members)).toEqual(["result"]);
+    const enc = monteCarloSimulationParity.members.result?.(m, st) as Record<string, unknown>;
+    expect(Object.keys(enc).sort()).toEqual(["bands", "bestCase", "medianFinalPnL", "probDrawdown20", "probProfit", "probTarget", "worstCase"]);
+    expect(enc.probTarget).toBe(0); // every shuffled path ends at the total (D-05 on the Mac)
+    expect(monteCarloSimulationParity.members.result?.({ ...m, result: null }, st)).toBeNull();
     expect(monteCarloSimulationParity.compute(st, trades, undefined)?.tradeCount).toBe(15);
   });
 

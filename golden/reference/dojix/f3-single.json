@@ -1,0 +1,2280 @@
+{
+ "schema": 1,
+ "brand": "dojix",
+ "fixture": "dojix/f3-single",
+ "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+ "xcode": "Xcode 16.4",
+ "swift": "6.1+",
+ "tz": "GMT",
+ "locale": "en_US_POSIX",
+ "firstWeekday": 1,
+ "minimumDaysInFirstWeek": 1,
+ "import": {
+  "kind": "file",
+  "saDirect": {
+   "count": 1
+  },
+  "detect": {
+   "headers": [
+    "Ticket",
+    "Symbol",
+    "Direction",
+    "Lots",
+    "OpenTime",
+    "CloseTime",
+    "DurationMin",
+    "OpenPrice",
+    "ClosePrice",
+    "SL",
+    "TP",
+    "NetProfit",
+    "MAE_Pips",
+    "MFE_Pips",
+    "RMultiple",
+    "Session",
+    "DayOfWeek",
+    "Hour",
+    "RangeSize",
+    "SweepDepth",
+    "UsedFVG",
+    "VolRegime",
+    "HitBreakeven",
+    "ScaledIn",
+    "Magic",
+    "Comment",
+    "TimeToMFE_Min",
+    "SLDist_Pips",
+    "Slippage_Pips",
+    "PostClose15m",
+    "PostClose30m",
+    "BiasAtEntry"
+   ],
+   "mapping": null,
+   "platform": "StrategyAnalytics (MT5)",
+   "sampleRows": [
+    [
+     "61000006",
+     "EURUSD",
+     "BUY",
+     "0.1",
+     "2026.01.05 09:15:00",
+     "2026.01.05 10:00:00",
+     "45",
+     "1.08420",
+     "1.08520",
+     "1.08220",
+     "1.08820",
+     "42.50",
+     "6.5",
+     "14.2",
+     "2.13",
+     "LONDON",
+     "Mon",
+     "9",
+     "32.5",
+     "2.1",
+     "NO",
+     "MED",
+     "NO",
+     "NO",
+     "7001",
+     "fictional",
+     "12",
+     "20",
+     "0.2",
+     "1.5",
+     "-2.5",
+     "WITH"
+    ]
+   ]
+  },
+  "route": "sa32 (detected)",
+  "parsedCount": 1,
+  "parsed": [
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "1.0852",
+    "closeTime": "2026-01-05T10:00:00.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURUSD|BUY|0.10000000|1767604500.0|1767607200.0|1.0842|1.0852|42.5",
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 45,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 9,
+    "id": null,
+    "lots": 0.1,
+    "maePips": 6.5,
+    "magic": 7001,
+    "mfePips": 14.2,
+    "netProfit": "42.5",
+    "notes": "",
+    "openPrice": "1.0842",
+    "openTime": "2026-01-05T09:15:00.000Z",
+    "postClose15m": 1.5,
+    "postClose30m": -2.5,
+    "rMultiple": 2.13,
+    "rangeSize": 32.5,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "LONDON",
+    "sl": "1.0822",
+    "slDistPips": 20,
+    "slippagePips": 0.2,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 2.1,
+    "symbol": "EURUSD",
+    "tags": "",
+    "ticket": "61000006",
+    "timeToMFEMin": 12,
+    "tp": "1.0882",
+    "usedFVG": false,
+    "volRegime": "MED"
+   }
+  ],
+  "inserted": 1,
+  "reimportInserted": 0,
+  "journalCount": 1,
+  "journal": [
+   {
+    "biasAtEntry": "WITH",
+    "checklistData": "",
+    "closePrice": "1.0852",
+    "closeTime": "2026-01-05T10:00:00.000Z",
+    "comment": "fictional",
+    "commission": "0",
+    "contentKey": "EURUSD|BUY|0.10000000|1767604500.0|1767607200.0|1.0842|1.0852|42.5",
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 45,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 9,
+    "id": 1,
+    "lots": 0.1,
+    "maePips": 6.5,
+    "magic": 7001,
+    "mfePips": 14.2,
+    "netProfit": "42.5",
+    "notes": "",
+    "openPrice": "1.0842",
+    "openTime": "2026-01-05T09:15:00.000Z",
+    "postClose15m": 1.5,
+    "postClose30m": -2.5,
+    "rMultiple": 2.13,
+    "rangeSize": 32.5,
+    "scaledIn": false,
+    "screenshots": "",
+    "session": "LONDON",
+    "sl": "1.0822",
+    "slDistPips": 20,
+    "slippagePips": 0.2,
+    "storageViolations": [],
+    "swap": "0",
+    "sweepDepth": 2.1,
+    "symbol": "EURUSD",
+    "tags": "",
+    "ticket": "61000006",
+    "timeToMFEMin": 12,
+    "tp": "1.0882",
+    "usedFVG": false,
+    "volRegime": "MED"
+   }
+  ]
+ },
+ "outputs": {
+  "Metrics.averageDuration": 45,
+  "Metrics.averageLoss": 0,
+  "Metrics.averageMAE": 6.5,
+  "Metrics.averageMFE": 14.2,
+  "Metrics.averageRMultiple": 2.13,
+  "Metrics.averageWin": 42.5,
+  "Metrics.bestTrade": 42.5,
+  "Metrics.calmarRatio": 10,
+  "Metrics.currentStreak": 1,
+  "Metrics.expectancy": 42.5,
+  "Metrics.grossLoss": 0,
+  "Metrics.grossProfit": 42.5,
+  "Metrics.losses": 0,
+  "Metrics.maxDrawdown": 0,
+  "Metrics.maxLossStreak": 0,
+  "Metrics.maxWinStreak": 1,
+  "Metrics.netProfitAfterCosts": 42.5,
+  "Metrics.profitFactor": "Infinity",
+  "Metrics.sharpeRatio": 0,
+  "Metrics.totalCommissions": 0,
+  "Metrics.totalCosts": 0,
+  "Metrics.totalProfit": 42.5,
+  "Metrics.totalSwap": 0,
+  "Metrics.totalTrades": 1,
+  "Metrics.winRate": 100,
+  "Metrics.wins": 1,
+  "Metrics.worstTrade": 42.5,
+  "Metrics.edgeByHour": [
+   {
+    "category": "Hour",
+    "label": "9:00",
+    "profit": 42.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "Metrics.edgeBySession": [
+   {
+    "category": "Session",
+    "label": "London",
+    "profit": 42.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "Metrics.edgeByDay": [
+   {
+    "category": "Day",
+    "label": "Mon",
+    "profit": 42.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "Metrics.edgeByPair": [
+   {
+    "category": "Pair",
+    "label": "EURUSD",
+    "profit": 42.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "Metrics.edgeByBias": [
+   {
+    "category": "Bias",
+    "label": "WITH",
+    "profit": 42.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "Metrics.edgeByVolRegime": [
+   {
+    "category": "Volatility",
+    "label": "MED",
+    "profit": 42.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "Metrics.allEdgeConditions[tradingDays=21]": [
+   {
+    "dimension": "Hour",
+    "expectancy": 42.5,
+    "id": "Hour_9:00",
+    "label": "9:00",
+    "monthlyImpact": 42.5,
+    "profit": 42.5,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Day",
+    "expectancy": 42.5,
+    "id": "Day_Mon",
+    "label": "Mon",
+    "monthlyImpact": 42.5,
+    "profit": 42.5,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Session",
+    "expectancy": 42.5,
+    "id": "Session_London",
+    "label": "London",
+    "monthlyImpact": 42.5,
+    "profit": 42.5,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Pair",
+    "expectancy": 42.5,
+    "id": "Pair_EURUSD",
+    "label": "EURUSD",
+    "monthlyImpact": 42.5,
+    "profit": 42.5,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Volatility",
+    "expectancy": 42.5,
+    "id": "Volatility_MED",
+    "label": "MED",
+    "monthlyImpact": 42.5,
+    "profit": 42.5,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Bias",
+    "expectancy": 42.5,
+    "id": "Bias_WITH",
+    "label": "WITH",
+    "monthlyImpact": 42.5,
+    "profit": 42.5,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "Metrics.confidence": [
+   {
+    "actionable": false,
+    "level": {
+     "$case": "insufficient",
+     "label": "Insufficient",
+     "icon": "exclamationmark.triangle.fill"
+    },
+    "n": 0
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "insufficient",
+     "label": "Insufficient",
+     "icon": "exclamationmark.triangle.fill"
+    },
+    "n": 1
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "insufficient",
+     "label": "Insufficient",
+     "icon": "exclamationmark.triangle.fill"
+    },
+    "n": 9
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "low",
+     "label": "Low confidence",
+     "icon": "info.circle.fill"
+    },
+    "n": 10
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "low",
+     "label": "Low confidence",
+     "icon": "info.circle.fill"
+    },
+    "n": 29
+   },
+   {
+    "actionable": true,
+    "level": {
+     "$case": "significant",
+     "label": "Significant",
+     "icon": "checkmark.seal.fill"
+    },
+    "n": 30
+   },
+   {
+    "actionable": true,
+    "level": {
+     "$case": "significant",
+     "label": "Significant",
+     "icon": "checkmark.seal.fill"
+    },
+    "n": 31
+   },
+   {
+    "actionable": true,
+    "level": {
+     "$case": "significant",
+     "label": "Significant",
+     "icon": "checkmark.seal.fill"
+    },
+    "n": 100
+   }
+  ],
+  "TradeGrader.grades": [
+   {
+    "grade": {
+     "executionScore": 17,
+     "managementScore": 20,
+     "overall": "A",
+     "rScore": 22,
+     "timingScore": 25,
+     "total": 84
+    },
+    "ticket": "61000006"
+   }
+  ],
+  "StrategyCheckpoints.split": [
+   {
+    "after": {
+     "avgR": 2.13,
+     "expectancy": 42.5,
+     "maxDrawdown": 0,
+     "profitFactor": "Infinity",
+     "sharpe": 0,
+     "tradeCount": 1,
+     "winRate": 100
+    },
+    "afterCount": 1,
+    "before": {
+     "avgR": 0,
+     "expectancy": 0,
+     "maxDrawdown": 0,
+     "profitFactor": 0,
+     "sharpe": 0,
+     "tradeCount": 0,
+     "winRate": 0
+    },
+    "beforeCount": 0,
+    "date": "2026-01-05T10:00:00.000Z"
+   }
+  ],
+  "Trade.derived": [
+   {
+    "ticket": "61000006",
+    "storageViolations": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 42.5,
+    "directionSymbol": "↑",
+    "pairDisplay": "EUR/USD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "netProfitAfterCosts": "42.5",
+    "profitAfterCostsDouble": 42.5,
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "baseCurrency": "EUR",
+    "quoteCurrency": "USD",
+    "exitEfficiency": 100,
+    "moneyLeftOnTable": 0,
+    "open": {
+     "utcHour": 9,
+     "tradingSession": "LONDON",
+     "activeTradingSessions": [
+      "LONDON"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Jan 5, 09:15",
+     "timeToNextSession": 9900
+    },
+    "close": {
+     "utcHour": 10,
+     "tradingSession": "LONDON",
+     "activeTradingSessions": [
+      "LONDON"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Jan 5, 10:00",
+     "timeToNextSession": 7200
+    }
+   }
+  ],
+  "BehavioralAnalytics.report": null,
+  "BenchmarkComparison.comparisons": [],
+  "CalendarCorrelation.analysis": {
+   "eventBreakdown": {},
+   "eventDayAvgPnL": 0,
+   "eventDayAvgR": 0,
+   "eventDayTrades": [],
+   "eventDayWinRate": 0,
+   "quietDayAvgPnL": 42.5,
+   "quietDayAvgR": 2.13,
+   "quietDayTrades": [
+    "#61000006"
+   ],
+   "quietDayWinRate": 1
+  },
+  "ChecklistAnalytics.clTrades": [],
+  "ChecklistAnalytics.hasData": false,
+  "ChecklistAnalytics.ruleStats": [],
+  "ChecklistAnalytics.overallCompliance": 0,
+  "ChecklistAnalytics.allFollowedAvg": 0,
+  "ChecklistAnalytics.anyBrokenAvg": 0,
+  "CommissionAnalytics.hasCostData": false,
+  "CommissionAnalytics.totalCommissions": 0,
+  "CommissionAnalytics.totalSwap": 0,
+  "CommissionAnalytics.totalCosts": 0,
+  "CommissionAnalytics.avgCostPerTrade": 0,
+  "CommissionAnalytics.grossProfit": 42.5,
+  "CommissionAnalytics.costPercent": 0,
+  "CommissionAnalytics.symbolCosts": [
+   {
+    "costPerLot": 0,
+    "symbol": "EURUSD",
+    "totalCosts": 0,
+    "totalLots": 0.1
+   }
+  ],
+  "ConsistencyScore.dimensions": [],
+  "ConsistencyScore.overallScore": 0,
+  "ConsistencyScore.grade": {
+   "$case": "f",
+   "label": "F"
+  },
+  "DailyBrief.signals": [],
+  "DailyBrief.generateSignals": [],
+  "DataQuality.issues": [],
+  "DayOfWeekChart.data": [
+   {
+    "day": "Mon",
+    "id": "Mon",
+    "profit": 42.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "DirectionalEdge.buyTrades": [
+   "#61000006"
+  ],
+  "DirectionalEdge.sellTrades": [],
+  "DirectionalEdge.buyStats": {
+   "avgPnL": 42.5,
+   "avgR": 2.13,
+   "count": 1,
+   "totalPnL": 42.5,
+   "winRate": 100
+  },
+  "DirectionalEdge.sellStats": {
+   "avgPnL": 0,
+   "avgR": 0,
+   "count": 0,
+   "totalPnL": 0,
+   "winRate": 0
+  },
+  "DrawdownChart.drawdownData": [
+   {
+    "date": "2026-01-05T10:00:00.000Z",
+    "drawdown": 0
+   }
+  ],
+  "DrawdownRecovery.sortedTrades": [
+   "#61000006"
+  ],
+  "DrawdownRecovery.equityCurve": [],
+  "DrawdownRecovery.drawdownEvents": [],
+  "DrawdownRecovery.avgRecoveryTrades": 0,
+  "DrawdownRecovery.deepestEvent": null,
+  "DrawdownRecovery.longestEvent": null,
+  "DrawdownRecovery.isCurrentlyInDrawdown": false,
+  "DrawdownRecovery.percentTimeInDrawdown": 0,
+  "DrawdownRecovery.drawdownPhaseStats": {
+   "avgLotSize": 0,
+   "pairBreakdown": [],
+   "sessionBreakdown": [],
+   "tradeCount": 0,
+   "winRate": 0
+  },
+  "DrawdownRecovery.recoveryPhaseStats": {
+   "avgLotSize": 0,
+   "pairBreakdown": [],
+   "sessionBreakdown": [],
+   "tradeCount": 0,
+   "winRate": 0
+  },
+  "DrawdownRecovery.drawdownPhaseTrades": [],
+  "DrawdownRecovery.recoveryPhaseTrades": [],
+  "DurationAnalysis.buckets": [
+   {
+    "avgR": 2.13,
+    "id": "30-60m",
+    "label": "30-60m",
+    "profit": 42.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "EdgeDecayMonitor.sorted": [
+   "#61000006"
+  ],
+  "EdgeDecayMonitor.rollingData": [],
+  "EdgeDecayMonitor.status": {
+   "$case": "healthy",
+   "label": "Healthy",
+   "icon": "checkmark.seal.fill"
+  },
+  "EdgeDecayMonitor.diagnoses": [],
+  "EmotionalAnalytics.metrics": null,
+  "EventImpactProfiler.results": [],
+  "EventImpactProfiler.tradingMonths": 9,
+  "ExitAnalysis.validTrades": [
+   "#61000006"
+  ],
+  "ExitAnalysis.avgExitEfficiency": 100,
+  "ExitAnalysis.totalMoneyLeftOnTable": 0,
+  "ExitAnalysis.winners": [
+   "#61000006"
+  ],
+  "ExitAnalysis.earlyExitPercent": 100,
+  "ExitAnalysis.avgPostClose15m": 1.5,
+  "ExitAnalysis.avgPostClose30m": -2.5,
+  "ExitAnalysis.distributionBuckets": [
+   {
+    "count": 0,
+    "id": "0-20%",
+    "label": "0-20%"
+   },
+   {
+    "count": 0,
+    "id": "20-40%",
+    "label": "20-40%"
+   },
+   {
+    "count": 0,
+    "id": "40-60%",
+    "label": "40-60%"
+   },
+   {
+    "count": 0,
+    "id": "60-80%",
+    "label": "60-80%"
+   },
+   {
+    "count": 1,
+    "id": "80-100%",
+    "label": "80-100%"
+   }
+  ],
+  "ExitAnalysis.exitsEarly": false,
+  "ExitAnalysis.insightText": "Excellent exits — near-optimal profit capture",
+  "ExpectancyCurve.projectionPoints": [],
+  "ExpectancyCurve.deviation": "—",
+  "GradeDistribution.gradeData": [
+   {
+    "count": 1,
+    "grade": "A",
+    "id": "A",
+    "percent": 100
+   }
+  ],
+  "GradeDistribution.averageScore": 84,
+  "GrowthProjection.tradesPerWeek": 0,
+  "GrowthProjection.projectionData": [],
+  "GrowthProjection[months3].tradesPerWeek": 0,
+  "GrowthProjection[months3].projectionData": [],
+  "GrowthProjection[months12].tradesPerWeek": 0,
+  "GrowthProjection[months12].projectionData": [],
+  "HourlyPnLChart.hourlyData": [
+   {
+    "count": 1,
+    "hour": 9,
+    "pnl": 42.5
+   }
+  ],
+  "ImprovementTracker.rollingMetrics": [],
+  "ImprovementTracker.trend": {
+   "$case": "insufficient",
+   "label": "Need more data",
+   "icon": "questionmark.circle"
+  },
+  "ImprovementTracker.insightText": "Keep trading to build enough history for trend detection",
+  "KillZoneOptimizer.tradingDays": 1,
+  "KillZoneOptimizer.hourlyStats": [
+   {
+    "count": 0,
+    "hour": 0,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 1,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 2,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 3,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 4,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 5,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 6,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 7,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 8,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 1,
+    "hour": 9,
+    "pnl": 42.5,
+    "winRate": 100
+   },
+   {
+    "count": 0,
+    "hour": 10,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 11,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 12,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 13,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 14,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 15,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 16,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 17,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 18,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 19,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 20,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 21,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 22,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 23,
+    "pnl": 0,
+    "winRate": 0
+   }
+  ],
+  "KillZoneOptimizer.recommendWindows": [],
+  "KillZoneOptimizer.avoidWindows": [],
+  "KillZoneOptimizer.topWindowMonthlyPnL": 0,
+  "LotSizeAnalysis.avgLotsWins": 0.1,
+  "LotSizeAnalysis.avgLotsLosses": 0,
+  "MAEMFEChart.captureRatio": 2.9929577464788735,
+  "MAEMFEChart.avgMAE": 6.5,
+  "MAEMFEChart.avgMFE": 14.2,
+  "MAEMFEChart.mfeToMaeRatio": 2.1846153846153844,
+  "MAEMFEChart.insightText": "Good trade management — 2:1+ favorable ratio",
+  "MAEMFEChart.insightIcon": "checkmark.circle",
+  "MonteCarloSimulation.result": null,
+  "MonthlyReturns.monthlyData": [
+   {
+    "id": "2026-01",
+    "month": 1,
+    "profit": 42.5,
+    "tradeCount": 1,
+    "winRate": 100,
+    "year": 2026
+   }
+  ],
+  "MonthlyReturns.years": [
+   2026
+  ],
+  "NetCurrencyExposure.exposures": [
+   {
+    "currency": "EUR",
+    "netLots": 0.1
+   },
+   {
+    "currency": "USD",
+    "netLots": -0.1
+   }
+  ],
+  "NetCurrencyExposure.maxAbsExposure": 0.1,
+  "NetCurrencyExposure.totalAbsExposure": 1,
+  "NetCurrencyExposure.concentration": {
+   "currency": "EUR",
+   "percent": 10
+  },
+  "NetCurrencyExposure.correlatedInsights": [],
+  "PairAnalytics.pairGroups": [
+   {
+    "symbol": "EURUSD",
+    "trades": [
+     "#61000006"
+    ]
+   }
+  ],
+  "PairCorrelation.pairs": [
+   "EURUSD"
+  ],
+  "PairCorrelation.pairDailyPnL": {
+   "allDates": [
+    "2026-01-05"
+   ],
+   "data": {
+    "EURUSD": {
+     "2026-01-05": 42.5
+    }
+   }
+  },
+  "PairCorrelation.correlationMatrix": [],
+  "PairCorrelation.dataQualitySummary": {
+   "maxOverlap": 0,
+   "sufficient": 0,
+   "total": 0
+  },
+  "PerformanceSummary.calendar": {
+   "firstWeekday": 1,
+   "identifier": "gregorian",
+   "locale": "en_US_POSIX",
+   "minimumDaysInFirstWeek": 1,
+   "timeZone": "GMT"
+  },
+  "PerformanceSummary.thisWeekTrades": [],
+  "PerformanceSummary.thisMonthTrades": [],
+  "PerformanceSummary.lastMonthTrades": [],
+  "PeriodComparison.currentPeriodTrades": [],
+  "PeriodComparison.previousPeriodTrades": [],
+  "PeriodComparison.comparisons": [
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "pnl",
+    "isPositiveGood": true,
+    "label": "P&L",
+    "previous": "$ 0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.0%",
+    "id": "wr",
+    "isPositiveGood": true,
+    "label": "Win Rate",
+    "previous": "0.0%"
+   },
+   {
+    "change": 0,
+    "current": "0.00",
+    "id": "pf",
+    "isPositiveGood": true,
+    "label": "Profit Factor",
+    "previous": "0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.00R",
+    "id": "avgr",
+    "isPositiveGood": true,
+    "label": "Avg R",
+    "previous": "0.00R"
+   },
+   {
+    "change": 0,
+    "current": "0",
+    "id": "trades",
+    "isPositiveGood": true,
+    "label": "Trades",
+    "previous": "0"
+   },
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "dd",
+    "isPositiveGood": false,
+    "label": "Max DD",
+    "previous": "$ 0.00"
+   }
+  ],
+  "PeriodComparison[week].currentPeriodTrades": [],
+  "PeriodComparison[week].previousPeriodTrades": [],
+  "PeriodComparison[week].comparisons": [
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "pnl",
+    "isPositiveGood": true,
+    "label": "P&L",
+    "previous": "$ 0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.0%",
+    "id": "wr",
+    "isPositiveGood": true,
+    "label": "Win Rate",
+    "previous": "0.0%"
+   },
+   {
+    "change": 0,
+    "current": "0.00",
+    "id": "pf",
+    "isPositiveGood": true,
+    "label": "Profit Factor",
+    "previous": "0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.00R",
+    "id": "avgr",
+    "isPositiveGood": true,
+    "label": "Avg R",
+    "previous": "0.00R"
+   },
+   {
+    "change": 0,
+    "current": "0",
+    "id": "trades",
+    "isPositiveGood": true,
+    "label": "Trades",
+    "previous": "0"
+   },
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "dd",
+    "isPositiveGood": false,
+    "label": "Max DD",
+    "previous": "$ 0.00"
+   }
+  ],
+  "PeriodComparison[quarter].currentPeriodTrades": [],
+  "PeriodComparison[quarter].previousPeriodTrades": [],
+  "PeriodComparison[quarter].comparisons": [
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "pnl",
+    "isPositiveGood": true,
+    "label": "P&L",
+    "previous": "$ 0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.0%",
+    "id": "wr",
+    "isPositiveGood": true,
+    "label": "Win Rate",
+    "previous": "0.0%"
+   },
+   {
+    "change": 0,
+    "current": "0.00",
+    "id": "pf",
+    "isPositiveGood": true,
+    "label": "Profit Factor",
+    "previous": "0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.00R",
+    "id": "avgr",
+    "isPositiveGood": true,
+    "label": "Avg R",
+    "previous": "0.00R"
+   },
+   {
+    "change": 0,
+    "current": "0",
+    "id": "trades",
+    "isPositiveGood": true,
+    "label": "Trades",
+    "previous": "0"
+   },
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "dd",
+    "isPositiveGood": false,
+    "label": "Max DD",
+    "previous": "$ 0.00"
+   }
+  ],
+  "PlaybookCatalog.setups": [],
+  "PlaybookCatalog.keepSetups": [],
+  "PlaybookCatalog.reviewSetups": [],
+  "PlaybookCatalog.dropSetups": [],
+  "PositionSizer.balance": 10000,
+  "PositionSizer.riskPerTrade": 100,
+  "PositionSizer.avgSLPips": 20,
+  "PositionSizer.suggestedLots": 0.5,
+  "PositionSizer.currentAvgLots": 0.1,
+  "PositionSizer.isSizingAligned": false,
+  "PositionSizer[balance25k_risk2].balance": 25000,
+  "PositionSizer[balance25k_risk2].riskPerTrade": 500,
+  "PositionSizer[balance25k_risk2].avgSLPips": 20,
+  "PositionSizer[balance25k_risk2].suggestedLots": 2.5,
+  "PositionSizer[balance25k_risk2].currentAvgLots": 0.1,
+  "PositionSizer[balance25k_risk2].isSizingAligned": false,
+  "PostCloseAnalysis.avgPostClose15m": 1.5,
+  "PostCloseAnalysis.avgPostClose30m": -2.5,
+  "PostCloseAnalysis.earlyExitCount": 0,
+  "PostCloseAnalysis.earlyExitPercent": 0,
+  "PostCloseAnalysis.winContinuation": [
+   {
+    "avgPips": 1.5,
+    "label": "Winners",
+    "timeframe": "15m"
+   },
+   {
+    "avgPips": -2.5,
+    "label": "Winners",
+    "timeframe": "30m"
+   }
+  ],
+  "PostCloseAnalysis.lossContinuation": [],
+  "PropFirmTracker.totalPnL": 42.5,
+  "PropFirmTracker.currentBalance": 100042.5,
+  "PropFirmTracker.profitTargetDollars": 8000,
+  "PropFirmTracker.maxDailyLossDollars": 5000,
+  "PropFirmTracker.maxDrawdownDollars": 10000,
+  "PropFirmTracker.dailyPnL": 0,
+  "PropFirmTracker.maxDrawdown": 0,
+  "PropFirmTracker.dailyLossBreached": false,
+  "PropFirmTracker.drawdownBreached": false,
+  "PropFirmTracker.tradingDays": 1,
+  "PropFirmTracker[custom].totalPnL": 42.5,
+  "PropFirmTracker[custom].currentBalance": 50042.5,
+  "PropFirmTracker[custom].profitTargetDollars": 5000,
+  "PropFirmTracker[custom].maxDailyLossDollars": 2000,
+  "PropFirmTracker[custom].maxDrawdownDollars": 4000,
+  "PropFirmTracker[custom].dailyPnL": 0,
+  "PropFirmTracker[custom].maxDrawdown": 0,
+  "PropFirmTracker[custom].dailyLossBreached": false,
+  "PropFirmTracker[custom].drawdownBreached": false,
+  "PropFirmTracker[custom].tradingDays": 1,
+  "QuickInsight.insight": null,
+  "QuickInsight.generateInsight": null,
+  "QuickInsight.allInsights": [
+   {
+    "icon": "clock.fill",
+    "message": "$ 42.50 across 1 trades with 100.0% win rate.",
+    "title": "London is your strongest session"
+   },
+   {
+    "icon": "arrow.left.arrow.right.circle.fill",
+    "message": "$ 42.50 profit, 100.0% win rate across 1 trades.",
+    "title": "EURUSD is your top pair"
+   },
+   {
+    "icon": "target",
+    "message": "Most retail traders average 40-50%. Keep focusing on quality setups.",
+    "title": "100.0% win rate — above average"
+   },
+   {
+    "icon": "calendar",
+    "message": "$ 42.50 with 100.0% win rate. Consider focusing effort here.",
+    "title": "Mon is your best trading day"
+   }
+  ],
+  "RMultipleChart.buckets": [
+   {
+    "count": 1,
+    "midpoint": 51,
+    "range": ">2R"
+   }
+  ],
+  "RMultipleChart.avgR": 2.13,
+  "RMultipleChart.medianR": 2.13,
+  "RMultipleChart.bestR": 2.13,
+  "RMultipleChart.worstR": 2.13,
+  "RiskOfRuin.winRate": 1,
+  "RiskOfRuin.avgWin": 42.5,
+  "RiskOfRuin.avgLoss": 0,
+  "RiskOfRuin.rewardRiskRatio": 0,
+  "RiskOfRuin.riskOfRuin": 1,
+  "RiskOfRuin.kellyFraction": 0,
+  "RiskOfRuin.rorLevel": {
+   "$case": "veryHigh",
+   "label": "Very High",
+   "icon": "xmark.shield.fill"
+  },
+  "RiskOfRuin.insightIcon": "exclamationmark.circle",
+  "RiskOfRuin.insightText": "Critical — stop trading until edge improves. Current stats lead to account blowup",
+  "SequenceAnalysis.sortedTrades": [
+   "#61000006"
+  ],
+  "SequenceAnalysis.stats": null,
+  "SessionHeatmap.dateRangeLabel": "Jan 5 – Jan 5, 2026 · 1 active hour · 1 trades",
+  "SessionHeatmap.heatmapData": [
+   {
+    "day": "Mon",
+    "hour": 9,
+    "id": "Mon-9",
+    "profit": 42.5,
+    "tradeCount": 1
+   },
+   {
+    "day": "Tue",
+    "hour": 9,
+    "id": "Tue-9",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Wed",
+    "hour": 9,
+    "id": "Wed-9",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 9,
+    "id": "Thu-9",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Fri",
+    "hour": 9,
+    "id": "Fri-9",
+    "profit": 0,
+    "tradeCount": 0
+   }
+  ],
+  "SessionHeatmap.sortedActiveHours": [
+   9
+  ],
+  "SessionHeatmap.maxAbsProfit": 42.5,
+  "SessionIntelligence.sessionData": [
+   {
+    "avgR": 2.13,
+    "id": "LONDON",
+    "profit": 42.5,
+    "profitFactor": "Infinity",
+    "recommendation": {
+     "$case": "neutral",
+     "label": "OK",
+     "icon": "minus.circle"
+    },
+    "session": "LONDON",
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "SessionRankingCard.sessions": [
+   {
+    "name": "London",
+    "pnl": 42.5,
+    "rank": 1,
+    "trades": 1,
+    "winRate": 100
+   }
+  ],
+  "ShareableSummary.summaryText": "📊 Dojix Daily Summary\n─────────────────────\nP&L: +$ 42.50 | 1 trades\nWin Rate: 100.0% (1W/0L)\nPF: 99.99 | Exp: $ 42.50\nAvg R: 2.13R | Sharpe: 0.00\nStreak: 🔥 1W\n─────────────────────\nvia Dojix",
+  "SlippageAnalysis.tradesWithSlippage": [
+   "#61000006"
+  ],
+  "SlippageAnalysis.avgSlippage": 0.2,
+  "SlippageAnalysis.totalSlippageCost": 0.2,
+  "SlippageAnalysis.highSlippageTrades": 0,
+  "SlippageAnalysis.buckets": [
+   {
+    "avgPnL": 42.5,
+    "count": 1,
+    "id": "0-0.5",
+    "label": "0-0.5"
+   },
+   {
+    "avgPnL": 0,
+    "count": 0,
+    "id": "0.5-1",
+    "label": "0.5-1"
+   },
+   {
+    "avgPnL": 0,
+    "count": 0,
+    "id": "1-2",
+    "label": "1-2"
+   },
+   {
+    "avgPnL": 0,
+    "count": 0,
+    "id": "2-3",
+    "label": "2-3"
+   },
+   {
+    "avgPnL": 0,
+    "count": 0,
+    "id": "3+",
+    "label": "3+"
+   }
+  ],
+  "StreakCard.sortedTrades": [
+   "#61000006"
+  ],
+  "StreakCard.currentStreak": 1,
+  "StreakCard.bestWinStreak": 1,
+  "StreakCard.bestLossStreak": 0,
+  "StreakCard.recentResults": [
+   true
+  ],
+  "StreakTimeline.segments": [
+   {
+    "count": 1,
+    "isWin": true,
+    "startIndex": 0
+   }
+  ],
+  "TagAnalytics.tagData": [],
+  "TagAnalytics.taggedTradeCount": 0,
+  "TimeToMFEAnalysis.validTrades": [
+   "#61000006"
+  ],
+  "TimeToMFEAnalysis.buckets": [
+   {
+    "count": 1,
+    "id": "5-15m",
+    "label": "5-15m"
+   }
+  ],
+  "TimeToMFEAnalysis.medianTimeToMFE": 12,
+  "TimeToMFEAnalysis.avgHoldTime": 45,
+  "TimeToMFEAnalysis.avgExitEfficiency": 100,
+  "TimeToMFEAnalysis.isOverholding": true,
+  "TradeCalendar.calendar": {
+   "firstWeekday": 1,
+   "identifier": "gregorian",
+   "locale": "en_US_POSIX",
+   "minimumDaysInFirstWeek": 1,
+   "timeZone": "GMT"
+  },
+  "TradeCalendar.dailyPnL": {
+   "2026-01-05T00:00:00.000Z": 42.5
+  },
+  "TradeCalendar.daysInMonth": [
+   "2026-10-01T00:00:00.000Z",
+   "2026-10-02T00:00:00.000Z",
+   "2026-10-03T00:00:00.000Z",
+   "2026-10-04T00:00:00.000Z",
+   "2026-10-05T00:00:00.000Z",
+   "2026-10-06T00:00:00.000Z",
+   "2026-10-07T00:00:00.000Z",
+   "2026-10-08T00:00:00.000Z",
+   "2026-10-09T00:00:00.000Z",
+   "2026-10-10T00:00:00.000Z",
+   "2026-10-11T00:00:00.000Z",
+   "2026-10-12T00:00:00.000Z",
+   "2026-10-13T00:00:00.000Z",
+   "2026-10-14T00:00:00.000Z",
+   "2026-10-15T00:00:00.000Z",
+   "2026-10-16T00:00:00.000Z",
+   "2026-10-17T00:00:00.000Z",
+   "2026-10-18T00:00:00.000Z",
+   "2026-10-19T00:00:00.000Z",
+   "2026-10-20T00:00:00.000Z",
+   "2026-10-21T00:00:00.000Z",
+   "2026-10-22T00:00:00.000Z",
+   "2026-10-23T00:00:00.000Z",
+   "2026-10-24T00:00:00.000Z",
+   "2026-10-25T00:00:00.000Z",
+   "2026-10-26T00:00:00.000Z",
+   "2026-10-27T00:00:00.000Z",
+   "2026-10-28T00:00:00.000Z",
+   "2026-10-29T00:00:00.000Z",
+   "2026-10-30T00:00:00.000Z",
+   "2026-10-31T00:00:00.000Z"
+  ],
+  "TradeCalendar.firstWeekdayOffset": 4,
+  "TradeCalendar[lastTradeMonth].calendar": {
+   "firstWeekday": 1,
+   "identifier": "gregorian",
+   "locale": "en_US_POSIX",
+   "minimumDaysInFirstWeek": 1,
+   "timeZone": "GMT"
+  },
+  "TradeCalendar[lastTradeMonth].dailyPnL": {
+   "2026-01-05T00:00:00.000Z": 42.5
+  },
+  "TradeCalendar[lastTradeMonth].daysInMonth": [
+   "2026-01-01T00:00:00.000Z",
+   "2026-01-02T00:00:00.000Z",
+   "2026-01-03T00:00:00.000Z",
+   "2026-01-04T00:00:00.000Z",
+   "2026-01-05T00:00:00.000Z",
+   "2026-01-06T00:00:00.000Z",
+   "2026-01-07T00:00:00.000Z",
+   "2026-01-08T00:00:00.000Z",
+   "2026-01-09T00:00:00.000Z",
+   "2026-01-10T00:00:00.000Z",
+   "2026-01-11T00:00:00.000Z",
+   "2026-01-12T00:00:00.000Z",
+   "2026-01-13T00:00:00.000Z",
+   "2026-01-14T00:00:00.000Z",
+   "2026-01-15T00:00:00.000Z",
+   "2026-01-16T00:00:00.000Z",
+   "2026-01-17T00:00:00.000Z",
+   "2026-01-18T00:00:00.000Z",
+   "2026-01-19T00:00:00.000Z",
+   "2026-01-20T00:00:00.000Z",
+   "2026-01-21T00:00:00.000Z",
+   "2026-01-22T00:00:00.000Z",
+   "2026-01-23T00:00:00.000Z",
+   "2026-01-24T00:00:00.000Z",
+   "2026-01-25T00:00:00.000Z",
+   "2026-01-26T00:00:00.000Z",
+   "2026-01-27T00:00:00.000Z",
+   "2026-01-28T00:00:00.000Z",
+   "2026-01-29T00:00:00.000Z",
+   "2026-01-30T00:00:00.000Z",
+   "2026-01-31T00:00:00.000Z"
+  ],
+  "TradeCalendar[lastTradeMonth].firstWeekdayOffset": 4,
+  "TradeComparison.bestTrade": "#61000006",
+  "TradeComparison.worstTrade": "#61000006",
+  "TradeTimeHeatmap.cells": [
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 0,
+    "id": "Mon-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 1,
+    "id": "Mon-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 2,
+    "id": "Mon-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 3,
+    "id": "Mon-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 4,
+    "id": "Mon-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 5,
+    "id": "Mon-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 6,
+    "id": "Mon-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 7,
+    "id": "Mon-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 8,
+    "id": "Mon-8",
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "day": "Mon",
+    "hour": 9,
+    "id": "Mon-9",
+    "pnl": 42.5
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 10,
+    "id": "Mon-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 11,
+    "id": "Mon-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 12,
+    "id": "Mon-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 13,
+    "id": "Mon-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 14,
+    "id": "Mon-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 15,
+    "id": "Mon-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 16,
+    "id": "Mon-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 17,
+    "id": "Mon-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 18,
+    "id": "Mon-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 19,
+    "id": "Mon-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 20,
+    "id": "Mon-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 21,
+    "id": "Mon-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 22,
+    "id": "Mon-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 23,
+    "id": "Mon-23",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 0,
+    "id": "Tue-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 1,
+    "id": "Tue-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 2,
+    "id": "Tue-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 3,
+    "id": "Tue-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 4,
+    "id": "Tue-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 5,
+    "id": "Tue-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 6,
+    "id": "Tue-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 7,
+    "id": "Tue-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 8,
+    "id": "Tue-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 9,
+    "id": "Tue-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 10,
+    "id": "Tue-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 11,
+    "id": "Tue-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 12,
+    "id": "Tue-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 13,
+    "id": "Tue-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 14,
+    "id": "Tue-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 15,
+    "id": "Tue-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 16,
+    "id": "Tue-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 17,
+    "id": "Tue-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 18,
+    "id": "Tue-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 19,
+    "id": "Tue-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 20,
+    "id": "Tue-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 21,
+    "id": "Tue-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 22,
+    "id": "Tue-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 23,
+    "id": "Tue-23",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 0,
+    "id": "Wed-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 1,
+    "id": "Wed-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 2,
+    "id": "Wed-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 3,
+    "id": "Wed-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 4,
+    "id": "Wed-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 5,
+    "id": "Wed-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 6,
+    "id": "Wed-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 7,
+    "id": "Wed-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 8,
+    "id": "Wed-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 9,
+    "id": "Wed-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 10,
+    "id": "Wed-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 11,
+    "id": "Wed-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 12,
+    "id": "Wed-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 13,
+    "id": "Wed-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 14,
+    "id": "Wed-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 15,
+    "id": "Wed-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 16,
+    "id": "Wed-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 17,
+    "id": "Wed-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 18,
+    "id": "Wed-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 19,
+    "id": "Wed-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 20,
+    "id": "Wed-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 21,
+    "id": "Wed-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 22,
+    "id": "Wed-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 23,
+    "id": "Wed-23",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 0,
+    "id": "Thu-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 1,
+    "id": "Thu-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 2,
+    "id": "Thu-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 3,
+    "id": "Thu-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 4,
+    "id": "Thu-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 5,
+    "id": "Thu-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 6,
+    "id": "Thu-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 7,
+    "id": "Thu-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 8,
+    "id": "Thu-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 9,
+    "id": "Thu-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 10,
+    "id": "Thu-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 11,
+    "id": "Thu-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 12,
+    "id": "Thu-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 13,
+    "id": "Thu-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 14,
+    "id": "Thu-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 15,
+    "id": "Thu-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 16,
+    "id": "Thu-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 17,
+    "id": "Thu-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 18,
+    "id": "Thu-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 19,
+    "id": "Thu-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 20,
+    "id": "Thu-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 21,
+    "id": "Thu-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 22,
+    "id": "Thu-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 23,
+    "id": "Thu-23",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 0,
+    "id": "Fri-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 1,
+    "id": "Fri-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 2,
+    "id": "Fri-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 3,
+    "id": "Fri-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 4,
+    "id": "Fri-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 5,
+    "id": "Fri-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 6,
+    "id": "Fri-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 7,
+    "id": "Fri-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 8,
+    "id": "Fri-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 9,
+    "id": "Fri-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 10,
+    "id": "Fri-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 11,
+    "id": "Fri-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 12,
+    "id": "Fri-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 13,
+    "id": "Fri-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 14,
+    "id": "Fri-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 15,
+    "id": "Fri-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 16,
+    "id": "Fri-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 17,
+    "id": "Fri-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 18,
+    "id": "Fri-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 19,
+    "id": "Fri-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 20,
+    "id": "Fri-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 21,
+    "id": "Fri-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 22,
+    "id": "Fri-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 23,
+    "id": "Fri-23",
+    "pnl": 0
+   }
+  ],
+  "TradeTimeHeatmap.maxAbsPnL": 42.5,
+  "WeeklyHeatmap.weeklyData": [
+   {
+    "id": "2026-W2",
+    "profit": 42.5,
+    "tradeCount": 1,
+    "weekStart": "2026-01-04T00:00:00.000Z",
+    "winRate": 100
+   }
+  ],
+  "WeeklyHeatmap.maxAbsProfit": 42.5,
+  "WeeklyHeatmap.calculateStreak": 1,
+  "WhatToCutAdvisor.tradingDays": 1,
+  "WhatToCutAdvisor.negativeConditions": [],
+  "WhatToCutAdvisor.totalPotentialSavings": 0,
+  "WhatToCutAdvisor.worstCondition": null,
+  "WhatToCutAdvisor.hasEnoughData": false,
+  "WinLossDistribution.buckets": []
+ },
+ "skipped": {},
+ "now": "2026-10-27T22:14:07.530Z",
+ "environment": {
+  "tz": "UTC",
+  "locale": "en_US_POSIX",
+  "deterministicHashing": true
+ },
+ "nondeterministic": [
+  "outputs.NetCurrencyExposure.concentration.currency",
+  "outputs.NetCurrencyExposure.exposures"
+ ]
+}

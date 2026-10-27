@@ -131,7 +131,7 @@ describe("DailyBrief", () => {
     const enc = m && (dailyBriefParity.members.signals?.(m, ctx) as Record<string, unknown>[]);
     expect(enc?.[0]).toEqual({
       icon: "xmark.circle.fill",
-      title: "GBPUSD is costing you -$6.00",
+      title: "GBPUSD is costing you -$\u00a06.00", // en_US_POSIX, the harness locale
       detail: "5 trades at 0.0% WR. Consider sitting out or reducing size.",
       value: null,
       priority: 1,

@@ -27,7 +27,7 @@ export interface OpeningRangeModel {
   activeBuckets: OpeningRangeBucket[];
   /** Some bucket has trades (else "No regular session trades to analyze"). */
   hasData: boolean;
-  /** Highest average P&L (last of ties). Highlighted only when more than one bucket is active. */
+  /** Highest average P&L (first of ties). Highlighted only when more than one bucket is active. */
   bestBucket: OpeningRangeBucket | null;
   /** Lowest average P&L (first of ties). Highlighted only when more than one bucket is active and its average is negative. */
   worstBucket: OpeningRangeBucket | null;
@@ -53,7 +53,7 @@ export function minutesSinceOpen(t: Pick<GreenwickTrade, "openTime">): number | 
 }
 
 /** OpeningRangeAnalysis.swift:49-102. No minimum trade count. */
-export function computeOpeningRange(trades: readonly GreenwickTrade[]): OpeningRangeModel {
+export function computeOpeningRange(trades: readonly GreenwickTrade[], locale: string): OpeningRangeModel {
   const minutes = trades.map(minutesSinceOpen);
   const buckets = OPENING_RANGE_BUCKETS.map(({ id, label, startMin, endMin }): OpeningRangeBucket => {
     const matching = trades.filter((_, i) => {
@@ -79,9 +79,9 @@ export function computeOpeningRange(trades: readonly GreenwickTrade[]): OpeningR
   if (best === null || worst === null || best.id === worst.id) {
     insightText = "Need more trades across different times for insights";
   } else {
-    const bestAvg = best.avgPnL >= 0 ? `+${asCurrency(best.avgPnL)}` : asCurrency(best.avgPnL);
+    const bestAvg = best.avgPnL >= 0 ? `+${asCurrency(best.avgPnL, locale)}` : asCurrency(best.avgPnL, locale);
     if (worst.totalPnL < 0) {
-      insightText = `Your best entries are ${best.label.toLowerCase()} (${bestAvg} avg) — ${worst.label.toLowerCase()} costs you ${asCurrency(Math.abs(worst.totalPnL))}`;
+      insightText = `Your best entries are ${best.label.toLowerCase()} (${bestAvg} avg) — ${worst.label.toLowerCase()} costs you ${asCurrency(Math.abs(worst.totalPnL), locale)}`;
     } else {
       insightText = `Your best entries are ${best.label.toLowerCase()} (${bestAvg} avg)`;
     }

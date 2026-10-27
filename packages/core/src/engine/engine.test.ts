@@ -20,8 +20,22 @@ describe("EngineContext", () => {
 
   it("parity runs use UTC, POSIX weeks and swift compat", () => {
     const ctx = parityContext("dojix", 123);
-    expect(ctx).toMatchObject({ brand: "dojix", now: 123, compat: "swift", brokerOffset: "utc" });
+    expect(ctx).toMatchObject({ brand: "dojix", now: 123, compat: "swift", brokerOffset: "utc", locale: "en_US_POSIX" });
     expect(ctx.calendar.spec).toEqual({ tz: "UTC", weekStart: 1, minDaysInFirstWeek: 1 });
+  });
+
+  it("carries the user's locale (default en_US) and a reference's own environment", () => {
+    expect(createEngineContext({ brand: "dojix", now: 0 }).locale).toBe("en_US");
+    expect(createEngineContext({ brand: "dojix", now: 0, locale: "ja_JP" }).locale).toBe("ja_JP");
+    // A variant file (@Europe-Berlin_en_GB): zone, locale and ISO weeks from the reference.
+    const gb = parityContext("dojix", 5, { tz: "Europe/Berlin", locale: "en_GB", firstWeekday: 2, minimumDaysInFirstWeek: 4 });
+    expect(gb.calendar.spec).toEqual({ tz: "Europe/Berlin", weekStart: 2, minDaysInFirstWeek: 4 });
+    expect(gb.locale).toBe("en_GB");
+    // Foundation reports TZ=UTC as "GMT"; Greenwick keeps the ET trading calendar.
+    const st = parityContext("greenwick", 5, { tz: "GMT", locale: "en_US_POSIX", firstWeekday: 1, minimumDaysInFirstWeek: 1 }, "fixed");
+    expect(st.localCalendar.tz).toBe("UTC");
+    expect(st.calendar).toBe(TRADING_CALENDAR);
+    expect(st.compat).toBe("fixed");
   });
 });
 

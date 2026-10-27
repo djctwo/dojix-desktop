@@ -14,7 +14,7 @@
 //   recoveryTrades = idx − trough. Unrecovered (still open at the end): duration =
 //   last − start **+ 1** and recoveryTrades 0.
 //   **D-20:** `fixed` uses last − start for the open event too, the same rule as recovered ones.
-// - deepest / longest = `max(by:)` on depth / duration (the **last** of ties).
+// - deepest / longest = `max(by:)` on depth / duration (the **first** of ties).
 // - Phase trades: start…trough of every event (drawdown phase) and trough+1…end of every
 //   recovered event (recovery phase), concatenated in event order.
 // - Phase stats: average size, WR%, count, and counts per symbol / session sorted by count

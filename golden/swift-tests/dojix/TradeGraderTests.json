@@ -1,0 +1,2695 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/TradeGraderTests.swift",
+  "helpers": {
+    "makeTrade": {
+      "line": 8,
+      "defaults": {
+        "ticket": 1,
+        "symbol": "GBPUSD",
+        "direction": "BUY",
+        "netProfit": 50,
+        "lots": 0.1,
+        "rMultiple": 1.0,
+        "maePips": 5.0,
+        "mfePips": 15.0,
+        "session": "LONDON",
+        "hour": 10,
+        "durationMin": 60,
+        "usedFVG": false,
+        "hitBreakeven": false,
+        "slippagePips": 0.5,
+        "postClose15m": 5.0,
+        "postClose30m": 8.0,
+        "biasAtEntry": "WITH",
+        "closeTime": {
+          "relative_seconds": 0
+        },
+        "openTime": {
+          "expr": "closeTime - durationMin*60 s"
+        },
+        "openPrice": 1.25,
+        "closePrice": 1.26,
+        "sl": 1.24,
+        "tp": 1.27,
+        "dayOfWeek": "Mon",
+        "rangeSize": 40,
+        "sweepDepth": 10,
+        "volRegime": "MED",
+        "scaledIn": false,
+        "magic": 0,
+        "comment": "",
+        "timeToMFEMin": 30,
+        "slDistPips": 20
+      },
+      "notes": "closeTime = Date() inside the helper. Decimal fields given as Swift float literals (e.g. openPrice 1.26) are built through Double (Decimal(floatLiteral:)), so they may carry binary noise; no assertion here depends on them."
+    },
+    "defaultMetrics": {
+      "line": 43,
+      "defaults": {
+        "totalTrades": 100,
+        "wins": 55,
+        "losses": 45,
+        "winRate": 55,
+        "totalProfit": 1500,
+        "grossProfit": 3500,
+        "grossLoss": 2000,
+        "profitFactor": 1.75,
+        "expectancy": 15,
+        "averageWin": 63.64,
+        "averageLoss": 44.44,
+        "bestTrade": 200,
+        "worstTrade": -100,
+        "maxDrawdown": 300,
+        "averageRMultiple": 0.5,
+        "averageMAE": 8,
+        "averageMFE": 16,
+        "maxWinStreak": 7,
+        "maxLossStreak": 5,
+        "currentStreak": 2,
+        "averageDuration": 45,
+        "sharpeRatio": 0.3,
+        "calmarRatio": 5.0,
+        "totalCommissions": 0,
+        "totalSwap": 0,
+        "totalCosts": 0,
+        "netProfitAfterCosts": 1500
+      },
+      "notes": "A hand-built PortfolioMetrics passed as portfolioMetrics. TradeGrader only reads averageDuration (45)."
+    }
+  },
+  "cases": [
+    {
+      "id": "TradeGraderTests.testHighRMultipleGetsHighScore",
+      "line": 59,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 3.5
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 25,
+          "line": 62,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 59,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 59,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 59,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 83,
+          "line": 59,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "A",
+          "line": 59,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testRMultipleExactly3",
+      "line": 65,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 3.0
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 25,
+          "line": 68,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 65,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 65,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 65,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 83,
+          "line": 65,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "A",
+          "line": 65,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testRMultiple2Point0",
+      "line": 71,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 2.0
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 22,
+          "line": 74,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 71,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 71,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 71,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 80,
+          "line": 71,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "A",
+          "line": 71,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testRMultiple1Point5",
+      "line": 77,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 1.5
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 20,
+          "line": 80,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 77,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 77,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 77,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 78,
+          "line": 77,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 77,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testModerateRMultiple",
+      "line": 83,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 1.2
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 86,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 83,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 83,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 83,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 75,
+          "line": 83,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 83,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testRMultiple0Point5",
+      "line": 89,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 0.5
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 13,
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 89,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 89,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 89,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 71,
+          "line": 89,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 89,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testZeroRMultiple",
+      "line": 95,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 0.0
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 8,
+          "line": 98,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 95,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 95,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 95,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 66,
+          "line": 95,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 95,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testSlightlyNegativeRMultiple",
+      "line": 101,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": -0.3
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 5,
+          "line": 104,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 101,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 101,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 101,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 63,
+          "line": 101,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "C",
+          "line": 101,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testNegativeRMultipleMinus1",
+      "line": 107,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": -0.8
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 3,
+          "line": 110,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 107,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 107,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 107,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 61,
+          "line": 107,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "C",
+          "line": 107,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testNegativeRMultipleGetsLowScore",
+      "line": 113,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": -1.5
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 0,
+          "line": 116,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 113,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 113,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 113,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 58,
+          "line": 113,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "C",
+          "line": 113,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testVeryLargeRMultiple",
+      "line": 119,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 10.0
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 25,
+          "line": 122,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 119,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 119,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 119,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 83,
+          "line": 119,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "A",
+          "line": 119,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testVeryNegativeRMultiple",
+      "line": 125,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": -5.0
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 0,
+          "line": 128,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 125,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 125,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 125,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 58,
+          "line": 125,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "C",
+          "line": 125,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testGoodMFEMAERatio",
+      "line": 133,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "maePips": 5,
+          "mfePips": 30,
+          "usedFVG": true,
+          "slippagePips": 0.3
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 25,
+          "line": 137,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 133,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 133,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 133,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 80,
+          "line": 133,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "A",
+          "line": 133,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testPoorMFEMAERatio",
+      "line": 140,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "maePips": 20,
+          "mfePips": 5,
+          "usedFVG": false,
+          "slippagePips": 3.0
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "executionScore",
+          "op": "le",
+          "value": 5,
+          "line": 144,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 140,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 3,
+          "line": 140,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 140,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 140,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 58,
+          "line": 140,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "C",
+          "line": 140,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testZeroMAEWithPositiveMFE",
+      "line": 147,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "maePips": 0,
+          "mfePips": 20,
+          "slippagePips": 0.3
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "executionScore",
+          "op": "ge",
+          "value": 15,
+          "line": 151,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 147,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 147,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 147,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 147,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 75,
+          "line": 147,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 147,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "MAE 0 with MFE > 0: ratio treated as 10."
+    },
+    {
+      "id": "TradeGraderTests.testZeroBothMAEAndMFE",
+      "line": 155,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "maePips": 0,
+          "mfePips": 0,
+          "slippagePips": 0.3
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 8,
+          "line": 160,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 155,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 155,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 155,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 63,
+          "line": 155,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "C",
+          "line": 155,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "MAE and MFE both 0: ratio treated as 0 (3 points) + slippage 5."
+    },
+    {
+      "id": "TradeGraderTests.testFVGBonusAdded",
+      "line": 163,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trades": {
+          "withFVG": {
+            "maePips": 10,
+            "mfePips": 10,
+            "usedFVG": true,
+            "slippagePips": 1.5
+          },
+          "withoutFVG": {
+            "maePips": 10,
+            "mfePips": 10,
+            "usedFVG": false,
+            "slippagePips": 1.5
+          }
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "withFVG.executionScore - withoutFVG.executionScore",
+          "op": "eq",
+          "value": 5,
+          "line": 169,
+          "derived": false
+        },
+        {
+          "path": "withFVG.executionScore",
+          "op": "eq",
+          "value": 13,
+          "line": 163,
+          "derived": true
+        },
+        {
+          "path": "withoutFVG.executionScore",
+          "op": "eq",
+          "value": 8,
+          "line": 163,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Two trades graded; path is a difference expression over the two named results."
+    },
+    {
+      "id": "TradeGraderTests.testExecutionScoreCappedAt25",
+      "line": 173,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "maePips": 1,
+          "mfePips": 100,
+          "usedFVG": true,
+          "slippagePips": 0.1
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 25,
+          "line": 177,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 173,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 173,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 173,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 80,
+          "line": 173,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "A",
+          "line": 173,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testLondonSessionPrimeHour",
+      "line": 182,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "session": "LONDON",
+          "hour": 9,
+          "biasAtEntry": "WITH"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 25,
+          "line": 186,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 182,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 182,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 182,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 78,
+          "line": 182,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 182,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testNYOverlapSessionPrimeHour",
+      "line": 189,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "session": "NY_OVERLAP",
+          "hour": 13,
+          "biasAtEntry": "WITH"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 25,
+          "line": 193,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 189,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 189,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 189,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 78,
+          "line": 189,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 189,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testNYSession",
+      "line": 196,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "session": "NY",
+          "hour": 13,
+          "biasAtEntry": "WITH"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 200,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 196,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 196,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 196,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 75,
+          "line": 196,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 196,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testAsianSession",
+      "line": 203,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "session": "ASIAN",
+          "hour": 3,
+          "biasAtEntry": "NEUTRAL"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 8,
+          "line": 207,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 203,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 203,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 203,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 61,
+          "line": 203,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "C",
+          "line": 203,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testLateSessionBadHour",
+      "line": 210,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "session": "LATE",
+          "hour": 3,
+          "biasAtEntry": "AGAINST"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "timingScore",
+          "op": "le",
+          "value": 5,
+          "line": 214,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 210,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 210,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 3,
+          "line": 210,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 210,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 56,
+          "line": 210,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "C",
+          "line": 210,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testBiasNeutralScoring",
+      "line": 217,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trades": {
+          "withBias": {
+            "session": "LONDON",
+            "hour": 8,
+            "biasAtEntry": "WITH"
+          },
+          "neutralBias": {
+            "session": "LONDON",
+            "hour": 8,
+            "biasAtEntry": "NEUTRAL"
+          }
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "withBias.timingScore - neutralBias.timingScore",
+          "op": "eq",
+          "value": 3,
+          "line": 222,
+          "derived": false
+        },
+        {
+          "path": "withBias.timingScore",
+          "op": "eq",
+          "value": 25,
+          "line": 217,
+          "derived": true
+        },
+        {
+          "path": "neutralBias.timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 217,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Two trades graded; path is a difference expression over the two named results."
+    },
+    {
+      "id": "TradeGraderTests.testBiasAgainstScoring",
+      "line": 226,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trades": {
+          "withBias": {
+            "session": "LONDON",
+            "hour": 8,
+            "biasAtEntry": "WITH"
+          },
+          "againstBias": {
+            "session": "LONDON",
+            "hour": 8,
+            "biasAtEntry": "AGAINST"
+          }
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "withBias.timingScore - againstBias.timingScore",
+          "op": "eq",
+          "value": 5,
+          "line": 231,
+          "derived": false
+        },
+        {
+          "path": "withBias.timingScore",
+          "op": "eq",
+          "value": 25,
+          "line": 226,
+          "derived": true
+        },
+        {
+          "path": "againstBias.timingScore",
+          "op": "eq",
+          "value": 20,
+          "line": 226,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Two trades graded; path is a difference expression over the two named results."
+    },
+    {
+      "id": "TradeGraderTests.testTimingScoreCappedAt25",
+      "line": 235,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "session": "LONDON",
+          "hour": 7,
+          "biasAtEntry": "WITH"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "timingScore",
+          "op": "le",
+          "value": 25,
+          "line": 239,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 235,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 235,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 25,
+          "line": 235,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 235,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 78,
+          "line": 235,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 235,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testWinningTradeWithGoodExit",
+      "line": 244,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "netProfit": 100,
+          "durationMin": 45,
+          "hitBreakeven": true,
+          "postClose30m": 2.0
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 25,
+          "line": 249,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 244,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 244,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 244,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 84,
+          "line": 244,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "A",
+          "line": 244,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testLosingTradeQuickCut",
+      "line": 252,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "netProfit": -30,
+          "durationMin": 15,
+          "postClose30m": 0
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "managementScore",
+          "op": "ge",
+          "value": 10,
+          "line": 257,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 252,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 252,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 252,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 14,
+          "line": 252,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 73,
+          "line": 252,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 252,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Quick-cut threshold is max(avgDur / 2, 5) with Int division: 45 / 2 = 22 (the test comment says 22.5)."
+    },
+    {
+      "id": "TradeGraderTests.testExtremeDurationPenalized",
+      "line": 260,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "netProfit": 20,
+          "durationMin": 225,
+          "postClose30m": 3.0
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "managementScore",
+          "op": "lt",
+          "value": 20,
+          "line": 265,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 260,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 260,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 260,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 12,
+          "line": 260,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 71,
+          "line": 260,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 260,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testHighPostCloseContinuationPenalized",
+      "line": 268,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "netProfit": 50,
+          "durationMin": 45,
+          "postClose30m": 30.0
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "managementScore",
+          "op": "lt",
+          "value": 20,
+          "line": 273,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 268,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 268,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 268,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 12,
+          "line": 268,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 71,
+          "line": 268,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 268,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testExcellentTradeGetsA",
+      "line": 278,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 3.0,
+          "maePips": 3,
+          "mfePips": 25,
+          "session": "LONDON",
+          "hour": 8,
+          "usedFVG": true,
+          "hitBreakeven": true,
+          "slippagePips": 0.2,
+          "postClose30m": 2.0,
+          "biasAtEntry": "WITH"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "A",
+          "line": 289,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 25,
+          "line": 278,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 25,
+          "line": 278,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 25,
+          "line": 278,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 25,
+          "line": 278,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 100,
+          "line": 278,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testTerribleTradeGetsDorF",
+      "line": 292,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "netProfit": -100,
+          "rMultiple": -2.0,
+          "maePips": 30,
+          "mfePips": 3,
+          "session": "LATE",
+          "hour": 2,
+          "slippagePips": 3.0,
+          "postClose30m": 25.0,
+          "biasAtEntry": "AGAINST"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": {
+            "anyOf": [
+              "D",
+              "F"
+            ]
+          },
+          "line": 303,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 0,
+          "line": 292,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 3,
+          "line": 292,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 3,
+          "line": 292,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 14,
+          "line": 292,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 20,
+          "line": 292,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "F",
+          "line": 292,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Asserted: overall is D or F (value {anyOf: [...]} = equals one of the listed values)."
+    },
+    {
+      "id": "TradeGraderTests.testTotalScoreIsSumOfDimensions",
+      "line": 307,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {},
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "total",
+          "op": "eq",
+          "value": {
+            "ref": "rScore + executionScore + timingScore + managementScore"
+          },
+          "line": 310,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 307,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 307,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 307,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 307,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 75,
+          "line": 307,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 307,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testGradeBoundaryA",
+      "line": 313,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "netProfit": 100,
+          "rMultiple": 3.0,
+          "maePips": 3,
+          "mfePips": 25,
+          "session": "LONDON",
+          "hour": 8,
+          "durationMin": 45,
+          "usedFVG": true,
+          "hitBreakeven": true,
+          "slippagePips": 0.3,
+          "postClose30m": 2.0,
+          "biasAtEntry": "WITH"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "total",
+          "op": "ge",
+          "value": 80,
+          "line": 327,
+          "derived": false
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "A",
+          "line": 328,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 25,
+          "line": 313,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 25,
+          "line": 313,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 25,
+          "line": 313,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 25,
+          "line": 313,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 100,
+          "line": 313,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testGradeBoundaries",
+      "line": 331,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {},
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "total",
+          "op": "ge",
+          "value": 65,
+          "line": 339,
+          "derived": false
+        },
+        {
+          "path": "total",
+          "op": "lt",
+          "value": 80,
+          "line": 339,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 331,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 331,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 331,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 331,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 75,
+          "line": 331,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 331,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "The test switches on overall and asserts total is inside that letter's band (lines 338-342). The default trade grades B (derived), so the live branch is line 339: total >= 65 && total < 80."
+    },
+    {
+      "id": "TradeGraderTests.testEachDimensionMaxIs25",
+      "line": 346,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "netProfit": 200,
+          "rMultiple": 5.0,
+          "maePips": 1,
+          "mfePips": 50,
+          "session": "LONDON",
+          "hour": 8,
+          "durationMin": 45,
+          "usedFVG": true,
+          "hitBreakeven": true,
+          "slippagePips": 0.1,
+          "postClose30m": 1.0,
+          "biasAtEntry": "WITH"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "le",
+          "value": 25,
+          "line": 360,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "le",
+          "value": 25,
+          "line": 361,
+          "derived": false
+        },
+        {
+          "path": "timingScore",
+          "op": "le",
+          "value": 25,
+          "line": 362,
+          "derived": false
+        },
+        {
+          "path": "managementScore",
+          "op": "le",
+          "value": 25,
+          "line": 363,
+          "derived": false
+        },
+        {
+          "path": "total",
+          "op": "le",
+          "value": 100,
+          "line": 364,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 25,
+          "line": 346,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 25,
+          "line": 346,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 25,
+          "line": 346,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 25,
+          "line": 346,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 100,
+          "line": 346,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "A",
+          "line": 346,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testEachDimensionMinIs0",
+      "line": 367,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "netProfit": -200,
+          "rMultiple": -3.0,
+          "maePips": 50,
+          "mfePips": 1,
+          "session": "LATE",
+          "hour": 1,
+          "durationMin": 300,
+          "usedFVG": false,
+          "hitBreakeven": false,
+          "slippagePips": 5.0,
+          "postClose30m": 40.0,
+          "biasAtEntry": "AGAINST"
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "rScore",
+          "op": "ge",
+          "value": 0,
+          "line": 380,
+          "derived": false
+        },
+        {
+          "path": "executionScore",
+          "op": "ge",
+          "value": 0,
+          "line": 381,
+          "derived": false
+        },
+        {
+          "path": "timingScore",
+          "op": "ge",
+          "value": 0,
+          "line": 382,
+          "derived": false
+        },
+        {
+          "path": "managementScore",
+          "op": "ge",
+          "value": 0,
+          "line": 383,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 0,
+          "line": 367,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 3,
+          "line": 367,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 3,
+          "line": 367,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 6,
+          "line": 367,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 12,
+          "line": 367,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "F",
+          "line": 367,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testAllGradesHaveDistinctRawValues",
+      "line": 414,
+      "subject": "TradeGrader.TradeGrade.Grade.rawValue",
+      "kind": "grader",
+      "input": {
+        "grades": [
+          "a",
+          "b",
+          "c",
+          "d",
+          "f"
+        ]
+      },
+      "expect": [
+        {
+          "path": "rawValues.uniqueCount",
+          "op": "eq",
+          "value": 5,
+          "line": 417,
+          "derived": false
+        },
+        {
+          "path": "rawValues",
+          "op": "eq",
+          "value": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "F"
+          ],
+          "line": 418,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeGraderTests.testGradeWithEmptyMetrics",
+      "line": 423,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 1.0
+        },
+        "portfolioMetrics": {
+          "empty": true,
+          "averageDuration": 0
+        }
+      },
+      "expect": [
+        {
+          "path": "total",
+          "op": "ge",
+          "value": 0,
+          "line": 429,
+          "derived": false
+        },
+        {
+          "path": "total",
+          "op": "le",
+          "value": 100,
+          "line": 430,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 17,
+          "line": 423,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 423,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 423,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 8,
+          "line": 423,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 67,
+          "line": 423,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 423,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "averageDuration 0 is replaced by max(averageDuration, 1) = 1, so the 60-minute trade's duration ratio is 60 (2 points)."
+    },
+    {
+      "id": "TradeGraderTests.testGradeConsistencyAcrossMultipleCalls",
+      "line": 433,
+      "subject": "TradeGrader.grade",
+      "kind": "grader",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "rMultiple": 1.5,
+          "session": "NY",
+          "hour": 14
+        },
+        "portfolioMetrics": "defaultMetrics"
+      },
+      "expect": [
+        {
+          "path": "second.total",
+          "op": "eq",
+          "value": {
+            "ref": "first.total"
+          },
+          "line": 438,
+          "derived": false
+        },
+        {
+          "path": "second.overall",
+          "op": "eq",
+          "value": {
+            "ref": "first.overall"
+          },
+          "line": 439,
+          "derived": false
+        },
+        {
+          "path": "second.rScore",
+          "op": "eq",
+          "value": {
+            "ref": "first.rScore"
+          },
+          "line": 440,
+          "derived": false
+        },
+        {
+          "path": "second.executionScore",
+          "op": "eq",
+          "value": {
+            "ref": "first.executionScore"
+          },
+          "line": 441,
+          "derived": false
+        },
+        {
+          "path": "second.timingScore",
+          "op": "eq",
+          "value": {
+            "ref": "first.timingScore"
+          },
+          "line": 442,
+          "derived": false
+        },
+        {
+          "path": "second.managementScore",
+          "op": "eq",
+          "value": {
+            "ref": "first.managementScore"
+          },
+          "line": 443,
+          "derived": false
+        },
+        {
+          "path": "rScore",
+          "op": "eq",
+          "value": 20,
+          "line": 433,
+          "derived": true
+        },
+        {
+          "path": "executionScore",
+          "op": "eq",
+          "value": 20,
+          "line": 433,
+          "derived": true
+        },
+        {
+          "path": "timingScore",
+          "op": "eq",
+          "value": 22,
+          "line": 433,
+          "derived": true
+        },
+        {
+          "path": "managementScore",
+          "op": "eq",
+          "value": 16,
+          "line": 433,
+          "derived": true
+        },
+        {
+          "path": "total",
+          "op": "eq",
+          "value": 78,
+          "line": 433,
+          "derived": true
+        },
+        {
+          "path": "overall",
+          "op": "eq",
+          "value": "B",
+          "line": 433,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "The same trade graded twice (first, second); derived values apply to both."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "TradeGraderTests.testGradeAColorIsGreen",
+      "line": 388,
+      "reason": "UI: only asserts that the SwiftUI Color for the grade is non-nil."
+    },
+    {
+      "id": "TradeGraderTests.testGradeBColorIsGreenFaded",
+      "line": 394,
+      "reason": "UI: only asserts that the SwiftUI Color for the grade is non-nil."
+    },
+    {
+      "id": "TradeGraderTests.testGradeCColorIsOrange",
+      "line": 399,
+      "reason": "UI: only asserts that the SwiftUI Color for the grade is non-nil."
+    },
+    {
+      "id": "TradeGraderTests.testGradeDColorIsRedFaded",
+      "line": 404,
+      "reason": "UI: only asserts that the SwiftUI Color for the grade is non-nil."
+    },
+    {
+      "id": "TradeGraderTests.testGradeFColorIsRed",
+      "line": 409,
+      "reason": "UI: only asserts that the SwiftUI Color for the grade is non-nil."
+    }
+  ]
+}

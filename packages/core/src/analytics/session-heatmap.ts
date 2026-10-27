@@ -16,6 +16,7 @@ import { groupByFirstAppearance, stableSorted, swiftMin } from "../swiftcompat/c
 import type { ZonedCalendar } from "../time/zoned-calendar";
 import { entryDayLabel, maxAbsOr, WEEKDAY_ROWS } from "./shared";
 import { sumProfit } from "./support";
+import { monthAbbreviation } from "../swiftcompat/format";
 
 export interface SessionHeatmapCell {
   id: string;
@@ -33,22 +34,31 @@ export interface SessionHeatmapModel {
   /** First and last close (ascending), null without trades. */
   firstClose: number | null;
   lastClose: number | null;
-  /** The Mac subtitle with en-US month names ("" without trades). */
+  /** The Mac subtitle with the locale's month names ("" without trades). */
   dateRangeLabel: string;
   totalTrades: number;
 }
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function monthDay(calendar: ZonedCalendar, t: number): string {
+function monthDay(calendar: ZonedCalendar, t: number, locale: string): string {
   const f = calendar.fields(t);
-  return `${MONTHS[f.month - 1] as string} ${f.day}`;
+  return `${monthAbbreviation(f.month, locale)} ${f.day}`;
 }
 
-/** `DateFormatter` "MMM d" … ", yyyy" in the brand calendar's zone, en_US_POSIX. */
-export function sessionHeatmapDateRange(calendar: ZonedCalendar, first: number, last: number, hours: number, trades: number): string {
+/**
+ * `DateFormatter` "MMM d" … ", yyyy" in the brand calendar's zone and the user's locale (the
+ * Mac's formatters use `Locale.current`): "Mar 2 – Nov 3, 2026" in en_US, "3月 2 – 11月 3, 2026"
+ * in ja_JP.
+ */
+export function sessionHeatmapDateRange(
+  calendar: ZonedCalendar,
+  first: number,
+  last: number,
+  hours: number,
+  trades: number,
+  locale: string,
+): string {
   const year = String(calendar.fields(last).year).padStart(4, "0");
-  return `${monthDay(calendar, first)} – ${monthDay(calendar, last)}, ${year} · ${hours} active hour${hours === 1 ? "" : "s"} · ${trades} trades`;
+  return `${monthDay(calendar, first, locale)} – ${monthDay(calendar, last, locale)}, ${year} · ${hours} active hour${hours === 1 ? "" : "s"} · ${trades} trades`;
 }
 
 export function sessionHeatmap(ctx: EngineContext, trades: readonly Trade[]): SessionHeatmapModel {
@@ -77,7 +87,7 @@ export function sessionHeatmap(ctx: EngineContext, trades: readonly Trade[]): Se
     dateRangeLabel:
       first === undefined || last === undefined
         ? ""
-        : sessionHeatmapDateRange(ctx.calendar, first.closeTime, last.closeTime, sortedActiveHours.length, trades.length),
+        : sessionHeatmapDateRange(ctx.calendar, first.closeTime, last.closeTime, sortedActiveHours.length, trades.length, ctx.locale),
     totalTrades: trades.length,
   };
 }

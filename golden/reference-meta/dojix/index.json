@@ -1,0 +1,735 @@
+{
+ "brand": "dojix",
+ "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+ "xcode": "Xcode 16.4",
+ "fixtures": [
+  {
+   "fixture": "dojix/f1-tiny",
+   "set": "F1",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f1-tiny.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 1.1
+  },
+  {
+   "fixture": "dojix/f1-tiny-journal",
+   "set": "F1",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f1-tiny-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "dojix/f2-forex-year",
+   "set": "F2",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f2-forex-year.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 10,
+   "seconds": 39.6
+  },
+  {
+   "fixture": "dojix/f2-forex-year-journal",
+   "set": "F2",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f2-forex-year-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 8,
+   "seconds": 32.3
+  },
+  {
+   "fixture": "dojix/f3-empty",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-empty.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.5
+  },
+  {
+   "fixture": "dojix/f3-empty-journal",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-empty-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.5
+  },
+  {
+   "fixture": "dojix/f3-single",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-single.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.6
+  },
+  {
+   "fixture": "dojix/f3-all-wins",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-all-wins.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "dojix/f3-all-losses",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-all-losses.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "dojix/f3-breakevens",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-breakevens.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 1
+  },
+  {
+   "fixture": "dojix/f3-all-breakeven",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-all-breakeven.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "dojix/f3-fifty-percent",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-fifty-percent.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 1.1
+  },
+  {
+   "fixture": "dojix/f3-zero-sl-jpy",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-zero-sl-jpy.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "dojix/f3-bucket-edges",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-bucket-edges.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "dojix/f3-columns",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-columns.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.6
+  },
+  {
+   "fixture": "dojix/f3-enc-lf",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-enc-lf.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.5
+  },
+  {
+   "fixture": "dojix/f3-enc-crlf",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-enc-crlf.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.5
+  },
+  {
+   "fixture": "dojix/f3-enc-utf8-bom",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-enc-utf8-bom.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.4
+  },
+  {
+   "fixture": "dojix/f3-enc-utf16le-bom",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-enc-utf16le-bom.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.4
+  },
+  {
+   "fixture": "dojix/f3-enc-cp1252",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-enc-cp1252.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.6
+  },
+  {
+   "fixture": "dojix/StrategyAnalytics_f3-multisection",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "StrategyAnalytics_f3-multisection.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.5
+  },
+  {
+   "fixture": "dojix/f3-renamed-multisection",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-renamed-multisection.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.4
+  },
+  {
+   "fixture": "dojix/f3-sanitize-limits",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-sanitize-limits.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "dojix/f3-sanitize-journal",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-sanitize-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 0.5
+  },
+  {
+   "fixture": "dojix/f4-long-history",
+   "set": "F4",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f4-long-history.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 9,
+   "seconds": 22.1
+  },
+  {
+   "fixture": "dojix/f4-long-history-journal",
+   "set": "F4",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f4-long-history-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 8,
+   "seconds": 21.6
+  },
+  {
+   "fixture": "dojix/f5-mt4",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-mt4.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "dojix/f5-ctrader",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-ctrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "dojix/f5-ctrader-compact",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-ctrader-compact.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.4
+  },
+  {
+   "fixture": "dojix/f5-tradingview",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-tradingview.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 7,
+   "seconds": 1.1
+  },
+  {
+   "fixture": "dojix/f5-oanda",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-oanda.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "dojix/f5-ibkr",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-ibkr.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "dojix/f5-tos",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-tos.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "dojix/f5-ninjatrader",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-ninjatrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "dojix/f5-generic-unknown",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-generic-unknown.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.4
+  },
+  {
+   "fixture": "dojix/DojixExport_00000000_20260630",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "DojixExport_00000000_20260630.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "dojix/ReportHistory-00000000",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "ReportHistory-00000000.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.4
+  },
+  {
+   "fixture": "dojix/f5-sa32",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-sa32.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "dojix/f7-dst-boundaries",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f7-dst-boundaries.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 2.3
+  },
+  {
+   "fixture": "dojix/f7-dst-boundaries",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Europe/Berlin",
+    "locale": "en_GB"
+   },
+   "file": "f7-dst-boundaries@Europe-Berlin_en_GB.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 2.3
+  },
+  {
+   "fixture": "dojix/f7-dst-boundaries",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "America/New_York",
+    "locale": "en_US"
+   },
+   "file": "f7-dst-boundaries@America-New_York_en_US.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 2.5
+  },
+  {
+   "fixture": "dojix/f7-dst-boundaries",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Asia/Kolkata",
+    "locale": "en_IN"
+   },
+   "file": "f7-dst-boundaries@Asia-Kolkata_en_IN.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 2.3
+  },
+  {
+   "fixture": "dojix/f7-dst-boundaries",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Asia/Tokyo",
+    "locale": "ja_JP"
+   },
+   "file": "f7-dst-boundaries@Asia-Tokyo_ja_JP.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 2.3
+  },
+  {
+   "fixture": "dojix/f7-ctrader-utc",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f7-ctrader-utc.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 2
+  },
+  {
+   "fixture": "dojix/f7-ctrader-utc",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Europe/Berlin",
+    "locale": "en_GB"
+   },
+   "file": "f7-ctrader-utc@Europe-Berlin_en_GB.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 2.3
+  },
+  {
+   "fixture": "dojix/f7-ctrader-utc",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "America/New_York",
+    "locale": "en_US"
+   },
+   "file": "f7-ctrader-utc@America-New_York_en_US.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 2.3
+  },
+  {
+   "fixture": "dojix/f7-ctrader-utc",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Asia/Kolkata",
+    "locale": "en_IN"
+   },
+   "file": "f7-ctrader-utc@Asia-Kolkata_en_IN.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 2.2
+  },
+  {
+   "fixture": "dojix/f7-ctrader-utc",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Asia/Tokyo",
+    "locale": "ja_JP"
+   },
+   "file": "f7-ctrader-utc@Asia-Tokyo_ja_JP.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 2.3
+  },
+  {
+   "fixture": "dojix/f8-tie-traps",
+   "set": "F8",
+   "compare": false,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f8-tie-traps.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "dojix/f9-scale-10k",
+   "set": "F9",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f9-scale-10k.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 12
+  },
+  {
+   "fixture": "dojix/f9-scale-50k",
+   "set": "F9",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f9-scale-50k.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 67.7
+  },
+  {
+   "fixture": "dojix/f9-scale-100k",
+   "set": "F9",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f9-scale-100k.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 121
+  }
+ ]
+}

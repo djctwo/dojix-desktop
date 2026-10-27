@@ -1,0 +1,253 @@
+{
+  "app": "greenwick",
+  "source_repo": "djctwo/greenwick",
+  "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+  "file": "GreenwickTests/StorageAndPrivacyTests.swift",
+  "helpers": {
+    "makeRepository": {
+      "line": 9,
+      "defaults": {
+        "database": "in-memory"
+      },
+      "notes": "Empty in-memory journal + TradeRepository."
+    },
+    "sampleTrades": {
+      "line": 19,
+      "defaults": {
+        "base": "DemoDataGenerator.generateTrades()[0]",
+        "ticket": "1000000 + i"
+      },
+      "notes": "count copies of sample trade 0 (AAPL BUY 100, netProfit 185) differing only in ticket."
+    }
+  },
+  "cases": [
+    {
+      "id": "StorageAndPrivacyTests.testBulkInsertHandlesLargeImports",
+      "line": 28,
+      "subject": "TradeRepository.bulkInsert",
+      "kind": "import",
+      "input": {
+        "helper": "sampleTrades",
+        "count": 40000,
+        "reinsert": "first 1000"
+      },
+      "expect": [
+        {
+          "path": "bulkInsert(trades)",
+          "op": "eq",
+          "value": 40000,
+          "line": 31,
+          "derived": false
+        },
+        {
+          "path": "count()",
+          "op": "eq",
+          "value": 40000,
+          "line": 32,
+          "derived": false
+        },
+        {
+          "path": "bulkInsert(trades[0..<1000])",
+          "op": "eq",
+          "value": 0,
+          "line": 34,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Re-import dedupes on ticket (UNIQUE)."
+    },
+    {
+      "id": "StorageAndPrivacyTests.testBulkInsertSkipsDuplicateTicketsWithinOneBatch",
+      "line": 37,
+      "subject": "TradeRepository.bulkInsert",
+      "kind": "import",
+      "input": {
+        "helper": "sampleTrades",
+        "count": 3,
+        "batch": "trades + trades"
+      },
+      "expect": [
+        {
+          "path": "bulkInsert(trades + trades)",
+          "op": "eq",
+          "value": 3,
+          "line": 40,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "StorageAndPrivacyTests.testHostileTextIsStoredLiterally",
+      "line": 43,
+      "subject": "TradeRepository.bulkInsert",
+      "kind": "validation",
+      "input": {
+        "helper": "sampleTrades",
+        "count": 1,
+        "trades": [
+          {
+            "symbol": "X'); DROP TABLE trades;--"
+          }
+        ],
+        "then": {
+          "updateNotes": "'; DELETE FROM trades; --"
+        }
+      },
+      "expect": [
+        {
+          "path": "bulkInsert(trades)",
+          "op": "eq",
+          "value": 1,
+          "line": 47,
+          "derived": false
+        },
+        {
+          "path": "fetchAll().count",
+          "op": "eq",
+          "value": 1,
+          "line": 49,
+          "derived": false
+        },
+        {
+          "path": "fetchAll()[0].symbol",
+          "op": "eq",
+          "value": "X'); DROP TABLE trades;--",
+          "line": 50,
+          "derived": false
+        },
+        {
+          "path": "count() after updateNotes",
+          "op": "eq",
+          "value": 1,
+          "line": 53,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "The 25-char symbol passes TradeLimits (<= 32, no control chars) on the repository path; the CSV importer would reduce it to 10 alnum chars."
+    },
+    {
+      "id": "StorageAndPrivacyTests.testEditingCostsMovesNetProfitByTheDifference",
+      "line": 56,
+      "subject": "TradeRepository.updateCosts",
+      "kind": "metric",
+      "input": {
+        "helper": "sampleTrades",
+        "count": 1,
+        "trades": [
+          {
+            "netProfit": "100",
+            "commission": "2",
+            "swap": "0"
+          }
+        ],
+        "updateCosts": {
+          "commission": "5",
+          "swap": "0"
+        }
+      },
+      "expect": [
+        {
+          "path": "fetchAll()[0].netProfit",
+          "op": "eq",
+          "value": "97",
+          "line": 66,
+          "derived": false
+        },
+        {
+          "path": "fetchAll()[0].commission",
+          "op": "eq",
+          "value": "5",
+          "line": 67,
+          "derived": false
+        },
+        {
+          "path": "fetchAll()[0].grossProfitBeforeCosts",
+          "op": "eq",
+          "value": "102",
+          "line": 68,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Greenwick stores net P&L: changing costs moves netProfit by -(new - old costs); gross = net + commission + swap."
+    },
+    {
+      "id": "ScreenshotPathTests.testScreenshotFilenamesCannotEscapeTheirFolder",
+      "line": 136,
+      "subject": "ScreenshotManager.imageURL",
+      "kind": "validation",
+      "input": {
+        "tradeId": 42,
+        "hostile": [
+          "..",
+          ".",
+          "../../etc/passwd",
+          "/etc/passwd",
+          "a/../../b",
+          ""
+        ],
+        "own": "<UUID>.jpg"
+      },
+      "expect": [
+        {
+          "path": "imageURL(hostile[*], 42)",
+          "op": "nil",
+          "value": null,
+          "line": 142,
+          "derived": false
+        },
+        {
+          "path": "imageURL(own, 42).lastPathComponent",
+          "op": "eq",
+          "value": "<UUID>.jpg",
+          "line": 147,
+          "derived": false
+        },
+        {
+          "path": "imageURL(own, 42).path hasPrefix screenshotDir(42) + \"/\"",
+          "op": "true",
+          "value": null,
+          "line": 148,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Class ScreenshotPathTests (in this file). Hostile names are rejected (XCTFail if any resolves). Same filename rule as HostileValueTests.testOnlyTheAppsOwnScreenshotNamesAreAccepted."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "StorageAndPrivacyTests.testTestsNeverUseTheReleaseDataFolderOrKeychainService",
+      "line": 73,
+      "reason": "Data-folder / keychain isolation (environment), not math."
+    },
+    {
+      "id": "StorageAndPrivacyTests.testKeychainServiceOverrideIsIgnoredByTheReleaseBuild",
+      "line": 81,
+      "reason": "Keychain service override (build hygiene)."
+    },
+    {
+      "id": "StorageAndPrivacyTests.testAIPromptContainsOnlyAggregates",
+      "line": 97,
+      "reason": "AI prompt privacy (SPEC §8.2): asserts absence of notes/tags/comment/screenshots/ticket in the prompt, no numbers."
+    },
+    {
+      "id": "StorageAndPrivacyTests.testAIIsOffByDefault",
+      "line": 111,
+      "reason": "AI opt-in default (settings), not math."
+    },
+    {
+      "id": "StorageAndPrivacyTests.testPinnedHostsStillMatchPins",
+      "line": 122,
+      "reason": "Live TLS pinning (network, opt-in); desktop drops pinning (PARITY B2)."
+    },
+    {
+      "id": "DemoSeedHelper.testSeedDemoDatabase",
+      "line": 156,
+      "reason": "Opt-in screenshot seeding helper, not a check (class DemoSeedHelper)."
+    }
+  ]
+}

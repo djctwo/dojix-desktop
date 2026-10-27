@@ -44,11 +44,11 @@ describe("EdgeDecayMonitor rolling windows", () => {
     expect(big?.pf).toBe(5);
   });
 
-  it("dominant regime: first-appearance order, the last of tied counts wins (Swift: random)", () => {
+  it("dominant regime: first-appearance order, the first of tied counts wins (Swift: random)", () => {
     const regimes: VolatilityRegime[] = [...Array(15).fill("LOW"), ...Array(15).fill("HIGH")];
-    expect(computeEdgeDecayMonitor(fx, series(Array(30).fill("1"), (i) => ({ volRegime: regimes[i] as VolatilityRegime }))).rollingData[0]?.volRegime).toBe("HIGH");
-    const mostly: VolatilityRegime[] = [...Array(16).fill("LOW"), ...Array(14).fill("HIGH")];
-    expect(computeEdgeDecayMonitor(fx, series(Array(30).fill("1"), (i) => ({ volRegime: mostly[i] as VolatilityRegime }))).rollingData[0]?.volRegime).toBe("LOW");
+    expect(computeEdgeDecayMonitor(fx, series(Array(30).fill("1"), (i) => ({ volRegime: regimes[i] as VolatilityRegime }))).rollingData[0]?.volRegime).toBe("LOW");
+    const mostly: VolatilityRegime[] = [...Array(14).fill("LOW"), ...Array(16).fill("HIGH")];
+    expect(computeEdgeDecayMonitor(fx, series(Array(30).fill("1"), (i) => ({ volRegime: mostly[i] as VolatilityRegime }))).rollingData[0]?.volRegime).toBe("HIGH");
   });
 
   it("Greenwick points have no regime", () => {

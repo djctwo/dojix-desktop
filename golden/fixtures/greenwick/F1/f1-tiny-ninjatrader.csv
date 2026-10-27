@@ -1,0 +1,6 @@
+Trade #,Instrument,Account,Strategy,Market position,Quantity,Entry price,Exit price,Entry time,Exit time,Profit,Commission,MAE,MFE
+1,FIXA,Sim101,Fictional,Long,100,42.00,42.50,01/05/2026 10:05:00,01/05/2026 10:35:00,100.00,0,0.12,0.6
+2,FIXA,Sim101,Fictional,Long,100,42.00,42.50,01/06/2026 10:05:00,01/06/2026 10:35:00,50.00,0,0.12,0.6
+3,FIXA,Sim101,Fictional,Long,100,42.00,42.50,01/07/2026 10:05:00,01/07/2026 10:35:00,-30.00,0,0.12,0.6
+4,FIXA,Sim101,Fictional,Long,100,42.00,42.50,01/08/2026 10:05:00,01/08/2026 10:35:00,-20.00,0,0.12,0.6
+5,FIXA,Sim101,Fictional,Long,100,42.00,42.50,01/09/2026 10:05:00,01/09/2026 10:35:00,80.00,0,0.12,0.6

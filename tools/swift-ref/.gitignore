@@ -1,0 +1,8 @@
+# Filled by prepare.mjs in CI (the app sources at the pinned commit + generated code)
+*/Sources/*/App/
+*/Sources/*/RefGenerated.swift
+*/Sources/*/RefSupport.swift
+*/Sources/*/main.swift
+*/generated-report.json
+*/.build/
+*/Package.resolved

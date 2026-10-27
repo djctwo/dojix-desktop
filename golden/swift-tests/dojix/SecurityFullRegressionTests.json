@@ -1,0 +1,217 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/SecurityFullRegressionTests.swift",
+  "helpers": {
+    "SecFixture.trade": {
+      "line": 41,
+      "defaults": {
+        "ticket": null,
+        "symbol": "EURUSD",
+        "lots": 0.1,
+        "netProfit": 10,
+        "durationMin": 60,
+        "closeTime": "2026-01-01T00:00:00Z",
+        "screenshots": "",
+        "direction": "BUY",
+        "openTime": {
+          "expr": "closeTime - 3600 s"
+        },
+        "openPrice": 1.1,
+        "closePrice": 1.101,
+        "sl": 1.09,
+        "tp": 1.12,
+        "maePips": 3,
+        "mfePips": 8,
+        "rMultiple": 1,
+        "session": "LONDON",
+        "dayOfWeek": "Thu",
+        "hour": 10,
+        "rangeSize": 20,
+        "sweepDepth": 4,
+        "usedFVG": false,
+        "volRegime": "MED",
+        "hitBreakeven": false,
+        "scaledIn": false,
+        "magic": 0,
+        "comment": "Sample (fictional)",
+        "timeToMFEMin": 10,
+        "slDistPips": 10,
+        "slippagePips": 0,
+        "postClose15m": 0,
+        "postClose30m": 0,
+        "biasAtEntry": "NEUTRAL",
+        "importedAt": {
+          "expr": "closeTime"
+        }
+      },
+      "notes": "Shared helper defined in DojixTests/SecurityFixTestSupport.swift (line 41), not in this file. closeTime default = Date(timeIntervalSince1970: 1_767_225_600). ticket is required. Decimal prices come from Swift float literals (via Double)."
+    },
+    "priceUpdates": {
+      "line": 146,
+      "defaults": {
+        "file_name": "DojixPrices.json"
+      },
+      "notes": "Writes the text to <scratch>/DojixPrices.json, lets MT5FileProvider read it once, and collects the emitted PriceUpdate values."
+    },
+    "priceJSON": {
+      "line": 156,
+      "defaults": {
+        "text": "{\"ts\":\"2026.01.01 10:00:00\",\"prices\":[{\"s\":\"EURUSD\",\"b\":1.1,\"a\":1.1002}]}"
+      },
+      "notes": "A minimal DojixPrices.json written by the MT5 price-feed EA."
+    }
+  },
+  "cases": [
+    {
+      "id": "SecurityFullRegressionTests.testHugeCostsAreClampedSoDojixsOwnBackupRestores",
+      "line": 123,
+      "subject": "TradeRepository.updateCosts (Trade.money clamp) + Trade.storageViolations",
+      "kind": "validation",
+      "input": {
+        "helper": "SecFixture.trade",
+        "trade": {
+          "ticket": 7
+        },
+        "updateCosts": {
+          "commission": "5e15",
+          "swap": "-7e20"
+        }
+      },
+      "expect": [
+        {
+          "path": "stored.storageViolations",
+          "op": "eq",
+          "value": [],
+          "line": 134,
+          "derived": false
+        },
+        {
+          "path": "stored.commission",
+          "op": "eq",
+          "value": "1000000000000",
+          "line": 135,
+          "derived": false
+        },
+        {
+          "path": "stored.swap",
+          "op": "eq",
+          "value": "-1000000000000",
+          "line": 136,
+          "derived": false
+        },
+        {
+          "path": "backup.validatedContents",
+          "op": "notNil",
+          "line": 141,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Typed costs are clamped to +/-Trade.moneyLimit (1e12; asserted as Trade.moneyLimit / -Trade.moneyLimit, written here as Decimal strings) so the journal's own backup passes restore validation. Line 141 is XCTAssertNoThrow(validatedContents(of: backup))."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testNormalPriceFileIsRead",
+      "line": 158,
+      "subject": "MT5FileProvider (DojixPrices.json)",
+      "kind": "import",
+      "input": {
+        "helper": "priceUpdates",
+        "text": "priceJSON"
+      },
+      "expect": [
+        {
+          "path": "updates[*].symbol",
+          "op": "eq",
+          "value": [
+            "EURUSD"
+          ],
+          "line": 160,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "JSON {ts: \"yyyy.MM.dd HH:mm:ss\", prices: [{s: symbol, b: bid, a: ask}]}."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testOversizedPriceFileIsIgnored",
+      "line": 165,
+      "subject": "MT5FileProvider (DojixPrices.json size cap)",
+      "kind": "import",
+      "input": {
+        "helper": "priceUpdates",
+        "text": "priceJSON + 2,097,152 spaces"
+      },
+      "expect": [
+        {
+          "path": "updates.isEmpty",
+          "op": "true",
+          "line": 168,
+          "derived": false
+        },
+        {
+          "path": "maximumFileSize",
+          "op": "eq",
+          "value": 262144,
+          "line": 165,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Files over MT5FileProvider.maximumFileSize (256 KiB = 262,144 bytes) are not parsed (size checked, then a bounded read)."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "SecurityFullRegressionTests.testCSVAndPDFExportsAreOwnerOnly",
+      "line": 28,
+      "reason": "File permissions of exports (0600), file-system security."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testSymlinkAtAPredictableTempNameIsNeverFollowed",
+      "line": 49,
+      "reason": "Atomic-write symlink safety (file-system security)."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testSymlinkAtTheDestinationIsReplacedNotFollowed",
+      "line": 74,
+      "reason": "Atomic-write symlink safety (file-system security)."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testUnloadKeepsEveryCommitThatRacedIt",
+      "line": 93,
+      "reason": "Lock/unload race (concurrency)."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testRedirectToAnotherHostIsRefused",
+      "line": 205,
+      "reason": "HTTP redirect policy (network security)."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testRedirectToPlainHTTPIsRefused",
+      "line": 212,
+      "reason": "HTTP redirect policy (network security)."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testSameHostHTTPSRedirectIsFollowed",
+      "line": 217,
+      "reason": "HTTP redirect policy (network security)."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testLegacyDefaultsKeyIsRemovedWhenKeychainAlreadyHasOne",
+      "line": 234,
+      "reason": "API-key migration to the Keychain (credential storage)."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testLegacyDefaultsKeyIsKeptWhenKeychainSaveFails",
+      "line": 247,
+      "reason": "API-key migration to the Keychain (credential storage)."
+    },
+    {
+      "id": "SecurityFullRegressionTests.testLegacyDefaultsKeyMovesToKeychain",
+      "line": 255,
+      "reason": "API-key migration to the Keychain (credential storage)."
+    }
+  ]
+}

@@ -5,7 +5,7 @@
 // - closed integer buckets 0…5, 6…15, 16…30, 31…60, 61…120, 121…999999 minutes (a duration
 //   outside every range, e.g. negative or ≥ 1,000,000, is in no bucket);
 // - per bucket: profit (input order), trade count, WR%, average R;
-// - sweet spot = `max(by: avgR <)` (the last of ties), shown only when it has ≥ 3 trades.
+// - sweet spot = `max(by: avgR <)` (the first of ties), shown only when it has ≥ 3 trades.
 
 import type { EngineContext } from "../engine/context";
 import type { Trade } from "../model/trade";

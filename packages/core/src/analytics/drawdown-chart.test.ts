@@ -38,13 +38,13 @@ describe("DrawdownChart", () => {
 });
 
 describe("TradeComparison", () => {
-  it("best = the last of equal maxima, worst = the first of equal minima", () => {
+  it("best = the first of equal maxima, worst = the first of equal minima (Swift max/min(by:))", () => {
     const a = fxTrade({ netProfit: "50" });
     const b = fxTrade({ netProfit: "-20" });
     const c = fxTrade({ netProfit: "50" });
     const d = fxTrade({ netProfit: "-20" });
     const m = computeTradeComparison([a, b, c, d]);
-    expect(m.bestTrade).toBe(c);
+    expect(m.bestTrade).toBe(a);
     expect(m.worstTrade).toBe(b);
     expect(computeTradeComparison([])).toEqual({ bestTrade: null, worstTrade: null });
   });

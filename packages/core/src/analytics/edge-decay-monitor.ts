@@ -17,7 +17,7 @@
 //   for sessions with ≥ 10 trades in each half, in enum order.
 //
 // Swift Dictionary / Set order is random. The desktop reads groups in first-appearance order:
-// the dominant regime is `max(by:)` over that order (so the last of tied counts wins), and the
+// the dominant regime is `max(by:)` over that order (so the first of tied counts wins), and the
 // new-session list is in first-appearance order in the second half.
 
 import type { BrandId } from "../brand";

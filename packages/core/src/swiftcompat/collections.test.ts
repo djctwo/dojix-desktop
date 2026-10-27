@@ -22,8 +22,8 @@ describe("max(by:) / min(by:) tie behaviour", () => {
     { v: 0, id: "e" },
   ];
 
-  it("max(by:) returns the LAST maximum (HourlyPnLChart best hour, TradeComparison best)", () => {
-    expect(maxBy(items, byValue)?.id).toBe("d");
+  it("max(by:) returns the FIRST maximum (Tier B: TradeComparison on dojix/f3-all-breakeven picks the first of six 0.00 trades)", () => {
+    expect(maxBy(items, byValue)?.id).toBe("b");
   });
 
   it("min(by:) returns the FIRST minimum (TradeComparison worst)", () => {
@@ -40,9 +40,10 @@ describe("max(by:) / min(by:) tie behaviour", () => {
   it("[Double].max()/min() treat NaN the Swift way", () => {
     expect(seqMax([1, 3, 2])).toBe(3);
     expect(seqMin([1, 3, -2])).toBe(-2);
-    // max: !(e < result) is true for NaN on either side, so NaN replaces, then is replaced.
+    // max: result < e is false against NaN, so a NaN element is skipped and a leading NaN sticks.
     expect(seqMax([1, NaN, 2])).toBe(2);
-    expect(seqMax([1, 2, NaN])).toBeNaN();
+    expect(seqMax([1, 2, NaN])).toBe(2);
+    expect(seqMax([NaN, 1, 2])).toBeNaN();
     expect(Math.max(1, NaN, 2)).toBeNaN(); // the JS behaviour this differs from
     // min: e < result is false against NaN, so a leading NaN sticks.
     expect(seqMin([NaN, 1, 2])).toBeNaN();

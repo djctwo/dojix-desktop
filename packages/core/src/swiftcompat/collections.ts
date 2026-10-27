@@ -4,9 +4,13 @@
 export type Less<T> = (a: T, b: T) => boolean;
 
 /**
- * Swift `Sequence.max(by:)`: on ties the **last** maximum wins, because the stdlib replaces
- * the running result whenever `!areInIncreasingOrder(e, result)`. Returns undefined when empty.
- * (swift/stdlib/public/core/SequenceAlgorithms.swift, `max(by:)`.)
+ * Swift `Sequence.max(by:)`: on ties the **first** maximum wins, because the stdlib replaces the
+ * running result only when `areInIncreasingOrder(result, e)` (swift/stdlib/public/core/
+ * SequenceAlgorithms.swift, `max(by:)`). Returns undefined when empty.
+ *
+ * Confirmed by the Tier B references (run 40586319588): TradeComparison picks the first of equal
+ * best trades (dojix/f3-all-breakeven, greenwick/f3-trade-limits-journal), ExecutionQuality the
+ * first of equal worst hours and OpeningRangeAnalysis the first of equal best buckets.
  */
 export function maxBy<T>(items: Iterable<T>, less: Less<T>): T | undefined {
   let have = false;
@@ -15,7 +19,7 @@ export function maxBy<T>(items: Iterable<T>, less: Less<T>): T | undefined {
     if (!have) {
       result = e;
       have = true;
-    } else if (!less(e, result as T)) {
+    } else if (less(result as T, e)) {
       result = e;
     }
   }
@@ -43,8 +47,9 @@ export function minBy<T>(items: Iterable<T>, less: Less<T>): T | undefined {
 const numLess: Less<number> = (a, b) => a < b;
 
 /**
- * Swift `[Double].max()` (`max(by: <)`). NaN behaves as in Swift: a NaN element replaces the
- * running result and the next element replaces the NaN, unlike `Math.max` which returns NaN.
+ * Swift `[Double].max()` (`max(by: <)`). NaN behaves as in Swift: a NaN element after the first
+ * is skipped (`result < NaN` is false) and a leading NaN sticks, unlike `Math.max` which returns
+ * NaN whenever one is present.
  */
 export function seqMax(values: Iterable<number>): number | undefined {
   return maxBy(values, numLess);

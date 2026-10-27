@@ -15,7 +15,7 @@ describe("OpeningRangeAnalysis (OpeningRangeAnalysis.swift:22-102)", () => {
 
   it("buckets, best/worst and the insight", () => {
     const trades = [at(9, 30, "100"), at(9, 34, "-20"), at(9, 35, "-60"), at(12, 0, "10"), at(15, 59, "30"), at(8, 0, "999")];
-    const m = computeOpeningRange(trades);
+    const m = computeOpeningRange(trades, "en_US");
     expect(m.buckets.map((b) => [b.id, b.tradeCount, b.totalPnL])).toEqual([
       ["5min", 2, 80],
       ["15min", 1, -60],
@@ -32,18 +32,18 @@ describe("OpeningRangeAnalysis (OpeningRangeAnalysis.swift:22-102)", () => {
     expect(m.insightText).toBe("Your best entries are first 5 min (+$40.00 avg) — first 15 min costs you $60.00");
   });
 
-  it("ties: best is the last maximum, worst the first minimum; no cost clause when the worst total is ≥ 0", () => {
-    const m = computeOpeningRange([at(9, 31, "10"), at(9, 40, "10"), at(10, 0, "5")]);
-    expect(m.bestBucket?.id).toBe("15min");
+  it("ties: best is the first maximum, worst the first minimum; no cost clause when the worst total is ≥ 0", () => {
+    const m = computeOpeningRange([at(9, 31, "10"), at(9, 40, "10"), at(10, 0, "5")], "en_US");
+    expect(m.bestBucket?.id).toBe("5min");
     expect(m.worstBucket?.id).toBe("midmorn");
-    expect(m.insightText).toBe("Your best entries are first 15 min (+$10.00 avg)");
-    const neg = computeOpeningRange([at(9, 31, "-10"), at(10, 0, "-5")]);
+    expect(m.insightText).toBe("Your best entries are first 5 min (+$10.00 avg)");
+    const neg = computeOpeningRange([at(9, 31, "-10"), at(10, 0, "-5")], "en_US");
     expect(neg.insightText).toBe("Your best entries are mid-morning (-$5.00 avg) — first 5 min costs you $10.00");
   });
 
   it("one active bucket and none", () => {
-    expect(computeOpeningRange([at(9, 31, "1")]).insightText).toBe("Need more trades across different times for insights");
-    const none = computeOpeningRange([at(7, 0, "1")]);
+    expect(computeOpeningRange([at(9, 31, "1")], "en_US").insightText).toBe("Need more trades across different times for insights");
+    const none = computeOpeningRange([at(7, 0, "1")], "en_US");
     expect(none).toMatchObject({ hasData: false, bestBucket: null, worstBucket: null, activeBuckets: [] });
     expect(none.insightText).toBe("Need more trades across different times for insights");
   });

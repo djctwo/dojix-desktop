@@ -111,7 +111,7 @@ export function periodComparison(ctx: EngineContext, trades: readonly Trade[], p
   const c = calculateMetrics(currentPeriodTrades, options);
   const p = calculateMetrics(previousPeriodTrades, options);
   const comparisons = [
-    metric("pnl", "P&L", c.totalProfit, p.totalProfit, asCompactCurrency(c.totalProfit), asCompactCurrency(p.totalProfit), percentChange(c.totalProfit, p.totalProfit), true),
+    metric("pnl", "P&L", c.totalProfit, p.totalProfit, asCompactCurrency(c.totalProfit, ctx.locale), asCompactCurrency(p.totalProfit, ctx.locale), percentChange(c.totalProfit, p.totalProfit), true),
     metric("wr", "Win Rate", c.winRate, p.winRate, asPercent(c.winRate), asPercent(p.winRate), c.winRate - p.winRate, true),
     metric(
       "pf",
@@ -134,7 +134,7 @@ export function periodComparison(ctx: EngineContext, trades: readonly Trade[], p
       true,
     ),
     metric("trades", "Trades", c.totalTrades, p.totalTrades, String(c.totalTrades), String(p.totalTrades), percentChange(c.totalTrades, p.totalTrades), true),
-    metric("dd", "Max DD", c.maxDrawdown, p.maxDrawdown, asCompactCurrency(c.maxDrawdown), asCompactCurrency(p.maxDrawdown), percentChange(c.maxDrawdown, p.maxDrawdown), false),
+    metric("dd", "Max DD", c.maxDrawdown, p.maxDrawdown, asCompactCurrency(c.maxDrawdown, ctx.locale), asCompactCurrency(p.maxDrawdown, ctx.locale), percentChange(c.maxDrawdown, p.maxDrawdown), false),
   ];
   return {
     period,

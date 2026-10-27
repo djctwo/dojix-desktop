@@ -1,0 +1,2 @@
+Ticket,Symbol,Direction,Lots,OpenTime,CloseTime,DurationMin,OpenPrice,ClosePrice,SL,TP,NetProfit,MAE_Pips,MFE_Pips,RMultiple,Session,DayOfWeek,Hour,RangeSize,SweepDepth,UsedFVG,VolRegime,HitBreakeven,ScaledIn,Magic,Comment,TimeToMFE_Min,SLDist_Pips,Slippage_Pips,PostClose15m,PostClose30m,BiasAtEntry
+61000006,EURUSD,BUY,0.1,2026.01.05 09:15:00,2026.01.05 10:00:00,45,1.08420,1.08520,1.08220,1.08820,42.50,6.5,14.2,2.13,LONDON,Mon,9,32.5,2.1,NO,MED,NO,NO,7001,fictional,12,20,0.2,1.5,-2.5,WITH

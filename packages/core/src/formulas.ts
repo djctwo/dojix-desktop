@@ -218,10 +218,10 @@ export const FORMULA_INDEX: readonly FormulaEntry[] = [
 
   // --- Appendix A, shared ------------------------------------------------------------------
   done("LotSizeAnalysis / ShareSizeAnalysis", "analytics/size-analysis.ts", ["sizeAnalysis"], BOTH, at("pairs", "pairs")),
-  done("HourlyPnLChart", "analytics/hourly-pnl.ts", ["hourlyPnL"], BOTH, at("timing", "timing"), undefined, "best = the last maximum (maxBy)"),
+  done("HourlyPnLChart", "analytics/hourly-pnl.ts", ["hourlyPnL"], BOTH, at("timing", "timing"), undefined, "best = the first maximum (maxBy)"),
   done("WinLossDistribution", "analytics/win-loss-distribution.ts", ["winLossDistribution"], BOTH, at("pairs", "pairs"), ["D-01"]),
   e3("DrawdownChart", BOTH, at("overview", "risk"), "analytics/drawdown-chart.ts", ["computeDrawdownChart", "drawdownChartComponent", "drawdownChartParity"]),
-  e3("TradeComparison", BOTH, at("behavioral", "behavioral"), "analytics/trade-comparison.ts", ["computeTradeComparison", "tradeComparisonComponent", "tradeComparisonParity"], { note: "best = maxBy (last of ties), worst = minBy (first)" }),
+  e3("TradeComparison", BOTH, at("behavioral", "behavioral"), "analytics/trade-comparison.ts", ["computeTradeComparison", "tradeComparisonComponent", "tradeComparisonParity"], { note: "best = maxBy, worst = minBy (both the first of ties)" }),
   done("DurationAnalysis", "analytics/duration-analysis.ts", ["durationAnalysis", "DURATION_RANGES"], BOTH, at("timing", "timing")),
   done("DayOfWeekChart", "analytics/day-of-week.ts", ["dayOfWeekChart"], BOTH, at("timing", "timing")),
   done("RMultipleChart", "analytics/r-multiple.ts", ["rMultipleChart", "R_MULTIPLE_RANGES"], BOTH, at("sessions", "sessions")),
@@ -251,7 +251,7 @@ export const FORMULA_INDEX: readonly FormulaEntry[] = [
   e3("EmotionalAnalytics", BOTH, at("behavioral", "behavioral"), "analytics/emotional-analytics.ts", ["computeEmotionalAnalytics", "emotionalAnalyticsComponent", "emotionalAnalyticsParity"]),
   e3("ImprovementTracker", BOTH, at("behavioral", "behavioral"), "analytics/improvement-tracker.ts", ["computeImprovementTracker", "improvementTrackerComponent", "improvementTrackerParity"]),
   e3("RiskOfRuin", BOTH, at("risk", "risk"), "analytics/risk-of-ruin.ts", ["computeRiskOfRuin", "riskOfRuinComponent", "riskOfRuinParity"], { divergences: ["D-04"] }),
-  e3("MonteCarloSimulation", BOTH, at("risk", "risk"), "analytics/monte-carlo-simulation.ts", ["computeMonteCarloSimulation", "monteCarloSimulationComponent", "monteCarloSimulationParity"], { divergences: ["D-05"], note: "swift compat: seeded shuffle without replacement; fixed: seeded bootstrap (engine/rng.ts resampled). No parity resolver: the Mac result is random" }),
+  e3("MonteCarloSimulation", BOTH, at("risk", "risk"), "analytics/monte-carlo-simulation.ts", ["computeMonteCarloSimulation", "monteCarloSimulationComponent", "monteCarloSimulationParity"], { divergences: ["D-05"], note: "swift compat: seeded shuffle without replacement; fixed: seeded bootstrap (engine/rng.ts resampled). Parity: the members the Mac randomises are nondeterministic in the reference (warn only); the invariants are compared" }),
   done("SequenceAnalysis", "analytics/sequence-analysis.ts", ["sequenceAnalysis", "sequencePattern"], BOTH, at("sessions", "sessions")),
   e3("StrategyCheckpoints", BOTH, at("advanced", "advanced"), "analytics/strategy-checkpoints.ts", ["computeStrategyCheckpoints", "strategyCheckpointsComponent", "strategyCheckpointsParity", "compareAtCheckpoint", "checkpointMetrics"]),
   e3("ChecklistAnalytics", BOTH, at("behavioral", "behavioral"), "analytics/checklist-analytics.ts", ["computeChecklistAnalytics", "checklistAnalyticsComponent", "checklistAnalyticsParity"]),

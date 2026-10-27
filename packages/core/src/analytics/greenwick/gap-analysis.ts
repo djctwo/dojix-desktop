@@ -4,7 +4,7 @@
 // - Days are the ET date of the **open** (`TradingCalendar.dayKey(openTime)`), zero-padded, so
 //   sorting the keys as strings is date order (the Mac's D-13 fix, now parity).
 // - Previous close = the close price of the previous traded day's last close (`max(by:)`, the
-//   last of equal close times); today's open = the open price of the day's first open
+//   first of equal close times in open-time order); today's open = the open price of the day's first open
 //   (`min(by:)`, the first of equal open times).
 // - Prices go through Foundation's Decimal → Double (`NSDecimalNumber.doubleValue`).
 // - The Mac walks symbols in dictionary order (random); the desktop walks them in first
@@ -147,7 +147,7 @@ function averagePnL(gs: readonly GapTrade[]): number {
 }
 
 /** GapAnalysis.swift:33-171. No minimum trade count. */
-export function computeGapAnalysis(trades: readonly GreenwickTrade[]): GapAnalysisModel {
+export function computeGapAnalysis(trades: readonly GreenwickTrade[], locale: string): GapAnalysisModel {
   const gapTrades = findGapTrades(trades);
 
   const up = gapStats(gapTrades, "Gap Up");
@@ -161,8 +161,8 @@ export function computeGapAnalysis(trades: readonly GreenwickTrade[]): GapAnalys
   let bestStrategy: string;
   if (up.count < 3 && down.count < 3) bestStrategy = "Need more gap trades to determine best strategy";
   else if (goBuys.length === 0 && fadeSells.length === 0) bestStrategy = "Need both long and short gap trades to compare strategies";
-  else if (go > fade) bestStrategy = `Gap-and-go works better for you (avg ${asCurrency(go)} vs ${asCurrency(fade)} fade)`;
-  else if (fade > go) bestStrategy = `Gap-and-fade works better for you (avg ${asCurrency(fade)} vs ${asCurrency(go)} go)`;
+  else if (go > fade) bestStrategy = `Gap-and-go works better for you (avg ${asCurrency(go, locale)} vs ${asCurrency(fade, locale)} fade)`;
+  else if (fade > go) bestStrategy = `Gap-and-fade works better for you (avg ${asCurrency(fade, locale)} vs ${asCurrency(go, locale)} go)`;
   else bestStrategy = "Gap-and-go and gap-and-fade perform similarly";
 
   return {

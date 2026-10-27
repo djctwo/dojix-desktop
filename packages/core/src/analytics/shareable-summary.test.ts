@@ -29,7 +29,7 @@ describe("ShareableSummary", () => {
   });
 
   it("shows losses, ❄️ streaks, ∞ PF as 99.99 and the Greenwick name", () => {
-    const losing = summaryTextOf("greenwick", { ...EMPTY_METRICS, totalTrades: 2, losses: 2, totalProfit: -12.5, expectancy: -6.25, currentStreak: -2 });
+    const losing = summaryTextOf("greenwick", { ...EMPTY_METRICS, totalTrades: 2, losses: 2, totalProfit: -12.5, expectancy: -6.25, currentStreak: -2 }, "en_US");
     expect(losing.split("\n")).toEqual([
       "📊 Greenwick Daily Summary",
       "─────────────────────",
@@ -41,7 +41,7 @@ describe("ShareableSummary", () => {
       "─────────────────────",
       "via Greenwick",
     ]);
-    const flat = summaryTextOf("dojix", { ...EMPTY_METRICS, totalTrades: 1, profitFactor: Infinity });
+    const flat = summaryTextOf("dojix", { ...EMPTY_METRICS, totalTrades: 1, profitFactor: Infinity }, "en_US");
     expect(flat).toContain("P&L: +$0.00 | 1 trades");
     expect(flat).toContain("PF: 99.99");
     expect(flat).toContain("Streak: ➖ 0\n");

@@ -1,0 +1,118 @@
+{
+  "app": "greenwick",
+  "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+  "files": [
+    {
+      "file": "GreenwickTests/TradingDayTests.swift",
+      "json": "golden/swift-tests/greenwick/TradingDayTests.json",
+      "cases": 12,
+      "skipped": 0
+    },
+    {
+      "file": "GreenwickTests/ImportParserTests.swift",
+      "json": "golden/swift-tests/greenwick/ImportParserTests.json",
+      "cases": 15,
+      "skipped": 0
+    },
+    {
+      "file": "GreenwickTests/HostileValueTests.swift",
+      "json": "golden/swift-tests/greenwick/HostileValueTests.json",
+      "cases": 9,
+      "skipped": 0
+    },
+    {
+      "file": "GreenwickTests/SampleTradesTests.swift",
+      "json": "golden/swift-tests/greenwick/SampleTradesTests.json",
+      "cases": 5,
+      "skipped": 0
+    },
+    {
+      "file": "GreenwickTests/RestoreValidationTests.swift",
+      "json": "golden/swift-tests/greenwick/RestoreValidationTests.json",
+      "cases": 6,
+      "skipped": 8
+    },
+    {
+      "file": "GreenwickTests/ImportSecurityTests.swift",
+      "json": "golden/swift-tests/greenwick/ImportSecurityTests.json",
+      "cases": 7,
+      "skipped": 1
+    },
+    {
+      "file": "GreenwickTests/SecurityReviewTests.swift",
+      "json": "golden/swift-tests/greenwick/SecurityReviewTests.json",
+      "cases": 2,
+      "skipped": 10
+    },
+    {
+      "file": "GreenwickTests/StorageAndPrivacyTests.swift",
+      "json": "golden/swift-tests/greenwick/StorageAndPrivacyTests.json",
+      "cases": 5,
+      "skipped": 6
+    }
+  ],
+  "not_ported": [
+    {
+      "file": "GreenwickTests/AppLockTests.swift",
+      "reason": "App Lock key wrapping, recovery, rotation, erase (security/keychain). Pins PBKDF2 >= 600,000 (desktop uses Argon2id, PARITY B2)."
+    },
+    {
+      "file": "GreenwickTests/BackupEncryptionTests.swift",
+      "reason": "Backup encryption format (crypto). Pins maximumIterations 10,000,000 and round counts 0 / 10,000,001 refused as damaged."
+    },
+    {
+      "file": "GreenwickTests/BackupFlowTests.swift",
+      "reason": "Backup/restore UI flow and password prompts (security/UI)."
+    },
+    {
+      "file": "GreenwickTests/DurableWriteTests.swift",
+      "reason": "fsync/rename durability (storage)."
+    },
+    {
+      "file": "GreenwickTests/FinishLineTests.swift",
+      "reason": "Lock during quit dialog, held journal, throttle/keychain read failures (lock/keychain/race)."
+    },
+    {
+      "file": "GreenwickTests/IdleLockTests.swift",
+      "reason": "Idle auto-lock (lock). Pins choices [0,1,5,15,30,60], default 15 min, unknown value -> 15 (PARITY A2.9)."
+    },
+    {
+      "file": "GreenwickTests/JournalDurabilityTests.swift",
+      "reason": "Journal open/save under disk errors, single instance (storage/lock)."
+    },
+    {
+      "file": "GreenwickTests/JournalEncryptionTests.swift",
+      "reason": "Journal encryption at rest (crypto)."
+    },
+    {
+      "file": "GreenwickTests/KeyChangeRaceTests.swift",
+      "reason": "Key-change races (race/lock). testThrottleKeepsTheLockScreenScheduleAndFormat pins lockoutDuration(1...10) = [0,0,0,0,30,60,300,900,1800,1800] s and the wait messages (PARITY A2.8)."
+    },
+    {
+      "file": "GreenwickTests/ReleaseHygieneTests.swift",
+      "reason": "Release-build override and entitlement hygiene (build)."
+    },
+    {
+      "file": "GreenwickTests/ReReviewTests.swift",
+      "reason": "Overlapping App Lock operations, unsaved changes at lock/quit, keychain read errors (lock/race/keychain)."
+    },
+    {
+      "file": "GreenwickTests/RollbackProtectionTests.swift",
+      "reason": "Journal generation / older-copy detection (security)."
+    },
+    {
+      "file": "GreenwickTests/ScreenshotKeyChangeTests.swift",
+      "reason": "Screenshot re-sealing on key change (screenshot/crypto)."
+    },
+    {
+      "file": "GreenwickTests/ScreenshotStorageTests.swift",
+      "reason": "Sealed screenshot storage (screenshot/crypto)."
+    },
+    {
+      "file": "GreenwickTests/TestSupport.swift",
+      "reason": "Helpers only (0 tests); the helpers used by ported cases are described in each JSON's helpers."
+    }
+  ],
+  "total_tests_in_source": 202,
+  "total_cases_ported": 61
+}

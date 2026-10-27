@@ -1,0 +1,553 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/CSVParserTests.swift",
+  "helpers": {},
+  "cases": [
+    {
+      "id": "CSVParserTests.testParseSimpleCSVLine",
+      "line": 8,
+      "subject": "CSVParser.parse",
+      "kind": "import",
+      "input": {
+        "csv": "Ticket,Symbol,Direction,Lots,OpenTime,CloseTime,DurationMin,OpenPrice,ClosePrice,SL,TP,NetProfit,MAE_Pips,MFE_Pips,RMultiple,Session,DayOfWeek,Hour,RangeSize,SweepDepth,UsedFVG,VolRegime,HitBreakeven,ScaledIn,Magic,Comment,TimeToMFE_Min,SLDist_Pips,Slippage_Pips,PostClose15m,PostClose30m,BiasAtEntry\n100001,GBPUSD,BUY,0.10,2026.01.15 08:30:00,2026.01.15 09:45:00,75,1.25000,1.25250,1.24800,1.25500,25.00,8.5,30.2,1.25,LONDON,Wed,8,45.0,12.3,YES,MED,NO,NO,12345,test comment,35,20.0,0.5,15.0,22.0,WITH"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 1,
+          "line": 19,
+          "derived": false
+        },
+        {
+          "path": "trades[0].ticket",
+          "op": "eq",
+          "value": 100001,
+          "line": 22,
+          "derived": false
+        },
+        {
+          "path": "trades[0].symbol",
+          "op": "eq",
+          "value": "GBPUSD",
+          "line": 23,
+          "derived": false
+        },
+        {
+          "path": "trades[0].direction",
+          "op": "eq",
+          "value": "BUY",
+          "line": 24,
+          "derived": false
+        },
+        {
+          "path": "trades[0].lots",
+          "op": "approx",
+          "value": 0.1,
+          "accuracy": 0.001,
+          "line": 25,
+          "derived": false
+        },
+        {
+          "path": "trades[0].durationMin",
+          "op": "eq",
+          "value": 75,
+          "line": 26,
+          "derived": false
+        },
+        {
+          "path": "trades[0].netProfit",
+          "op": "eq",
+          "value": "25.00",
+          "line": 27,
+          "derived": false
+        },
+        {
+          "path": "trades[0].maePips",
+          "op": "approx",
+          "value": 8.5,
+          "accuracy": 0.01,
+          "line": 28,
+          "derived": false
+        },
+        {
+          "path": "trades[0].mfePips",
+          "op": "approx",
+          "value": 30.2,
+          "accuracy": 0.01,
+          "line": 29,
+          "derived": false
+        },
+        {
+          "path": "trades[0].rMultiple",
+          "op": "approx",
+          "value": 1.25,
+          "accuracy": 0.01,
+          "line": 30,
+          "derived": false
+        },
+        {
+          "path": "trades[0].session",
+          "op": "eq",
+          "value": "LONDON",
+          "line": 31,
+          "derived": false
+        },
+        {
+          "path": "trades[0].dayOfWeek",
+          "op": "eq",
+          "value": "Wed",
+          "line": 32,
+          "derived": false
+        },
+        {
+          "path": "trades[0].hour",
+          "op": "eq",
+          "value": 8,
+          "line": 33,
+          "derived": false
+        },
+        {
+          "path": "trades[0].usedFVG",
+          "op": "true",
+          "line": 34,
+          "derived": false
+        },
+        {
+          "path": "trades[0].volRegime",
+          "op": "eq",
+          "value": "MED",
+          "line": 35,
+          "derived": false
+        },
+        {
+          "path": "trades[0].hitBreakeven",
+          "op": "false",
+          "line": 36,
+          "derived": false
+        },
+        {
+          "path": "trades[0].scaledIn",
+          "op": "false",
+          "line": 37,
+          "derived": false
+        },
+        {
+          "path": "trades[0].magic",
+          "op": "eq",
+          "value": 12345,
+          "line": 38,
+          "derived": false
+        },
+        {
+          "path": "trades[0].comment",
+          "op": "eq",
+          "value": "test comment",
+          "line": 39,
+          "derived": false
+        },
+        {
+          "path": "trades[0].timeToMFEMin",
+          "op": "eq",
+          "value": 35,
+          "line": 40,
+          "derived": false
+        },
+        {
+          "path": "trades[0].slDistPips",
+          "op": "approx",
+          "value": 20.0,
+          "accuracy": 0.01,
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "trades[0].slippagePips",
+          "op": "approx",
+          "value": 0.5,
+          "accuracy": 0.01,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "trades[0].postClose15m",
+          "op": "approx",
+          "value": 15.0,
+          "accuracy": 0.01,
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "trades[0].postClose30m",
+          "op": "approx",
+          "value": 22.0,
+          "accuracy": 0.01,
+          "line": 44,
+          "derived": false
+        },
+        {
+          "path": "trades[0].biasAtEntry",
+          "op": "eq",
+          "value": "WITH",
+          "line": 45,
+          "derived": false
+        },
+        {
+          "path": "trades[0].openTime",
+          "op": "eq",
+          "value": "2026-01-15T08:30:00Z",
+          "line": 8,
+          "derived": true
+        },
+        {
+          "path": "trades[0].closeTime",
+          "op": "eq",
+          "value": "2026-01-15T09:45:00Z",
+          "line": 8,
+          "derived": true
+        },
+        {
+          "path": "trades[0].openPrice",
+          "op": "eq",
+          "value": "1.25",
+          "line": 8,
+          "derived": true
+        },
+        {
+          "path": "trades[0].closePrice",
+          "op": "eq",
+          "value": "1.2525",
+          "line": 8,
+          "derived": true
+        },
+        {
+          "path": "trades[0].sl",
+          "op": "eq",
+          "value": "1.248",
+          "line": 8,
+          "derived": true
+        },
+        {
+          "path": "trades[0].tp",
+          "op": "eq",
+          "value": "1.255",
+          "line": 8,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "The test writes the text to a temp .csv file (UTF-8, no BOM) and parses that file. netProfit is a Decimal compared with Decimal(string: \"25.00\") (numerically 25; Decimal.description \"25\"). Derived Decimal values use Decimal.description. 32-column SA times are read as UTC (yyyy.MM.dd HH:mm:ss, en_US_POSIX); Session/DayOfWeek/Hour are taken verbatim from the file."
+    },
+    {
+      "id": "CSVParserTests.testParseMultipleTrades",
+      "line": 48,
+      "subject": "CSVParser.parse",
+      "kind": "import",
+      "input": {
+        "csv": "Ticket,Symbol,Direction,Lots,OpenTime,CloseTime,DurationMin,OpenPrice,ClosePrice,SL,TP,NetProfit,MAE_Pips,MFE_Pips,RMultiple,Session,DayOfWeek,Hour,RangeSize,SweepDepth,UsedFVG,VolRegime,HitBreakeven,ScaledIn,Magic,Comment,TimeToMFE_Min,SLDist_Pips,Slippage_Pips,PostClose15m,PostClose30m,BiasAtEntry\n100001,GBPUSD,BUY,0.10,2026.01.15 08:30:00,2026.01.15 09:45:00,75,1.25000,1.25250,1.24800,1.25500,25.00,8.5,30.2,1.25,LONDON,Wed,8,45.0,12.3,YES,MED,NO,NO,12345,,35,20.0,0.5,15.0,22.0,WITH\n100002,EURUSD,SELL,0.20,2026.01.15 14:00:00,2026.01.15 15:30:00,90,1.08500,1.08200,1.08800,1.08000,60.00,5.0,35.0,2.00,NY_OVERLAP,Wed,14,38.0,8.0,NO,HIGH,YES,NO,12345,,40,30.0,1.0,20.0,28.0,AGAINST\n100003,USDJPY,BUY,0.05,2026.01.16 03:00:00,2026.01.16 04:15:00,75,150.500,150.200,150.800,150.000,-15.00,12.0,8.0,-0.50,ASIAN,Thu,3,55.0,15.0,YES,LOW,NO,NO,12345,,20,30.0,0.2,5.0,8.0,NEUTRAL"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 3,
+          "line": 61,
+          "derived": false
+        },
+        {
+          "path": "trades[0].symbol",
+          "op": "eq",
+          "value": "GBPUSD",
+          "line": 62,
+          "derived": false
+        },
+        {
+          "path": "trades[1].symbol",
+          "op": "eq",
+          "value": "EURUSD",
+          "line": 63,
+          "derived": false
+        },
+        {
+          "path": "trades[2].symbol",
+          "op": "eq",
+          "value": "USDJPY",
+          "line": 64,
+          "derived": false
+        },
+        {
+          "path": "trades[1].direction",
+          "op": "eq",
+          "value": "SELL",
+          "line": 65,
+          "derived": false
+        },
+        {
+          "path": "trades[2].biasAtEntry",
+          "op": "eq",
+          "value": "NEUTRAL",
+          "line": 66,
+          "derived": false
+        },
+        {
+          "path": "trades[1].session",
+          "op": "eq",
+          "value": "NY_OVERLAP",
+          "line": 48,
+          "derived": true
+        },
+        {
+          "path": "trades[1].hitBreakeven",
+          "op": "eq",
+          "value": true,
+          "line": 48,
+          "derived": true
+        },
+        {
+          "path": "trades[2].session",
+          "op": "eq",
+          "value": "ASIAN",
+          "line": 48,
+          "derived": true
+        },
+        {
+          "path": "trades[2].netProfit",
+          "op": "eq",
+          "value": "-15",
+          "line": 48,
+          "derived": true
+        },
+        {
+          "path": "trades[2].comment",
+          "op": "eq",
+          "value": "",
+          "line": 48,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "The test writes the text to a temp .csv file (UTF-8, no BOM) and parses that file. Output keeps file order."
+    },
+    {
+      "id": "CSVParserTests.testParseFileNotFound",
+      "line": 69,
+      "subject": "CSVParser.parse",
+      "kind": "import",
+      "input": {
+        "path": "/nonexistent/file.csv"
+      },
+      "expect": [
+        {
+          "path": "error",
+          "op": "throws",
+          "value": "fileNotFound",
+          "line": 70,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Throws CSVParser.ParseError.fileNotFound (checked at line 75)."
+    },
+    {
+      "id": "CSVParserTests.testParseNoTradeSection",
+      "line": 81,
+      "subject": "CSVParser.parse",
+      "kind": "import",
+      "input": {
+        "csv": "Some random content\nwith no trade headers\n"
+      },
+      "expect": [
+        {
+          "path": "error",
+          "op": "throws",
+          "value": "noTradeSection",
+          "line": 87,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "The test writes the text to a temp .csv file (UTF-8, no BOM) and parses that file. No line starts with \"Ticket,Symbol,Direction\": throws CSVParser.ParseError.noTradeSection (checked at line 92)."
+    },
+    {
+      "id": "CSVParserTests.testParseSellDirection",
+      "line": 98,
+      "subject": "CSVParser.parse",
+      "kind": "import",
+      "input": {
+        "csv": "Ticket,Symbol,Direction,Lots,OpenTime,CloseTime,DurationMin,OpenPrice,ClosePrice,SL,TP,NetProfit,MAE_Pips,MFE_Pips,RMultiple,Session,DayOfWeek,Hour,RangeSize,SweepDepth,UsedFVG,VolRegime,HitBreakeven,ScaledIn,Magic,Comment,TimeToMFE_Min,SLDist_Pips,Slippage_Pips,PostClose15m,PostClose30m,BiasAtEntry\n200001,AUDUSD,SELL,0.50,2026.02.10 15:00:00,2026.02.10 16:30:00,90,0.65500,0.65200,0.65800,0.65000,150.00,3.0,32.0,3.00,NY_OVERLAP,Mon,15,42.0,10.0,NO,HIGH,NO,YES,99999,scaled entry,45,30.0,0.3,25.0,30.0,WITH"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 1,
+          "line": 109,
+          "derived": false
+        },
+        {
+          "path": "trades[0].direction",
+          "op": "eq",
+          "value": "SELL",
+          "line": 110,
+          "derived": false
+        },
+        {
+          "path": "trades[0].scaledIn",
+          "op": "true",
+          "line": 111,
+          "derived": false
+        },
+        {
+          "path": "trades[0].volRegime",
+          "op": "eq",
+          "value": "HIGH",
+          "line": 112,
+          "derived": false
+        },
+        {
+          "path": "trades[0].ticket",
+          "op": "eq",
+          "value": 200001,
+          "line": 98,
+          "derived": true
+        },
+        {
+          "path": "trades[0].comment",
+          "op": "eq",
+          "value": "scaled entry",
+          "line": 98,
+          "derived": true
+        },
+        {
+          "path": "trades[0].magic",
+          "op": "eq",
+          "value": 99999,
+          "line": 98,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "The test writes the text to a temp .csv file (UTF-8, no BOM) and parses that file."
+    },
+    {
+      "id": "CSVParserTests.testParseOlderCSVFormat26Columns",
+      "line": 115,
+      "subject": "CSVParser.parse",
+      "kind": "import",
+      "input": {
+        "csv": "Ticket,Symbol,Direction,Lots,OpenTime,CloseTime,DurationMin,OpenPrice,ClosePrice,SL,TP,NetProfit,MAE_Pips,MFE_Pips,RMultiple,Session,DayOfWeek,Hour,RangeSize,SweepDepth,UsedFVG,VolRegime,HitBreakeven,ScaledIn,Magic,Comment\n300001,GBPJPY,BUY,0.10,2025.12.01 10:00:00,2025.12.01 11:00:00,60,185.500,186.000,185.000,186.500,50.00,10.0,55.0,1.00,LONDON,Mon,10,60.0,20.0,YES,MED,NO,NO,11111,old format"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 1,
+          "line": 127,
+          "derived": false
+        },
+        {
+          "path": "trades[0].ticket",
+          "op": "eq",
+          "value": 300001,
+          "line": 128,
+          "derived": false
+        },
+        {
+          "path": "trades[0].timeToMFEMin",
+          "op": "eq",
+          "value": 0,
+          "line": 130,
+          "derived": false
+        },
+        {
+          "path": "trades[0].slDistPips",
+          "op": "eq",
+          "value": 0,
+          "line": 131,
+          "derived": false
+        },
+        {
+          "path": "trades[0].biasAtEntry",
+          "op": "eq",
+          "value": "NEUTRAL",
+          "line": 132,
+          "derived": false
+        },
+        {
+          "path": "trades[0].slippagePips",
+          "op": "eq",
+          "value": 0.0,
+          "line": 115,
+          "derived": true
+        },
+        {
+          "path": "trades[0].postClose15m",
+          "op": "eq",
+          "value": 0.0,
+          "line": 115,
+          "derived": true
+        },
+        {
+          "path": "trades[0].postClose30m",
+          "op": "eq",
+          "value": 0.0,
+          "line": 115,
+          "derived": true
+        },
+        {
+          "path": "trades[0].comment",
+          "op": "eq",
+          "value": "old format",
+          "line": 115,
+          "derived": true
+        },
+        {
+          "path": "trades[0].symbol",
+          "op": "eq",
+          "value": "GBPJPY",
+          "line": 115,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "The test writes the text to a temp .csv file (UTF-8, no BOM) and parses that file. Rows with 26-31 fields are padded: field index 31 (BiasAtEntry) with \"NEUTRAL\", every other missing field with \"0\"."
+    },
+    {
+      "id": "CSVParserTests.testParseWithMultiSectionCSV",
+      "line": 135,
+      "subject": "CSVParser.parse",
+      "kind": "import",
+      "input": {
+        "csv": "== Section 1: Summary ==\nTotal Trades,12\nWin Rate,50.0%\n\n== Section 2: Settings ==\nEA,ExampleStrategy\nTimeframe,M15\n\nTicket,Symbol,Direction,Lots,OpenTime,CloseTime,DurationMin,OpenPrice,ClosePrice,SL,TP,NetProfit,MAE_Pips,MFE_Pips,RMultiple,Session,DayOfWeek,Hour,RangeSize,SweepDepth,UsedFVG,VolRegime,HitBreakeven,ScaledIn,Magic,Comment,TimeToMFE_Min,SLDist_Pips,Slippage_Pips,PostClose15m,PostClose30m,BiasAtEntry\n400001,GBPUSD,BUY,0.10,2026.01.20 09:00:00,2026.01.20 10:00:00,60,1.26000,1.26100,1.25800,1.26300,10.00,5.0,12.0,0.50,LONDON,Mon,9,35.0,8.0,NO,MED,NO,NO,12345,,25,20.0,0.1,8.0,12.0,WITH\n\n== Section 4: More Data ==\nSomething else"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 1,
+          "line": 158,
+          "derived": false
+        },
+        {
+          "path": "trades[0].ticket",
+          "op": "eq",
+          "value": 400001,
+          "line": 159,
+          "derived": false
+        },
+        {
+          "path": "trades[0].symbol",
+          "op": "eq",
+          "value": "GBPUSD",
+          "line": 135,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "The test writes the text to a temp .csv file (UTF-8, no BOM) and parses that file. The trade section starts at the first line beginning \"Ticket,Symbol,Direction\" and ends at the first empty line or the first line whose first character is not a digit."
+    }
+  ],
+  "skipped": []
+}

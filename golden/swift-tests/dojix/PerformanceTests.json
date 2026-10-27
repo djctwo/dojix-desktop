@@ -1,0 +1,124 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/PerformanceTests.swift",
+  "helpers": {
+    "makeRandomTrade": {
+      "line": 8,
+      "defaults": {
+        "random": true
+      },
+      "notes": "Every field is random (Double.random / randomElement; unseeded); netProfit = Decimal(floatLiteral: random -200...300). Not reproducible."
+    },
+    "generateTrades": {
+      "line": 56,
+      "defaults": {
+        "ticket": "i + 1",
+        "closeTime": {
+          "expr": "Date() - i * 3600 s"
+        }
+      },
+      "notes": "count trades with tickets 1...count and distinct close times."
+    }
+  },
+  "cases": [
+    {
+      "id": "PerformanceTests.testBulkInsert500Trades",
+      "line": 68,
+      "subject": "TradeRepository.deleteAll + bulkInsert (measured)",
+      "kind": "import",
+      "input": {
+        "helper": "generateTrades",
+        "count": 500,
+        "steps": [
+          "measure { deleteAll; bulkInsert(trades) } (repeated)",
+          "count"
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 500,
+          "line": 78,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Random trades with unique tickets 1...n; after the repeated delete-and-insert the journal holds exactly n trades. Timing is not asserted."
+    },
+    {
+      "id": "PerformanceTests.testBulkInsert1000Trades",
+      "line": 81,
+      "subject": "TradeRepository.deleteAll + bulkInsert (measured)",
+      "kind": "import",
+      "input": {
+        "helper": "generateTrades",
+        "count": 1000,
+        "steps": [
+          "measure { deleteAll; bulkInsert(trades) } (repeated)",
+          "count"
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 1000,
+          "line": 91,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Random trades with unique tickets 1...n; after the repeated delete-and-insert the journal holds exactly n trades. Timing is not asserted."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "PerformanceTests.testFetchAll500Trades",
+      "line": 96,
+      "reason": "Timing only (measure {}); asserts no values, and the input is random."
+    },
+    {
+      "id": "PerformanceTests.testFetchBySymbol500Trades",
+      "line": 106,
+      "reason": "Timing only (measure {}); asserts no values, and the input is random."
+    },
+    {
+      "id": "PerformanceTests.testEquityCurve500Trades",
+      "line": 116,
+      "reason": "Timing only (measure {}); asserts no values, and the input is random."
+    },
+    {
+      "id": "PerformanceTests.testTotalProfit500Trades",
+      "line": 126,
+      "reason": "Timing only (measure {}); asserts no values, and the input is random."
+    },
+    {
+      "id": "PerformanceTests.testProfitBySymbol500Trades",
+      "line": 136,
+      "reason": "Timing only (measure {}); asserts no values, and the input is random."
+    },
+    {
+      "id": "PerformanceTests.testMetricsCalculation500Trades",
+      "line": 148,
+      "reason": "Timing only (measure {}); asserts no values, and the input is random."
+    },
+    {
+      "id": "PerformanceTests.testMetricsCalculation1000Trades",
+      "line": 156,
+      "reason": "Timing only (measure {}); asserts no values, and the input is random."
+    },
+    {
+      "id": "PerformanceTests.testEdgeBreakdowns500Trades",
+      "line": 164,
+      "reason": "Timing only (measure {}); asserts no values, and the input is random."
+    },
+    {
+      "id": "PerformanceTests.testParseCSV250Trades",
+      "line": 179,
+      "reason": "Timing only (measure {}); asserts no values, and the input is random."
+    }
+  ]
+}

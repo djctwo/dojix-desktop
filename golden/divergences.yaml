@@ -1,0 +1,224 @@
+# Intentional differences from the Mac apps (PARITY.md §B1), read by tools/parity-check.
+#
+# Each entry: id, app (dojix | greenwick | both), headline (can it change a Dashboard header
+# number?), approved (headline entries need the maintainer's approval: given 2026-10-27,
+# DECISIONS.md #8), reason, test (the red→green test that proves the fix; filled in Phase 2),
+# affects (reference keys whose values may legitimately differ: "outputs.<Component>",
+# "import.parsed", "import.journal", or "*" for every value of the listed fixtures), and
+# fixtures (fixture ids the entry applies to; [] = all).
+#
+# parity-check fails when a reference value differs without an entry, when an approved entry has
+# no test (--strict, from Phase 2), or when a headline fix is implemented (has a test) without
+# approval. An entry with approved: false and test: null is a proposal: it records a Mac behaviour
+# someone wants to fix and covers no difference until the maintainer approves it.
+
+- id: D-01
+  app: both
+  headline: false
+  approved: true
+  reason: "WinLossDistribution: the top bucket is closed at +maxAbs (Mac: the largest win falls outside every bucket)"
+  test: packages/core/src/analytics/pairs-overview.test.ts
+  affects: ["outputs.WinLossDistribution"]
+  fixtures: []
+- id: D-02
+  app: both
+  headline: false
+  approved: true
+  reason: "SlippageAnalysis: half-open buckets, last one open-ended (Mac: edges counted twice, values above 100 dropped)"
+  test: packages/core/src/analytics/pairs-overview.test.ts
+  affects: ["outputs.SlippageAnalysis"]
+  fixtures: []
+- id: D-03
+  app: both
+  headline: false
+  approved: true
+  reason: "ExitAnalysis: half-open efficiency buckets with 100 in the last (Mac: edges counted twice)"
+  test: packages/core/src/analytics/exit-analysis.test.ts
+  affects: ["outputs.ExitAnalysis"]
+  fixtures: []
+- id: D-04
+  app: both
+  headline: false
+  approved: true
+  reason: "RiskOfRuin: the general formula at exactly 50% win rate (Mac: always 100%)"
+  test: packages/core/src/analytics/risk-of-ruin.test.ts
+  affects: ["outputs.RiskOfRuin"]
+  fixtures: []
+- id: D-05
+  app: both
+  headline: false
+  approved: true
+  reason: "Monte Carlo: seeded bootstrap with replacement (Mac: unseeded shuffle, every final equals the total). Only invariants are compared"
+  test: packages/core/src/analytics/monte-carlo-simulation.test.ts
+  affects: ["outputs.MonteCarloSimulation"]
+  fixtures: []
+- id: D-06
+  app: dojix
+  headline: false
+  approved: true
+  reason: "Generic CSV JPY R-multiple uses a pip value of 10 per lot like every pair (Mac: 100, so JPY R is ten times too small)"
+  test: null
+  affects: ["import.parsed", "import.journal", "outputs.*"]
+  fixtures: []
+- id: D-08
+  app: dojix
+  headline: false
+  approved: true
+  reason: "KillZone counts trading days by close day like WhatToCut (Mac: open day)"
+  test: packages/core/src/analytics/sessions.test.ts
+  affects: ["outputs.KillZoneOptimizer"]
+  fixtures: []
+- id: D-09
+  app: dojix
+  headline: false
+  approved: true
+  reason: "News-event heuristics in UTC (Mac: the computer's calendar)"
+  test: packages/core/src/analytics/calendar-correlation.test.ts
+  affects: ["outputs.CalendarCorrelation", "outputs.EventImpactProfiler"]
+  fixtures: []
+- id: D-15
+  app: dojix
+  headline: false
+  approved: true
+  reason: "cTrader and OANDA CSV volume in units is divided by 100,000 into lots (Mac: stored raw)"
+  test: null
+  affects: ["import.parsed", "import.journal", "outputs.*"]
+  fixtures: ["dojix/f5-ctrader", "dojix/f5-ctrader-compact", "dojix/f5-oanda", "dojix/f7-ctrader-utc"]
+- id: D-16
+  app: both
+  headline: true
+  approved: true
+  reason: "TradingView entry and exit rows are paired by Trade # into one round trip (Mac: each row is a trade)"
+  test: null
+  affects: ["*"]
+  fixtures: ["dojix/f5-tradingview", "greenwick/f5-tradingview"]
+- id: D-17
+  app: both
+  headline: false
+  approved: true
+  reason: "Streaks: MetricsCalculator lets breakevens pass, StreakCard counts them as losses. No change; documented per component"
+  test: packages/core/src/analytics/pairs-overview.test.ts
+  affects: []
+  fixtures: []
+- id: D-18
+  app: both
+  headline: true
+  approved: true
+  reason: "Unknown MAE/MFE (formats without those columns) is NULL and excluded from averages (Mac: stored as 0 and averaged in)"
+  test: null
+  affects: ["import.parsed", "import.journal", "outputs.*"]
+  fixtures: ["dojix/f5-mt4", "dojix/f5-ctrader", "dojix/f5-ctrader-compact", "dojix/f5-oanda", "dojix/f5-ibkr", "dojix/f5-tos", "dojix/f7-ctrader-utc", "greenwick/f5-ibkr", "greenwick/f5-tos", "greenwick/f5-webull", "greenwick/f5-webull-pnl", "greenwick/f5-robinhood", "greenwick/f5-schwab", "greenwick/f5-fidelity", "greenwick/f5-etrade", "greenwick/f5-tastytrade", "greenwick/f6-robinhood", "greenwick/f6-robinhood-fees", "greenwick/f6-schwab", "greenwick/f6-schwab-no-footer", "greenwick/f6-schwab-header-first", "greenwick/f6-fidelity", "greenwick/f6-fidelity-no-price", "greenwick/f6-etrade", "greenwick/f6-tastytrade"]
+- id: D-19
+  app: both
+  headline: false
+  approved: true
+  reason: "NFP 'week 1' means the first Friday of the month (Mac: locale weeks / Monday-minDays-4 weeks)"
+  test: packages/core/src/analytics/calendar-correlation.test.ts
+  affects: ["outputs.CalendarCorrelation", "outputs.EventImpactProfiler"]
+  fixtures: []
+- id: D-20
+  app: both
+  headline: false
+  approved: true
+  reason: "DrawdownRecovery: the same duration rule for recovered and unrecovered drawdowns (Mac: +1 for unrecovered only)"
+  test: packages/core/src/analytics/drawdown-recovery.test.ts
+  affects: ["outputs.DrawdownRecovery"]
+  fixtures: []
+- id: D-21
+  app: dojix
+  headline: false
+  approved: true
+  reason: "32-column file: extra fields from an unquoted comma are re-joined into Comment (Mac: later columns shift)"
+  test: null
+  affects: ["*"]
+  fixtures: ["dojix/f3-columns"]
+- id: D-22
+  app: greenwick
+  headline: true
+  approved: true
+  reason: "Option rows are skipped with a count (Mac: imported as shares without the ×100 multiplier)"
+  test: null
+  affects: ["*"]
+  fixtures: ["greenwick/f6-robinhood", "greenwick/f6-schwab", "greenwick/f6-tastytrade"]
+- id: D-23
+  app: greenwick
+  headline: true
+  approved: true
+  reason: "Schwab: the footer is detected and the header found on line 0 or 1 (Mac: last line always dropped; header on line 0 gives 0 trades)"
+  test: null
+  affects: ["*"]
+  fixtures: ["greenwick/f6-schwab-no-footer", "greenwick/f6-schwab-header-first"]
+- id: D-24
+  app: greenwick
+  headline: false
+  approved: true
+  reason: "Fidelity price never falls back to column 0; the row is reported (Mac: silently skipped)"
+  test: null
+  affects: ["*"]
+  fixtures: ["greenwick/f6-fidelity-no-price"]
+- id: D-25
+  app: greenwick
+  headline: false
+  approved: true
+  reason: "Unmatched FIFO buys and sells are reported as skipped with a reason (Mac: logged or dropped). Reporting only"
+  test: null
+  affects: []
+  fixtures: []
+- id: D-26
+  app: greenwick
+  headline: false
+  approved: true
+  reason: "Same-date sell then buy on date-only exports: file order breaks the tie and the short is detected (Mac: recorded as a long)"
+  test: null
+  affects: ["import.parsed", "import.journal", "outputs.*"]
+  fixtures: ["greenwick/f6-robinhood", "greenwick/f6-robinhood-fees", "greenwick/f6-schwab", "greenwick/f6-schwab-no-footer", "greenwick/f6-schwab-header-first", "greenwick/f6-fidelity", "greenwick/f6-fidelity-no-price", "greenwick/f6-etrade"]
+- id: D-27
+  app: greenwick
+  headline: true
+  approved: true
+  reason: "Robinhood fees are read when the column exists (Mac: never read)"
+  test: null
+  affects: ["*"]
+  fixtures: ["greenwick/f6-robinhood-fees"]
+- id: D-28
+  app: dojix
+  headline: false
+  approved: true
+  reason: "Pulse edge signal recomputed on hour/session change (Mac: once when the screen appears). Not in the harness (live view model)"
+  test: null
+  affects: []
+  fixtures: []
+- id: D-29
+  app: dojix
+  headline: false
+  approved: true
+  reason: "Broker tickets from two platforms can collide; the second trade is skipped. No change (Mac-backup interop); documented in Help"
+  test: null
+  affects: []
+  fixtures: []
+# Proposed by the importers team (Phase 2), not decided by the maintainer: approved false, no
+# fix in either compat mode yet (test: null), so they cover no difference until approved.
+- id: D-30
+  app: greenwick
+  headline: true
+  approved: false
+  reason: "PROPOSED. A skipped ET wall time (spring-forward gap) is not re-read day-first (Mac: DateFormatter rejects '03/08/2026 02:30:00' as MM/dd/yyyy and parseDateTime then reads it as dd/MM/yyyy, 3 August 2026; golden/README.md probes)"
+  test: null
+  affects: ["import.parsed", "import.journal", "outputs.*"]
+  fixtures: []
+- id: D-31
+  app: dojix
+  headline: true
+  approved: false
+  reason: "PROPOSED. The compact cTrader header (PositionId/EntryTime/CloseTime/ClosePrice without spaces) maps its close columns (Mac: detected as cTrader but closeTime/closePrice unmapped, so the file imports 0 trades; golden/reference/dojix/f5-ctrader-compact.json)"
+  test: null
+  affects: ["*"]
+  fixtures: ["dojix/f5-ctrader-compact"]
+- id: D-32
+  app: greenwick
+  headline: true
+  approved: false
+  reason: "PROPOSED. Fidelity without a price column never takes the month of the Run Date as the price (Mac: column 0, '02/03/2026', is read as price 2 and the trades are imported; golden/reference/greenwick/f6-fidelity-no-price.json). Overlaps D-24, whose 'silently skipped' the reference contradicts"
+  test: null
+  affects: ["*"]
+  fixtures: ["greenwick/f6-fidelity-no-price"]

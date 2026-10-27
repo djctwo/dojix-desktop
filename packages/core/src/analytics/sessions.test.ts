@@ -129,6 +129,14 @@ describe("SessionHeatmap", () => {
     expect(one.dateRangeLabel).toBe("Dec 31 – Dec 31, 2026 · 1 active hour · 1 trades");
   });
 
+  it("formats the subtitle in the user's zone and locale (DateFormatter with Locale.current)", () => {
+    const trades = [fxTrade({ hour: 9, closeTime: Date.UTC(2026, 2, 1, 20) }), fxTrade({ hour: 9, closeTime: Date.UTC(2026, 10, 2, 20) })];
+    const tokyo = createEngineContext({ brand: "dojix", now: 0, local: { tz: "Asia/Tokyo" }, locale: "ja_JP" });
+    expect(sessionHeatmap(tokyo, trades).dateRangeLabel).toBe("3月 2 – 11月 3, 2026 · 1 active hour · 2 trades");
+    const london = createEngineContext({ brand: "dojix", now: 0, local: { tz: "Europe/London" }, locale: "en_GB" });
+    expect(sessionHeatmap(london, trades).dateRangeLabel).toBe("Mar 1 – Nov 2, 2026 · 1 active hour · 2 trades");
+  });
+
   it("Greenwick keys by the ET open weekday and formats dates in New York", () => {
     const t = stTrade({ openTime: etWall(2026, 1, 5, 21, 0), closeTime: etWall(2026, 1, 5, 22, 0), hour: 21, dayOfWeek: "x", netProfit: "4" });
     const m = sessionHeatmap(st, [t]);

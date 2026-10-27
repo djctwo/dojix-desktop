@@ -1,0 +1,926 @@
+{
+  "app": "greenwick",
+  "source_repo": "djctwo/greenwick",
+  "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+  "file": "GreenwickTests/ImportParserTests.swift",
+  "helpers": {
+    "parseSample": {
+      "line": 18,
+      "defaults": {
+        "dir": "TestData/"
+      },
+      "notes": "GenericCSVParser.detect(fileAt:) then parse(fileAt:mapping:) on a bundled sample; returns (detection.platform, trades). Mapping must auto-detect."
+    },
+    "parse": {
+      "line": 189,
+      "defaults": {},
+      "notes": "detect + parse of a temp file; mapping must auto-detect (XCTUnwrap)."
+    },
+    "writeTemp": {
+      "line": 195,
+      "defaults": {
+        "encoding": "utf-8",
+        "ext": "csv",
+        "trailingNewline": false
+      },
+      "notes": "Writes the exact csv text (no newline appended)."
+    }
+  },
+  "cases": [
+    {
+      "id": "ImportParserTests.testEverySampleDetectsAndParses",
+      "line": 26,
+      "subject": "GenericCSVParser.parse",
+      "kind": "import",
+      "input": {
+        "helper": "parseSample",
+        "files": [
+          "TestData/thinkorswim_sample.csv",
+          "TestData/interactive_brokers_sample.csv",
+          "TestData/webull_sample.csv",
+          "TestData/tradingview_sample.csv",
+          "TestData/ninjatrader_sample.csv",
+          "TestData/robinhood_sample.csv",
+          "TestData/schwab_sample.csv",
+          "TestData/fidelity_sample.csv",
+          "TestData/etrade_sample.csv",
+          "TestData/tastytrade_sample.csv"
+        ]
+      },
+      "expect": [
+        {
+          "path": "[\"TestData/thinkorswim_sample.csv\"].platform",
+          "op": "eq",
+          "value": "Thinkorswim",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/thinkorswim_sample.csv\"].trades.count",
+          "op": "eq",
+          "value": 10,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/thinkorswim_sample.csv\"].uniqueTickets.count",
+          "op": "eq",
+          "value": {
+            "ref": "[\"TestData/thinkorswim_sample.csv\"].trades.count"
+          },
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/interactive_brokers_sample.csv\"].platform",
+          "op": "eq",
+          "value": "Interactive Brokers",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/interactive_brokers_sample.csv\"].trades.count",
+          "op": "eq",
+          "value": 10,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/interactive_brokers_sample.csv\"].uniqueTickets.count",
+          "op": "eq",
+          "value": {
+            "ref": "[\"TestData/interactive_brokers_sample.csv\"].trades.count"
+          },
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/webull_sample.csv\"].platform",
+          "op": "eq",
+          "value": "Webull",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/webull_sample.csv\"].trades.count",
+          "op": "eq",
+          "value": 8,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/webull_sample.csv\"].uniqueTickets.count",
+          "op": "eq",
+          "value": {
+            "ref": "[\"TestData/webull_sample.csv\"].trades.count"
+          },
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/tradingview_sample.csv\"].platform",
+          "op": "eq",
+          "value": "TradingView",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/tradingview_sample.csv\"].trades.count",
+          "op": "eq",
+          "value": 7,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/tradingview_sample.csv\"].uniqueTickets.count",
+          "op": "eq",
+          "value": {
+            "ref": "[\"TestData/tradingview_sample.csv\"].trades.count"
+          },
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/ninjatrader_sample.csv\"].platform",
+          "op": "eq",
+          "value": "NinjaTrader",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/ninjatrader_sample.csv\"].trades.count",
+          "op": "eq",
+          "value": 8,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/ninjatrader_sample.csv\"].uniqueTickets.count",
+          "op": "eq",
+          "value": {
+            "ref": "[\"TestData/ninjatrader_sample.csv\"].trades.count"
+          },
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/robinhood_sample.csv\"].platform",
+          "op": "eq",
+          "value": "Robinhood",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/robinhood_sample.csv\"].trades.count",
+          "op": "eq",
+          "value": 6,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/robinhood_sample.csv\"].uniqueTickets.count",
+          "op": "eq",
+          "value": {
+            "ref": "[\"TestData/robinhood_sample.csv\"].trades.count"
+          },
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/schwab_sample.csv\"].platform",
+          "op": "eq",
+          "value": "Charles Schwab",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/schwab_sample.csv\"].trades.count",
+          "op": "eq",
+          "value": 6,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/schwab_sample.csv\"].uniqueTickets.count",
+          "op": "eq",
+          "value": {
+            "ref": "[\"TestData/schwab_sample.csv\"].trades.count"
+          },
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/fidelity_sample.csv\"].platform",
+          "op": "eq",
+          "value": "Fidelity",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/fidelity_sample.csv\"].trades.count",
+          "op": "eq",
+          "value": 5,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/fidelity_sample.csv\"].uniqueTickets.count",
+          "op": "eq",
+          "value": {
+            "ref": "[\"TestData/fidelity_sample.csv\"].trades.count"
+          },
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/etrade_sample.csv\"].platform",
+          "op": "eq",
+          "value": "E*Trade",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/etrade_sample.csv\"].trades.count",
+          "op": "eq",
+          "value": 5,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/etrade_sample.csv\"].uniqueTickets.count",
+          "op": "eq",
+          "value": {
+            "ref": "[\"TestData/etrade_sample.csv\"].trades.count"
+          },
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/tastytrade_sample.csv\"].platform",
+          "op": "eq",
+          "value": "Tastytrade",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/tastytrade_sample.csv\"].trades.count",
+          "op": "eq",
+          "value": 5,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[\"TestData/tastytrade_sample.csv\"].uniqueTickets.count",
+          "op": "eq",
+          "value": {
+            "ref": "[\"TestData/tastytrade_sample.csv\"].trades.count"
+          },
+          "line": 43,
+          "derived": false
+        }
+      ],
+      "parity": "D-16",
+      "notes": "Platform values are GenericCSVParser.Platform raw values. Only the tradingview_sample.csv count (7: every row is an \"Entry\" row and each row is a trade on the Mac) pins a Mac behaviour the desktop changes (D-16 pairs entry/exit rows by Trade #); the other 29 expects are parity. tastytrade_sample.csv equity rows use BUY_TO_OPEN / SELL_TO_CLOSE: the D-22 option filter must key on Instrument Type, or the desktop loses all 5 trades."
+    },
+    {
+      "id": "ImportParserTests.testGenericSampleFallsBackToManualMapping",
+      "line": 47,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "file": "TestData/generic_sample.csv"
+      },
+      "expect": [
+        {
+          "path": "detection.platform",
+          "op": "eq",
+          "value": "Generic CSV",
+          "line": 49,
+          "derived": false
+        },
+        {
+          "path": "detection.mapping",
+          "op": "nil",
+          "value": null,
+          "line": 50,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "ImportParserTests.testNinjaTraderHeadlineStats",
+      "line": 56,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "parseSample",
+        "file": "TestData/ninjatrader_sample.csv",
+        "platform": "NinjaTrader"
+      },
+      "expect": [
+        {
+          "path": "metrics.totalTrades",
+          "op": "eq",
+          "value": 8,
+          "line": 59,
+          "derived": false
+        },
+        {
+          "path": "metrics.totalProfit",
+          "op": "approx",
+          "value": 1814.06,
+          "accuracy": 0.001,
+          "line": 60,
+          "derived": false
+        },
+        {
+          "path": "metrics.winRate",
+          "op": "approx",
+          "value": 87.5,
+          "accuracy": 0.001,
+          "line": 61,
+          "derived": false
+        },
+        {
+          "path": "metrics.profitFactor",
+          "op": "approx",
+          "value": 8.429192,
+          "accuracy": 0.0001,
+          "line": 62,
+          "derived": false
+        },
+        {
+          "path": "metrics.expectancy",
+          "op": "approx",
+          "value": 226.7575,
+          "accuracy": 0.001,
+          "line": 63,
+          "derived": false
+        },
+        {
+          "path": "metrics.totalCommissions",
+          "op": "approx",
+          "value": 33.44,
+          "accuracy": 0.001,
+          "line": 64,
+          "derived": false
+        },
+        {
+          "path": "metrics.wins",
+          "op": "eq",
+          "value": 7,
+          "line": 61,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "P&L is net: Profit column minus |Commission| (4.18 per row)."
+    },
+    {
+      "id": "ImportParserTests.testThinkorswimHeadlineStats",
+      "line": 67,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "parseSample",
+        "file": "TestData/thinkorswim_sample.csv",
+        "platform": "Thinkorswim"
+      },
+      "expect": [
+        {
+          "path": "metrics.totalProfit",
+          "op": "approx",
+          "value": 2608.3,
+          "accuracy": 0.001,
+          "line": 70,
+          "derived": false
+        },
+        {
+          "path": "metrics.winRate",
+          "op": "approx",
+          "value": 70,
+          "accuracy": 0.001,
+          "line": 71,
+          "derived": false
+        },
+        {
+          "path": "metrics.profitFactor",
+          "op": "approx",
+          "value": 3.802815,
+          "accuracy": 0.0001,
+          "line": 72,
+          "derived": false
+        },
+        {
+          "path": "metrics.expectancy",
+          "op": "approx",
+          "value": 260.83,
+          "accuracy": 0.001,
+          "line": 73,
+          "derived": false
+        },
+        {
+          "path": "metrics.totalTrades",
+          "op": "eq",
+          "value": 10,
+          "line": 70,
+          "derived": true
+        },
+        {
+          "path": "metrics.wins",
+          "op": "eq",
+          "value": 7,
+          "line": 71,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "thinkorswim mapping has no close column: closeTime = openTime, closePrice = openPrice, durationMin 0."
+    },
+    {
+      "id": "ImportParserTests.testRobinhoodFIFOHeadlineStats",
+      "line": 76,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "fifo",
+      "input": {
+        "helper": "parseSample",
+        "file": "TestData/robinhood_sample.csv",
+        "platform": "Robinhood"
+      },
+      "expect": [
+        {
+          "path": "metrics.totalProfit",
+          "op": "approx",
+          "value": 856,
+          "accuracy": 0.001,
+          "line": 79,
+          "derived": false
+        },
+        {
+          "path": "metrics.winRate",
+          "op": "approx",
+          "value": 66.6667,
+          "accuracy": 0.001,
+          "line": 80,
+          "derived": false
+        },
+        {
+          "path": "metrics.profitFactor",
+          "op": "approx",
+          "value": 2.35873,
+          "accuracy": 0.0001,
+          "line": 81,
+          "derived": false
+        },
+        {
+          "path": "metrics.expectancy",
+          "op": "approx",
+          "value": 142.666667,
+          "accuracy": 0.001,
+          "line": 82,
+          "derived": false
+        },
+        {
+          "path": "metrics.totalTrades",
+          "op": "eq",
+          "value": 6,
+          "line": 79,
+          "derived": true
+        },
+        {
+          "path": "metrics.wins",
+          "op": "eq",
+          "value": 4,
+          "line": 80,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "File has no fees column, so D-27 (Robinhood fees) does not change these numbers."
+    },
+    {
+      "id": "ImportParserTests.testSchwabFIFOHeadlineStats",
+      "line": 85,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "fifo",
+      "input": {
+        "helper": "parseSample",
+        "file": "TestData/schwab_sample.csv",
+        "platform": "Charles Schwab"
+      },
+      "expect": [
+        {
+          "path": "metrics.totalProfit",
+          "op": "approx",
+          "value": 1012.98,
+          "accuracy": 0.001,
+          "line": 88,
+          "derived": false
+        },
+        {
+          "path": "metrics.profitFactor",
+          "op": "approx",
+          "value": 3.411283,
+          "accuracy": 0.0001,
+          "line": 89,
+          "derived": false
+        },
+        {
+          "path": "metrics.totalCommissions",
+          "op": "approx",
+          "value": 0.52,
+          "accuracy": 0.0001,
+          "line": 90,
+          "derived": false
+        },
+        {
+          "path": "metrics.totalTrades",
+          "op": "eq",
+          "value": 6,
+          "line": 88,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "File ends with a \"Transactions Total\" footer, so the Mac's always-drop-last-line rule (D-23) and footer detection agree here. Line 1 is account metadata; header on line 2."
+    },
+    {
+      "id": "ImportParserTests.testReimportGivesSameTickets",
+      "line": 95,
+      "subject": "TicketKeyCounter.ticket",
+      "kind": "ticket",
+      "input": {
+        "files": [
+          "TestData/thinkorswim_sample.csv",
+          "TestData/robinhood_sample.csv"
+        ],
+        "parses": 2
+      },
+      "expect": [
+        {
+          "path": "parse1(\"TestData/thinkorswim_sample.csv\").trades[].ticket",
+          "op": "eq",
+          "value": {
+            "ref": "parse2(\"TestData/thinkorswim_sample.csv\").trades[].ticket"
+          },
+          "line": 98,
+          "derived": false
+        },
+        {
+          "path": "set(parse1(\"TestData/robinhood_sample.csv\").trades[].ticket)",
+          "op": "eq",
+          "value": {
+            "ref": "set(parse2(\"TestData/robinhood_sample.csv\").trades[].ticket)"
+          },
+          "line": 101,
+          "derived": false
+        },
+        {
+          "path": "parse1(\"TestData/thinkorswim_sample.csv\").trades[0].ticket",
+          "op": "eq",
+          "value": "7346775743911778085",
+          "line": 98,
+          "derived": true
+        },
+        {
+          "path": "parse1(\"TestData/thinkorswim_sample.csv\").trades[1].ticket",
+          "op": "eq",
+          "value": "9050045187381925591",
+          "line": 98,
+          "derived": true
+        },
+        {
+          "path": "parse1(\"TestData/thinkorswim_sample.csv\").trades[2].ticket",
+          "op": "eq",
+          "value": "1590425526386309294",
+          "line": 98,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Derived tickets (strings: Int64 > 2^53): FNV-1a 64 over \"Thinkorswim|<trimmed fields joined by |>#0\", masked to 63 bits (SPEC §5.1 step 6); computed by the porter, not asserted in Swift."
+    },
+    {
+      "id": "ImportParserTests.testReimportLaterGivesSameTickets",
+      "line": 104,
+      "subject": "TicketKeyCounter.ticket",
+      "kind": "ticket",
+      "input": {
+        "files": [
+          "TestData/webull_sample.csv",
+          "TestData/thinkorswim_sample.csv"
+        ],
+        "sleep_seconds": 1.2,
+        "sequence": [
+          "webull",
+          "sleep 1.2 s",
+          "thinkorswim",
+          "webull",
+          "thinkorswim"
+        ]
+      },
+      "expect": [
+        {
+          "path": "webull#1.trades[].ticket",
+          "op": "eq",
+          "value": {
+            "ref": "webull#2.trades[].ticket"
+          },
+          "line": 110,
+          "derived": false
+        },
+        {
+          "path": "thinkorswim#1.trades[].ticket",
+          "op": "eq",
+          "value": {
+            "ref": "thinkorswim#2.trades[].ticket"
+          },
+          "line": 112,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Tickets are content hashes, never clock-based. Webull's Order Number column is ignored for the ticket (SPEC §5.1)."
+    },
+    {
+      "id": "ImportParserTests.testDifferentFilesWithSameTradeNumbersDoNotCollide",
+      "line": 115,
+      "subject": "TicketKeyCounter.ticket",
+      "kind": "ticket",
+      "input": {
+        "helper": "parse",
+        "a": {
+          "csv": "Trade #,Instrument,Market Position,Quantity,Entry Time,Exit Time,Entry Price,Exit Price,Profit\n1,AAPL,Long,10,03/24/2026 09:35:00,03/24/2026 10:15:00,100,101,10",
+          "platform": "NinjaTrader"
+        },
+        "b": {
+          "csv": "Trade #,Instrument,Market Position,Quantity,Entry Time,Exit Time,Entry Price,Exit Price,Profit\n1,MSFT,Long,10,03/25/2026 09:35:00,03/25/2026 10:15:00,200,201,10",
+          "platform": "NinjaTrader"
+        }
+      },
+      "expect": [
+        {
+          "path": "a.trades[0].ticket == b.trades[0].ticket",
+          "op": "false",
+          "value": null,
+          "line": 121,
+          "derived": false
+        },
+        {
+          "path": "a.trades[0].ticket",
+          "op": "eq",
+          "value": "308530286678055712",
+          "line": 121,
+          "derived": true
+        },
+        {
+          "path": "b.trades[0].ticket",
+          "op": "eq",
+          "value": "748717176594918684",
+          "line": 121,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "XCTAssertNotEqual recorded as (a == b) false. NinjaTrader \"Trade #\" is ignored: both files start at 1. Derived tickets per SPEC §5.1 (FNV-1a key \"NinjaTrader|<fields>#0\")."
+    },
+    {
+      "id": "ImportParserTests.testIdenticalRowsInOneFileAreKept",
+      "line": 124,
+      "subject": "GenericCSVParser.parse",
+      "kind": "ticket",
+      "input": {
+        "helper": "parse",
+        "csv": "Exec Time,Symbol,Side,Qty,Price,Net Price,P/L,Commission\n03/24/26 09:31:15,AAPL,BUY,100,171.25,171.30,25.00,0.65\n03/24/26 09:31:15,AAPL,BUY,100,171.25,171.30,25.00,0.65",
+        "platform": "Thinkorswim"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 2,
+          "line": 128,
+          "derived": false
+        },
+        {
+          "path": "uniqueTickets.count",
+          "op": "eq",
+          "value": 2,
+          "line": 129,
+          "derived": false
+        },
+        {
+          "path": "trades[0].ticket",
+          "op": "eq",
+          "value": "3583893301892632446",
+          "line": 129,
+          "derived": true
+        },
+        {
+          "path": "trades[1].ticket",
+          "op": "eq",
+          "value": "3583894401404260657",
+          "line": 129,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Occurrence counter: identical rows hash \"<key>#0\" and \"<key>#1\"."
+    },
+    {
+      "id": "ImportParserTests.testFIFOShortSaleIsLabelledSell",
+      "line": 134,
+      "subject": "GenericCSVParser.pairTransactions",
+      "kind": "fifo",
+      "input": {
+        "helper": "parse",
+        "platform": "Robinhood",
+        "csv": "Activity Date,Process Date,Settle Date,Account Type,Instrument,Description,Trans Code,Quantity,Price,Amount,Suppressed\n3/24/2026,3/24/2026,3/26/2026,Brokerage,XYZ,Example,Sell,10,$50.00,$500.00,\n3/25/2026,3/25/2026,3/27/2026,Brokerage,XYZ,Example,Buy,10,$45.00,($450.00),"
+      },
+      "expect": [
+        {
+          "path": "trades[0].direction",
+          "op": "eq",
+          "value": "SELL",
+          "line": 141,
+          "derived": false
+        },
+        {
+          "path": "trades[0].netProfit",
+          "op": "eq",
+          "value": "50",
+          "line": 142,
+          "derived": false
+        },
+        {
+          "path": "trades[0].openTime",
+          "op": "lt",
+          "value": {
+            "ref": "trades[0].closeTime"
+          },
+          "line": 143,
+          "derived": false
+        },
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 1,
+          "line": 141,
+          "derived": true
+        },
+        {
+          "path": "trades[0].openTime",
+          "op": "eq",
+          "value": "2026-03-24T04:00:00Z",
+          "line": 143,
+          "derived": true
+        },
+        {
+          "path": "trades[0].closeTime",
+          "op": "eq",
+          "value": "2026-03-25T04:00:00Z",
+          "line": 143,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Sell dated before the buy = short (SELL), opened at the sale. Date-only Robinhood dates are ET midnights. Different dates, so D-26 (same-date tie) does not apply."
+    },
+    {
+      "id": "ImportParserTests.testTitleLineAboveRobinhoodHeaderIsSkipped",
+      "line": 146,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "parse",
+        "file": "TestData/robinhood_sample.csv",
+        "prepend": "Account activity export\n"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 6,
+          "line": 149,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Header detected on line 2 when line 1 is a title."
+    },
+    {
+      "id": "ImportParserTests.testPartialFillCostsAllocatedPerSide",
+      "line": 152,
+      "subject": "GenericCSVParser.pairTransactions",
+      "kind": "fifo",
+      "input": {
+        "helper": "parse",
+        "platform": "Charles Schwab",
+        "csv": "\"Transactions for account Example\"\nDate,Action,Symbol,Description,Quantity,Price,Fees & Comm,Amount\n03/24/2026,Buy,XYZ,Example,100,$10.00,$1.00,-$1000\n03/24/2026,Sell,XYZ,Example,50,$11.00,$0.50,$550\n03/25/2026,Sell,XYZ,Example,50,$12.00,$0.50,$600\nTransactions Total,,,,,,,$150"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 2,
+          "line": 160,
+          "derived": false
+        },
+        {
+          "path": "sum(trades[].commission)",
+          "op": "approx",
+          "value": 2,
+          "accuracy": 0.0001,
+          "line": 162,
+          "derived": false
+        },
+        {
+          "path": "sum(trades[].netProfit)",
+          "op": "approx",
+          "value": 148,
+          "accuracy": 0.0001,
+          "line": 162,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Costs prorated by each side's own size: buy fee 1.00 split 0.50/0.50, each sell fee 0.50 counted once. Derived net = (50 + 100) - 2."
+    },
+    {
+      "id": "ImportParserTests.testOneSellAgainstTwoBuysCountsSellFeesOnce",
+      "line": 165,
+      "subject": "GenericCSVParser.pairTransactions",
+      "kind": "fifo",
+      "input": {
+        "helper": "parse",
+        "platform": "Charles Schwab",
+        "csv": "\"Transactions for account Example\"\nDate,Action,Symbol,Description,Quantity,Price,Fees & Comm,Amount\n03/24/2026,Buy,XYZ,Example,50,$10.00,,-$500\n03/24/2026,Buy,XYZ,Example,50,$10.00,,-$500\n03/25/2026,Sell,XYZ,Example,100,$11.00,$1.00,$1099\nTransactions Total,,,,,,,$99"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 2,
+          "line": 173,
+          "derived": false
+        },
+        {
+          "path": "sum(trades[].commission)",
+          "op": "approx",
+          "value": 1,
+          "accuracy": 0.0001,
+          "line": 176,
+          "derived": false
+        },
+        {
+          "path": "sum(trades[].netProfit)",
+          "op": "approx",
+          "value": 99,
+          "accuracy": 0.0001,
+          "line": 177,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "The two FIFO pairs have identical keys (same buy date/price/shares, same sell, 50 matched): only the occurrence counter (#0/#1) keeps their tickets distinct."
+    },
+    {
+      "id": "ImportParserTests.testImportedProfitIsNetOfCommission",
+      "line": 180,
+      "subject": "GenericCSVParser.parse",
+      "kind": "import",
+      "input": {
+        "helper": "parse",
+        "platform": "Thinkorswim",
+        "csv": "Exec Time,Symbol,Side,Qty,Price,Net Price,P/L,Commission\n03/24/26 09:31:15,AAPL,BUY,100,171.25,171.30,25.00,-1.50"
+      },
+      "expect": [
+        {
+          "path": "trades[0].netProfit",
+          "op": "eq",
+          "value": "23.5",
+          "line": 183,
+          "derived": false
+        },
+        {
+          "path": "trades[0].commission",
+          "op": "eq",
+          "value": "1.5",
+          "line": 184,
+          "derived": false
+        },
+        {
+          "path": "trades[0].ticket",
+          "op": "eq",
+          "value": "513029715834116480",
+          "line": 184,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Commission written as -1.50 is a cost either way: stored |commission|, net = P/L - |commission|. Decimal values as Swift Decimal.description strings."
+    }
+  ],
+  "skipped": []
+}

@@ -1,0 +1,878 @@
+{
+  "app": "greenwick",
+  "source_repo": "djctwo/greenwick",
+  "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+  "file": "GreenwickTests/TradingDayTests.swift",
+  "helpers": {
+    "et": {
+      "line": 27,
+      "defaults": {
+        "tz": "America/New_York",
+        "calendar": "gregorian"
+      },
+      "notes": "Builds an instant from New York wall-clock year/month/day/hour/minute. All such instants are written below as UTC ISO-8601."
+    },
+    "inEachZone": {
+      "line": 34,
+      "defaults": {
+        "zones": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ]
+      },
+      "notes": "Runs the body once per zone with NSTimeZone.default (Calendar.current, DateFormatter) switched to that zone; every expect must hold in every zone. Desktop: run with each zone as the display/local zone; Greenwick results must not change."
+    },
+    "trade": {
+      "line": 45,
+      "defaults": {
+        "ticket": "random 1...Int64.max",
+        "symbol": "AAPL",
+        "direction": "BUY",
+        "shares": 100,
+        "openPrice": "100",
+        "closePrice": "101",
+        "sl": "0",
+        "tp": "0",
+        "maePoints": 0,
+        "mfePoints": 0,
+        "rMultiple": 0,
+        "rangeSize": 0,
+        "hitBreakeven": false,
+        "scaledIn": false,
+        "comment": "",
+        "timeToMFEMin": 0,
+        "slDistPoints": 0,
+        "slippagePoints": 0,
+        "importedAt": "Date() (now)",
+        "durationMin": "Int((closeTime - openTime) / 60)",
+        "session": "openTime.marketSession (ET)",
+        "dayOfWeek": "openTime.shortDayName (ET) unless given",
+        "hour": "openTime.etHour"
+      },
+      "notes": "A trade built the way the importers build one. Cases list only openTime, closeTime, netProfit (and dayOfWeek when overridden)."
+    },
+    "importNinjaTrader": {
+      "line": 60,
+      "defaults": {
+        "header": "Trade #,Instrument,Market Position,Quantity,Entry Time,Exit Time,Entry Price,Exit Price,Profit,MAE,MFE,Commission",
+        "rowSeparator": "\n",
+        "trailingNewline": true,
+        "platform": "NinjaTrader"
+      },
+      "notes": "Writes header + rows to a temp .csv and runs GenericCSVParser.detect + parse. The csv in each case is the exact file text. File times are New York time."
+    },
+    "calendarCell": {
+      "line": 73,
+      "defaults": {
+        "firstWeekday": 1,
+        "locale": "en_US_POSIX"
+      },
+      "notes": "P&L calendar cell: grid = TradeCalendar.gridCalendar(firstWeekday, en_US_POSIX) (TradingCalendar.calendar = America/New_York); days = TradeCalendar.days(inMonthOf:); pnl = TradeCalendar.dailyPnL(for: trades)[grid.startOfDay(days[day-1])] (nil = empty cell); header = weekdayHeaders[(leadingBlankCount + day - 1) % 7]. Path cell[N] = day-of-month N of the month containing the given instant (in ET)."
+    }
+  },
+  "cases": [
+    {
+      "id": "TradingDayTests.testFridayAfterHoursTradeIsOnFridayInPnLCalendar",
+      "line": 85,
+      "subject": "TradeCalendar.dailyPnL",
+      "kind": "calendar",
+      "input": {
+        "helper": "importNinjaTrader",
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "platform": "NinjaTrader",
+        "csv": "Trade #,Instrument,Market Position,Quantity,Entry Time,Exit Time,Entry Price,Exit Price,Profit,MAE,MFE,Commission\n1,AAPL,Long,100,10/23/2026 10:00:00,10/23/2026 10:30:00,171.00,171.50,50.00,0.10,0.60,0.00\n2,TSLA,Long,100,10/23/2026 18:20:00,10/23/2026 18:50:00,180.00,181.25,125.00,0.10,1.50,0.00\n",
+        "firstWeekday": [
+          1,
+          2
+        ],
+        "month_of": "trades[0].closeTime"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 2,
+          "line": 91,
+          "derived": false
+        },
+        {
+          "path": "cell[23].pnl",
+          "op": "approx",
+          "value": 175,
+          "accuracy": 0.001,
+          "line": 95,
+          "derived": false
+        },
+        {
+          "path": "cell[23].header",
+          "op": "eq",
+          "value": "Fri",
+          "line": 96,
+          "derived": false
+        },
+        {
+          "path": "cell[24].pnl",
+          "op": "nil",
+          "value": null,
+          "line": 98,
+          "derived": false
+        },
+        {
+          "path": "TradeCalendar.monthTitle(TradeCalendar.days(inMonthOf: trades[0].closeTime, calendar: gridCalendar())[0], locale: en_US_POSIX)",
+          "op": "eq",
+          "value": "October 2026",
+          "line": 101,
+          "derived": false
+        },
+        {
+          "path": "trades[0].openTime",
+          "op": "eq",
+          "value": "2026-10-23T14:00:00Z",
+          "line": 91,
+          "derived": true
+        },
+        {
+          "path": "trades[1].closeTime",
+          "op": "eq",
+          "value": "2026-10-23T22:50:00Z",
+          "line": 91,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "cell asserts run for firstWeekday 1 (Sunday-first) and 2 (Monday-first) in every zone. Derived times: NinjaTrader times are New York time (SPEC §3.1). Fri 23 Oct 18:50 ET = Sat 00:50 Berlin / 07:50 Tokyo."
+    },
+    {
+      "id": "TradingDayTests.testFridayAfterHoursTradeCountsAsFridayInWeekdayStats",
+      "line": 105,
+      "subject": "DayOfWeekChart.data",
+      "kind": "calendar",
+      "input": {
+        "helper": "importNinjaTrader",
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "platform": "NinjaTrader",
+        "csv": "Trade #,Instrument,Market Position,Quantity,Entry Time,Exit Time,Entry Price,Exit Price,Profit,MAE,MFE,Commission\n1,TSLA,Long,100,10/23/2026 18:20:00,10/23/2026 18:50:00,180.00,181.25,125.00,0.10,1.50,0.00\n"
+      },
+      "expect": [
+        {
+          "path": "DayOfWeekChart.data(trades)[].day",
+          "op": "eq",
+          "value": [
+            "Fri"
+          ],
+          "line": 111,
+          "derived": false
+        },
+        {
+          "path": "DayOfWeekChart.data(trades)[0].profit",
+          "op": "approx",
+          "value": 125,
+          "accuracy": 0.001,
+          "line": 112,
+          "derived": false
+        },
+        {
+          "path": "MetricsCalculator.edgeByDay(trades)[].label",
+          "op": "eq",
+          "value": [
+            "Fri"
+          ],
+          "line": 113,
+          "derived": false
+        },
+        {
+          "path": "MetricsCalculator.allEdgeConditions(trades, tradingDays: 1)[dimension==\"Day\"].label",
+          "op": "eq",
+          "value": [
+            "Fri"
+          ],
+          "line": 116,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradingDayTests.testWeekdayStatsDoNotDependOnTheStoredLabelsLanguage",
+      "line": 122,
+      "subject": "DayOfWeekChart.data",
+      "kind": "calendar",
+      "input": {
+        "helper": "trade",
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "trades": [
+          {
+            "openTime": "2026-10-23T22:20:00Z",
+            "closeTime": "2026-10-23T22:50:00Z",
+            "netProfit": "125",
+            "dayOfWeek": "Fr."
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "DayOfWeekChart.data(trades)[].day",
+          "op": "eq",
+          "value": [
+            "Fri"
+          ],
+          "line": 126,
+          "derived": false
+        },
+        {
+          "path": "MetricsCalculator.edgeByDay(trades)[].label",
+          "op": "eq",
+          "value": [
+            "Fri"
+          ],
+          "line": 127,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "The stored dayOfWeek label (\"Fr.\", a German-locale import) is ignored: weekday stats use the ET weekday of the close (Trade.tradingWeekday)."
+    },
+    {
+      "id": "TradingDayTests.testWeekdayStatsUseTheCloseTradingDayLikeTheCalendar",
+      "line": 133,
+      "subject": "DayOfWeekChart.data",
+      "kind": "calendar",
+      "input": {
+        "helper": "trade",
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "trades": [
+          {
+            "openTime": "2026-10-22T19:30:00Z",
+            "closeTime": "2026-10-23T22:50:00Z",
+            "netProfit": "80"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "DayOfWeekChart.data(trades)[].day",
+          "op": "eq",
+          "value": [
+            "Fri"
+          ],
+          "line": 136,
+          "derived": false
+        },
+        {
+          "path": "cell[23].pnl",
+          "op": "approx",
+          "value": 80,
+          "accuracy": 0.001,
+          "line": 138,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Swing trade opened Thu, closed Fri after hours: a Friday result (close day), not Thursday (open day). cell uses calendarCell defaults (firstWeekday 1)."
+    },
+    {
+      "id": "TradingDayTests.testFridayEveningTradeIsNotFlaggedAsWeekend",
+      "line": 142,
+      "subject": "DataQuality.weekendTradeCount",
+      "kind": "calendar",
+      "input": {
+        "helper": "trade",
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "trades": [
+          {
+            "openTime": "2026-10-23T22:20:00Z",
+            "closeTime": "2026-10-23T22:50:00Z",
+            "netProfit": "125"
+          },
+          {
+            "openTime": "2026-10-24T15:00:00Z",
+            "closeTime": "2026-10-24T15:30:00Z",
+            "netProfit": "10"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "DataQuality.weekendTradeCount([trades[0]])",
+          "op": "eq",
+          "value": 0,
+          "line": 146,
+          "derived": false
+        },
+        {
+          "path": "DataQuality.weekendTradeCount([trades[0], trades[1]])",
+          "op": "eq",
+          "value": 1,
+          "line": 147,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "weekendTradeCount tests the ET weekday of the OPEN time (unlike tradingDay, which uses the close)."
+    },
+    {
+      "id": "TradingDayTests.testTradingDayCountAndDailyLossLimitUseTheNewYorkDay",
+      "line": 153,
+      "subject": "PropFirmTracker.todayPnL",
+      "kind": "calendar",
+      "input": {
+        "helper": "trade",
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "trades": [
+          {
+            "openTime": "2026-10-23T13:45:00Z",
+            "closeTime": "2026-10-23T14:00:00Z",
+            "netProfit": "50"
+          },
+          {
+            "openTime": "2026-10-23T22:20:00Z",
+            "closeTime": "2026-10-23T22:50:00Z",
+            "netProfit": "-200"
+          }
+        ],
+        "now": [
+          "2026-10-23T23:30:00Z",
+          "2026-10-24T14:00:00Z"
+        ]
+      },
+      "expect": [
+        {
+          "path": "PropFirmTracker.tradingDayCount(trades)",
+          "op": "eq",
+          "value": 1,
+          "line": 158,
+          "derived": false
+        },
+        {
+          "path": "PropFirmTracker.todayPnL(trades, now: 2026-10-23T23:30:00Z)",
+          "op": "approx",
+          "value": -150,
+          "accuracy": 0.001,
+          "line": 160,
+          "derived": false
+        },
+        {
+          "path": "PropFirmTracker.todayPnL(trades, now: 2026-10-24T14:00:00Z)",
+          "op": "approx",
+          "value": 0,
+          "accuracy": 0.001,
+          "line": 161,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "\"today\" for the daily loss limit is the New York date of now (19:30 ET Friday is already Saturday in Berlin/Tokyo)."
+    },
+    {
+      "id": "TradingDayTests.testMonthEndAfterHoursTradeStaysInItsMonth",
+      "line": 166,
+      "subject": "MonthlyReturns.monthlyData",
+      "kind": "calendar",
+      "input": {
+        "helper": "trade",
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "trades": [
+          {
+            "openTime": "2026-07-31T22:20:00Z",
+            "closeTime": "2026-07-31T22:50:00Z",
+            "netProfit": "125"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "MonthlyReturns.monthlyData(trades)[].id",
+          "op": "eq",
+          "value": [
+            "2026-07"
+          ],
+          "line": 170,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Fri 31 Jul 2026 18:50 ET = Sat 1 Aug 00:50 Berlin; month key is the ET month of the close."
+    },
+    {
+      "id": "TradingDayTests.testJournalDateFiltersStartAtNewYorkMidnight",
+      "line": 174,
+      "subject": "JournalViewModel.cutoff",
+      "kind": "calendar",
+      "input": {
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "now": [
+          "2026-10-23T23:30:00Z",
+          "2026-07-31T22:30:00Z"
+        ]
+      },
+      "expect": [
+        {
+          "path": "JournalViewModel.cutoff(.today, now: 2026-10-23T23:30:00Z)",
+          "op": "eq",
+          "value": "2026-10-23T04:00:00Z",
+          "line": 177,
+          "derived": false
+        },
+        {
+          "path": "JournalViewModel.cutoff(.thisWeek, now: 2026-10-23T23:30:00Z)",
+          "op": "eq",
+          "value": "2026-10-19T04:00:00Z",
+          "line": 178,
+          "derived": false
+        },
+        {
+          "path": "JournalViewModel.cutoff(.thisMonth, now: 2026-07-31T22:30:00Z)",
+          "op": "eq",
+          "value": "2026-07-01T04:00:00Z",
+          "line": 180,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Trading weeks start Monday 00:00 ET (TradingCalendar: firstWeekday 2, minimumDaysInFirstWeek 4)."
+    },
+    {
+      "id": "TradingDayTests.testAfterHoursTradesAroundDaylightSavingChanges",
+      "line": 186,
+      "subject": "TradeCalendar.dailyPnL",
+      "kind": "calendar",
+      "input": {
+        "helper": "trade",
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "subcases": [
+          {
+            "label": "Fri 13 Mar 2026 19:30 EDT",
+            "day": 13,
+            "trades": [
+              {
+                "openTime": "2026-03-13T23:20:00Z",
+                "closeTime": "2026-03-13T23:30:00Z",
+                "netProfit": "42"
+              }
+            ]
+          },
+          {
+            "label": "Fri 30 Oct 2026 19:30 EDT",
+            "day": 30,
+            "trades": [
+              {
+                "openTime": "2026-10-30T23:20:00Z",
+                "closeTime": "2026-10-30T23:30:00Z",
+                "netProfit": "42"
+              }
+            ]
+          },
+          {
+            "label": "Fri 6 Nov 2026 18:50 EST",
+            "day": 6,
+            "trades": [
+              {
+                "openTime": "2026-11-06T23:40:00Z",
+                "closeTime": "2026-11-06T23:50:00Z",
+                "netProfit": "42"
+              }
+            ]
+          },
+          {
+            "label": "Tue 10 Mar 2026 01:30 EDT",
+            "day": 10,
+            "trades": [
+              {
+                "openTime": "2026-03-10T05:20:00Z",
+                "closeTime": "2026-03-10T05:30:00Z",
+                "netProfit": "42"
+              }
+            ]
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "subcases[0].cell[13].pnl",
+          "op": "approx",
+          "value": 42,
+          "accuracy": 0.001,
+          "line": 201,
+          "derived": false
+        },
+        {
+          "path": "subcases[0].cell[14].pnl",
+          "op": "nil",
+          "value": null,
+          "line": 202,
+          "derived": false
+        },
+        {
+          "path": "subcases[1].cell[30].pnl",
+          "op": "approx",
+          "value": 42,
+          "accuracy": 0.001,
+          "line": 201,
+          "derived": false
+        },
+        {
+          "path": "subcases[1].cell[31].pnl",
+          "op": "nil",
+          "value": null,
+          "line": 202,
+          "derived": false
+        },
+        {
+          "path": "subcases[2].cell[6].pnl",
+          "op": "approx",
+          "value": 42,
+          "accuracy": 0.001,
+          "line": 201,
+          "derived": false
+        },
+        {
+          "path": "subcases[2].cell[7].pnl",
+          "op": "nil",
+          "value": null,
+          "line": 202,
+          "derived": false
+        },
+        {
+          "path": "subcases[3].cell[10].pnl",
+          "op": "approx",
+          "value": 42,
+          "accuracy": 0.001,
+          "line": 201,
+          "derived": false
+        },
+        {
+          "path": "subcases[3].cell[11].pnl",
+          "op": "nil",
+          "value": null,
+          "line": 202,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "US and EU DST switch on different dates (9-28 Mar, 25 Oct-1 Nov 2026). Cells use calendarCell defaults (firstWeekday 1); month = the ET month of the close."
+    },
+    {
+      "id": "TradingDayTests.testCalendarGridFollowsNewYorkDaylightSaving",
+      "line": 207,
+      "subject": "TradeCalendar.days",
+      "kind": "calendar",
+      "input": {
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "calendar": "TradeCalendar.gridCalendar() (America/New_York)",
+        "march_of": "2026-03-15T16:00:00Z",
+        "november_of": "2026-11-15T17:00:00Z"
+      },
+      "expect": [
+        {
+          "path": "march.count",
+          "op": "eq",
+          "value": 31,
+          "line": 212,
+          "derived": false
+        },
+        {
+          "path": "november.count",
+          "op": "eq",
+          "value": 30,
+          "line": 213,
+          "derived": false
+        },
+        {
+          "path": "march[0]",
+          "op": "eq",
+          "value": "2026-03-01T05:00:00Z",
+          "line": 214,
+          "derived": false
+        },
+        {
+          "path": "march[8] - march[7] (seconds)",
+          "op": "eq",
+          "value": 82800,
+          "line": 216,
+          "derived": false
+        },
+        {
+          "path": "november[1] - november[0] (seconds)",
+          "op": "eq",
+          "value": 90000,
+          "line": 217,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Grid days are New York midnights; Sun 8 Mar 2026 has 23 h, Sun 1 Nov 2026 has 25 h in New York."
+    },
+    {
+      "id": "TradingDayTests.testSessionsAndEntryLabelsAreNewYorkTimeInEveryZone",
+      "line": 223,
+      "subject": "Date.marketSession",
+      "kind": "session",
+      "input": {
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "helper": "importNinjaTrader",
+        "platform": "NinjaTrader",
+        "csv": "Trade #,Instrument,Market Position,Quantity,Entry Time,Exit Time,Entry Price,Exit Price,Profit,MAE,MFE,Commission\n1,TSLA,Long,100,10/23/2026 18:20:00,10/23/2026 18:50:00,180.00,181.25,125.00,0.10,1.50,0.00\n"
+      },
+      "expect": [
+        {
+          "path": "marketSession(2026-10-23T07:59:00Z)",
+          "op": "eq",
+          "value": "EXTENDED",
+          "line": 233,
+          "derived": false
+        },
+        {
+          "path": "marketSession(2026-10-23T08:00:00Z)",
+          "op": "eq",
+          "value": "PRE_MARKET",
+          "line": 233,
+          "derived": false
+        },
+        {
+          "path": "marketSession(2026-10-23T13:29:00Z)",
+          "op": "eq",
+          "value": "PRE_MARKET",
+          "line": 233,
+          "derived": false
+        },
+        {
+          "path": "marketSession(2026-10-23T13:30:00Z)",
+          "op": "eq",
+          "value": "REGULAR",
+          "line": 233,
+          "derived": false
+        },
+        {
+          "path": "marketSession(2026-10-23T19:59:00Z)",
+          "op": "eq",
+          "value": "REGULAR",
+          "line": 233,
+          "derived": false
+        },
+        {
+          "path": "marketSession(2026-10-23T20:00:00Z)",
+          "op": "eq",
+          "value": "AFTER_HOURS",
+          "line": 233,
+          "derived": false
+        },
+        {
+          "path": "marketSession(2026-10-23T23:59:00Z)",
+          "op": "eq",
+          "value": "AFTER_HOURS",
+          "line": 233,
+          "derived": false
+        },
+        {
+          "path": "marketSession(2026-10-24T00:00:00Z)",
+          "op": "eq",
+          "value": "EXTENDED",
+          "line": 233,
+          "derived": false
+        },
+        {
+          "path": "marketSession(2026-10-24T15:00:00Z)",
+          "op": "eq",
+          "value": "EXTENDED",
+          "line": 235,
+          "derived": false
+        },
+        {
+          "path": "timeToNextSession(2026-10-23T13:00:00Z)",
+          "op": "eq",
+          "value": 1800,
+          "line": 236,
+          "derived": false
+        },
+        {
+          "path": "timeToNextSession(2026-10-24T00:30:00Z)",
+          "op": "eq",
+          "value": 27000,
+          "line": 237,
+          "derived": false
+        },
+        {
+          "path": "trades[0].dayOfWeek",
+          "op": "eq",
+          "value": "Fri",
+          "line": 239,
+          "derived": false
+        },
+        {
+          "path": "trades[0].hour",
+          "op": "eq",
+          "value": 18,
+          "line": 240,
+          "derived": false
+        },
+        {
+          "path": "trades[0].session",
+          "op": "eq",
+          "value": "AFTER_HOURS",
+          "line": 241,
+          "derived": false
+        },
+        {
+          "path": "trades[0].tradingWeekday",
+          "op": "eq",
+          "value": "Fri",
+          "line": 242,
+          "derived": false
+        },
+        {
+          "path": "Market.default",
+          "op": "eq",
+          "value": "us",
+          "line": 244,
+          "derived": false
+        },
+        {
+          "path": "MarketSession.allCases[].startHourET",
+          "op": "eq",
+          "value": [
+            4,
+            9,
+            16,
+            4
+          ],
+          "line": 245,
+          "derived": false
+        },
+        {
+          "path": "MarketSession.allCases[].endHourET",
+          "op": "eq",
+          "value": [
+            9,
+            16,
+            20,
+            20
+          ],
+          "line": 246,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "allCases order = PRE_MARKET, REGULAR, AFTER_HOURS, EXTENDED. startHourET/endHourET are minutes/60 truncated (regular opens 9:30 -> 9). timeToNextSession ignores weekends: 20:30 ET -> next 04:00 = 7.5 h (PARITY B2: desktop countdown skips weekends/holidays, display only). Market.default compared by identity; \"us\" = Market.us."
+    },
+    {
+      "id": "TradingDayTests.testSampleDataHeadlineNumbersAreTheSameInEveryZone",
+      "line": 251,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "sample",
+      "input": {
+        "tz": [
+          "Europe/Berlin",
+          "Asia/Tokyo",
+          "America/Los_Angeles"
+        ],
+        "generator": "DemoDataGenerator.generateTrades",
+        "now": "Date() (relative; trades placed 28...0 ET days back)",
+        "relative_seconds": null,
+        "templates": "see SampleTradesTests.json helpers[\"DemoDataGenerator.generateTrades\"]"
+      },
+      "expect": [
+        {
+          "path": "metrics.totalTrades",
+          "op": "eq",
+          "value": 30,
+          "line": 255,
+          "derived": false
+        },
+        {
+          "path": "metrics.totalProfit",
+          "op": "approx",
+          "value": 1975,
+          "accuracy": 0.001,
+          "line": 256,
+          "derived": false
+        },
+        {
+          "path": "metrics.winRate",
+          "op": "approx",
+          "value": 66.6667,
+          "accuracy": 0.001,
+          "line": 257,
+          "derived": false
+        },
+        {
+          "path": "sum(TradeCalendar.dailyPnL(trades).values)",
+          "op": "approx",
+          "value": 1975,
+          "accuracy": 0.001,
+          "line": 259,
+          "derived": false
+        },
+        {
+          "path": "sum(DayOfWeekChart.data(trades)[].profit)",
+          "op": "approx",
+          "value": 1975,
+          "accuracy": 0.001,
+          "line": 260,
+          "derived": false
+        },
+        {
+          "path": "all(dailyPnL.keys, !isWeekend in America/New_York)",
+          "op": "true",
+          "value": null,
+          "line": 265,
+          "derived": false
+        },
+        {
+          "path": "all(dailyPnL.keys, key == NY startOfDay(key))",
+          "op": "true",
+          "value": null,
+          "line": 266,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Date-relative: trades are placed relative to Date(); only order-independent sums are asserted. Weekday check is asserted per key (XCTAssertFalse), recorded as one all(...) == true."
+    }
+  ],
+  "skipped": []
+}

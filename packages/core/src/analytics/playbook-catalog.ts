@@ -10,7 +10,7 @@
 //
 // Determinism: tags and sessions are grouped with `Dictionary`, so ties (equal |total|, equal
 // session P&L) resolve in random order on the Mac. The desktop orders groups by first appearance
-// in the input; best = the last maximum, worst = the first minimum in that order (max/min(by:)).
+// in the input; best = the first maximum, worst = the first minimum in that order (max/min(by:)).
 
 import type { BrandId } from "../brand";
 import { defineComponent } from "../engine/registry";

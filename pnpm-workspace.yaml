@@ -2,6 +2,8 @@ packages:
   - packages/*
   - brands
   - apps/*
+  - tools/fixture-gen
+  - tools/parity-check
 
 # Exact versions only; the lockfile is the source of truth in CI (--frozen-lockfile).
 saveExact: true

@@ -1,0 +1,22 @@
+{
+  "name": "@dojix-desktop/fixture-gen",
+  "private": true,
+  "version": "0.1.0",
+  "license": "GPL-3.0-or-later",
+  "description": "Seeded generator of the fictional golden fixtures (golden/fixtures)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "node src/cli.ts",
+    "check": "node src/cli.ts --check",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "6.0.3",
+    "vitest": "5.0.4"
+  }
+}

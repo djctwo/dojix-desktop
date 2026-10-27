@@ -1,0 +1,763 @@
+{
+ "brand": "greenwick",
+ "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+ "xcode": "Xcode 16.4",
+ "fixtures": [
+  {
+   "fixture": "greenwick/f1-tiny-journal",
+   "set": "F1",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f1-tiny-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f1-tiny-ninjatrader",
+   "set": "F1",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f1-tiny-ninjatrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f2-stocks-year-journal",
+   "set": "F2",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f2-stocks-year-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 13,
+   "seconds": 33.1
+  },
+  {
+   "fixture": "greenwick/f2-stocks-year-ninjatrader",
+   "set": "F2",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f2-stocks-year-ninjatrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 14,
+   "seconds": 35
+  },
+  {
+   "fixture": "greenwick/f3-empty-journal",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-empty-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.6
+  },
+  {
+   "fixture": "greenwick/f3-empty-ninjatrader",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-empty-ninjatrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "greenwick/f3-single-journal",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-single-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "greenwick/f3-all-wins-journal",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-all-wins-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f3-all-losses-journal",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-all-losses-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.6
+  },
+  {
+   "fixture": "greenwick/f3-breakevens-journal",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-breakevens-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f3-fifty-percent-journal",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-fifty-percent-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f3-bucket-edges-journal",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-bucket-edges-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 1
+  },
+  {
+   "fixture": "greenwick/f3-trade-limits-journal",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-trade-limits-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 4,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "greenwick/f3-hostile-ninjatrader",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-hostile-ninjatrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f3-enc-crlf",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-enc-crlf.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.6
+  },
+  {
+   "fixture": "greenwick/f3-enc-utf8-bom",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-enc-utf8-bom.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f3-enc-utf16le-bom",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-enc-utf16le-bom.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.6
+  },
+  {
+   "fixture": "greenwick/f3-enc-cp1252",
+   "set": "F3",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f3-enc-cp1252.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "greenwick/f4-long-history-journal",
+   "set": "F4",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f4-long-history-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 7,
+   "seconds": 22.1
+  },
+  {
+   "fixture": "greenwick/f5-ibkr",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-ibkr.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f5-tos",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-tos.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 1
+  },
+  {
+   "fixture": "greenwick/f5-tradingview",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-tradingview.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 5,
+   "seconds": 1.2
+  },
+  {
+   "fixture": "greenwick/f5-ninjatrader",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-ninjatrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f5-webull",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-webull.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 8,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f5-webull-pnl",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-webull-pnl.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f5-generic-unknown",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-generic-unknown.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.4
+  },
+  {
+   "fixture": "greenwick/f5-robinhood",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-robinhood.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f5-schwab",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-schwab.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f5-fidelity",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-fidelity.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f5-etrade",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-etrade.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f5-tastytrade",
+   "set": "F5",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f5-tastytrade.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 2,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f6-robinhood",
+   "set": "F6",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f6-robinhood.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "greenwick/f6-robinhood-fees",
+   "set": "F6",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f6-robinhood-fees.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f6-schwab",
+   "set": "F6",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f6-schwab.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f6-schwab-no-footer",
+   "set": "F6",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f6-schwab-no-footer.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "greenwick/f6-schwab-header-first",
+   "set": "F6",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f6-schwab-header-first.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 0.4
+  },
+  {
+   "fixture": "greenwick/f6-fidelity",
+   "set": "F6",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f6-fidelity.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f6-fidelity-no-price",
+   "set": "F6",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f6-fidelity-no-price.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 5,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "greenwick/f6-etrade",
+   "set": "F6",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f6-etrade.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f6-tastytrade",
+   "set": "F6",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f6-tastytrade.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 3,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f7-et-boundaries-journal",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f7-et-boundaries-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f7-et-boundaries-journal",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Europe/Berlin",
+    "locale": "en_GB"
+   },
+   "file": "f7-et-boundaries-journal@Europe-Berlin_en_GB.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f7-et-boundaries-journal",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "America/New_York",
+    "locale": "en_US"
+   },
+   "file": "f7-et-boundaries-journal@America-New_York_en_US.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.8
+  },
+  {
+   "fixture": "greenwick/f7-et-boundaries-journal",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Asia/Kolkata",
+    "locale": "en_IN"
+   },
+   "file": "f7-et-boundaries-journal@Asia-Kolkata_en_IN.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 1
+  },
+  {
+   "fixture": "greenwick/f7-et-boundaries-journal",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Asia/Tokyo",
+    "locale": "ja_JP"
+   },
+   "file": "f7-et-boundaries-journal@Asia-Tokyo_ja_JP.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f7-et-boundaries-ninjatrader",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f7-et-boundaries-ninjatrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 1.1
+  },
+  {
+   "fixture": "greenwick/f7-et-boundaries-ninjatrader",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Europe/Berlin",
+    "locale": "en_GB"
+   },
+   "file": "f7-et-boundaries-ninjatrader@Europe-Berlin_en_GB.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 0.9
+  },
+  {
+   "fixture": "greenwick/f7-et-boundaries-ninjatrader",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "America/New_York",
+    "locale": "en_US"
+   },
+   "file": "f7-et-boundaries-ninjatrader@America-New_York_en_US.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 1
+  },
+  {
+   "fixture": "greenwick/f7-et-boundaries-ninjatrader",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Asia/Kolkata",
+    "locale": "en_IN"
+   },
+   "file": "f7-et-boundaries-ninjatrader@Asia-Kolkata_en_IN.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 1.4
+  },
+  {
+   "fixture": "greenwick/f7-et-boundaries-ninjatrader",
+   "set": "F7",
+   "compare": true,
+   "variant": {
+    "tz": "Asia/Tokyo",
+    "locale": "ja_JP"
+   },
+   "file": "f7-et-boundaries-ninjatrader@Asia-Tokyo_ja_JP.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 1,
+   "seconds": 1
+  },
+  {
+   "fixture": "greenwick/f8-tie-traps-journal",
+   "set": "F8",
+   "compare": false,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f8-tie-traps-journal.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 5,
+   "seconds": 0.7
+  },
+  {
+   "fixture": "greenwick/f9-scale-10k-ninjatrader",
+   "set": "F9",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f9-scale-10k-ninjatrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 9.4
+  },
+  {
+   "fixture": "greenwick/f9-scale-50k-ninjatrader",
+   "set": "F9",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f9-scale-50k-ninjatrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 38.3
+  },
+  {
+   "fixture": "greenwick/f9-scale-100k-ninjatrader",
+   "set": "F9",
+   "compare": true,
+   "variant": {
+    "tz": "UTC",
+    "locale": "en_US_POSIX"
+   },
+   "file": "f9-scale-100k-ninjatrader.json",
+   "status": "ok",
+   "skipped": [],
+   "nondeterministic": 0,
+   "seconds": 83.9
+  }
+ ]
+}

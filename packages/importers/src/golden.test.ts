@@ -10,7 +10,7 @@ import { describe, expect, it } from "vitest";
 import type { BrandId } from "@dojix-desktop/core";
 import { ImportError, type MacTrade } from "./model";
 import { importTradeFile, type ImportResult } from "./pipeline";
-import { dojixContentKey } from "./tickets";
+import { dojixContentKey, greenwickHash } from "./tickets";
 
 const here = fileURLToPath(new URL(".", import.meta.url));
 const GOLDEN = process.env.GOLDEN_DIR ?? resolve(here, "../../../golden");
@@ -131,6 +131,19 @@ describe.skipIf(docs.length === 0)("Swift reference: import.parsed and import.jo
       ];
       for (const [k, a, b] of pairs) expect(same(a, b), `${doc.fixture} ${String(e.ticket)}.${k}: ${String(a)} vs ${String(b)}`).toBe(true);
     }
+  });
+});
+
+// TicketKeyCounter.hash vectors (Greenwick GenericCSVParser.swift:1053-1061), recorded per reference file.
+const ticketVectors = referenceDocs().flatMap(({ file, doc }) => {
+  const v = (doc.outputs as Record<string, unknown> | undefined)?.["TicketKeyCounter.vectors"];
+  return Array.isArray(v) ? [[file, v as { key: string; ticket: string }[]] as const] : [];
+});
+
+describe.skipIf(ticketVectors.length === 0)("Swift reference: TicketKeyCounter.vectors", () => {
+  it.each(ticketVectors)("%s", (_file, vectors) => {
+    expect(vectors.length).toBeGreaterThan(0);
+    for (const { key, ticket } of vectors) expect(greenwickHash(key).toString(), JSON.stringify(key)).toBe(String(ticket));
   });
 });
 

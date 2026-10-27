@@ -1,0 +1,303 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/SampleFileCrossCheckTests.swift",
+  "helpers": {},
+  "cases": [
+    {
+      "id": "SampleFileCrossCheckTests.testMT4SampleHeadlineStatsMatchHandCalculation",
+      "line": 21,
+      "subject": "GenericCSVParser.detect + parse + TradeRepository.bulkInsert + MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "csv": "Ticket,Open Time,Close Time,Type,Size,Item,Price,S/L,T/P,Close Price,Profit,Commission,Swap\n5001,2026.03.02 08:15:00,2026.03.02 09:40:00,BUY,0.10,EURUSD,1.08000,1.07800,1.08500,1.08500,50.00,-2.00,0.00\n5002,2026.03.03 13:05:00,2026.03.03 14:10:00,SELL,0.20,GBPUSD,1.27000,1.27200,1.26500,1.27150,-30.00,-2.00,0.00\n5003,2026.03.04 02:30:00,2026.03.04 05:00:00,BUY,0.10,USDJPY,150.000,149.700,150.800,150.800,80.00,-3.00,-1.00\n5004,2026.03.05 15:45:00,2026.03.05 16:20:00,SELL,0.10,AUDUSD,0.66000,0.66200,0.65500,0.66200,-20.00,-1.00,0.00\n5005,2026.03.06 09:00:00,2026.03.06 10:30:00,BUY,0.05,EURUSD,1.08200,1.08000,1.08800,1.08700,25.00,-1.00,0.00",
+        "file_equivalent": "samples/sample-mt4.csv",
+        "steps": [
+          "detect",
+          "parse",
+          "bulkInsert",
+          "MetricsCalculator.calculate(fetchAll())"
+        ]
+      },
+      "expect": [
+        {
+          "path": "detection.platform",
+          "op": "eq",
+          "value": "mt4",
+          "line": 27,
+          "derived": false
+        },
+        {
+          "path": "detection.mapping",
+          "op": "notNil",
+          "line": 28,
+          "derived": false
+        },
+        {
+          "path": "inserted",
+          "op": "eq",
+          "value": 5,
+          "line": 31,
+          "derived": false
+        },
+        {
+          "path": "totalTrades",
+          "op": "eq",
+          "value": 5,
+          "line": 34,
+          "derived": false
+        },
+        {
+          "path": "totalProfit",
+          "op": "approx",
+          "value": 95,
+          "accuracy": 0.001,
+          "line": 35,
+          "derived": false
+        },
+        {
+          "path": "winRate",
+          "op": "approx",
+          "value": 60,
+          "accuracy": 0.001,
+          "line": 36,
+          "derived": false
+        },
+        {
+          "path": "profitFactor",
+          "op": "approx",
+          "value": 2.792452830188679,
+          "accuracy": 0.001,
+          "line": 37,
+          "derived": false
+        },
+        {
+          "path": "expectancy",
+          "op": "approx",
+          "value": 19,
+          "accuracy": 0.001,
+          "line": 38,
+          "derived": false
+        },
+        {
+          "path": "wins",
+          "op": "eq",
+          "value": 3,
+          "line": 21,
+          "derived": true
+        },
+        {
+          "path": "losses",
+          "op": "eq",
+          "value": 2,
+          "line": 21,
+          "derived": true
+        },
+        {
+          "path": "grossProfit",
+          "op": "eq",
+          "value": 148.0,
+          "line": 21,
+          "derived": true
+        },
+        {
+          "path": "grossLoss",
+          "op": "eq",
+          "value": 53.0,
+          "line": 21,
+          "derived": true
+        },
+        {
+          "path": "bestTrade",
+          "op": "eq",
+          "value": 76.0,
+          "line": 21,
+          "derived": true
+        },
+        {
+          "path": "worstTrade",
+          "op": "eq",
+          "value": -32.0,
+          "line": 21,
+          "derived": true
+        },
+        {
+          "path": "maxDrawdown",
+          "op": "eq",
+          "value": 32.0,
+          "line": 21,
+          "derived": true
+        },
+        {
+          "path": "calmarRatio",
+          "op": "approx",
+          "value": 2.96875,
+          "accuracy": 1e-09,
+          "line": 21,
+          "derived": true
+        },
+        {
+          "path": "averageDuration",
+          "op": "eq",
+          "value": 85,
+          "line": 21,
+          "derived": true
+        },
+        {
+          "path": "sharpeRatio",
+          "op": "approx",
+          "value": 0.4658878266830622,
+          "accuracy": 1e-09,
+          "line": 21,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Per-trade netProfit = Profit + Commission + Swap: 48, -32, 76, -21, 24. Metrics run on fetchAll() (close time descending: 24, -21, 76, -32, 48). The inline text equals samples/sample-mt4.csv in the source repo (the file may end with a newline). profitFactor literal is the Swift expression 148.0 / 53.0."
+    },
+    {
+      "id": "SampleFileCrossCheckTests.testBuiltInSampleTradesHeadlineStats",
+      "line": 41,
+      "subject": "DemoDataGenerator.generateTrades + MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "generator": "DemoDataGenerator.generateTrades",
+        "template_profits": [
+          85,
+          -45,
+          120,
+          -60,
+          35,
+          95,
+          55,
+          -75,
+          70,
+          -50,
+          40,
+          150,
+          65,
+          90,
+          45,
+          -85,
+          30,
+          -40,
+          75,
+          110,
+          -55,
+          80,
+          -35,
+          50,
+          130,
+          60,
+          -70,
+          25,
+          -90,
+          40
+        ]
+      },
+      "expect": [
+        {
+          "path": "totalProfit",
+          "op": "approx",
+          "value": 845,
+          "accuracy": 0.001,
+          "line": 45,
+          "derived": false
+        },
+        {
+          "path": "winRate",
+          "op": "approx",
+          "value": 66.66666666666667,
+          "accuracy": 0.001,
+          "line": 46,
+          "derived": false
+        },
+        {
+          "path": "profitFactor",
+          "op": "approx",
+          "value": 2.396694214876033,
+          "accuracy": 0.001,
+          "line": 47,
+          "derived": false
+        },
+        {
+          "path": "expectancy",
+          "op": "approx",
+          "value": 28.166666666666668,
+          "accuracy": 0.001,
+          "line": 48,
+          "derived": false
+        },
+        {
+          "path": "totalTrades",
+          "op": "eq",
+          "value": 30,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "wins",
+          "op": "eq",
+          "value": 20,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "losses",
+          "op": "eq",
+          "value": 10,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "grossProfit",
+          "op": "eq",
+          "value": 1450.0,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "grossLoss",
+          "op": "eq",
+          "value": 605.0,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "averageWin",
+          "op": "approx",
+          "value": 72.5,
+          "accuracy": 1e-09,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "averageLoss",
+          "op": "approx",
+          "value": 60.5,
+          "accuracy": 1e-09,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "bestTrade",
+          "op": "eq",
+          "value": 150.0,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "worstTrade",
+          "op": "eq",
+          "value": -90.0,
+          "line": 41,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "The 30 sample trades' profits are fixed templates (listed); dates (relative to now, Calendar.current, random minutes) and several other fields are random, so only order-independent values are derived. Literals are Swift expressions (evaluated)."
+    }
+  ],
+  "skipped": []
+}

@@ -1,0 +1,331 @@
+{
+ "schema": 1,
+ "brand": "greenwick",
+ "fixture": "greenwick/f9-scale-50k-ninjatrader",
+ "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+ "xcode": "Xcode 16.4",
+ "swift": "6.1+",
+ "tz": "GMT",
+ "locale": "en_US_POSIX",
+ "firstWeekday": 1,
+ "minimumDaysInFirstWeek": 1,
+ "import": {
+  "kind": "file",
+  "detect": {
+   "headers": [
+    "Trade #",
+    "Instrument",
+    "Account",
+    "Strategy",
+    "Market position",
+    "Quantity",
+    "Entry price",
+    "Exit price",
+    "Entry time",
+    "Exit time",
+    "Profit",
+    "Commission",
+    "MAE",
+    "MFE"
+   ],
+   "mapping": {
+    "closePrice": 7,
+    "closeTime": 9,
+    "commission": 11,
+    "dateFormat": "MM/dd/yyyy HH:mm:ss",
+    "direction": 4,
+    "maePoints": 12,
+    "mfePoints": 13,
+    "openPrice": 6,
+    "openTime": 8,
+    "platform": "NinjaTrader",
+    "profit": 10,
+    "shares": 5,
+    "sl": null,
+    "swap": null,
+    "symbol": 1,
+    "ticket": 0,
+    "tp": null,
+    "volume": null
+   },
+   "platform": "NinjaTrader",
+   "sampleRows": [
+    [
+     "1",
+     "FIXE",
+     "Sim101",
+     "Fictional",
+     "Short",
+     "0.5",
+     "9.67",
+     "9.76",
+     "01/04/2016 04:15:31",
+     "01/04/2016 04:16:31",
+     "0.00",
+     "0.72",
+     "0.12",
+     "0.09"
+    ],
+    [
+     "2",
+     "FIXA",
+     "Sim101",
+     "Fictional",
+     "Long",
+     "200",
+     "41.38",
+     "43.17",
+     "01/04/2016 10:18:27",
+     "01/04/2016 10:31:27",
+     "358.08",
+     "0.00",
+     "0.17",
+     "1.96"
+    ],
+    [
+     "3",
+     "FIXC",
+     "Sim101",
+     "Fictional",
+     "Short",
+     "50",
+     "23.68",
+     "23.31",
+     "01/04/2016 10:35:52",
+     "01/04/2016 12:00:52",
+     "18.59",
+     "0.00",
+     "0.06",
+     "0.43"
+    ],
+    [
+     "4",
+     "FIXC",
+     "Sim101",
+     "Fictional",
+     "Long",
+     "5",
+     "21.83",
+     "22.13",
+     "01/04/2016 12:21:08",
+     "01/04/2016 12:21:08",
+     "1.57",
+     "0.00",
+     "0.03",
+     "0.31"
+    ],
+    [
+     "5",
+     "FIXD",
+     "Sim101",
+     "Fictional",
+     "Short",
+     "200",
+     "70.25",
+     "67.87",
+     "01/04/2016 12:16:07",
+     "01/04/2016 12:33:07",
+     "476.00",
+     "2.63",
+     "0.23",
+     "3.08"
+    ]
+   ]
+  },
+  "route": "generic:NinjaTrader",
+  "parsedCount": 50000,
+  "inserted": 50000,
+  "reimportInserted": 0,
+  "journalCount": 50000
+ },
+ "outputs": {
+  "Metrics.averageDuration": 94,
+  "Metrics.averageLoss": 44.78343038835223,
+  "Metrics.averageMAE": 0.6028301999999981,
+  "Metrics.averageMFE": 1.3333749999999924,
+  "Metrics.averageRMultiple": 0,
+  "Metrics.averageWin": 109.77203635586052,
+  "Metrics.bestTrade": 2920.09,
+  "Metrics.calmarRatio": 385.03816448525095,
+  "Metrics.currentStreak": -2,
+  "Metrics.expectancy": 27.486705861241663,
+  "Metrics.grossLoss": 1119720.1099999708,
+  "Metrics.grossProfit": 2566470.210000019,
+  "Metrics.losses": 25003,
+  "Metrics.maxDrawdown": 3757.4199999999837,
+  "Metrics.maxLossStreak": 15,
+  "Metrics.maxWinStreak": 13,
+  "Metrics.netProfitAfterCosts": 1446750.1000001654,
+  "Metrics.profitFactor": 2.2920640498276716,
+  "Metrics.sharpeRatio": 0.14226499191657102,
+  "Metrics.totalCommissions": 45424.459999999606,
+  "Metrics.totalCosts": 45424.459999999606,
+  "Metrics.totalProfit": 1446750.1000001654,
+  "Metrics.totalSwap": 0,
+  "Metrics.totalTrades": 50000,
+  "Metrics.winRate": 46.760000000000005,
+  "Metrics.wins": 23380,
+  "Metrics.worstTrade": -1033.5700000000002,
+  "Metrics.edgeByHour": [
+   {
+    "category": "Hour",
+    "label": "12:00",
+    "profit": 207760.43999999898,
+    "tradeCount": 6958,
+    "winRate": 46.24892210405289
+   },
+   {
+    "category": "Hour",
+    "label": "11:00",
+    "profit": 201328.89999999962,
+    "tradeCount": 6711,
+    "winRate": 47.38489047831918
+   },
+   {
+    "category": "Hour",
+    "label": "15:00",
+    "profit": 197786.47999999963,
+    "tradeCount": 6317,
+    "winRate": 47.015988602184585
+   },
+   {
+    "category": "Hour",
+    "label": "14:00",
+    "profit": 194808.77999999895,
+    "tradeCount": 6942,
+    "winRate": 47.34946701238837
+   },
+   {
+    "category": "Hour",
+    "label": "13:00",
+    "profit": 189695.01999999912,
+    "tradeCount": 6805,
+    "winRate": 46.877296105804554
+   },
+   {
+    "category": "Hour",
+    "label": "10:00",
+    "profit": 184440.0399999987,
+    "tradeCount": 6850,
+    "winRate": 45.8978102189781
+   },
+   {
+    "category": "Hour",
+    "label": "9:00",
+    "profit": 127268.74999999948,
+    "tradeCount": 4434,
+    "winRate": 47.02300405953992
+   },
+   {
+    "category": "Hour",
+    "label": "4:00",
+    "profit": 33128.74000000002,
+    "tradeCount": 1016,
+    "winRate": 43.89763779527559
+   },
+   {
+    "category": "Hour",
+    "label": "16:00",
+    "profit": 32713.3,
+    "tradeCount": 991,
+    "winRate": 46.82139253279516
+   },
+   {
+    "category": "Hour",
+    "label": "19:00",
+    "profit": 28360.970000000034,
+    "tradeCount": 971,
+    "winRate": 46.96189495365603
+   },
+   {
+    "category": "Hour",
+    "label": "7:00",
+    "profit": 26957.45000000005,
+    "tradeCount": 956,
+    "winRate": 45.60669456066946
+   },
+   {
+    "category": "Hour",
+    "label": "17:00",
+    "profit": 22501.230000000007,
+    "tradeCount": 1049,
+    "winRate": 48.04575786463298
+   }
+  ],
+  "Metrics.edgeBySession": [
+   {
+    "category": "Session",
+    "label": "Regular",
+    "profit": 1276480.710000103,
+    "tradeCount": 43986,
+    "winRate": 46.78761424089483
+   },
+   {
+    "category": "Session",
+    "label": "Pre-Market",
+    "profit": 86693.88999999994,
+    "tradeCount": 3003,
+    "winRate": 45.820845820845825
+   },
+   {
+    "category": "Session",
+    "label": "After Hours",
+    "profit": 83575.50000000004,
+    "tradeCount": 3011,
+    "winRate": 47.293258053802724
+   }
+  ],
+  "Metrics.edgeByDay": [
+   {
+    "category": "Day",
+    "label": "Fri",
+    "profit": 297895.23000000167,
+    "tradeCount": 9931,
+    "winRate": 47.06474675259289
+   },
+   {
+    "category": "Day",
+    "label": "Mon",
+    "profit": 296338.45000000106,
+    "tradeCount": 10116,
+    "winRate": 46.97508896797153
+   },
+   {
+    "category": "Day",
+    "label": "Thu",
+    "profit": 289140.88999999966,
+    "tradeCount": 9934,
+    "winRate": 46.788806120394604
+   },
+   {
+    "category": "Day",
+    "label": "Tue",
+    "profit": 284092.1000000004,
+    "tradeCount": 10018,
+    "winRate": 46.64603713316031
+   },
+   {
+    "category": "Day",
+    "label": "Wed",
+    "profit": 277328.3199999998,
+    "tradeCount": 9983,
+    "winRate": 46.308724832214764
+   },
+   {
+    "category": "Day",
+    "label": "Sat",
+    "profit": 1955.1100000000001,
+    "tradeCount": 18,
+    "winRate": 55.55555555555556
+   }
+  ]
+ },
+ "skipped": {},
+ "now": "2026-10-27T22:15:16.556Z",
+ "environment": {
+  "tz": "UTC",
+  "locale": "en_US_POSIX",
+  "deterministicHashing": true
+ },
+ "nondeterministic": []
+}

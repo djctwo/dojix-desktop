@@ -13,8 +13,8 @@
 //
 // Determinism: the "current regime" is the most common regime of the last five days. The Mac
 // takes `max(by:)` over a dictionary, so a tie is random. The desktop counts in the order the
-// regimes first appear in those days and keeps Swift's `max(by:)` rule (the last of equal
-// counts wins), i.e. the tied regime that showed up most recently first (F8 tie trap).
+// regimes first appear in those days and keeps Swift's `max(by:)` rule (the first of equal
+// counts wins), i.e. the tied regime that showed up earliest in those days (F8 tie trap).
 
 import type { CompatMode } from "../../engine/compat";
 import { isLoss, isWin, maeOf } from "../../model/accessors";
@@ -71,7 +71,7 @@ export interface RegimeAnalysisModel {
   tradingDays: RegimeDay[];
   /** Regimes that occur, in `REGIMES` order. */
   regimeStats: RegimeStats[];
-  /** Highest average P&L per day (last of ties). */
+  /** Highest average P&L per day (first of ties). */
   bestRegime: RegimeStats | null;
   /** Lowest total P&L (first of ties). */
   worstRegime: RegimeStats | null;
@@ -124,7 +124,7 @@ function avgProfit(trades: readonly GreenwickTrade[]): number {
  * RegimeAnalysis.swift:63-185. The card needs 10 trades (the registry guard) and 3 trading
  * days ("Need at least 3 trading days for regime classification").
  */
-export function computeRegimeAnalysis(trades: readonly GreenwickTrade[], compat: CompatMode): RegimeAnalysisModel {
+export function computeRegimeAnalysis(trades: readonly GreenwickTrade[], compat: CompatMode, locale: string): RegimeAnalysisModel {
   const byDay = new Map<string, GreenwickTrade[]>();
   for (const t of trades) {
     const k = TRADING_CALENDAR.dayKey(t.closeTime);
@@ -202,11 +202,11 @@ export function computeRegimeAnalysis(trades: readonly GreenwickTrade[], compat:
     // regimeInsights (:377-404)
     bestInsight:
       bestRegime && bestRegime.avgPnL > 0
-        ? `You thrive in ${bestRegime.regime} days -- avg ${asCurrency(bestRegime.avgPnL)}/day across ${bestRegime.dayCount} days`
+        ? `You thrive in ${bestRegime.regime} days -- avg ${asCurrency(bestRegime.avgPnL, locale)}/day across ${bestRegime.dayCount} days`
         : null,
     worstInsight:
       worstRegime && worstRegime.totalPnL < 0
-        ? `Consider sitting out ${worstRegime.regime} days -- costs you ${asCurrency(Math.abs(worstRegime.totalPnL))} total`
+        ? `Consider sitting out ${worstRegime.regime} days -- costs you ${asCurrency(Math.abs(worstRegime.totalPnL), locale)} total`
         : null,
     needsMoreVariety: regimeStats.length <= 1,
   };

@@ -1,0 +1,291 @@
+{
+  "app": "greenwick",
+  "source_repo": "djctwo/greenwick",
+  "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+  "file": "GreenwickTests/ImportSecurityTests.swift",
+  "helpers": {
+    "tosHeader": {
+      "line": 7,
+      "defaults": {
+        "value": "Exec Time,Symbol,Side,Qty,Price,Net Price,P/L,Commission"
+      },
+      "notes": "thinkorswim header used by most cases."
+    },
+    "writeTemp": {
+      "line": 9,
+      "defaults": {
+        "encoding": "utf-8",
+        "trailingNewline": false
+      },
+      "notes": "Writes the exact text to a temp .csv."
+    },
+    "importAll": {
+      "line": 17,
+      "defaults": {},
+      "notes": "detect; if no mapping -> []; else parse."
+    }
+  },
+  "cases": [
+    {
+      "id": "ImportSecurityTests.testNonFiniteAndAbsurdNumbersAreRejected",
+      "line": 23,
+      "subject": "GenericCSVParser.parse",
+      "kind": "validation",
+      "input": {
+        "helper": "importAll",
+        "platform": "Thinkorswim",
+        "csv": "Exec Time,Symbol,Side,Qty,Price,Net Price,P/L,Commission\n03/24/26 09:31:15,AAPL,BUY,inf,171.25,171.30,25.00,0.65\n03/24/26 09:32:15,AAPL,BUY,nan,171.25,171.30,25.00,0.65\n03/24/26 09:33:15,AAPL,BUY,1e308,171.25,171.30,25.00,0.65\n03/24/26 09:34:15,AAPL,BUY,-0,171.25,171.30,25.00,0.65\n03/24/26 09:35:15,AAPL,BUY,100,171.25,171.30,1e300,0.65\n03/24/26 09:36:15,AAPL,BUY,100,171.25,171.30,25.00,0.65"
+      },
+      "expect": [
+        {
+          "path": "trades[*].shares",
+          "op": "gt",
+          "value": 0,
+          "line": 34,
+          "derived": false
+        },
+        {
+          "path": "trades[*].shares",
+          "op": "le",
+          "value": 1000000000,
+          "line": 34,
+          "derived": false
+        },
+        {
+          "path": "trades[*].netProfit (isNaN)",
+          "op": "false",
+          "value": null,
+          "line": 35,
+          "derived": false
+        },
+        {
+          "path": "trades[*].netProfit (abs)",
+          "op": "le",
+          "value": "1000000000000",
+          "line": 36,
+          "derived": false
+        },
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 2,
+          "line": 39,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Rows 1-4 rejected (inf, nan, 1e308 > 1e9, -0 -> 0 < 1e-6). Row 5 is KEPT: an out-of-range P&L (1e300 > 1e12) parses as nil -> profit 0, so its stored net is 0 - |0.65| = -0.65 (the test comment says \"P&L 0\"; the value is not asserted). MetricsCalculator.calculate must not trap."
+    },
+    {
+      "id": "ImportSecurityTests.testFIFONonFiniteQuantitiesDoNotHang",
+      "line": 43,
+      "subject": "GenericCSVParser.parseTransactions",
+      "kind": "validation",
+      "input": {
+        "helper": "importAll",
+        "platform": "Robinhood",
+        "csv": "Activity Date,Process Date,Settle Date,Account Type,Instrument,Description,Trans Code,Quantity,Price,Amount,Suppressed\n3/24/2026,3/24/2026,3/26/2026,Brokerage,XYZ,x,Buy,inf,$1.00,$1,\n3/24/2026,3/24/2026,3/26/2026,Brokerage,XYZ,x,Sell,inf,$2.00,$1,\n3/24/2026,3/24/2026,3/26/2026,Brokerage,XYZ,x,Buy,10,$NaN,$1,"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 0,
+          "line": 49,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Non-finite quantities and a NaN price are dropped before FIFO (the Buy 10 @ NaN row leaves nothing to pair)."
+    },
+    {
+      "id": "ImportSecurityTests.testMalformedLinesDoNotCrash",
+      "line": 52,
+      "subject": "GenericCSVParser.parse",
+      "kind": "sanitize",
+      "input": {
+        "helper": "importAll",
+        "platform": "Thinkorswim",
+        "header": "Exec Time,Symbol,Side,Qty,Price,Net Price,P/L,Commission",
+        "rows": [
+          "\"unterminated,quote,field",
+          ",,,,,,,",
+          "03/24/26 09:31:15,=HYPERLINK(\"http://example.invalid\"),BUY,1,1,1,1,1",
+          {
+            "repeat": "A",
+            "count": 200000
+          },
+          "03/24/26 09:31:15,AAPL,SIDEWAYS,100,171.25,171.30,25.00,0.65",
+          "not a date,AAPL,BUY,100,171.25,171.30,25.00,0.65",
+          "\u0000�‮garbage,💩,BUY,1,1,1,1,1"
+        ],
+        "csv_rule": "header + rows joined by \"\\n\", no trailing newline; {repeat, count} = that character repeated count times"
+      },
+      "expect": [
+        {
+          "path": "trades[*].symbol chars",
+          "op": "true",
+          "value": "letter (Unicode isLetter) | number (isNumber) | \".\"",
+          "line": 64,
+          "derived": false
+        },
+        {
+          "path": "trades[*].symbol.count",
+          "op": "le",
+          "value": 10,
+          "line": 65,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Import cleanSymbol: uppercased, keeps only Character.isLetter/isNumber/\".\", truncated to 10 chars (TradeLimits allows 32; import is stricter). Only the =HYPERLINK row survives, as symbol \"HYPERLINKH\" (not asserted). Swift isLetter is Unicode-wide: JS needs \\p{L}/\\p{N}, not [A-Z0-9]."
+    },
+    {
+      "id": "ImportSecurityTests.testEmptyAndHeaderOnlyFiles",
+      "line": 69,
+      "subject": "GenericCSVParser.detect",
+      "kind": "validation",
+      "input": {
+        "helper": "importAll",
+        "files": [
+          {
+            "csv": ""
+          },
+          {
+            "csv": "Exec Time,Symbol,Side,Qty,Price,Net Price,P/L,Commission"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "detect(files[0])",
+          "op": "throws",
+          "value": "emptyFile",
+          "line": 70,
+          "derived": false
+        },
+        {
+          "path": "(try? importAll(files[1])) ?? [] .count",
+          "op": "eq",
+          "value": 0,
+          "line": 71,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Error kind of the empty file is not asserted (source: emptyFile). Header-only: parse throws emptyFile, swallowed by try? -> 0 trades."
+    },
+    {
+      "id": "ImportSecurityTests.testOversizedFileIsRefusedWithoutReading",
+      "line": 83,
+      "subject": "GenericCSVParser.detect",
+      "kind": "validation",
+      "input": {
+        "file_size_bytes": 52428801,
+        "content": "\"Exec Time,Symbol,Side,Qty,Price,Net Price,P/L,Commission\" followed by zero bytes (sparse file)",
+        "maxFileSize": 52428800
+      },
+      "expect": [
+        {
+          "path": "detect(file)",
+          "op": "throws",
+          "value": "fileTooLarge",
+          "line": 91,
+          "derived": false
+        },
+        {
+          "path": "GenericCSVParser.maxFileSize",
+          "op": "eq",
+          "value": 52428800,
+          "line": 91,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Cap is 50 MiB (50*1024*1024); maxFileSize + 1 is refused by size before reading."
+    },
+    {
+      "id": "ImportSecurityTests.testLargeValidFileParsesInReasonableTime",
+      "line": 98,
+      "subject": "GenericCSVParser.parse",
+      "kind": "import",
+      "input": {
+        "helper": "importAll",
+        "platform": "Thinkorswim",
+        "header": "Exec Time,Symbol,Side,Qty,Price,Net Price,P/L,Commission",
+        "generator": {
+          "count": 20000,
+          "format": "03/24/26 %02d:%02d:%02d,SYM%d,BUY,10,100.00,100.00,%d.00,0.10",
+          "args": [
+            "hour = 9 + (i / 60) % 7",
+            "minute = i % 60",
+            "second = i % 60",
+            "i % 50",
+            "(i % 7) - 3"
+          ]
+        },
+        "csv_rule": "header + 20000 rows joined by \"\\n\", no trailing newline"
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 20000,
+          "line": 109,
+          "derived": false
+        },
+        {
+          "path": "elapsedSeconds",
+          "op": "lt",
+          "value": 60,
+          "line": 110,
+          "derived": false
+        },
+        {
+          "path": "sum(trades[].netProfit)",
+          "op": "approx",
+          "value": -2003,
+          "accuracy": 0.01,
+          "line": 109,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Rows repeat every 2100 lines; the occurrence counter keeps every duplicate. Derived: sum((i%7)-3) over i<20000 = -3, minus 20000 x |0.10| commission = -2003 (net of costs, SPEC §3.1). \"%d.00\" of a negative int gives \"-3.00\"."
+    },
+    {
+      "id": "ImportSecurityTests.testFileNotFoundErrorDoesNotLeakFullPath",
+      "line": 113,
+      "subject": "GenericCSVParser.detect",
+      "kind": "validation",
+      "input": {
+        "path": "/nonexistent/dir/secret-name.csv"
+      },
+      "expect": [
+        {
+          "path": "detect(path)",
+          "op": "throws",
+          "value": null,
+          "line": 114,
+          "derived": false
+        },
+        {
+          "path": "error.localizedDescription",
+          "op": "notContains",
+          "value": "/nonexistent/dir",
+          "line": 115,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Mac message: \"File not found: secret-name.csv\" (last path component only)."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "ImportSecurityTests.testBinaryFileDoesNotCrash",
+      "line": 74,
+      "reason": "No assertion (crash-only smoke test). Input if wanted: 65536 bytes, byte[i] = UInt8(truncatingIfNeeded: i &* 7919), written as .csv; import result ignored."
+    }
+  ]
+}

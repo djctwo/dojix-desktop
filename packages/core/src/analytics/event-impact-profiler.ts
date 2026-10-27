@@ -21,7 +21,7 @@
 // "week 1" = first Friday of the month), shared with CalendarCorrelation (`newsDateFields`).
 //
 // Swift traps: the symbol-impact table groups with a Dictionary and sorts by |delta| (ties are
-// random on the Mac; first appearance here). `min(by:)`/`max(by:)` pick the first worst / last
+// random on the Mac; first appearance here). `min(by:)`/`max(by:)` pick the first worst / first
 // best event for the insight.
 
 import type { BrandId } from "../brand";

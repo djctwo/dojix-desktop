@@ -1,0 +1,577 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/FormattingTests.swift",
+  "helpers": {},
+  "cases": [
+    {
+      "id": "FormattingTests.testAsCurrencyPositive",
+      "line": 8,
+      "subject": "Double.asCurrency",
+      "kind": "format",
+      "input": {
+        "value": 1234.56
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "contains",
+          "value": {
+            "anyOf": [
+              "1,234.56",
+              "1234.56"
+            ]
+          },
+          "line": 10,
+          "derived": false
+        },
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "$1,234.56",
+          "line": 8,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "asCurrency uses a NumberFormatter (currency, USD, 2 fraction digits) with the process locale; the test only checks substrings so it passes in any locale. Derived values assume en_US. op contains with anyOf: the result contains at least one of the strings."
+    },
+    {
+      "id": "FormattingTests.testAsCurrencyNegative",
+      "line": 13,
+      "subject": "Double.asCurrency",
+      "kind": "format",
+      "input": {
+        "value": -500.0
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "contains",
+          "value": "500.00",
+          "line": 15,
+          "derived": false
+        },
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "-$500.00",
+          "line": 13,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "asCurrency uses a NumberFormatter (currency, USD, 2 fraction digits) with the process locale; the test only checks substrings so it passes in any locale. Derived values assume en_US."
+    },
+    {
+      "id": "FormattingTests.testAsCurrencyZero",
+      "line": 18,
+      "subject": "Double.asCurrency",
+      "kind": "format",
+      "input": {
+        "value": 0.0
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "contains",
+          "value": "0.00",
+          "line": 20,
+          "derived": false
+        },
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "$0.00",
+          "line": 18,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "asCurrency uses a NumberFormatter (currency, USD, 2 fraction digits) with the process locale; the test only checks substrings so it passes in any locale. Derived values assume en_US."
+    },
+    {
+      "id": "FormattingTests.testAsPips",
+      "line": 23,
+      "subject": "Double.asPips",
+      "kind": "format",
+      "input": {
+        "values": [
+          12.5,
+          0.0,
+          -3.2
+        ]
+      },
+      "expect": [
+        {
+          "path": "[0]",
+          "op": "eq",
+          "value": "12.5 pips",
+          "line": 24,
+          "derived": false
+        },
+        {
+          "path": "[1]",
+          "op": "eq",
+          "value": "0.0 pips",
+          "line": 25,
+          "derived": false
+        },
+        {
+          "path": "[2]",
+          "op": "eq",
+          "value": "-3.2 pips",
+          "line": 26,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "String(format: \"%.1f pips\"). Path [i] is the result for values[i]."
+    },
+    {
+      "id": "FormattingTests.testAsPercent",
+      "line": 29,
+      "subject": "Double.asPercent",
+      "kind": "format",
+      "input": {
+        "values": [
+          65.4,
+          100.0,
+          0.0
+        ]
+      },
+      "expect": [
+        {
+          "path": "[0]",
+          "op": "eq",
+          "value": "65.4%",
+          "line": 30,
+          "derived": false
+        },
+        {
+          "path": "[1]",
+          "op": "eq",
+          "value": "100.0%",
+          "line": 31,
+          "derived": false
+        },
+        {
+          "path": "[2]",
+          "op": "eq",
+          "value": "0.0%",
+          "line": 32,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "String(format: \"%.1f%%\")."
+    },
+    {
+      "id": "FormattingTests.testAsRMultiple",
+      "line": 35,
+      "subject": "Double.asRMultiple",
+      "kind": "format",
+      "input": {
+        "values": [
+          1.5,
+          -0.3,
+          0.0
+        ]
+      },
+      "expect": [
+        {
+          "path": "[0]",
+          "op": "eq",
+          "value": "1.50R",
+          "line": 36,
+          "derived": false
+        },
+        {
+          "path": "[1]",
+          "op": "eq",
+          "value": "-0.30R",
+          "line": 37,
+          "derived": false
+        },
+        {
+          "path": "[2]",
+          "op": "eq",
+          "value": "0.00R",
+          "line": 38,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "String(format: \"%.2fR\")."
+    },
+    {
+      "id": "FormattingTests.testAsProfitFactor",
+      "line": 41,
+      "subject": "Double.asProfitFactor",
+      "kind": "format",
+      "input": {
+        "values": [
+          1.85,
+          0.0
+        ]
+      },
+      "expect": [
+        {
+          "path": "[0]",
+          "op": "eq",
+          "value": "1.85",
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[1]",
+          "op": "eq",
+          "value": "0.00",
+          "line": 43,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "String(format: \"%.2f\"); +/-infinity is shown as \"99.99\" (not exercised here)."
+    },
+    {
+      "id": "FormattingTests.testAsCompactCurrencyThousands",
+      "line": 46,
+      "subject": "Double.asCompactCurrency",
+      "kind": "format",
+      "input": {
+        "value": 15300.0
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "contains",
+          "value": "15.3K",
+          "line": 48,
+          "derived": false
+        },
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "$15.3K",
+          "line": 46,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "abs >= 1e6: sign + \"$\" + %.1fM of abs/1e6; abs >= 1e3: sign + \"$\" + %.1fK of abs/1e3; otherwise asCurrency."
+    },
+    {
+      "id": "FormattingTests.testAsCompactCurrencyMillions",
+      "line": 51,
+      "subject": "Double.asCompactCurrency",
+      "kind": "format",
+      "input": {
+        "value": 1200000.0
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "contains",
+          "value": "1.2M",
+          "line": 53,
+          "derived": false
+        },
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "$1.2M",
+          "line": 51,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "abs >= 1e6: sign + \"$\" + %.1fM of abs/1e6; abs >= 1e3: sign + \"$\" + %.1fK of abs/1e3; otherwise asCurrency."
+    },
+    {
+      "id": "FormattingTests.testAsCompactCurrencySmall",
+      "line": 56,
+      "subject": "Double.asCompactCurrency",
+      "kind": "format",
+      "input": {
+        "value": 500.0
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "contains",
+          "value": "500.00",
+          "line": 58,
+          "derived": false
+        },
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "$500.00",
+          "line": 56,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "abs >= 1e6: sign + \"$\" + %.1fM of abs/1e6; abs >= 1e3: sign + \"$\" + %.1fK of abs/1e3; otherwise asCurrency. asCurrency uses a NumberFormatter (currency, USD, 2 fraction digits) with the process locale; the test only checks substrings so it passes in any locale. Derived values assume en_US."
+    },
+    {
+      "id": "FormattingTests.testAsCompactCurrencyNegative",
+      "line": 61,
+      "subject": "Double.asCompactCurrency",
+      "kind": "format",
+      "input": {
+        "value": -5000.0
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "contains",
+          "value": "-",
+          "line": 63,
+          "derived": false
+        },
+        {
+          "path": "result",
+          "op": "contains",
+          "value": "5.0K",
+          "line": 64,
+          "derived": false
+        },
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "-$5.0K",
+          "line": 61,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "abs >= 1e6: sign + \"$\" + %.1fM of abs/1e6; abs >= 1e3: sign + \"$\" + %.1fK of abs/1e3; otherwise asCurrency."
+    },
+    {
+      "id": "FormattingTests.testDecimalAsCurrency",
+      "line": 69,
+      "subject": "Decimal.asCurrency",
+      "kind": "format",
+      "input": {
+        "value": 250.75
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "contains",
+          "value": "250.75",
+          "line": 72,
+          "derived": false
+        },
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "$250.75",
+          "line": 69,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Decimal literal 250.75 converted to Double, then Double.asCurrency. asCurrency uses a NumberFormatter (currency, USD, 2 fraction digits) with the process locale; the test only checks substrings so it passes in any locale. Derived values assume en_US."
+    },
+    {
+      "id": "FormattingTests.testTradingSessionAsian",
+      "line": 77,
+      "subject": "Date.tradingSession",
+      "kind": "session",
+      "input": {
+        "date": "2026-01-15T03:00:00Z"
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "ASIAN",
+          "line": 88,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "App buckets by UTC hour: 0-6 ASIAN, 7-11 LONDON, 12-15 NY_OVERLAP, 16-20 NY, else LATE."
+    },
+    {
+      "id": "FormattingTests.testTradingSessionLondon",
+      "line": 91,
+      "subject": "Date.tradingSession",
+      "kind": "session",
+      "input": {
+        "date": "2026-01-15T09:00:00Z"
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "LONDON",
+          "line": 101,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "App buckets by UTC hour: 0-6 ASIAN, 7-11 LONDON, 12-15 NY_OVERLAP, 16-20 NY, else LATE."
+    },
+    {
+      "id": "FormattingTests.testTradingSessionNYOverlap",
+      "line": 104,
+      "subject": "Date.tradingSession",
+      "kind": "session",
+      "input": {
+        "date": "2026-01-15T14:00:00Z"
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "NY_OVERLAP",
+          "line": 114,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "App buckets by UTC hour: 0-6 ASIAN, 7-11 LONDON, 12-15 NY_OVERLAP, 16-20 NY, else LATE."
+    },
+    {
+      "id": "FormattingTests.testTradingSessionNY",
+      "line": 117,
+      "subject": "Date.tradingSession",
+      "kind": "session",
+      "input": {
+        "date": "2026-01-15T18:00:00Z"
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "NY",
+          "line": 127,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "App buckets by UTC hour: 0-6 ASIAN, 7-11 LONDON, 12-15 NY_OVERLAP, 16-20 NY, else LATE."
+    },
+    {
+      "id": "FormattingTests.testTradingSessionLate",
+      "line": 130,
+      "subject": "Date.tradingSession",
+      "kind": "session",
+      "input": {
+        "date": "2026-01-15T22:00:00Z"
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "LATE",
+          "line": 140,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "App buckets by UTC hour: 0-6 ASIAN, 7-11 LONDON, 12-15 NY_OVERLAP, 16-20 NY, else LATE."
+    },
+    {
+      "id": "FormattingTests.testFromSADateTime",
+      "line": 143,
+      "subject": "Date.fromSADateTime",
+      "kind": "calendar",
+      "input": {
+        "string": "2026.01.15 08:30:00"
+      },
+      "expect": [
+        {
+          "path": "result",
+          "op": "notNil",
+          "line": 145,
+          "derived": false
+        },
+        {
+          "path": "result.utc.year",
+          "op": "eq",
+          "value": 2026,
+          "line": 149,
+          "derived": false
+        },
+        {
+          "path": "result.utc.month",
+          "op": "eq",
+          "value": 1,
+          "line": 150,
+          "derived": false
+        },
+        {
+          "path": "result.utc.day",
+          "op": "eq",
+          "value": 15,
+          "line": 151,
+          "derived": false
+        },
+        {
+          "path": "result.utc.hour",
+          "op": "eq",
+          "value": 8,
+          "line": 152,
+          "derived": false
+        },
+        {
+          "path": "result.utc.minute",
+          "op": "eq",
+          "value": 30,
+          "line": 153,
+          "derived": false
+        },
+        {
+          "path": "result",
+          "op": "eq",
+          "value": "2026-01-15T08:30:00Z",
+          "line": 143,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Format yyyy.MM.dd HH:mm:ss, UTC, en_US_POSIX. Components are read in UTC."
+    },
+    {
+      "id": "FormattingTests.testFromSADateTimeInvalid",
+      "line": 156,
+      "subject": "Date.fromSADateTime",
+      "kind": "calendar",
+      "input": {
+        "strings": [
+          "not a date",
+          "",
+          "Jan 15, 2026 8:30 AM"
+        ]
+      },
+      "expect": [
+        {
+          "path": "[0]",
+          "op": "nil",
+          "line": 157,
+          "derived": false
+        },
+        {
+          "path": "[1]",
+          "op": "nil",
+          "line": 158,
+          "derived": false
+        },
+        {
+          "path": "[2]",
+          "op": "nil",
+          "line": 159,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    }
+  ],
+  "skipped": []
+}

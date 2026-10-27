@@ -1,0 +1,893 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/GenericCSVParserTests.swift",
+  "helpers": {
+    "writeTempCSV": {
+      "line": 269,
+      "defaults": {
+        "encoding": "utf8",
+        "atomically": true
+      },
+      "notes": "Writes the text verbatim (UTF-8, no BOM) to a temp .csv file and returns its path."
+    }
+  },
+  "cases": [
+    {
+      "id": "GenericCSVParserTests.testDetectMT4Format",
+      "line": 8,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": "Ticket,Open Time,Close Time,Type,Size,Item,Price,S/L,T/P,Profit,Commission,Swap\n12345,2024.01.15 08:30:00,2024.01.15 09:45:00,BUY,0.10,GBPUSD,1.25000,1.24800,1.25500,25.00,-2.00,0.00\n"
+      },
+      "expect": [
+        {
+          "path": "platform",
+          "op": "eq",
+          "value": "mt4",
+          "line": 15,
+          "derived": false
+        },
+        {
+          "path": "mapping",
+          "op": "notNil",
+          "line": 16,
+          "derived": false
+        },
+        {
+          "path": "mapping.platform",
+          "op": "eq",
+          "value": "mt4",
+          "line": 17,
+          "derived": false
+        },
+        {
+          "path": "headers.count",
+          "op": "eq",
+          "value": 12,
+          "line": 8,
+          "derived": true
+        },
+        {
+          "path": "sampleRows.count",
+          "op": "eq",
+          "value": 1,
+          "line": 8,
+          "derived": true
+        },
+        {
+          "path": "mapping.dateFormat",
+          "op": "eq",
+          "value": "yyyy.MM.dd HH:mm:ss",
+          "line": 8,
+          "derived": true
+        },
+        {
+          "path": "mapping.closePrice",
+          "op": "nil",
+          "line": 8,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "MT4 detection: header set contains ticket, type, item and profit. With a single \"Price\" column and no \"Close Price\" the mapping has no close-price column (closePrice falls back to the open price on parse). platform values are GenericCSVParser.Platform case names (mt4 = \"MetaTrader 4\", cTrader, oanda, tradingView, ninjaTrader, strategyAnalytics, generic)."
+    },
+    {
+      "id": "GenericCSVParserTests.testDetectCTraderFormat",
+      "line": 20,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": "Position ID,Symbol,Direction,Volume,Entry Time,Close Time,Entry Price,Close Price,Stop Loss,Take Profit,Net Profit,Commission,Swap,Pips\n100001,EURUSD,BUY,10000,2024-01-15 08:30:00,2024-01-15 09:45:00,1.08500,1.08700,1.08200,1.09000,20.00,-1.50,0.00,20.0\n"
+      },
+      "expect": [
+        {
+          "path": "platform",
+          "op": "eq",
+          "value": "cTrader",
+          "line": 27,
+          "derived": false
+        },
+        {
+          "path": "mapping",
+          "op": "notNil",
+          "line": 28,
+          "derived": false
+        },
+        {
+          "path": "mapping.dateFormat",
+          "op": "eq",
+          "value": "yyyy-MM-dd HH:mm:ss",
+          "line": 20,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "platform values are GenericCSVParser.Platform case names (mt4 = \"MetaTrader 4\", cTrader, oanda, tradingView, ninjaTrader, strategyAnalytics, generic)."
+    },
+    {
+      "id": "GenericCSVParserTests.testDetectOANDAFormat",
+      "line": 31,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": "Transaction ID,Instrument,Type,Units,Open Time,Close Time,Open Price,Close Price,S/L,T/P,P/L,Financing\n5001,EUR_USD,BUY,10000,2024-01-15T08:30:00,2024-01-15T09:45:00,1.08500,1.08700,1.08200,1.09000,20.00,-0.50\n"
+      },
+      "expect": [
+        {
+          "path": "platform",
+          "op": "eq",
+          "value": "oanda",
+          "line": 38,
+          "derived": false
+        },
+        {
+          "path": "mapping",
+          "op": "notNil",
+          "line": 39,
+          "derived": false
+        },
+        {
+          "path": "mapping.dateFormat",
+          "op": "eq",
+          "value": "yyyy-MM-dd'T'HH:mm:ss",
+          "line": 31,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "platform values are GenericCSVParser.Platform case names (mt4 = \"MetaTrader 4\", cTrader, oanda, tradingView, ninjaTrader, strategyAnalytics, generic)."
+    },
+    {
+      "id": "GenericCSVParserTests.testDetectTradingViewFormat",
+      "line": 42,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": "Trade #,Date/Time,Type,Signal,Symbol,Contracts,Price,Profit,Cumulative Profit,Run-up,Drawdown\n1,2024-01-15T08:30:00Z,Entry Long,BUY,EURUSD,1,1.08500,0.00,0.00,0.0,0.0\n"
+      },
+      "expect": [
+        {
+          "path": "platform",
+          "op": "eq",
+          "value": "tradingView",
+          "line": 49,
+          "derived": false
+        },
+        {
+          "path": "mapping",
+          "op": "notNil",
+          "line": 50,
+          "derived": false
+        },
+        {
+          "path": "mapping.ticket",
+          "op": "nil",
+          "line": 42,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "TradingView mapping has no ticket column (\"Trade #\" restarts per export) and no close time. platform values are GenericCSVParser.Platform case names (mt4 = \"MetaTrader 4\", cTrader, oanda, tradingView, ninjaTrader, strategyAnalytics, generic)."
+    },
+    {
+      "id": "GenericCSVParserTests.testDetectNinjaTraderFormat",
+      "line": 53,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": "Trade #,Instrument,Market Position,Quantity,Entry Time,Entry Price,Exit Time,Exit Price,Profit,Commission,MAE,MFE\n1,ES 03-24,Long,1,01/15/2024 08:30:00,4800.00,01/15/2024 09:45:00,4810.00,500.00,-4.00,100.00,600.00\n"
+      },
+      "expect": [
+        {
+          "path": "platform",
+          "op": "eq",
+          "value": "ninjaTrader",
+          "line": 60,
+          "derived": false
+        },
+        {
+          "path": "mapping",
+          "op": "notNil",
+          "line": 61,
+          "derived": false
+        },
+        {
+          "path": "mapping.ticket",
+          "op": "nil",
+          "line": 53,
+          "derived": true
+        },
+        {
+          "path": "mapping.dateFormat",
+          "op": "eq",
+          "value": "MM/dd/yyyy HH:mm:ss",
+          "line": 53,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "platform values are GenericCSVParser.Platform case names (mt4 = \"MetaTrader 4\", cTrader, oanda, tradingView, ninjaTrader, strategyAnalytics, generic)."
+    },
+    {
+      "id": "GenericCSVParserTests.testDetectUnknownFormatReturnsGeneric",
+      "line": 64,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": "Column A,Column B,Column C,Column D\nfoo,bar,baz,qux\n"
+      },
+      "expect": [
+        {
+          "path": "platform",
+          "op": "eq",
+          "value": "generic",
+          "line": 71,
+          "derived": false
+        },
+        {
+          "path": "mapping",
+          "op": "nil",
+          "line": 72,
+          "derived": false
+        },
+        {
+          "path": "headers",
+          "op": "eq",
+          "value": [
+            "Column A",
+            "Column B",
+            "Column C",
+            "Column D"
+          ],
+          "line": 73,
+          "derived": false
+        },
+        {
+          "path": "sampleRows.count",
+          "op": "eq",
+          "value": 1,
+          "line": 64,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "platform values are GenericCSVParser.Platform case names (mt4 = \"MetaTrader 4\", cTrader, oanda, tradingView, ninjaTrader, strategyAnalytics, generic)."
+    },
+    {
+      "id": "GenericCSVParserTests.testDetectSAFormatWithRMultiple",
+      "line": 76,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": "Ticket,Symbol,Direction,Lots,OpenTime,CloseTime,DurationMin,OpenPrice,ClosePrice,SL,TP,NetProfit,MAE_Pips,MFE_Pips,RMultiple\n100001,GBPUSD,BUY,0.10,2026.01.15 08:30:00,2026.01.15 09:45:00,75,1.25000,1.25250,1.24800,1.25500,25.00,8.5,30.2,1.25\n"
+      },
+      "expect": [
+        {
+          "path": "platform",
+          "op": "eq",
+          "value": "strategyAnalytics",
+          "line": 83,
+          "derived": false
+        },
+        {
+          "path": "mapping",
+          "op": "nil",
+          "line": 85,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Any header with both \"ticket\" and \"rmultiple\" is StrategyAnalytics (parsed by CSVParser, so no mapping). platform values are GenericCSVParser.Platform case names (mt4 = \"MetaTrader 4\", cTrader, oanda, tradingView, ninjaTrader, strategyAnalytics, generic)."
+    },
+    {
+      "id": "GenericCSVParserTests.testParseCSVLineSimple",
+      "line": 90,
+      "subject": "GenericCSVParser.parseCSVLine",
+      "kind": "import",
+      "input": {
+        "line": "apple,banana,cherry"
+      },
+      "expect": [
+        {
+          "path": "fields",
+          "op": "eq",
+          "value": [
+            "apple",
+            "banana",
+            "cherry"
+          ],
+          "line": 92,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "GenericCSVParserTests.testParseCSVLineQuotedFieldsWithCommas",
+      "line": 95,
+      "subject": "GenericCSVParser.parseCSVLine",
+      "kind": "import",
+      "input": {
+        "line": "one,\"two, with comma\",three"
+      },
+      "expect": [
+        {
+          "path": "fields.count",
+          "op": "eq",
+          "value": 3,
+          "line": 97,
+          "derived": false
+        },
+        {
+          "path": "fields[0]",
+          "op": "eq",
+          "value": "one",
+          "line": 98,
+          "derived": false
+        },
+        {
+          "path": "fields[1]",
+          "op": "eq",
+          "value": "two, with comma",
+          "line": 99,
+          "derived": false
+        },
+        {
+          "path": "fields[2]",
+          "op": "eq",
+          "value": "three",
+          "line": 100,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Quotes toggle quoting and are dropped; each field is trimmed of spaces/tabs."
+    },
+    {
+      "id": "GenericCSVParserTests.testParseCSVLineEmptyFields",
+      "line": 103,
+      "subject": "GenericCSVParser.parseCSVLine",
+      "kind": "import",
+      "input": {
+        "line": "a,,c,"
+      },
+      "expect": [
+        {
+          "path": "fields.count",
+          "op": "eq",
+          "value": 4,
+          "line": 105,
+          "derived": false
+        },
+        {
+          "path": "fields[0]",
+          "op": "eq",
+          "value": "a",
+          "line": 106,
+          "derived": false
+        },
+        {
+          "path": "fields[1]",
+          "op": "eq",
+          "value": "",
+          "line": 107,
+          "derived": false
+        },
+        {
+          "path": "fields[2]",
+          "op": "eq",
+          "value": "c",
+          "line": 108,
+          "derived": false
+        },
+        {
+          "path": "fields[3]",
+          "op": "eq",
+          "value": "",
+          "line": 109,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "GenericCSVParserTests.testParseMT4CSVCreatesTradesCorrectly",
+      "line": 114,
+      "subject": "GenericCSVParser.detect + GenericCSVParser.parse",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": "Ticket,Open Time,Close Time,Type,Size,Item,Price,S/L,T/P,Close Price,Profit,Commission,Swap\n12345,2024.01.15 08:30:00,2024.01.15 09:45:00,BUY,0.10,GBPUSD,1.25000,1.24800,1.25500,1.25250,25.00,-2.00,-0.50\n12346,2024.01.15 14:00:00,2024.01.15 15:30:00,SELL,0.20,EURUSD,1.08500,1.08800,1.08000,1.08200,60.00,-4.00,0.00\n12347,2024.01.16 03:00:00,2024.01.16 04:15:00,BUY,0.05,USDJPY,150.500,150.000,151.000,150.200,-15.00,-1.00,0.00"
+      },
+      "expect": [
+        {
+          "path": "detection.platform",
+          "op": "eq",
+          "value": "mt4",
+          "line": 127,
+          "derived": false
+        },
+        {
+          "path": "detection.mapping",
+          "op": "notNil",
+          "line": 129,
+          "derived": false
+        },
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 3,
+          "line": 132,
+          "derived": false
+        },
+        {
+          "path": "trades[0].symbol",
+          "op": "eq",
+          "value": "GBPUSD",
+          "line": 136,
+          "derived": false
+        },
+        {
+          "path": "trades[0].direction",
+          "op": "eq",
+          "value": "BUY",
+          "line": 137,
+          "derived": false
+        },
+        {
+          "path": "trades[0].lots",
+          "op": "approx",
+          "value": 0.1,
+          "accuracy": 0.001,
+          "line": 138,
+          "derived": false
+        },
+        {
+          "path": "trades[0].netProfit",
+          "op": "eq",
+          "value": "22.5",
+          "line": 140,
+          "derived": false
+        },
+        {
+          "path": "trades[0].ticket",
+          "op": "eq",
+          "value": 12345,
+          "line": 141,
+          "derived": false
+        },
+        {
+          "path": "trades[1].symbol",
+          "op": "eq",
+          "value": "EURUSD",
+          "line": 145,
+          "derived": false
+        },
+        {
+          "path": "trades[1].direction",
+          "op": "eq",
+          "value": "SELL",
+          "line": 146,
+          "derived": false
+        },
+        {
+          "path": "trades[1].lots",
+          "op": "approx",
+          "value": 0.2,
+          "accuracy": 0.001,
+          "line": 147,
+          "derived": false
+        },
+        {
+          "path": "trades[1].netProfit",
+          "op": "eq",
+          "value": "56",
+          "line": 149,
+          "derived": false
+        },
+        {
+          "path": "trades[2].symbol",
+          "op": "eq",
+          "value": "USDJPY",
+          "line": 153,
+          "derived": false
+        },
+        {
+          "path": "trades[2].direction",
+          "op": "eq",
+          "value": "BUY",
+          "line": 154,
+          "derived": false
+        },
+        {
+          "path": "trades[2].lots",
+          "op": "approx",
+          "value": 0.05,
+          "accuracy": 0.001,
+          "line": 155,
+          "derived": false
+        },
+        {
+          "path": "trades[0].openTime",
+          "op": "eq",
+          "value": "2024-01-15T08:30:00Z",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[0].closeTime",
+          "op": "eq",
+          "value": "2024-01-15T09:45:00Z",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[0].durationMin",
+          "op": "eq",
+          "value": 75,
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[0].session",
+          "op": "eq",
+          "value": "LONDON",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[0].dayOfWeek",
+          "op": "eq",
+          "value": "Mon",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[0].hour",
+          "op": "eq",
+          "value": 8,
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[0].closePrice",
+          "op": "eq",
+          "value": "1.2525",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[0].commission",
+          "op": "eq",
+          "value": "0",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[0].swap",
+          "op": "eq",
+          "value": "0",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[0].slDistPips",
+          "op": "approx",
+          "value": 20.0,
+          "accuracy": 1e-09,
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[0].rMultiple",
+          "op": "approx",
+          "value": 1.125,
+          "accuracy": 1e-09,
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[1].session",
+          "op": "eq",
+          "value": "NY_OVERLAP",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[1].rMultiple",
+          "op": "approx",
+          "value": 0.9333333333333333,
+          "accuracy": 1e-09,
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[2].netProfit",
+          "op": "eq",
+          "value": "-16",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[2].session",
+          "op": "eq",
+          "value": "ASIAN",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[2].dayOfWeek",
+          "op": "eq",
+          "value": "Tue",
+          "line": 114,
+          "derived": true
+        },
+        {
+          "path": "trades[2].slDistPips",
+          "op": "approx",
+          "value": 50.0,
+          "accuracy": 1e-09,
+          "line": 114,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Generic imports fold costs into P&L: netProfit = Profit + Commission + Swap (signed sum); the Trade's own commission/swap fields stay 0. Session/hour/day are derived from the open time in UTC (app buckets). slDist = |open - SL| x (JPY ? 100 : 10000); R = netProfit / (slDist x lots x (JPY ? 100 : 10)). trades[2] (USDJPY) R would be -0.064 under the Mac's JPY pip value 100 (D-06), so it is deliberately not listed."
+    },
+    {
+      "id": "GenericCSVParserTests.testMultipleDateFormatsParseCorrectly",
+      "line": 160,
+      "subject": "GenericCSVParser.detect + GenericCSVParser.parse",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csvs": {
+          "mt4": "Ticket,Open Time,Close Time,Type,Size,Item,Price,S/L,T/P,Profit,Commission\n1,2024.03.15 10:30:00,2024.03.15 11:00:00,BUY,0.10,EURUSD,1.08500,1.08200,1.09000,15.00,0.00",
+          "cTrader": "Position ID,Symbol,Direction,Volume,Entry Time,Close Time,Entry Price,Close Price,Net Profit\n200,GBPUSD,BUY,10000,2024-03-15 10:30:00,2024-03-15 11:00:00,1.27500,1.27700,20.00",
+          "ninja": "Trade #,Instrument,Market Position,Quantity,Entry Time,Entry Price,Exit Time,Exit Price,Profit\n1,ES 03-24,Long,1,01/15/2024 08:30:00,4800.00,01/15/2024 09:45:00,4810.00,500.00"
+        }
+      },
+      "expect": [
+        {
+          "path": "mt4.mapping",
+          "op": "notNil",
+          "line": 170,
+          "derived": false
+        },
+        {
+          "path": "mt4.trades.count",
+          "op": "eq",
+          "value": 1,
+          "line": 172,
+          "derived": false
+        },
+        {
+          "path": "cTrader.mapping",
+          "op": "notNil",
+          "line": 183,
+          "derived": false
+        },
+        {
+          "path": "cTrader.trades.count",
+          "op": "eq",
+          "value": 1,
+          "line": 185,
+          "derived": false
+        },
+        {
+          "path": "ninja.mapping",
+          "op": "notNil",
+          "line": 196,
+          "derived": false
+        },
+        {
+          "path": "ninja.trades.count",
+          "op": "eq",
+          "value": 1,
+          "line": 198,
+          "derived": false
+        },
+        {
+          "path": "mt4.trades[0].openTime",
+          "op": "eq",
+          "value": "2024-03-15T10:30:00Z",
+          "line": 160,
+          "derived": true
+        },
+        {
+          "path": "mt4.trades[0].durationMin",
+          "op": "eq",
+          "value": 30,
+          "line": 160,
+          "derived": true
+        },
+        {
+          "path": "mt4.trades[0].closePrice",
+          "op": "eq",
+          "value": "1.085",
+          "line": 160,
+          "derived": true
+        },
+        {
+          "path": "cTrader.trades[0].openTime",
+          "op": "eq",
+          "value": "2024-03-15T10:30:00Z",
+          "line": 160,
+          "derived": true
+        },
+        {
+          "path": "cTrader.trades[0].ticket",
+          "op": "eq",
+          "value": 200,
+          "line": 160,
+          "derived": true
+        },
+        {
+          "path": "ninja.trades[0].openTime",
+          "op": "eq",
+          "value": "2024-01-15T08:30:00Z",
+          "line": 160,
+          "derived": true
+        },
+        {
+          "path": "ninja.trades[0].closeTime",
+          "op": "eq",
+          "value": "2024-01-15T09:45:00Z",
+          "line": 160,
+          "derived": true
+        },
+        {
+          "path": "ninja.trades[0].symbol",
+          "op": "eq",
+          "value": "ES03-24",
+          "line": 160,
+          "derived": true
+        },
+        {
+          "path": "ninja.trades[0].direction",
+          "op": "eq",
+          "value": "BUY",
+          "line": 160,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Three files, each detected then parsed. mt4 has a single Price column, so closePrice = openPrice. cTrader Volume 10000 is stored raw as lots (D-15), so lots is deliberately not listed. Ninja symbol is upper-cased with '/', '_' and spaces removed; it has no ticket column, so its ticket is a content ticket."
+    },
+    {
+      "id": "GenericCSVParserTests.testDetectEmptyFileThrows",
+      "line": 203,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": ""
+      },
+      "expect": [
+        {
+          "path": "error",
+          "op": "throws",
+          "value": "emptyFile",
+          "line": 207,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "GenericParseError.emptyFile (checked at line 212)."
+    },
+    {
+      "id": "GenericCSVParserTests.testDetectFileNotFoundThrows",
+      "line": 218,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "path": "/nonexistent/path/trades.csv"
+      },
+      "expect": [
+        {
+          "path": "error",
+          "op": "throws",
+          "value": "fileNotFound",
+          "line": 219,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "GenericParseError.fileNotFound (checked at line 224)."
+    },
+    {
+      "id": "GenericCSVParserTests.testParseHeaderOnlyFileThrows",
+      "line": 230,
+      "subject": "GenericCSVParser.detect + GenericCSVParser.parse",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": "Ticket,Open Time,Close Time,Type,Size,Item,Price,S/L,T/P,Profit\n"
+      },
+      "expect": [
+        {
+          "path": "detection.mapping",
+          "op": "notNil",
+          "line": 236,
+          "derived": false
+        },
+        {
+          "path": "parse.error",
+          "op": "throws",
+          "value": "emptyFile",
+          "line": 238,
+          "derived": false
+        },
+        {
+          "path": "detection.platform",
+          "op": "eq",
+          "value": "mt4",
+          "line": 230,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Blank lines are dropped before counting; a file with only a header line fails parse with GenericParseError.emptyFile (checked at line 243)."
+    },
+    {
+      "id": "GenericCSVParserTests.testDetectionReturnsSampleRows",
+      "line": 251,
+      "subject": "GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "writeTempCSV",
+        "csv": "Ticket,Open Time,Type,Size,Item,Price,Profit\n1,2024.01.15 08:30:00,BUY,0.10,GBPUSD,1.25000,25.00\n2,2024.01.15 09:00:00,SELL,0.20,EURUSD,1.08500,30.00"
+      },
+      "expect": [
+        {
+          "path": "headers.count",
+          "op": "eq",
+          "value": 7,
+          "line": 261,
+          "derived": false
+        },
+        {
+          "path": "sampleRows.count",
+          "op": "eq",
+          "value": 2,
+          "line": 262,
+          "derived": false
+        },
+        {
+          "path": "sampleRows[0][0]",
+          "op": "eq",
+          "value": "1",
+          "line": 263,
+          "derived": false
+        },
+        {
+          "path": "sampleRows[1][0]",
+          "op": "eq",
+          "value": "2",
+          "line": 264,
+          "derived": false
+        },
+        {
+          "path": "platform",
+          "op": "eq",
+          "value": "mt4",
+          "line": 251,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "sampleRows = up to the first 5 non-blank lines after the header, each split with parseCSVLine. platform values are GenericCSVParser.Platform case names (mt4 = \"MetaTrader 4\", cTrader, oanda, tradingView, ninjaTrader, strategyAnalytics, generic)."
+    }
+  ],
+  "skipped": []
+}

@@ -2,3 +2,8 @@
 *.png binary
 *.ico binary
 *.icns binary
+
+# Fixture bytes are test data (CRLF, BOMs, UTF-16, Windows-1252): never normalise them.
+golden/fixtures/** -text
+golden/reference/** -text
+golden/reference-meta/** -text

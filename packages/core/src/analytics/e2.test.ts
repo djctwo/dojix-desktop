@@ -255,7 +255,7 @@ describe("E2 parity resolvers", () => {
       },
     ]);
     const comparisons = resolveE2Output("PeriodComparison.comparisons", ctx, trades)?.value as { id: string; current: string }[];
-    expect(comparisons.map((c) => `${c.id}=${c.current}`)).toEqual(["pnl=$70.00", "wr=50.0%", "pf=3.33", "avgr=1.00R", "trades=2", "dd=$30.00"]);
+    expect(comparisons.map((c) => `${c.id}=${c.current}`)).toEqual(["pnl=$\u00a070.00", "wr=50.0%", "pf=3.33", "avgr=1.00R", "trades=2", "dd=$\u00a030.00"]);
   });
 
   it("answers the windows, conditions and Greenwick-only members", () => {
@@ -279,7 +279,15 @@ describe("E2 parity resolvers", () => {
     expect(resolveE2Output("Metrics.winRate", ctx, trades)).toBeUndefined();
     expect(resolveE2Output("HourlyPnLChart.body", ctx, trades)).toBeUndefined();
     expect(resolveE2Output("HourlyPnLChart[week].hourlyData", ctx, trades)).toBeUndefined();
-    expect(resolveE2Output("PerformanceSummary.calendar", ctx, trades)).toBeUndefined();
+    expect(resolveE2Output("PerformanceSummary.body", ctx, trades)).toBeUndefined();
+    // The component's Calendar, as the harness encodes it (its settings; Foundation calls UTC "GMT").
+    expect(resolveE2Output("PerformanceSummary.calendar", ctx, trades)?.value).toEqual({
+      firstWeekday: 1,
+      identifier: "gregorian",
+      locale: "en_US_POSIX",
+      minimumDaysInFirstWeek: 1,
+      timeZone: "GMT",
+    });
     expect(resolveE2Output("not a key", ctx, trades)).toBeUndefined();
     expect(E2_PARITY_COMPONENTS).toContain("SymbolAnalytics");
     expect(E2_INTEGER_KEYS).toContain("KillZoneOptimizer.tradingDays");

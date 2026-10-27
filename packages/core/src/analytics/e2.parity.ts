@@ -14,6 +14,7 @@ import type { EngineContext } from "../engine/context";
 import type { EdgeCondition } from "../metrics/edges";
 import { sortedByCloseAscending } from "../metrics/metrics-calculator";
 import type { Trade } from "../model/trade";
+import type { ZonedCalendar } from "../time/zoned-calendar";
 import { registerParityResolver } from "../parity/reference";
 import { dayOfWeekChart } from "./day-of-week";
 import { directionalEdge } from "./directional-edge";
@@ -33,7 +34,7 @@ import { slippageAnalysis } from "./slippage";
 import { streakCard } from "./streak-card";
 import { streakTimeline } from "./streak-timeline";
 import { symbolAnalytics } from "./symbol-analytics";
-import { tradeCalendar } from "./trade-calendar";
+import { tradeCalendar, tradeCalendarGrid } from "./trade-calendar";
 import { tradeTimeHeatmap } from "./trade-time-heatmap";
 import { weeklyHeatmap } from "./weekly-heatmap";
 import { whatToCut } from "./what-to-cut";
@@ -42,6 +43,20 @@ import { winLossDistribution } from "./win-loss-distribution";
 /** A trade inside an analytics output ("#<ticket>"). */
 export function refTrade(t: Pick<Trade, "ticket">): string {
   return `#${t.ticket}`;
+}
+
+/**
+ * A Foundation `Calendar` as the harness writes it: its settings (RefSupport.swift
+ * `refCalendar`). Foundation names the UTC zone "GMT".
+ */
+export function refCalendar(cal: ZonedCalendar, locale: string): Record<string, unknown> {
+  return {
+    firstWeekday: cal.weekStart,
+    identifier: "gregorian",
+    locale,
+    minimumDaysInFirstWeek: cal.minDaysInFirstWeek,
+    timeZone: cal.tz === "UTC" ? "GMT" : cal.tz,
+  };
 }
 
 /** A date as the harness writes it ("2026-01-15T10:00:00.000Z"). */
@@ -174,6 +189,9 @@ const SPECS: readonly ComponentSpec[] = [
       },
       daysInMonth: (c, t, i) => calendarModel(c, t, i).days.map((d) => refDate(d.date)),
       firstWeekdayOffset: (c, t, i) => calendarModel(c, t, i).leadingBlankCount,
+      // Dojix: Calendar.current; Greenwick: gridCalendar() = the ET trading calendar with the
+      // computer's first weekday and Locale.current (TradeCalendar.swift:9 / :12, :143-148).
+      calendar: (c) => refCalendar(tradeCalendarGrid(c), c.locale),
     },
     ints: ["firstWeekdayOffset"],
   },
@@ -203,6 +221,9 @@ const SPECS: readonly ComponentSpec[] = [
       thisWeekTrades: (c, t) => perf(c, t).thisWeek.trades.map(refTrade),
       thisMonthTrades: (c, t) => perf(c, t).thisMonth.trades.map(refTrade),
       lastMonthTrades: (c, t) => perf(c, t).lastMonth.trades.map(refTrade),
+      // Dojix: Calendar.current; Greenwick: TradingCalendar.calendar, pinned to en_US_POSIX
+      // (PerformanceSummary.swift:7-8, TradingCalendar.swift:72-79).
+      calendar: (c) => refCalendar(c.calendar, c.brand === "greenwick" ? "en_US_POSIX" : c.locale),
     },
   },
   {

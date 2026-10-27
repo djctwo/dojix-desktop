@@ -1,0 +1,460 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/ImportHardeningTests.swift",
+  "helpers": {
+    "write": {
+      "line": 16,
+      "defaults": {
+        "encoding": "utf8",
+        "atomically": true
+      },
+      "notes": "Writes the text verbatim (UTF-8) to a temp .csv file and returns its path."
+    },
+    "saHeader": {
+      "line": 23,
+      "defaults": {
+        "text": "Ticket,Symbol,Direction,Lots,OpenTime,CloseTime,DurationMin,OpenPrice,ClosePrice,SL,TP,NetProfit,MAE_Pips,MFE_Pips,RMultiple,Session,DayOfWeek,Hour,RangeSize,SweepDepth,UsedFVG,VolRegime,HitBreakeven,ScaledIn,Magic,Comment,TimeToMFE_Min,SLDist_Pips,Slippage_Pips,PostClose15m,PostClose30m,BiasAtEntry"
+      },
+      "notes": "The 32-column StrategyAnalytics header line."
+    }
+  },
+  "cases": [
+    {
+      "id": "ImportHardeningTests.testHostileSARowsAreSanitizedBeforeStorage",
+      "line": 27,
+      "subject": "CSVParser.parse + TradeRepository.bulkInsert (Trade.sanitizedForStorage) + MetricsCalculator",
+      "kind": "sanitize",
+      "input": {
+        "helper": "write",
+        "csv": "Ticket,Symbol,Direction,Lots,OpenTime,CloseTime,DurationMin,OpenPrice,ClosePrice,SL,TP,NetProfit,MAE_Pips,MFE_Pips,RMultiple,Session,DayOfWeek,Hour,RangeSize,SweepDepth,UsedFVG,VolRegime,HitBreakeven,ScaledIn,Magic,Comment,TimeToMFE_Min,SLDist_Pips,Slippage_Pips,PostClose15m,PostClose30m,BiasAtEntry\n1,EURUSD,BUY,nan,2026.01.05 09:00:00,2026.01.05 10:00:00,-50,1.1,1.2,0,0,inf,nan,inf,-inf,LONDON,Funday,99,nan,inf,NO,MED,NO,NO,1,c,-9,nan,inf,nan,-inf,WITH\n2,XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\u0007,SELL,1e308,2026.01.05 09:00:00,2026.01.04 10:00:00,999999999,1e300,0,0,0,1e300,1e300,1e300,1e300,ASIAN,Mon,-3,1,1,NO,LOW,NO,NO,1,\"=HYPERLINK(\"\"x\"\")\",1,1,1,1,1,AGAINST\n3,\"GBPUSD,BUY,0.1\nabc,GBPUSD,BUY,0.1,2026.01.05 09:00:00,2026.01.05 10:00:00,60,1,1,0,0,10,1,1,1,LONDON,Mon,9,1,1,NO,MED,NO,NO,1,,1,1,1,1,1,WITH\n99999999999999999999999,GBPUSD,BUY,0.1,2026.01.05 09:00:00,2026.01.05 10:00:00,60,1,1,0,0,10,1,1,1,LONDON,Mon,9,1,1,NO,MED,NO,NO,1,,1,1,1,1,1,WITH\n",
+        "csv_note": "row 2's symbol is 10,000 'X' characters followed by U+0007 (BEL)",
+        "steps": [
+          "CSVParser.parse",
+          "bulkInsert",
+          "fetchAll",
+          "MetricsCalculator.calculate",
+          "edgeByHour",
+          "allEdgeConditions(tradingDays: 1)"
+        ]
+      },
+      "expect": [
+        {
+          "path": "parsed.count",
+          "op": "eq",
+          "value": 2,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "inserted",
+          "op": "eq",
+          "value": 2,
+          "line": 45,
+          "derived": false
+        },
+        {
+          "path": "stored.count",
+          "op": "eq",
+          "value": 2,
+          "line": 47,
+          "derived": false
+        },
+        {
+          "path": "stored[*].{lots,maePips,mfePips,rMultiple,rangeSize,sweepDepth,slDistPips,slippagePips,postClose15m,postClose30m}",
+          "op": "true",
+          "line": 52,
+          "derived": false
+        },
+        {
+          "path": "stored[*].netProfit.isNaN",
+          "op": "false",
+          "line": 54,
+          "derived": false
+        },
+        {
+          "path": "stored[*].hour",
+          "op": "ge",
+          "value": 0,
+          "line": 55,
+          "derived": false
+        },
+        {
+          "path": "stored[*].hour",
+          "op": "le",
+          "value": 23,
+          "line": 55,
+          "derived": false
+        },
+        {
+          "path": "stored[*].dayOfWeek",
+          "op": "eq",
+          "value": {
+            "anyOf": [
+              "Mon",
+              "Tue",
+              "Wed",
+              "Thu",
+              "Fri",
+              "Sat",
+              "Sun"
+            ]
+          },
+          "line": 56,
+          "derived": false
+        },
+        {
+          "path": "stored[*].durationMin",
+          "op": "ge",
+          "value": 0,
+          "line": 57,
+          "derived": false
+        },
+        {
+          "path": "stored[*].symbol.count",
+          "op": "le",
+          "value": 32,
+          "line": 58,
+          "derived": false
+        },
+        {
+          "path": "stored[*].symbol.hasControlCharacters",
+          "op": "false",
+          "line": 59,
+          "derived": false
+        },
+        {
+          "path": "stored[*].closeTime",
+          "op": "ge",
+          "value": {
+            "ref": "stored[*].openTime"
+          },
+          "line": 60,
+          "derived": false
+        },
+        {
+          "path": "metrics.winRate.isFinite",
+          "op": "true",
+          "line": 65,
+          "derived": false
+        },
+        {
+          "path": "metrics.expectancy.isFinite",
+          "op": "true",
+          "line": 66,
+          "derived": false
+        },
+        {
+          "path": "parsed[0].ticket",
+          "op": "eq",
+          "value": 1,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "parsed[1].ticket",
+          "op": "eq",
+          "value": 2,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=1].lots",
+          "op": "eq",
+          "value": 0.0,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=1].hour",
+          "op": "eq",
+          "value": 9,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=1].dayOfWeek",
+          "op": "eq",
+          "value": "Mon",
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=1].durationMin",
+          "op": "eq",
+          "value": 0,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=1].mfePips",
+          "op": "eq",
+          "value": 0.0,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=1].rMultiple",
+          "op": "eq",
+          "value": 0.0,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=1].timeToMFEMin",
+          "op": "eq",
+          "value": 0,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=2].symbol",
+          "op": "eq",
+          "value": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=2].lots",
+          "op": "eq",
+          "value": 1000000.0,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=2].hour",
+          "op": "eq",
+          "value": 9,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=2].durationMin",
+          "op": "eq",
+          "value": 5270400,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=2].maePips",
+          "op": "eq",
+          "value": 1000000000.0,
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=2].closeTime",
+          "op": "eq",
+          "value": "2026-01-05T09:00:00Z",
+          "line": 27,
+          "derived": true
+        },
+        {
+          "path": "stored[ticket=2].comment",
+          "op": "eq",
+          "value": "=HYPERLINK(x)",
+          "line": 27,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "stored[ticket=N] selects the stored trade with that ticket. stored[*] = every stored trade; value {anyOf: [...]} = equals one of the listed values; line 52 asserts each listed Double isFinite. Row 3 (unbalanced quote) yields too few fields and is skipped. Row 4 starts with a non-digit, which ENDS the trade section (break, not skip), so row 5 (ticket overflow) is never read. Sanitizing: non-finite metrics (nan, +inf, -inf) become 0, NOT the +/-1e9 limit; finite metrics clamp to +/-1e9; lots non-finite -> 0, else min(|lots|, 1e6); durations clamp to [0, 5_270_400] (10 x 366 days in minutes); an hour outside 0-23 is replaced by the open time's UTC hour; an invalid day by the open time's UTC weekday (EEE, en_US_POSIX); closeTime < openTime -> closeTime = openTime; symbol: control characters removed, trimmed, first 32 characters. The comment's CSV quotes are toggled away by parseCSVLine. Decimal fields from \"inf\"/\"1e300\" (beyond Decimal's range) are not derived."
+    },
+    {
+      "id": "ImportHardeningTests.testGenericZeroLotsWithStopLossDoesNotStoreInfiniteR",
+      "line": 73,
+      "subject": "GenericCSVParser.detect + parse + TradeRepository.bulkInsert",
+      "kind": "sanitize",
+      "input": {
+        "helper": "write",
+        "csv": "Ticket,Open Time,Close Time,Type,Size,Item,Price,S/L,T/P,Profit,Commission,Swap\n500,2024.01.15 08:30:00,2024.01.15 09:45:00,BUY,0,GBPUSD,1.25000,1.24800,1.25500,25.00,0,0\n"
+      },
+      "expect": [
+        {
+          "path": "detection.mapping",
+          "op": "notNil",
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 1,
+          "line": 80,
+          "derived": false
+        },
+        {
+          "path": "stored",
+          "op": "notNil",
+          "line": 84,
+          "derived": false
+        },
+        {
+          "path": "stored.rMultiple.isFinite",
+          "op": "true",
+          "line": 85,
+          "derived": false
+        },
+        {
+          "path": "trades[0].rMultiple",
+          "op": "eq",
+          "value": "Infinity",
+          "line": 73,
+          "derived": true
+        },
+        {
+          "path": "stored.rMultiple",
+          "op": "eq",
+          "value": 0.0,
+          "line": 73,
+          "derived": true
+        },
+        {
+          "path": "stored.lots",
+          "op": "eq",
+          "value": 0.0,
+          "line": 73,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Zero lots with an SL: the parser's R = 25 / (20 x 0 x 10) = +Infinity (JSON string); storage sanitizing turns non-finite metrics into 0."
+    },
+    {
+      "id": "ImportHardeningTests.testBinaryGarbageDoesNotCrash",
+      "line": 90,
+      "subject": "CSVParser.parse / GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "bytes_generator": {
+          "length": 65536,
+          "byte_i": "(i * 7919) % 256"
+        }
+      },
+      "expect": [
+        {
+          "path": "CSVParser.parse.error",
+          "op": "throws",
+          "line": 97,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "64 KiB of generated bytes written raw. CSVParser.parse must throw (any error); GenericCSVParser.detect may throw or not but must not crash (not asserted)."
+    },
+    {
+      "id": "ImportHardeningTests.testOversizedFileIsRejectedWithoutReading",
+      "line": 101,
+      "subject": "CSVParser.parse / GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "file": {
+          "size_bytes": 53477376,
+          "content": "sparse file of zero bytes (51 MiB)"
+        }
+      },
+      "expect": [
+        {
+          "path": "CSVParser.parse.error",
+          "op": "throws",
+          "value": "fileTooLarge",
+          "line": 109,
+          "derived": false
+        },
+        {
+          "path": "GenericCSVParser.detect.error",
+          "op": "throws",
+          "line": 114,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Size cap is 50 MiB (52,428,800 bytes), checked from the file size before reading. CSVParser throws ParseError.fileTooLarge (\"%.0f MB\" of the size)."
+    },
+    {
+      "id": "ImportHardeningTests.testLargeGenericFileParsesInReasonableTime",
+      "line": 119,
+      "subject": "GenericCSVParser.detect + parse",
+      "kind": "import",
+      "input": {
+        "helper": "write",
+        "csv_generator": {
+          "header": "Ticket,Open Time,Close Time,Type,Size,Item,Price,S/L,T/P,Profit,Commission,Swap",
+          "row_i_for_i_in_0_to_49999": "{i+1},2024.01.15 08:30:00,2024.01.15 09:45:00,BUY,0.10,GBPUSD,1.25000,1.24800,1.25500,25.00,-2.00,0.00",
+          "joined_with": "\n",
+          "trailing_newline": false
+        }
+      },
+      "expect": [
+        {
+          "path": "detection.mapping",
+          "op": "notNil",
+          "line": 127,
+          "derived": false
+        },
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 50000,
+          "line": 132,
+          "derived": false
+        },
+        {
+          "path": "elapsedSeconds",
+          "op": "lt",
+          "value": 20,
+          "line": 133,
+          "derived": false
+        },
+        {
+          "path": "trades[0].ticket",
+          "op": "eq",
+          "value": 1,
+          "line": 119,
+          "derived": true
+        },
+        {
+          "path": "trades[49999].ticket",
+          "op": "eq",
+          "value": 50000,
+          "line": 119,
+          "derived": true
+        },
+        {
+          "path": "trades[0].netProfit",
+          "op": "eq",
+          "value": "23",
+          "line": 119,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Performance budget on the Mac: 50,000 rows parse in under 20 s. netProfit = 25.00 + (-2.00) + 0.00."
+    },
+    {
+      "id": "ImportHardeningTests.testSingleHugeLineDoesNotHang",
+      "line": 137,
+      "subject": "CSVParser.parse / GenericCSVParser.detect",
+      "kind": "import",
+      "input": {
+        "helper": "write",
+        "csv_generator": {
+          "text": "saHeader + \"\\n1\" + 5,000,000 commas + \"\\n\""
+        }
+      },
+      "expect": [
+        {
+          "path": "elapsedSeconds",
+          "op": "lt",
+          "value": 30,
+          "line": 144,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Both calls may throw or return anything (not asserted); together they must finish in under 30 s."
+    }
+  ],
+  "skipped": []
+}

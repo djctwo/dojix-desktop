@@ -3,6 +3,6 @@
 interface ImportMeta {
   glob<T = unknown>(
     patterns: string | readonly string[],
-    options: { eager: true; import?: string },
+    options: { eager: true; import?: string; query?: string },
   ): Record<string, T>;
 }

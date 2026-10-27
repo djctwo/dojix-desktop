@@ -1,0 +1,114 @@
+name: parity-reference
+
+# Tier B reference numbers (SPEC §10.2): builds a command-line harness from the Mac apps'
+# own Swift sources at the pinned commits and runs it over every fictional fixture.
+# Reference values are produced ONLY here, on a throwaway macOS runner — never on a
+# maintainer's Mac. The output is uploaded as an artifact and committed from there.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["wt/parity", "parity/**"]
+    paths:
+      - "tools/swift-ref/**"
+      - "tools/fixture-gen/**"
+      - "golden/fixtures/**"
+      # Outputs of this workflow, committed from its artifact: don't re-trigger on them.
+      - "!golden/fixtures/*/F10/**"
+      - "!golden/fixtures/*/*.trades.json"
+      - "!golden/fixtures/README.md"
+      - ".github/workflows/parity-reference.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: parity-reference-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned sources (PARITY.md). Moving a pin is its own pull request.
+  DOJIX_SHA: 614bd6a0bd85adcbb0a8a48891c7fa708a6b2605
+  GREENWICK_SHA: 64495e28b0c9a8016ea86adf43098a569307e074
+
+jobs:
+  reference:
+    name: reference (${{ matrix.brand }})
+    runs-on: macos-15
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - brand: dojix
+            repo: djctwo/dojix
+            sha_var: DOJIX_SHA
+            target: DojixRef
+          - brand: greenwick
+            repo: djctwo/greenwick
+            sha_var: GREENWICK_SHA
+            target: GreenwickRef
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check out the Mac app at the pinned commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ matrix.repo }}
+          ref: ${{ env[matrix.sha_var] }}
+          path: ext/${{ matrix.brand }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Select Xcode 16.4 (the image the Mac apps' own CI uses)
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app && xcodebuild -version && swift --version
+
+      - name: Pin the environment (UTC, POSIX locale)
+        run: |
+          defaults write -g AppleLocale en_US_POSIX
+          echo "TZ=UTC" >> "$GITHUB_ENV"
+
+      - name: Fixtures match the generator; generate the F9 scale sets
+        run: |
+          node tools/fixture-gen/src/cli.ts --check
+          node tools/fixture-gen/src/cli.ts --scale "$RUNNER_TEMP/f9"
+
+      - name: Copy the app sources into the harness and generate the accessors
+        run: |
+          node tools/swift-ref/prepare.mjs --brand ${{ matrix.brand }} --src ext/${{ matrix.brand }}
+          head -c 4000 tools/swift-ref/${{ matrix.brand }}/generated-report.json
+
+      - name: Build the harness (release)
+        run: |
+          set -o pipefail
+          swift build -c release --package-path tools/swift-ref/${{ matrix.brand }} 2>&1 | { grep -v '^\[' || true; } | tail -400
+
+      - name: Run the harness over every fixture
+        env:
+          SOURCE_SHA: ${{ env[matrix.sha_var] }}
+        run: |
+          BIN="tools/swift-ref/${{ matrix.brand }}/.build/release/${{ matrix.target }}"
+          test -x "$BIN"
+          node tools/swift-ref/run.mjs --brand ${{ matrix.brand }} --bin "$BIN" \
+            --source-sha "$SOURCE_SHA" --xcode "$(xcodebuild -version | head -1)" \
+            --scale-dir "$RUNNER_TEMP/f9"
+
+      - name: Export the stored journals as engine input (<fixture>.trades.json)
+        if: always()
+        run: node tools/swift-ref/export-trades.mjs
+
+      - name: Upload the reference files
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: reference-${{ matrix.brand }}
+          path: |
+            golden/reference/${{ matrix.brand }}
+            golden/reference-meta/${{ matrix.brand }}
+            golden/fixtures/${{ matrix.brand }}/F10
+            golden/fixtures/${{ matrix.brand }}/*.trades.json
+            tools/swift-ref/${{ matrix.brand }}/generated-report.json
+          if-no-files-found: warn

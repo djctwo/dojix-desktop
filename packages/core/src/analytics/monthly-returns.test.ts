@@ -30,12 +30,12 @@ describe("MonthlyReturns", () => {
     expect(m.worst?.id).toBe("2026-02");
   });
 
-  it("best is the last of equal maxima, worst the first of equal minima", () => {
+  it("best is the first of equal maxima, worst the first of equal minima", () => {
     const m = computeMonthlyReturns(fx, [
       fxTrade({ closeTime: utc(2026, 1, 5), netProfit: "10" }),
       fxTrade({ closeTime: utc(2026, 2, 5), netProfit: "10" }),
     ]);
-    expect(m.best?.id).toBe("2026-02");
+    expect(m.best?.id).toBe("2026-01");
     expect(m.worst?.id).toBe("2026-01");
     expect(computeMonthlyReturns(fx, [])).toEqual({ monthlyData: [], years: [], yearTotals: new Map(), best: null, worst: null });
   });

@@ -12,7 +12,10 @@
           ],
           "permissions": [
             "allow-e2e-status",
-            "allow-e2e-add-trade"
+            "allow-e2e-add-trade",
+            "allow-e2e-set-idle-seconds",
+            "allow-e2e-backup-export",
+            "allow-e2e-backup-pick"
           ]
         }
       ]

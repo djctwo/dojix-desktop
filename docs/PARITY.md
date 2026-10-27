@@ -202,11 +202,12 @@ B3 and are now parity.
 | Sample trades | Partly random per load; Greenwick uses real ticker symbols while the copy says "made-up tickers" | Seeded per load (dates relative to now); the copy says "fictional trades" | Reproducible tests; accurate copy |
 | Password rule | Dojix 8–128; Greenwick minimum 8, no maximum | 8–128 for both | One rule |
 | Save failure while locking | Greenwick holds the journal decrypted behind the lock screen and asks before quitting | The same for both brands | Greenwick's rule is the safer one |
-| Erase confirmation | Greenwick: Touch ID / Mac password; Dojix: an alert | Windows Hello / account password where available; Linux: type the app name | Closest platform equivalent |
+| Erase confirmation | Greenwick: Touch ID / Mac password; Dojix: an alert | Type the app name (both platforms). Windows Hello / account password (`UserConsentVerifier`) is planned on top, where available | Closest platform equivalent; the Hello prompt is not in phase 1S yet |
 | Password recovery copy | Greenwick, signed builds only (the released builds are unsigned) | None | Matches the shipped builds |
 | Automatic snapshots | None | Before migrations, plus daily (keep 7), sealed | Recovery without plaintext |
 | Web view after a lock | SwiftUI views are released | Query caches cleared, the lock route loaded in a fresh document; the JS heap can't be zeroed on demand | Platform. Disclosed in SECURITY.md |
 | Data folder and identifiers | `com.dojix.app` / `com.greenwick.app` | `io.github.djctwo.dojix` / `io.github.djctwo.greenwick` | A future macOS build can never touch the native apps' data |
+| Control characters on restore | Dojix strips Apple's `controlCharacters` set (Cc and Cf, so zero-width joiners too) | Both brands use Greenwick's definition: Cc plus U+2028/2029 (Dojix strips them, Greenwick refuses the row) | Keeps emoji sequences in notes intact |
 | Dev overrides | `DOJIX_DATA_DIR`, `DOJIX_KEYCHAIN_SERVICE`, `GREENWICK_*` (Debug only) | `--data-dir`, `--vault-service` (debug and `e2e` builds only) | Same rule: release builds ignore them |
 
 ### B3. Retired: fixed on the Mac since the first draft (now parity)

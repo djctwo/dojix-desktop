@@ -10,7 +10,7 @@ for brand in dojix greenwick; do
   echo "== $brand .deb ($pkg)"
   if sudo apt-get install -y "$(realpath "$deb")" >/dev/null; then
     bin=$(dpkg -L "$pkg" | grep -E '^/usr/bin/' | head -1)
-    if out=$("$bin" --self-test); then
+    if out=$("$bin" --self-test) && echo "$out" | grep -q '"webviewPrivate":true'; then
       echo "self-test: $out"
       echo "ok - $brand .deb install and self-test"
     else
@@ -25,7 +25,8 @@ for brand in dojix greenwick; do
   appimage=$(ls "$artifacts/$brand"/*.AppImage | head -1)
   echo "== $brand AppImage"
   chmod +x "$appimage"
-  if out=$(APPIMAGE_EXTRACT_AND_RUN=1 "$appimage" --self-test); then
+  if out=$(APPIMAGE_EXTRACT_AND_RUN=1 "$appimage" --self-test) \
+    && echo "$out" | grep -q '"webviewPrivate":true'; then
     echo "self-test: $out"
     echo "ok - $brand AppImage self-test"
   else

@@ -60,6 +60,7 @@ function Invoke-SelfTest([string]$exe, [string]$label) {
   if ($p.ExitCode -ne 0) { throw "self-test failed for $label" }
   $report = $json | ConvertFrom-Json
   if (-not $report.ok) { throw "self-test reported failure for $label" }
+  if ($report.webviewPrivate -ne $true) { throw "release build for $label does not use a private web view" }
 }
 
 function Wait-Gone([string]$path) {

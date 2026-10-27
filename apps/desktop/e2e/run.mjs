@@ -1,29 +1,54 @@
-// Real-binary end-to-end smoke test through tauri-driver (W3C WebDriver). CI only: it launches
-// the desktop app, so never run it on a maintainer's machine.
+// Real-binary end-to-end tests through tauri-driver (W3C WebDriver). CI only: they launch
+// the desktop app, so never run them on a maintainer's machine.
 //
-//   node apps/desktop/e2e/run.mjs --brand dojix --app <binary> [--out <dir>] [--native-driver <path>]
+//   node apps/desktop/e2e/run.mjs --brand dojix --app <binary> [--out <dir>]
+//        [--native-driver <path>] [--scenario all|lock|layout|no-keyring]
 //
-// For each run it uses a fresh scratch data folder and a scratch vault namespace, then checks:
-//   1. the app opens on the empty Journal with the brand's name and accent colour;
-//   2. a trade added through the real write path survives a restart;
-//   3. nothing in the data folder is a plaintext SQLite file, and the logs hold no trade data
-//      or paths.
+// Every run uses a fresh scratch data folder and a scratch vault namespace (except "layout",
+// which checks the DEFAULT data folder of a disposable CI runner).
+//
+// "lock" (SPEC 12, phase 1S gate), all with fictional data:
+//   1. empty journal, brand visible; a trade survives a restart;
+//   2. App Lock on → password-protected backup → idle lock with an injected 3 s timeout;
+//   3. restart → lock screen → 5 wrong passwords (throttle) → restart → still throttled →
+//      wait → right password;
+//   4. an older journal copy put back → older-copy screen → password → opens, and the save
+//      count never goes down;
+//   5. backup restore: wrong password refused, right password restores;
+//   6. "Forgot password?" → erase → a fresh, unlocked, empty journal;
+//   7. data at rest: no plaintext SQLite anywhere in the data folder; logs hold no trade data,
+//      paths or passwords.
+// "layout": the app started with its DEFAULT data folder keeps the web view's files outside
+//   it, so that folder holds no plaintext SQLite at all.
+// "no-keyring" (Linux without a Secret Service): a password is required before anything is
+//   created; the wrapped key lives in the data folder; App Lock can't be turned off.
 // Zero dependencies: a minimal WebDriver client over fetch.
 
 import { spawn } from "node:child_process";
-import { mkdtempSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import {
+  existsSync,
+  mkdtempSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
+import { homedir, tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 
 const BRANDS = {
-  dojix: { productName: "Dojix", accent: "#e8b44c" },
-  greenwick: { productName: "Greenwick", accent: "#00d4aa" },
+  dojix: { productName: "Dojix", accent: "#e8b44c", identifier: "io.github.djctwo.dojix" },
+  greenwick: { productName: "Greenwick", accent: "#00d4aa", identifier: "io.github.djctwo.greenwick" },
 };
 const ELEMENT = "element-6066-11e4-a52e-4f735466cecf";
 const PORT = 4444;
 const BASE = `http://127.0.0.1:${PORT}`;
 const SQLITE_MAGIC = Buffer.from("SQLite format 3\0", "latin1");
+// Fictional passwords for a throwaway CI journal.
+const PASSWORD = "fictional-pass-1";
+const WRONG = "wrong-password-x";
 
 const { values: opts } = parseArgs({
   options: {
@@ -32,11 +57,12 @@ const { values: opts } = parseArgs({
     out: { type: "string", default: "e2e-output" },
     "native-driver": { type: "string" },
     driver: { type: "string", default: "tauri-driver" },
+    scenario: { type: "string", default: "all" },
   },
 });
 const brand = BRANDS[opts.brand];
 if (!brand || !opts.app) {
-  console.error("usage: run.mjs --brand dojix|greenwick --app <binary>");
+  console.error("usage: run.mjs --brand dojix|greenwick --app <binary> [--scenario ...]");
   process.exit(2);
 }
 mkdirSync(opts.out, { recursive: true });
@@ -91,6 +117,11 @@ async function newSession(args) {
   throw lastError;
 }
 
+async function endSession(session) {
+  await wd("DELETE", `/session/${session}`);
+  await sleep(3000); // let the process exit and release journal.lock
+}
+
 async function find(session, css, timeoutMs = 60000) {
   const end = Date.now() + timeoutMs;
   for (;;) {
@@ -104,44 +135,111 @@ async function find(session, css, timeoutMs = 60000) {
   }
 }
 
+async function absent(session, css) {
+  const found = await wd("POST", `/session/${session}/elements`, { using: "css selector", value: css });
+  return found.length === 0;
+}
+
 const text = (session, id) => wd("GET", `/session/${session}/element/${id}/text`);
 const run = (session, script) => wd("POST", `/session/${session}/execute/sync`, { script, args: [] });
+const click = (session, id) => wd("POST", `/session/${session}/element/${id}/click`, {});
+const type = (session, id, value) => wd("POST", `/session/${session}/element/${id}/value`, { text: value });
 
-async function invoke(session, command) {
+/** Waits until `css` shows text matching `test` (the UI updates asynchronously). */
+async function waitText(session, css, test, timeoutMs = 30000) {
+  const end = Date.now() + timeoutMs;
+  let last = "";
+  for (;;) {
+    try {
+      last = await text(session, await find(session, css, 2000));
+      if (test(last)) return last;
+    } catch {
+      // re-rendering
+    }
+    if (Date.now() > end) throw new Error(`${css} never matched (last: "${last}")`);
+    await sleep(250);
+  }
+}
+
+/** Calls an app command through the real IPC. Resolves {ok, value} or {ok:false, code}. */
+async function call(session, command, args = {}) {
   const script = `
     const done = arguments[arguments.length - 1];
-    window.__TAURI_INTERNALS__.invoke(${JSON.stringify(command)})
-      .then((value) => done({ ok: true, value }), (error) => done({ ok: false, error: String(error) }));`;
-  const result = await wd("POST", `/session/${session}/execute/async`, { script, args: [] });
-  if (!result.ok) throw new Error(`${command} failed: ${result.error}`);
+    window.__TAURI_INTERNALS__.invoke(${JSON.stringify(command)}, ${JSON.stringify(args)})
+      .then((value) => done({ ok: true, value }),
+            (e) => done({ ok: false, code: e && e.code ? e.code : String(e), message: e && e.message ? e.message : "" }));`;
+  return wd("POST", `/session/${session}/execute/async`, { script, args: [] });
+}
+
+async function invoke(session, command, args = {}) {
+  const result = await call(session, command, args);
+  if (!result.ok) throw new Error(`${command} failed: ${result.code} ${result.message}`);
   return result.value;
 }
 
 async function screenshot(session, name) {
-  const png = await wd("GET", `/session/${session}/screenshot`);
-  writeFileSync(join(opts.out, `${opts.brand}-${name}.png`), Buffer.from(png, "base64"));
+  try {
+    const png = await wd("GET", `/session/${session}/screenshot`);
+    writeFileSync(join(opts.out, `${opts.brand}-${name}.png`), Buffer.from(png, "base64"));
+  } catch (err) {
+    console.log(`(no screenshot ${name}: ${err.message})`);
+  }
 }
 
 function filesUnder(dir) {
+  if (!existsSync(dir)) return [];
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
     return statSync(path).isDirectory() ? filesUnder(path) : [path];
   });
 }
 
-async function main() {
+function checkAtRest(dataDir, label) {
+  const files = filesUnder(dataDir);
+  const plaintext = files.filter((f) => readFileSync(f).includes(SQLITE_MAGIC));
+  check(
+    plaintext.length === 0,
+    `${label}: no plaintext SQLite anywhere in the data folder (${files.length} files${
+      plaintext.length ? `; found in ${plaintext.map((f) => f.slice(dataDir.length)).join(", ")}` : ""
+    })`,
+  );
+  const logs = files.filter((f) => f.endsWith(".log")).map((f) => readFileSync(f, "utf8")).join("\n");
+  check(logs.length > 0, `${label}: the app wrote a log`);
+  check(!logs.includes("TESTSYM"), `${label}: logs contain no trade data`);
+  check(!logs.includes(dataDir), `${label}: logs contain no data-folder path`);
+  check(!logs.includes(PASSWORD) && !logs.includes(WRONG), `${label}: logs contain no password`);
+  writeFileSync(join(opts.out, `${opts.brand}-${label}-log.txt`), logs);
+}
+
+function startDriver() {
   const driverArgs = ["--port", String(PORT)];
   if (opts["native-driver"]) driverArgs.push("--native-driver", opts["native-driver"]);
-  const driver = spawn(opts.driver, driverArgs, { stdio: ["ignore", "inherit", "inherit"] });
-  let failed = false;
-  const dataDir = mkdtempSync(join(tmpdir(), `e2e-${opts.brand}-`));
-  try {
-    await waitForDriver();
-    const vaultService = `e2e.${opts.brand}.${process.pid}.${Date.now()}`;
-    // "--flag=value" form: msedgedriver treats every arg as a Chromium-style switch.
-    const appArgs = [`--data-dir=${dataDir}`, `--vault-service=${vaultService}`];
+  return spawn(opts.driver, driverArgs, { stdio: ["ignore", "inherit", "inherit"] });
+}
 
-    // Launch 1: empty journal, brand visible, add one trade.
+function dumpLogs(dir) {
+  for (const file of filesUnder(dir).filter((f) => f.endsWith(".log"))) {
+    console.error(`--- ${file.slice(dir.length)}\n${readFileSync(file, "utf8")}`);
+  }
+}
+
+async function unlockThroughUi(session, password) {
+  const field = await find(session, '[data-testid="lock-password"]');
+  await type(session, field, password);
+  await click(session, await find(session, '[data-testid="lock-submit"]'));
+}
+
+// ---------------------------------------------------------------------------------------------
+
+async function lockScenario() {
+  const dataDir = mkdtempSync(join(tmpdir(), `e2e-${opts.brand}-`));
+  const backupPath = join(mkdtempSync(join(tmpdir(), `e2e-backup-${opts.brand}-`)), "journal.dxbk");
+  const vaultService = `e2e.${opts.brand}.${process.pid}.${Date.now()}`;
+  // "--flag=value" form: msedgedriver treats every arg as a Chromium-style switch.
+  const appArgs = [`--data-dir=${dataDir}`, `--vault-service=${vaultService}`];
+  try {
+    // Launch 1: empty journal, brand visible, add one trade, turn App Lock on, back up,
+    // then the injected short idle timeout locks the app.
     let session = await newSession(appArgs);
     await find(session, '[data-testid="journal-empty"]');
     check(true, `${brand.productName} opened on the empty Journal`);
@@ -167,37 +265,202 @@ async function main() {
     await invoke(session, "e2e_add_trade");
     const after = await invoke(session, "e2e_status");
     check(after.generation === 2, `adding a trade saved generation 2 (got ${after.generation})`);
-    await wd("DELETE", `/session/${session}`);
-    await sleep(3000); // let the process exit and release journal.lock
 
-    // Launch 2: the trade persisted.
+    const outcome = await invoke(session, "lock_enable", { password: PASSWORD, confirmation: PASSWORD });
+    check(outcome === "complete", `App Lock turned on with a complete key rotation (${outcome})`);
+    const status = await invoke(session, "lock_status");
+    check(status.lockEnabled === true && status.idleLockMinutes === 15, "App Lock on, idle lock 15 min by default");
+
+    await invoke(session, "e2e_backup_export", { path: backupPath, password: PASSWORD });
+    const backup = readFileSync(backupPath);
+    check(backup.subarray(0, 4).toString("latin1") === "DXBK", "the backup is a password-protected DXBK file");
+    check(!backup.includes(SQLITE_MAGIC), "the backup holds no plaintext SQLite");
+
+    await invoke(session, "e2e_set_idle_seconds", { seconds: 3 });
+    await find(session, '[data-testid="lock-screen"]', 40000);
+    check(true, "the idle timeout locked the app (lock screen shown)");
+    const query = await call(session, "journal_query", { limit: 5 });
+    check(!query.ok && query.code === "locked", `the journal is gone from memory while locked (${query.code})`);
+    check(await absent(session, '[data-testid="journal-table"]'), "no journal rows in the locked document");
+    await screenshot(session, "idle-locked");
+    await endSession(session);
+
+    // Launch 2: lock screen; five wrong passwords through the UI hit the throttle.
     session = await newSession(appArgs);
-    const table = await text(session, await find(session, '[data-testid="journal-table"]'));
-    check(table.includes("TESTSYM"), "the added trade is listed after a restart");
-    await screenshot(session, "after-restart");
-    await wd("DELETE", `/session/${session}`);
-    await sleep(2000);
+    await find(session, '[data-testid="lock-screen"]');
+    check(await absent(session, '[data-testid="journal-table"]'), "after a restart only the lock screen shows");
+    for (let n = 1; n <= 5; n++) {
+      await unlockThroughUi(session, WRONG);
+      const expected = n < 5 ? `Incorrect password (${n}/5)` : "Try again in 30 seconds";
+      const shown = await waitText(session, '[data-testid="lock-message"]', (t) => t.includes(expected));
+      check(true, `wrong password ${n}: "${shown}"`);
+    }
+    const throttledAt = Date.now();
+    await screenshot(session, "throttled");
+    await endSession(session);
 
-    // Data at rest.
-    const files = filesUnder(dataDir);
+    // Launch 3: the wait survived the restart; the right password works after it.
+    session = await newSession(appArgs);
+    const waiting = await waitText(session, '[data-testid="lock-message"]', (t) => t.includes("Try again in"));
+    check(true, `the throttle survived a restart ("${waiting}")`);
+    const early = await call(session, "lock_unlock", { password: PASSWORD });
+    check(!early.ok && early.code === "throttled", "even the right password is not checked during the wait");
+    const wait = throttledAt + 31000 - Date.now();
+    if (wait > 0) await sleep(wait);
+    await unlockThroughUi(session, PASSWORD);
+    const table = await waitText(session, '[data-testid="journal-table"]', (t) => t.includes("TESTSYM"));
+    check(table.includes("TESTSYM"), "the right password unlocks the journal and the trade is there");
+
+    // Keep an older copy, then save once more.
+    const olderCopy = readFileSync(join(dataDir, "journal.sealed"));
+    await invoke(session, "e2e_add_trade");
+    const newest = await invoke(session, "e2e_status");
+    check(newest.trades === 2, "a second trade was saved");
+    await endSession(session);
+    writeFileSync(join(dataDir, "journal.sealed"), olderCopy);
+
+    // Launch 4: the older copy is refused until the password confirms it.
+    session = await newSession(appArgs);
+    await find(session, '[data-testid="older-copy"]');
+    check(await absent(session, '[data-testid="journal-table"]'), "the older copy is not opened silently");
+    await screenshot(session, "older-copy");
+    await type(session, await find(session, '[data-testid="older-password"]'), PASSWORD);
+    await click(session, await find(session, '[data-testid="older-open"]'));
+    await find(session, '[data-testid="journal-table"]');
+    const reopened = await invoke(session, "e2e_status");
+    check(reopened.trades === 1, "the confirmed older copy opened (1 trade)");
+    check(
+      reopened.generation > newest.generation,
+      `the save count never goes down (${reopened.generation} > ${newest.generation})`,
+    );
+
+    // Restore the password-protected backup (made with 1 trade) over 3 trades.
+    await invoke(session, "e2e_add_trade");
+    await invoke(session, "e2e_add_trade");
+    const picked = await invoke(session, "e2e_backup_pick", { path: backupPath });
+    check(picked.kind === "desktop" && picked.needsPassword === true, "the backup is recognised and needs its password");
+    const wrongRestore = await call(session, "backup_restore", { password: WRONG });
+    check(!wrongRestore.ok && wrongRestore.code === "wrong_backup_password", "a wrong backup password is refused");
+    check((await invoke(session, "e2e_status")).trades === 3, "a refused restore changes nothing");
+    const summary = await invoke(session, "backup_restore", { password: PASSWORD });
+    check(summary.trades === 1 && summary.source === "desktop", `the backup restored (${summary.trades} trade)`);
+    check((await invoke(session, "e2e_status")).trades === 1, "the journal now holds the backup's rows");
+
+    // "Forgot password?" from the lock screen erases everything.
+    // The shell reloads the web view as it locks, so the call may not get its reply back.
+    await call(session, "lock_now").catch(() => null);
+    await find(session, '[data-testid="lock-screen"]');
+    await click(session, await find(session, '[data-testid="forgot-password"]'));
+    await type(session, await find(session, '[data-testid="erase-confirm"]'), brand.productName);
+    await click(session, await find(session, '[data-testid="erase-submit"]'));
+    await find(session, '[data-testid="journal-empty"]');
+    const erased = await invoke(session, "lock_status");
+    check(erased.phase === "unlocked" && erased.lockEnabled === false, "erase started a fresh journal with App Lock off");
+    check((await invoke(session, "e2e_status")).trades === 0, "the fresh journal is empty");
+    await screenshot(session, "after-erase");
+    await endSession(session);
+
+    // Launch 5: the fresh journal opens without a password.
+    session = await newSession(appArgs);
+    await find(session, '[data-testid="journal-empty"]');
+    check(true, "after erase the app opens without a password");
+    await endSession(session);
+
     const sealed = readFileSync(join(dataDir, "journal.sealed"));
     check(sealed.subarray(0, 4).toString("latin1") === "DXJN", "journal.sealed has the DXJN header");
-    const plaintext = files.filter((f) => readFileSync(f).includes(SQLITE_MAGIC));
-    check(plaintext.length === 0, `no plaintext SQLite anywhere in the data folder (${files.length} files)`);
-    const logs = files.filter((f) => f.endsWith(".log")).map((f) => readFileSync(f, "utf8")).join("\n");
-    check(logs.length > 0, "the app wrote a log");
-    check(!logs.includes("TESTSYM"), "logs contain no trade data");
-    check(!logs.includes(dataDir), "logs contain no data-folder path");
-    writeFileSync(join(opts.out, `${opts.brand}-log.txt`), logs);
+    checkAtRest(dataDir, "lock");
   } catch (err) {
-    failed = true;
-    console.error(err.stack ?? String(err));
-    // The app's own log is the best clue; it holds no paths or trade data by design.
-    for (const file of filesUnder(dataDir).filter((f) => f.endsWith(".log"))) {
-      console.error(`--- ${file.slice(dataDir.length)}\n${readFileSync(file, "utf8")}`);
-    }
+    dumpLogs(dataDir);
+    throw err;
+  }
+}
+
+async function noKeyringScenario() {
+  const dataDir = mkdtempSync(join(tmpdir(), `e2e-nokey-${opts.brand}-`));
+  const appArgs = [`--data-dir=${dataDir}`, `--vault-service=e2e.nokey.${opts.brand}.${process.pid}`];
+  try {
+    let session = await newSession(appArgs);
+    await find(session, '[data-testid="setup-screen"]');
+    check(!existsSync(join(dataDir, "journal.sealed")), "no keyring: nothing is created before a password");
+    await screenshot(session, "no-keyring-setup");
+    await type(session, await find(session, '[data-testid="setup-password"]'), PASSWORD);
+    await type(session, await find(session, '[data-testid="setup-confirm"]'), PASSWORD);
+    await click(session, await find(session, '[data-testid="setup-submit"]'));
+    await find(session, '[data-testid="journal-empty"]');
+    const status = await invoke(session, "lock_status");
+    check(status.lockRequired === true && status.lockEnabled === true, "App Lock is on and required");
+    check(status.vaultBackend === "data-folder", `the key is kept in the data folder (${status.vaultBackend})`);
+    await invoke(session, "e2e_add_trade");
+    const off = await call(session, "lock_disable", { password: PASSWORD });
+    check(!off.ok && off.code === "lock_required", "App Lock can't be turned off without a keyring");
+    await endSession(session);
+    check(existsSync(join(dataDir, "key.wrapped")), "the wrapped key file exists");
+
+    session = await newSession(appArgs);
+    await find(session, '[data-testid="lock-screen"]');
+    await unlockThroughUi(session, PASSWORD);
+    await waitText(session, '[data-testid="journal-table"]', (t) => t.includes("TESTSYM"));
+    check(true, "after a restart the password unlocks the journal");
+    await endSession(session);
+    checkAtRest(dataDir, "no-keyring");
+  } catch (err) {
+    dumpLogs(dataDir);
+    throw err;
+  }
+}
+
+/** The DEFAULT data folder (no --data-dir): the web view's files must live elsewhere. */
+async function layoutScenario() {
+  const isWindows = process.platform === "win32";
+  const localData = isWindows
+    ? process.env.LOCALAPPDATA
+    : process.env.XDG_DATA_HOME || join(homedir(), ".local", "share");
+  const cache = isWindows ? process.env.LOCALAPPDATA : process.env.XDG_CACHE_HOME || join(homedir(), ".cache");
+  const dataDir = join(localData, brand.identifier);
+  const webviewDir = join(cache, `${brand.identifier}.webview`);
+  // Launched directly (no WebDriver), so the app uses its own production web view folder.
+  const env = { ...process.env };
+  delete env.WEBVIEW2_USER_DATA_FOLDER;
+  delete env.WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS;
+  const child = spawn(resolve(opts.app), [`--vault-service=e2e.layout.${opts.brand}.${process.pid}`], {
+    env,
+    stdio: "ignore",
+  });
+  try {
+    for (let i = 0; i < 60 && !existsSync(join(dataDir, "journal.sealed")); i++) await sleep(500);
+    await sleep(12000); // give the web view time to write whatever it writes
   } finally {
-    driver.kill();
+    child.kill();
+    await sleep(3000);
+  }
+  check(existsSync(join(dataDir, "journal.sealed")), "the default data folder holds the journal");
+  const files = filesUnder(dataDir);
+  check(!files.some((f) => /EBWebView|WebKit|IndexedDB/i.test(f)), "no web view files in the data folder");
+  check(existsSync(webviewDir), `the web view folder is outside it (${webviewDir.replace(homedir(), "~")})`);
+  checkAtRest(dataDir, "layout");
+}
+
+async function main() {
+  const scenarios =
+    opts.scenario === "all" ? ["lock", "layout"] : opts.scenario.split(",").map((s) => s.trim());
+  let failed = false;
+  for (const scenario of scenarios) {
+    console.log(`=== ${opts.brand}: ${scenario}`);
+    const usesDriver = scenario !== "layout";
+    const driver = usesDriver ? startDriver() : null;
+    try {
+      if (driver) await waitForDriver();
+      if (scenario === "lock") await lockScenario();
+      else if (scenario === "no-keyring") await noKeyringScenario();
+      else if (scenario === "layout") await layoutScenario();
+      else throw new Error(`unknown scenario ${scenario}`);
+    } catch (err) {
+      failed = true;
+      console.error(err.stack ?? String(err));
+    } finally {
+      driver?.kill();
+      await sleep(1000);
+    }
   }
   process.exit(failed ? 1 : 0);
 }

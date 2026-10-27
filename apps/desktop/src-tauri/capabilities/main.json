@@ -1,12 +1,30 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "main",
-  "description": "Least privilege: the main window may call only this app's own commands. No fs, shell, http or opener access.",
+  "description": "Least privilege: the main window may call only this app's own commands and listen to the app's own events. No fs, shell, http, dialog or opener access from the web view.",
   "windows": [
     "main"
   ],
   "permissions": [
     "allow-app-info",
-    "allow-journal-query"
+    "allow-journal-query",
+    "allow-lock-status",
+    "allow-lock-unlock",
+    "allow-lock-setup",
+    "allow-lock-enable",
+    "allow-lock-change",
+    "allow-lock-disable",
+    "allow-lock-now",
+    "allow-lock-activity",
+    "allow-older-copy-open",
+    "allow-prefs-set-idle",
+    "allow-erase-all",
+    "allow-save-retry",
+    "allow-app-quit",
+    "allow-backup-export",
+    "allow-backup-pick",
+    "allow-backup-restore",
+    "core:event:allow-listen",
+    "core:event:allow-unlisten"
   ]
 }

@@ -1,0 +1,5260 @@
+{
+ "schema": 1,
+ "brand": "greenwick",
+ "fixture": "greenwick/f6-fidelity",
+ "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+ "xcode": "Xcode 16.4",
+ "swift": "6.1+",
+ "tz": "GMT",
+ "locale": "en_US_POSIX",
+ "firstWeekday": 1,
+ "minimumDaysInFirstWeek": 1,
+ "import": {
+  "kind": "file",
+  "detect": {
+   "headers": [
+    "Run Date",
+    "Action",
+    "Symbol",
+    "Security Description",
+    "Security Type",
+    "Quantity",
+    "Price ($)",
+    "Commission ($)",
+    "Fees ($)",
+    "Accrued Interest ($)",
+    "Amount ($)",
+    "Settlement Date"
+   ],
+   "mapping": {
+    "closePrice": null,
+    "closeTime": null,
+    "commission": null,
+    "dateFormat": "",
+    "direction": 0,
+    "maePoints": null,
+    "mfePoints": null,
+    "openPrice": 0,
+    "openTime": 0,
+    "platform": "Fidelity",
+    "profit": 0,
+    "shares": 0,
+    "sl": null,
+    "swap": null,
+    "symbol": 0,
+    "ticket": null,
+    "tp": null,
+    "volume": null
+   },
+   "platform": "Fidelity",
+   "sampleRows": [
+    [
+     "02/02/2026",
+     "YOU BOUGHT FICTIONAL HOLDINGS INC (FIXA) (Cash)",
+     "FIXA",
+     "FICTIONAL HOLDINGS INC",
+     "Cash",
+     "100",
+     "10.00",
+     "1.00",
+     "0.05",
+     "",
+     "-1000.00",
+     "02/04/2026"
+    ],
+    [
+     "02/03/2026",
+     "YOU SOLD FICTIONAL HOLDINGS INC (FIXA) (Cash)",
+     "FIXA",
+     "FICTIONAL HOLDINGS INC",
+     "Cash",
+     "-50",
+     "11.00",
+     "0.50",
+     "0.02",
+     "",
+     "550.00",
+     "02/05/2026"
+    ],
+    [
+     "02/04/2026",
+     "YOU SOLD FICTIONAL HOLDINGS INC (FIXA) (Cash)",
+     "FIXA",
+     "FICTIONAL HOLDINGS INC",
+     "Cash",
+     "-50",
+     "12.00",
+     "0.50",
+     "0.02",
+     "",
+     "600.00",
+     "02/06/2026"
+    ],
+    [
+     "02/09/2026",
+     "YOU BOUGHT FICTIONAL HOLDINGS INC (FIXB) (Cash)",
+     "FIXB",
+     "FICTIONAL HOLDINGS INC",
+     "Cash",
+     "30",
+     "20.00",
+     "0.30",
+     "0",
+     "",
+     "-600.00",
+     "02/11/2026"
+    ],
+    [
+     "02/10/2026",
+     "YOU BOUGHT FICTIONAL HOLDINGS INC (FIXB) (Cash)",
+     "FIXB",
+     "FICTIONAL HOLDINGS INC",
+     "Cash",
+     "70",
+     "21.00",
+     "0.70",
+     "0",
+     "",
+     "-1470.00",
+     "02/12/2026"
+    ]
+   ]
+  },
+  "route": "fifo:Fidelity",
+  "parsedCount": 9,
+  "parsed": [
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "11",
+    "closeTime": "2026-02-03T05:00:00.000Z",
+    "comment": "",
+    "commission": "1.045",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 1440,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": null,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "48.955",
+    "notes": "",
+    "openPrice": "10",
+    "openTime": "2026-02-02T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 50,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXA",
+    "tags": "",
+    "ticket": "7112847995892630009",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "12",
+    "closeTime": "2026-02-04T05:00:00.000Z",
+    "comment": "",
+    "commission": "1.045",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 2880,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": null,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "98.955",
+    "notes": "",
+    "openPrice": "10",
+    "openTime": "2026-02-02T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 50,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXA",
+    "tags": "",
+    "ticket": "651758429111483355",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "22",
+    "closeTime": "2026-02-11T05:00:00.000Z",
+    "comment": "",
+    "commission": "0.63",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 2880,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": null,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "59.37",
+    "notes": "",
+    "openPrice": "20",
+    "openTime": "2026-02-09T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 30,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXB",
+    "tags": "",
+    "ticket": "8092904366104880805",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "22",
+    "closeTime": "2026-02-11T05:00:00.000Z",
+    "comment": "",
+    "commission": "1.47",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 1440,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": null,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "68.53",
+    "notes": "",
+    "openPrice": "21",
+    "openTime": "2026-02-10T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 70,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXB",
+    "tags": "",
+    "ticket": "8094341537237864664",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "14",
+    "closeTime": "2026-02-18T05:00:00.000Z",
+    "comment": "",
+    "commission": "0.8",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "SELL",
+    "durationMin": 2880,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": null,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "39.2",
+    "notes": "",
+    "openPrice": "15",
+    "openTime": "2026-02-16T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 40,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXC",
+    "tags": "",
+    "ticket": "8456898306838273080",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "6",
+    "closeTime": "2026-02-24T05:00:00.000Z",
+    "comment": "",
+    "commission": "0",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 1440,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": null,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "60",
+    "notes": "",
+    "openPrice": "5",
+    "openTime": "2026-02-23T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 60,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXD",
+    "tags": "",
+    "ticket": "7068568429894052897",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "30",
+    "closeTime": "2026-03-03T05:00:00.000Z",
+    "comment": "",
+    "commission": "0",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 0,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": null,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "25",
+    "notes": "",
+    "openPrice": "29",
+    "openTime": "2026-03-03T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 25,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXE",
+    "tags": "",
+    "ticket": "5106938260674288597",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "301.25",
+    "closeTime": "2026-03-05T05:00:00.000Z",
+    "comment": "",
+    "commission": "0",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Thu",
+    "direction": "BUY",
+    "durationMin": 0,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": null,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "12.5",
+    "notes": "",
+    "openPrice": "300",
+    "openTime": "2026-03-05T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 10,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIX.B",
+    "tags": "",
+    "ticket": "1716536045982060688",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "10.4",
+    "closeTime": "2026-03-10T04:00:00.000Z",
+    "comment": "",
+    "commission": "0",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 1440,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": null,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "0.15",
+    "notes": "",
+    "openPrice": "10.1",
+    "openTime": "2026-03-09T04:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 0.5,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXA",
+    "tags": "",
+    "ticket": "2239254632406286775",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   }
+  ],
+  "inserted": 9,
+  "reimportInserted": 0,
+  "journalCount": 9,
+  "journal": [
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "10.4",
+    "closeTime": "2026-03-10T04:00:00.000Z",
+    "comment": "",
+    "commission": "0",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 1440,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": 9,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "0.15",
+    "notes": "",
+    "openPrice": "10.1",
+    "openTime": "2026-03-09T04:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 0.5,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXA",
+    "tags": "",
+    "ticket": "2239254632406286775",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "301.25",
+    "closeTime": "2026-03-05T05:00:00.000Z",
+    "comment": "",
+    "commission": "0",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Thu",
+    "direction": "BUY",
+    "durationMin": 0,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": 8,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "12.5",
+    "notes": "",
+    "openPrice": "300",
+    "openTime": "2026-03-05T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 10,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIX.B",
+    "tags": "",
+    "ticket": "1716536045982060688",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "30",
+    "closeTime": "2026-03-03T05:00:00.000Z",
+    "comment": "",
+    "commission": "0",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 0,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": 7,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "25",
+    "notes": "",
+    "openPrice": "29",
+    "openTime": "2026-03-03T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 25,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXE",
+    "tags": "",
+    "ticket": "5106938260674288597",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "6",
+    "closeTime": "2026-02-24T05:00:00.000Z",
+    "comment": "",
+    "commission": "0",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 1440,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": 6,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "60",
+    "notes": "",
+    "openPrice": "5",
+    "openTime": "2026-02-23T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 60,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXD",
+    "tags": "",
+    "ticket": "7068568429894052897",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "14",
+    "closeTime": "2026-02-18T05:00:00.000Z",
+    "comment": "",
+    "commission": "0.8",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "SELL",
+    "durationMin": 2880,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": 5,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "39.2",
+    "notes": "",
+    "openPrice": "15",
+    "openTime": "2026-02-16T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 40,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXC",
+    "tags": "",
+    "ticket": "8456898306838273080",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "22",
+    "closeTime": "2026-02-11T05:00:00.000Z",
+    "comment": "",
+    "commission": "1.47",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Tue",
+    "direction": "BUY",
+    "durationMin": 1440,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": 4,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "68.53",
+    "notes": "",
+    "openPrice": "21",
+    "openTime": "2026-02-10T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 70,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXB",
+    "tags": "",
+    "ticket": "8094341537237864664",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "22",
+    "closeTime": "2026-02-11T05:00:00.000Z",
+    "comment": "",
+    "commission": "0.63",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 2880,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": 3,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "59.37",
+    "notes": "",
+    "openPrice": "20",
+    "openTime": "2026-02-09T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 30,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXB",
+    "tags": "",
+    "ticket": "8092904366104880805",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "12",
+    "closeTime": "2026-02-04T05:00:00.000Z",
+    "comment": "",
+    "commission": "1.045",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 2880,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": 2,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "98.955",
+    "notes": "",
+    "openPrice": "10",
+    "openTime": "2026-02-02T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 50,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXA",
+    "tags": "",
+    "ticket": "651758429111483355",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   },
+   {
+    "avgVolume": 0,
+    "checklistData": "",
+    "closePrice": "11",
+    "closeTime": "2026-02-03T05:00:00.000Z",
+    "comment": "",
+    "commission": "1.045",
+    "controlCharacterFields": [],
+    "dayOfWeek": "Mon",
+    "direction": "BUY",
+    "durationMin": 1440,
+    "emotion": "",
+    "hitBreakeven": false,
+    "hour": 0,
+    "id": 1,
+    "industry": "",
+    "isSample": false,
+    "maePoints": 0,
+    "mfePoints": 0,
+    "netProfit": "48.955",
+    "notes": "",
+    "openPrice": "10",
+    "openTime": "2026-02-02T05:00:00.000Z",
+    "rMultiple": 0,
+    "rangeSize": 0,
+    "rejected": false,
+    "scaledIn": false,
+    "screenshots": "",
+    "sector": "",
+    "session": "EXTENDED",
+    "shares": 50,
+    "sl": "0",
+    "slDistPoints": 0,
+    "slippagePoints": 0,
+    "storageViolations": [],
+    "swap": "0",
+    "symbol": "FIXA",
+    "tags": "",
+    "ticket": "7112847995892630009",
+    "timeToMFEMin": 0,
+    "tp": "0",
+    "volume": 0
+   }
+  ]
+ },
+ "outputs": {
+  "Metrics.averageDuration": 1600,
+  "Metrics.averageLoss": 0,
+  "Metrics.averageMAE": 0,
+  "Metrics.averageMFE": 0,
+  "Metrics.averageRMultiple": 0,
+  "Metrics.averageWin": 45.85111111111111,
+  "Metrics.bestTrade": 98.955,
+  "Metrics.calmarRatio": 10,
+  "Metrics.currentStreak": 9,
+  "Metrics.expectancy": 45.85111111111111,
+  "Metrics.grossLoss": 0,
+  "Metrics.grossProfit": 412.65999999999997,
+  "Metrics.losses": 0,
+  "Metrics.maxDrawdown": 0,
+  "Metrics.maxLossStreak": 0,
+  "Metrics.maxWinStreak": 9,
+  "Metrics.netProfitAfterCosts": 412.65999999999997,
+  "Metrics.profitFactor": "Infinity",
+  "Metrics.sharpeRatio": 1.598287080038104,
+  "Metrics.totalCommissions": 4.99,
+  "Metrics.totalCosts": 4.99,
+  "Metrics.totalProfit": 412.65999999999997,
+  "Metrics.totalSwap": 0,
+  "Metrics.totalTrades": 9,
+  "Metrics.winRate": 100,
+  "Metrics.wins": 9,
+  "Metrics.worstTrade": 0.15,
+  "Metrics.edgeByHour": [
+   {
+    "category": "Hour",
+    "label": "0:00",
+    "profit": 412.65999999999997,
+    "tradeCount": 9,
+    "winRate": 100
+   }
+  ],
+  "Metrics.edgeBySession": [
+   {
+    "category": "Session",
+    "label": "Extended",
+    "profit": 412.65999999999997,
+    "tradeCount": 9,
+    "winRate": 100
+   }
+  ],
+  "Metrics.edgeByDay": [
+   {
+    "category": "Day",
+    "label": "Wed",
+    "profit": 266.055,
+    "tradeCount": 4,
+    "winRate": 100
+   },
+   {
+    "category": "Day",
+    "label": "Tue",
+    "profit": 134.10500000000002,
+    "tradeCount": 4,
+    "winRate": 100
+   },
+   {
+    "category": "Day",
+    "label": "Thu",
+    "profit": 12.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "Metrics.edgeBySymbol": [
+   {
+    "category": "Symbol",
+    "label": "FIXA",
+    "profit": 148.06,
+    "tradeCount": 3,
+    "winRate": 100
+   },
+   {
+    "category": "Symbol",
+    "label": "FIXB",
+    "profit": 127.9,
+    "tradeCount": 2,
+    "winRate": 100
+   },
+   {
+    "category": "Symbol",
+    "label": "FIXD",
+    "profit": 60,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Symbol",
+    "label": "FIXC",
+    "profit": 39.2,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Symbol",
+    "label": "FIXE",
+    "profit": 25,
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "category": "Symbol",
+    "label": "FIX.B",
+    "profit": 12.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "Metrics.edgeBySector": [
+   {
+    "category": "Sector",
+    "label": "Unknown",
+    "profit": 412.65999999999997,
+    "tradeCount": 9,
+    "winRate": 100
+   }
+  ],
+  "Metrics.allEdgeConditions[tradingDays=21]": [
+   {
+    "dimension": "Hour",
+    "expectancy": 45.85111111111111,
+    "id": "Hour_0:00",
+    "label": "0:00",
+    "monthlyImpact": 412.65999999999997,
+    "profit": 412.65999999999997,
+    "profitFactor": "Infinity",
+    "tradeCount": 9,
+    "winRate": 100
+   },
+   {
+    "dimension": "Day",
+    "expectancy": 33.526250000000005,
+    "id": "Day_Tue",
+    "label": "Tue",
+    "monthlyImpact": 134.10500000000002,
+    "profit": 134.10500000000002,
+    "profitFactor": "Infinity",
+    "tradeCount": 4,
+    "winRate": 100
+   },
+   {
+    "dimension": "Day",
+    "expectancy": 12.5,
+    "id": "Day_Thu",
+    "label": "Thu",
+    "monthlyImpact": 12.5,
+    "profit": 12.5,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Day",
+    "expectancy": 66.51375,
+    "id": "Day_Wed",
+    "label": "Wed",
+    "monthlyImpact": 266.055,
+    "profit": 266.055,
+    "profitFactor": "Infinity",
+    "tradeCount": 4,
+    "winRate": 100
+   },
+   {
+    "dimension": "Session",
+    "expectancy": 45.85111111111111,
+    "id": "Session_Extended",
+    "label": "Extended",
+    "monthlyImpact": 412.65999999999997,
+    "profit": 412.65999999999997,
+    "profitFactor": "Infinity",
+    "tradeCount": 9,
+    "winRate": 100
+   },
+   {
+    "dimension": "Symbol",
+    "expectancy": 39.2,
+    "id": "Symbol_FIXC",
+    "label": "FIXC",
+    "monthlyImpact": 39.2,
+    "profit": 39.2,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Symbol",
+    "expectancy": 63.95,
+    "id": "Symbol_FIXB",
+    "label": "FIXB",
+    "monthlyImpact": 127.9,
+    "profit": 127.9,
+    "profitFactor": "Infinity",
+    "tradeCount": 2,
+    "winRate": 100
+   },
+   {
+    "dimension": "Symbol",
+    "expectancy": 25,
+    "id": "Symbol_FIXE",
+    "label": "FIXE",
+    "monthlyImpact": 25,
+    "profit": 25,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Symbol",
+    "expectancy": 49.35333333333333,
+    "id": "Symbol_FIXA",
+    "label": "FIXA",
+    "monthlyImpact": 148.06,
+    "profit": 148.06,
+    "profitFactor": "Infinity",
+    "tradeCount": 3,
+    "winRate": 100
+   },
+   {
+    "dimension": "Symbol",
+    "expectancy": 60,
+    "id": "Symbol_FIXD",
+    "label": "FIXD",
+    "monthlyImpact": 60,
+    "profit": 60,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Symbol",
+    "expectancy": 12.5,
+    "id": "Symbol_FIX.B",
+    "label": "FIX.B",
+    "monthlyImpact": 12.5,
+    "profit": 12.5,
+    "profitFactor": "Infinity",
+    "tradeCount": 1,
+    "winRate": 100
+   },
+   {
+    "dimension": "Sector",
+    "expectancy": 45.85111111111111,
+    "id": "Sector_Unknown",
+    "label": "Unknown",
+    "monthlyImpact": 412.65999999999997,
+    "profit": 412.65999999999997,
+    "profitFactor": "Infinity",
+    "tradeCount": 9,
+    "winRate": 100
+   }
+  ],
+  "Metrics.confidence": [
+   {
+    "actionable": false,
+    "level": {
+     "$case": "insufficient",
+     "label": "Insufficient",
+     "icon": "exclamationmark.triangle.fill"
+    },
+    "n": 0
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "insufficient",
+     "label": "Insufficient",
+     "icon": "exclamationmark.triangle.fill"
+    },
+    "n": 1
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "insufficient",
+     "label": "Insufficient",
+     "icon": "exclamationmark.triangle.fill"
+    },
+    "n": 9
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "low",
+     "label": "Low confidence",
+     "icon": "info.circle.fill"
+    },
+    "n": 10
+   },
+   {
+    "actionable": false,
+    "level": {
+     "$case": "low",
+     "label": "Low confidence",
+     "icon": "info.circle.fill"
+    },
+    "n": 29
+   },
+   {
+    "actionable": true,
+    "level": {
+     "$case": "significant",
+     "label": "Significant",
+     "icon": "checkmark.seal.fill"
+    },
+    "n": 30
+   },
+   {
+    "actionable": true,
+    "level": {
+     "$case": "significant",
+     "label": "Significant",
+     "icon": "checkmark.seal.fill"
+    },
+    "n": 31
+   },
+   {
+    "actionable": true,
+    "level": {
+     "$case": "significant",
+     "label": "Significant",
+     "icon": "checkmark.seal.fill"
+    },
+    "n": 100
+   }
+  ],
+  "TradeGrader.grades": [
+   {
+    "grade": {
+     "executionScore": 8,
+     "managementScore": 12,
+     "overall": "F",
+     "rScore": 8,
+     "timingScore": 3,
+     "total": 31
+    },
+    "ticket": "2239254632406286775"
+   },
+   {
+    "grade": {
+     "executionScore": 8,
+     "managementScore": 4,
+     "overall": "F",
+     "rScore": 8,
+     "timingScore": 3,
+     "total": 23
+    },
+    "ticket": "1716536045982060688"
+   },
+   {
+    "grade": {
+     "executionScore": 8,
+     "managementScore": 4,
+     "overall": "F",
+     "rScore": 8,
+     "timingScore": 3,
+     "total": 23
+    },
+    "ticket": "5106938260674288597"
+   },
+   {
+    "grade": {
+     "executionScore": 8,
+     "managementScore": 12,
+     "overall": "F",
+     "rScore": 8,
+     "timingScore": 3,
+     "total": 31
+    },
+    "ticket": "7068568429894052897"
+   },
+   {
+    "grade": {
+     "executionScore": 8,
+     "managementScore": 12,
+     "overall": "F",
+     "rScore": 8,
+     "timingScore": 3,
+     "total": 31
+    },
+    "ticket": "8456898306838273080"
+   },
+   {
+    "grade": {
+     "executionScore": 8,
+     "managementScore": 12,
+     "overall": "F",
+     "rScore": 8,
+     "timingScore": 3,
+     "total": 31
+    },
+    "ticket": "8094341537237864664"
+   },
+   {
+    "grade": {
+     "executionScore": 8,
+     "managementScore": 12,
+     "overall": "F",
+     "rScore": 8,
+     "timingScore": 3,
+     "total": 31
+    },
+    "ticket": "8092904366104880805"
+   },
+   {
+    "grade": {
+     "executionScore": 8,
+     "managementScore": 12,
+     "overall": "F",
+     "rScore": 8,
+     "timingScore": 3,
+     "total": 31
+    },
+    "ticket": "651758429111483355"
+   },
+   {
+    "grade": {
+     "executionScore": 8,
+     "managementScore": 12,
+     "overall": "F",
+     "rScore": 8,
+     "timingScore": 3,
+     "total": 31
+    },
+    "ticket": "7112847995892630009"
+   }
+  ],
+  "TradingCalendar.tradingDayCount": 8,
+  "TradingCalendar.dailyPnL": [
+   {
+    "day": "2026-02-03",
+    "pnl": 48.955
+   },
+   {
+    "day": "2026-02-04",
+    "pnl": 98.955
+   },
+   {
+    "day": "2026-02-11",
+    "pnl": 127.9
+   },
+   {
+    "day": "2026-02-18",
+    "pnl": 39.2
+   },
+   {
+    "day": "2026-02-24",
+    "pnl": 60
+   },
+   {
+    "day": "2026-03-03",
+    "pnl": 25
+   },
+   {
+    "day": "2026-03-05",
+    "pnl": 12.5
+   },
+   {
+    "day": "2026-03-10",
+    "pnl": 0.15
+   }
+  ],
+  "TradingCalendar.groupedByWeekday": {
+   "Thu": [
+    "1716536045982060688"
+   ],
+   "Tue": [
+    "2239254632406286775",
+    "5106938260674288597",
+    "7068568429894052897",
+    "7112847995892630009"
+   ],
+   "Wed": [
+    "8456898306838273080",
+    "8094341537237864664",
+    "8092904366104880805",
+    "651758429111483355"
+   ]
+  },
+  "TicketKeyCounter.vectors": [
+   {
+    "key": "a#0",
+    "ticket": "7370696151014322231"
+   },
+   {
+    "key": "FIXA|BUY#0",
+    "ticket": "301297092225543544"
+   },
+   {
+    "key": "Robinhood|FIXA|1770000000.0|10|100.0#1",
+    "ticket": "4418660819538979922"
+   },
+   {
+    "key": "",
+    "ticket": "5472609002491880229"
+   }
+  ],
+  "StrategyCheckpoints.split": [
+   {
+    "after": {
+     "avgR": 0,
+     "expectancy": 27.369999999999997,
+     "maxDrawdown": 0,
+     "profitFactor": "Infinity",
+     "sharpe": 1.313097878182963,
+     "tradeCount": 5,
+     "winRate": 100
+    },
+    "afterCount": 5,
+    "before": {
+     "avgR": 0,
+     "expectancy": 68.9525,
+     "maxDrawdown": 0,
+     "profitFactor": "Infinity",
+     "sharpe": 3.696171845583447,
+     "tradeCount": 4,
+     "winRate": 100
+    },
+    "beforeCount": 4,
+    "date": "2026-02-18T05:00:00.000Z"
+   }
+  ],
+  "Trade.derived": [
+   {
+    "ticket": "2239254632406286775",
+    "storageViolations": [],
+    "controlCharacterFields": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 0.15,
+    "directionSymbol": "↑",
+    "tickerDisplay": "FIXA",
+    "tagList": [],
+    "tradeEmotion": null,
+    "grossProfitBeforeCosts": "0.15",
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "exitEfficiency": null,
+    "moneyLeftOnTable": null,
+    "tradingDay": "2026-03-10T04:00:00.000Z",
+    "tradingWeekday": "Tue",
+    "entryWeekday": "Mon",
+    "open": {
+     "utcHour": 4,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Mar 9, 00:00",
+     "timeToNextSession": 14400
+    },
+    "close": {
+     "utcHour": 4,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Mar 10, 00:00",
+     "timeToNextSession": 14400
+    },
+    "closeDayKey": "2026-03-10",
+    "openMinuteOfDay": 0
+   },
+   {
+    "ticket": "1716536045982060688",
+    "storageViolations": [],
+    "controlCharacterFields": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 12.5,
+    "directionSymbol": "↑",
+    "tickerDisplay": "FIX.B",
+    "tagList": [],
+    "tradeEmotion": null,
+    "grossProfitBeforeCosts": "12.5",
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "exitEfficiency": null,
+    "moneyLeftOnTable": null,
+    "tradingDay": "2026-03-05T05:00:00.000Z",
+    "tradingWeekday": "Thu",
+    "entryWeekday": "Thu",
+    "open": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Thu",
+     "tradeDisplayString": "Mar 5, 00:00",
+     "timeToNextSession": 14400
+    },
+    "close": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Thu",
+     "tradeDisplayString": "Mar 5, 00:00",
+     "timeToNextSession": 14400
+    },
+    "closeDayKey": "2026-03-05",
+    "openMinuteOfDay": 0
+   },
+   {
+    "ticket": "5106938260674288597",
+    "storageViolations": [],
+    "controlCharacterFields": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 25,
+    "directionSymbol": "↑",
+    "tickerDisplay": "FIXE",
+    "tagList": [],
+    "tradeEmotion": null,
+    "grossProfitBeforeCosts": "25",
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "exitEfficiency": null,
+    "moneyLeftOnTable": null,
+    "tradingDay": "2026-03-03T05:00:00.000Z",
+    "tradingWeekday": "Tue",
+    "entryWeekday": "Tue",
+    "open": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Mar 3, 00:00",
+     "timeToNextSession": 14400
+    },
+    "close": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Mar 3, 00:00",
+     "timeToNextSession": 14400
+    },
+    "closeDayKey": "2026-03-03",
+    "openMinuteOfDay": 0
+   },
+   {
+    "ticket": "7068568429894052897",
+    "storageViolations": [],
+    "controlCharacterFields": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 60,
+    "directionSymbol": "↑",
+    "tickerDisplay": "FIXD",
+    "tagList": [],
+    "tradeEmotion": null,
+    "grossProfitBeforeCosts": "60",
+    "commissionDouble": 0,
+    "swapDouble": 0,
+    "totalCosts": 0,
+    "screenshotList": [],
+    "checklistResults": {},
+    "exitEfficiency": null,
+    "moneyLeftOnTable": null,
+    "tradingDay": "2026-02-24T05:00:00.000Z",
+    "tradingWeekday": "Tue",
+    "entryWeekday": "Mon",
+    "open": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Feb 23, 00:00",
+     "timeToNextSession": 14400
+    },
+    "close": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Feb 24, 00:00",
+     "timeToNextSession": 14400
+    },
+    "closeDayKey": "2026-02-24",
+    "openMinuteOfDay": 0
+   },
+   {
+    "ticket": "8456898306838273080",
+    "storageViolations": [],
+    "controlCharacterFields": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 39.2,
+    "directionSymbol": "↓",
+    "tickerDisplay": "FIXC",
+    "tagList": [],
+    "tradeEmotion": null,
+    "grossProfitBeforeCosts": "40",
+    "commissionDouble": 0.8,
+    "swapDouble": 0,
+    "totalCosts": 0.8,
+    "screenshotList": [],
+    "checklistResults": {},
+    "exitEfficiency": null,
+    "moneyLeftOnTable": null,
+    "tradingDay": "2026-02-18T05:00:00.000Z",
+    "tradingWeekday": "Wed",
+    "entryWeekday": "Mon",
+    "open": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Feb 16, 00:00",
+     "timeToNextSession": 14400
+    },
+    "close": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Wed",
+     "tradeDisplayString": "Feb 18, 00:00",
+     "timeToNextSession": 14400
+    },
+    "closeDayKey": "2026-02-18",
+    "openMinuteOfDay": 0
+   },
+   {
+    "ticket": "8094341537237864664",
+    "storageViolations": [],
+    "controlCharacterFields": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 68.53,
+    "directionSymbol": "↑",
+    "tickerDisplay": "FIXB",
+    "tagList": [],
+    "tradeEmotion": null,
+    "grossProfitBeforeCosts": "70",
+    "commissionDouble": 1.47,
+    "swapDouble": 0,
+    "totalCosts": 1.47,
+    "screenshotList": [],
+    "checklistResults": {},
+    "exitEfficiency": null,
+    "moneyLeftOnTable": null,
+    "tradingDay": "2026-02-11T05:00:00.000Z",
+    "tradingWeekday": "Wed",
+    "entryWeekday": "Tue",
+    "open": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Feb 10, 00:00",
+     "timeToNextSession": 14400
+    },
+    "close": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Wed",
+     "tradeDisplayString": "Feb 11, 00:00",
+     "timeToNextSession": 14400
+    },
+    "closeDayKey": "2026-02-11",
+    "openMinuteOfDay": 0
+   },
+   {
+    "ticket": "8092904366104880805",
+    "storageViolations": [],
+    "controlCharacterFields": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 59.370000000000005,
+    "directionSymbol": "↑",
+    "tickerDisplay": "FIXB",
+    "tagList": [],
+    "tradeEmotion": null,
+    "grossProfitBeforeCosts": "60",
+    "commissionDouble": 0.63,
+    "swapDouble": 0,
+    "totalCosts": 0.63,
+    "screenshotList": [],
+    "checklistResults": {},
+    "exitEfficiency": null,
+    "moneyLeftOnTable": null,
+    "tradingDay": "2026-02-11T05:00:00.000Z",
+    "tradingWeekday": "Wed",
+    "entryWeekday": "Mon",
+    "open": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Feb 9, 00:00",
+     "timeToNextSession": 14400
+    },
+    "close": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Wed",
+     "tradeDisplayString": "Feb 11, 00:00",
+     "timeToNextSession": 14400
+    },
+    "closeDayKey": "2026-02-11",
+    "openMinuteOfDay": 0
+   },
+   {
+    "ticket": "651758429111483355",
+    "storageViolations": [],
+    "controlCharacterFields": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 98.955,
+    "directionSymbol": "↑",
+    "tickerDisplay": "FIXA",
+    "tagList": [],
+    "tradeEmotion": null,
+    "grossProfitBeforeCosts": "100",
+    "commissionDouble": 1.045,
+    "swapDouble": 0,
+    "totalCosts": 1.045,
+    "screenshotList": [],
+    "checklistResults": {},
+    "exitEfficiency": null,
+    "moneyLeftOnTable": null,
+    "tradingDay": "2026-02-04T05:00:00.000Z",
+    "tradingWeekday": "Wed",
+    "entryWeekday": "Mon",
+    "open": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Feb 2, 00:00",
+     "timeToNextSession": 14400
+    },
+    "close": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Wed",
+     "tradeDisplayString": "Feb 4, 00:00",
+     "timeToNextSession": 14400
+    },
+    "closeDayKey": "2026-02-04",
+    "openMinuteOfDay": 0
+   },
+   {
+    "ticket": "7112847995892630009",
+    "storageViolations": [],
+    "controlCharacterFields": [],
+    "isWin": true,
+    "isLoss": false,
+    "profitDouble": 48.955,
+    "directionSymbol": "↑",
+    "tickerDisplay": "FIXA",
+    "tagList": [],
+    "tradeEmotion": null,
+    "grossProfitBeforeCosts": "50",
+    "commissionDouble": 1.045,
+    "swapDouble": 0,
+    "totalCosts": 1.045,
+    "screenshotList": [],
+    "checklistResults": {},
+    "exitEfficiency": null,
+    "moneyLeftOnTable": null,
+    "tradingDay": "2026-02-03T05:00:00.000Z",
+    "tradingWeekday": "Tue",
+    "entryWeekday": "Mon",
+    "open": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Mon",
+     "tradeDisplayString": "Feb 2, 00:00",
+     "timeToNextSession": 14400
+    },
+    "close": {
+     "utcHour": 5,
+     "etHour": 0,
+     "etMinute": 0,
+     "isWeekend": false,
+     "marketSession": "EXTENDED",
+     "activeMarketSessions": [
+      "EXTENDED"
+     ],
+     "shortDayName": "Tue",
+     "tradeDisplayString": "Feb 3, 00:00",
+     "timeToNextSession": 14400
+    },
+    "closeDayKey": "2026-02-03",
+    "openMinuteOfDay": 0
+   }
+  ],
+  "BehavioralAnalytics.report": null,
+  "BenchmarkComparison.comparisons": [],
+  "CalendarCorrelation.analysis": {
+   "eventBreakdown": {
+    "CPI Release": {
+     "avgPnL": 68.53,
+     "count": 1,
+     "totalPnL": 68.53,
+     "winRate": 1,
+     "wins": 1
+    },
+    "Monday Open": {
+     "avgPnL": 51.105,
+     "count": 6,
+     "totalPnL": 306.63,
+     "winRate": 1,
+     "wins": 6
+    }
+   },
+   "eventDayAvgPnL": 53.59428571428571,
+   "eventDayAvgR": 0,
+   "eventDayTrades": [
+    "#2239254632406286775",
+    "#7068568429894052897",
+    "#8456898306838273080",
+    "#8094341537237864664",
+    "#8092904366104880805",
+    "#651758429111483355",
+    "#7112847995892630009"
+   ],
+   "eventDayWinRate": 1,
+   "quietDayAvgPnL": 18.75,
+   "quietDayAvgR": 0,
+   "quietDayTrades": [
+    "#1716536045982060688",
+    "#5106938260674288597"
+   ],
+   "quietDayWinRate": 1
+  },
+  "ChecklistAnalytics.clTrades": [],
+  "ChecklistAnalytics.hasData": false,
+  "ChecklistAnalytics.ruleStats": [],
+  "ChecklistAnalytics.overallCompliance": 0,
+  "ChecklistAnalytics.allFollowedAvg": 0,
+  "ChecklistAnalytics.anyBrokenAvg": 0,
+  "CommissionAnalytics.hasCostData": true,
+  "CommissionAnalytics.totalCommissions": 4.99,
+  "CommissionAnalytics.totalSwap": 0,
+  "CommissionAnalytics.totalCosts": 4.99,
+  "CommissionAnalytics.avgCostPerTrade": 0.5544444444444445,
+  "CommissionAnalytics.grossProfit": 417.65000000000003,
+  "CommissionAnalytics.costPercent": 1.1947803184484616,
+  "CommissionAnalytics.symbolCosts": [
+   {
+    "costPerShare": 0.021,
+    "symbol": "FIXB",
+    "totalCosts": 2.1,
+    "totalShares": 100
+   },
+   {
+    "costPerShare": 0.020796019900497512,
+    "symbol": "FIXA",
+    "totalCosts": 2.09,
+    "totalShares": 100.5
+   },
+   {
+    "costPerShare": 0.02,
+    "symbol": "FIXC",
+    "totalCosts": 0.8,
+    "totalShares": 40
+   },
+   {
+    "costPerShare": 0,
+    "symbol": "FIXE",
+    "totalCosts": 0,
+    "totalShares": 25
+   },
+   {
+    "costPerShare": 0,
+    "symbol": "FIXD",
+    "totalCosts": 0,
+    "totalShares": 60
+   },
+   {
+    "costPerShare": 0,
+    "symbol": "FIX.B",
+    "totalCosts": 0,
+    "totalShares": 10
+   }
+  ],
+  "ConsistencyScore.dimensions": [],
+  "ConsistencyScore.overallScore": 0,
+  "ConsistencyScore.grade": {
+   "$case": "f",
+   "label": "F"
+  },
+  "DailyBrief.signals": [
+   {
+    "detail": "3 trades, 100.0% win rate.",
+    "icon": "star.fill",
+    "priority": 3,
+    "title": "FIXA is your top performer",
+    "value": "$ 148.06"
+   },
+   {
+    "detail": "Sharpe ratio 1.60 — your consistency is strong.",
+    "icon": "chart.line.uptrend.xyaxis",
+    "priority": 4,
+    "title": "Excellent risk-adjusted returns",
+    "value": "1.60"
+   }
+  ],
+  "DailyBrief.generateSignals": [
+   {
+    "detail": "3 trades, 100.0% win rate.",
+    "icon": "star.fill",
+    "priority": 3,
+    "title": "FIXA is your top performer",
+    "value": "$ 148.06"
+   },
+   {
+    "detail": "Sharpe ratio 1.60 — your consistency is strong.",
+    "icon": "chart.line.uptrend.xyaxis",
+    "priority": 4,
+    "title": "Excellent risk-adjusted returns",
+    "value": "1.60"
+   }
+  ],
+  "DataQuality.issues": [
+   {
+    "count": 9,
+    "message": "Trades with missing R-multiple (no SL set?)",
+    "severity": {
+     "$case": "warning",
+     "icon": "exclamationmark.triangle.fill"
+    }
+   },
+   {
+    "count": 2,
+    "message": "Trades with 0-minute duration",
+    "severity": {
+     "$case": "info",
+     "icon": "info.circle.fill"
+    }
+   },
+   {
+    "count": 1,
+    "message": "Trades with identical close times",
+    "severity": {
+     "$case": "warning",
+     "icon": "exclamationmark.triangle.fill"
+    }
+   }
+  ],
+  "DayOfWeekChart.data": [
+   {
+    "day": "Tue",
+    "id": "Tue",
+    "profit": 134.10500000000002,
+    "tradeCount": 4,
+    "winRate": 100
+   },
+   {
+    "day": "Wed",
+    "id": "Wed",
+    "profit": 266.055,
+    "tradeCount": 4,
+    "winRate": 100
+   },
+   {
+    "day": "Thu",
+    "id": "Thu",
+    "profit": 12.5,
+    "tradeCount": 1,
+    "winRate": 100
+   }
+  ],
+  "DirectionalEdge.buyTrades": [
+   "#2239254632406286775",
+   "#1716536045982060688",
+   "#5106938260674288597",
+   "#7068568429894052897",
+   "#8094341537237864664",
+   "#8092904366104880805",
+   "#651758429111483355",
+   "#7112847995892630009"
+  ],
+  "DirectionalEdge.sellTrades": [
+   "#8456898306838273080"
+  ],
+  "DirectionalEdge.buyStats": {
+   "avgPnL": 46.6825,
+   "avgR": 0,
+   "count": 8,
+   "totalPnL": 373.46,
+   "winRate": 100
+  },
+  "DirectionalEdge.sellStats": {
+   "avgPnL": 39.2,
+   "avgR": 0,
+   "count": 1,
+   "totalPnL": 39.2,
+   "winRate": 100
+  },
+  "DiversificationScore.symbols": [
+   "FIX.B",
+   "FIXA",
+   "FIXB",
+   "FIXC",
+   "FIXD",
+   "FIXE"
+  ],
+  "DiversificationScore.symbolDailyPnL": {
+   "FIX.B": {
+    "2026-03-05": 12.5
+   },
+   "FIXA": {
+    "2026-02-03": 48.955,
+    "2026-02-04": 98.955,
+    "2026-03-10": 0.15
+   },
+   "FIXB": {
+    "2026-02-11": 127.9
+   },
+   "FIXC": {
+    "2026-02-18": 39.2
+   },
+   "FIXD": {
+    "2026-02-24": 60
+   },
+   "FIXE": {
+    "2026-03-03": 25
+   }
+  },
+  "DiversificationScore.correlationMatrix": [
+   [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ]
+  ],
+  "DiversificationScore.effectivePositionCount": 6,
+  "DiversificationScore.topSymbolsByPnL": [
+   {
+    "pct": 35.87941646876364,
+    "pnl": 148.06,
+    "symbol": "FIXA"
+   },
+   {
+    "pct": 30.994038675907532,
+    "pnl": 127.9,
+    "symbol": "FIXB"
+   },
+   {
+    "pct": 14.53981485969079,
+    "pnl": 60,
+    "symbol": "FIXD"
+   },
+   {
+    "pct": 9.499345708331315,
+    "pnl": 39.2,
+    "symbol": "FIXC"
+   },
+   {
+    "pct": 6.058256191537828,
+    "pnl": 25,
+    "symbol": "FIXE"
+   }
+  ],
+  "DiversificationScore.sectorDistribution": [],
+  "DrawdownChart.drawdownData": [
+   {
+    "date": "2026-02-03T05:00:00.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-02-04T05:00:00.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-02-11T05:00:00.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-02-11T05:00:00.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-02-18T05:00:00.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-02-24T05:00:00.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-03-03T05:00:00.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-03-05T05:00:00.000Z",
+    "drawdown": 0
+   },
+   {
+    "date": "2026-03-10T04:00:00.000Z",
+    "drawdown": 0
+   }
+  ],
+  "DrawdownRecovery.sortedTrades": [
+   "#7112847995892630009",
+   "#651758429111483355",
+   "#8094341537237864664",
+   "#8092904366104880805",
+   "#8456898306838273080",
+   "#7068568429894052897",
+   "#5106938260674288597",
+   "#1716536045982060688",
+   "#2239254632406286775"
+  ],
+  "DrawdownRecovery.equityCurve": [],
+  "DrawdownRecovery.drawdownEvents": [],
+  "DrawdownRecovery.avgRecoveryTrades": 0,
+  "DrawdownRecovery.deepestEvent": null,
+  "DrawdownRecovery.longestEvent": null,
+  "DrawdownRecovery.isCurrentlyInDrawdown": false,
+  "DrawdownRecovery.percentTimeInDrawdown": 0,
+  "DrawdownRecovery.drawdownPhaseStats": {
+   "avgShareSize": 0,
+   "sessionBreakdown": [],
+   "symbolBreakdown": [],
+   "tradeCount": 0,
+   "winRate": 0
+  },
+  "DrawdownRecovery.recoveryPhaseStats": {
+   "avgShareSize": 0,
+   "sessionBreakdown": [],
+   "symbolBreakdown": [],
+   "tradeCount": 0,
+   "winRate": 0
+  },
+  "DrawdownRecovery.drawdownPhaseTrades": [],
+  "DrawdownRecovery.recoveryPhaseTrades": [],
+  "DurationAnalysis.buckets": [
+   {
+    "avgR": 0,
+    "id": "0-5m",
+    "label": "0-5m",
+    "profit": 37.5,
+    "tradeCount": 2,
+    "winRate": 100
+   },
+   {
+    "avgR": 0,
+    "id": "2h+",
+    "label": "2h+",
+    "profit": 375.15999999999997,
+    "tradeCount": 7,
+    "winRate": 100
+   }
+  ],
+  "EarningsImpact.analysis": {
+   "catalystTrades": [],
+   "heldThroughTrades": [],
+   "normalTrades": [
+    "#2239254632406286775",
+    "#1716536045982060688",
+    "#5106938260674288597",
+    "#7068568429894052897",
+    "#8456898306838273080",
+    "#8094341537237864664",
+    "#8092904366104880805",
+    "#651758429111483355",
+    "#7112847995892630009"
+   ]
+  },
+  "EdgeDecayMonitor.sorted": [
+   "#7112847995892630009",
+   "#651758429111483355",
+   "#8094341537237864664",
+   "#8092904366104880805",
+   "#8456898306838273080",
+   "#7068568429894052897",
+   "#5106938260674288597",
+   "#1716536045982060688",
+   "#2239254632406286775"
+  ],
+  "EdgeDecayMonitor.rollingData": [],
+  "EdgeDecayMonitor.status": {
+   "$case": "healthy",
+   "label": "Healthy",
+   "icon": "checkmark.seal.fill"
+  },
+  "EdgeDecayMonitor.diagnoses": [],
+  "EmotionalAnalytics.metrics": null,
+  "EventImpactProfiler.results": [
+   {
+    "avgPnL": 51.105,
+    "avgR": 0,
+    "duringTrades": [],
+    "eventType": {
+     "$case": "mondayOpen",
+     "$raw": "Mon Open",
+     "icon": "sunrise.fill",
+     "typicalHourET": 9,
+     "affectedSectors": []
+    },
+    "postTrades": [],
+    "preTrades": [],
+    "profitFactor": 99,
+    "recommendation": "CAUTION",
+    "totalPnL": 306.63,
+    "trades": [
+     "#2239254632406286775",
+     "#7068568429894052897",
+     "#8456898306838273080",
+     "#8092904366104880805",
+     "#651758429111483355",
+     "#7112847995892630009"
+    ],
+    "winRate": 1
+   }
+  ],
+  "EventImpactProfiler.tradingMonths": 8,
+  "ExecutionQuality.tradesWithSlippage": [],
+  "ExecutionQuality.hourlySlippage": [],
+  "ExecutionQuality.worstHour": null,
+  "ExecutionQuality.symbolSlippage": [],
+  "ExecutionQuality.executionScore": 85,
+  "ExecutionQuality.scoreLabel": "Good",
+  "ExecutionQuality.maxHourlySlippage": 1,
+  "ExitAnalysis.validTrades": [],
+  "ExitAnalysis.avgExitEfficiency": 0,
+  "ExitAnalysis.totalMoneyLeftOnTable": 0,
+  "ExitAnalysis.winners": [
+   "#2239254632406286775",
+   "#1716536045982060688",
+   "#5106938260674288597",
+   "#7068568429894052897",
+   "#8456898306838273080",
+   "#8094341537237864664",
+   "#8092904366104880805",
+   "#651758429111483355",
+   "#7112847995892630009"
+  ],
+  "ExitAnalysis.earlyExitPercent": 0,
+  "ExitAnalysis.distributionBuckets": [
+   {
+    "count": 0,
+    "id": "0-20%",
+    "label": "0-20%"
+   },
+   {
+    "count": 0,
+    "id": "20-40%",
+    "label": "20-40%"
+   },
+   {
+    "count": 0,
+    "id": "40-60%",
+    "label": "40-60%"
+   },
+   {
+    "count": 0,
+    "id": "60-80%",
+    "label": "60-80%"
+   },
+   {
+    "count": 0,
+    "id": "80-100%",
+    "label": "80-100%"
+   }
+  ],
+  "ExitAnalysis.exitsEarly": true,
+  "ExitAnalysis.insightText": "Exiting way too early — capturing less than half of available moves",
+  "ExpectancyCurve.projectionPoints": [],
+  "ExpectancyCurve.deviation": "—",
+  "GapAnalysis.gapTrades": [
+   {
+    "gapFilled": true,
+    "gapPercent": -4.545454545454546,
+    "gapType": "Gap Down",
+    "previousClose": 22,
+    "trade": "#8094341537237864664"
+   },
+   {
+    "gapFilled": false,
+    "gapPercent": -15.833333333333336,
+    "gapType": "Gap Down",
+    "previousClose": 12,
+    "trade": "#2239254632406286775"
+   }
+  ],
+  "GapAnalysis.hasEnoughData": true,
+  "GapAnalysis.overallFillRate": 50,
+  "GapAnalysis.bestStrategy": "Need more gap trades to determine best strategy",
+  "GradeDistribution.gradeData": [
+   {
+    "count": 9,
+    "grade": "F",
+    "id": "F",
+    "percent": 100
+   }
+  ],
+  "GradeDistribution.averageScore": 29.22222222222222,
+  "GrowthProjection.tradesPerWeek": 2.25,
+  "GrowthProjection.projectionData": [
+   {
+    "conservative": 0,
+    "expected": 0,
+    "optimistic": 0,
+    "week": 0
+   },
+   {
+    "conservative": 61.898999999999994,
+    "expected": 103.16499999999999,
+    "optimistic": 144.43099999999998,
+    "week": 1
+   },
+   {
+    "conservative": 123.79799999999999,
+    "expected": 206.32999999999998,
+    "optimistic": 288.86199999999997,
+    "week": 2
+   },
+   {
+    "conservative": 185.697,
+    "expected": 309.495,
+    "optimistic": 433.293,
+    "week": 3
+   },
+   {
+    "conservative": 247.59599999999998,
+    "expected": 412.65999999999997,
+    "optimistic": 577.7239999999999,
+    "week": 4
+   },
+   {
+    "conservative": 309.49499999999995,
+    "expected": 515.8249999999999,
+    "optimistic": 722.1549999999999,
+    "week": 5
+   },
+   {
+    "conservative": 371.394,
+    "expected": 618.99,
+    "optimistic": 866.586,
+    "week": 6
+   },
+   {
+    "conservative": 433.29299999999995,
+    "expected": 722.155,
+    "optimistic": 1011.0169999999999,
+    "week": 7
+   },
+   {
+    "conservative": 495.19199999999995,
+    "expected": 825.3199999999999,
+    "optimistic": 1155.4479999999999,
+    "week": 8
+   },
+   {
+    "conservative": 557.0909999999999,
+    "expected": 928.4849999999999,
+    "optimistic": 1299.8789999999997,
+    "week": 9
+   },
+   {
+    "conservative": 618.9899999999999,
+    "expected": 1031.6499999999999,
+    "optimistic": 1444.3099999999997,
+    "week": 10
+   },
+   {
+    "conservative": 680.8889999999999,
+    "expected": 1134.8149999999998,
+    "optimistic": 1588.7409999999998,
+    "week": 11
+   },
+   {
+    "conservative": 742.788,
+    "expected": 1237.98,
+    "optimistic": 1733.172,
+    "week": 12
+   },
+   {
+    "conservative": 804.687,
+    "expected": 1341.145,
+    "optimistic": 1877.6029999999998,
+    "week": 13
+   },
+   {
+    "conservative": 866.5859999999999,
+    "expected": 1444.31,
+    "optimistic": 2022.0339999999999,
+    "week": 14
+   },
+   {
+    "conservative": 928.4849999999999,
+    "expected": 1547.475,
+    "optimistic": 2166.4649999999997,
+    "week": 15
+   },
+   {
+    "conservative": 990.3839999999999,
+    "expected": 1650.6399999999999,
+    "optimistic": 2310.8959999999997,
+    "week": 16
+   },
+   {
+    "conservative": 1052.283,
+    "expected": 1753.8049999999998,
+    "optimistic": 2455.3269999999998,
+    "week": 17
+   },
+   {
+    "conservative": 1114.1819999999998,
+    "expected": 1856.9699999999998,
+    "optimistic": 2599.7579999999994,
+    "week": 18
+   },
+   {
+    "conservative": 1176.081,
+    "expected": 1960.1349999999998,
+    "optimistic": 2744.1889999999994,
+    "week": 19
+   },
+   {
+    "conservative": 1237.9799999999998,
+    "expected": 2063.2999999999997,
+    "optimistic": 2888.6199999999994,
+    "week": 20
+   },
+   {
+    "conservative": 1299.8789999999997,
+    "expected": 2166.4649999999997,
+    "optimistic": 3033.0509999999995,
+    "week": 21
+   },
+   {
+    "conservative": 1361.7779999999998,
+    "expected": 2269.6299999999997,
+    "optimistic": 3177.4819999999995,
+    "week": 22
+   },
+   {
+    "conservative": 1423.6769999999997,
+    "expected": 2372.7949999999996,
+    "optimistic": 3321.912999999999,
+    "week": 23
+   },
+   {
+    "conservative": 1485.576,
+    "expected": 2475.96,
+    "optimistic": 3466.344,
+    "week": 24
+   }
+  ],
+  "GrowthProjection[months3].tradesPerWeek": 2.25,
+  "GrowthProjection[months3].projectionData": [
+   {
+    "conservative": 0,
+    "expected": 0,
+    "optimistic": 0,
+    "week": 0
+   },
+   {
+    "conservative": 61.898999999999994,
+    "expected": 103.16499999999999,
+    "optimistic": 144.43099999999998,
+    "week": 1
+   },
+   {
+    "conservative": 123.79799999999999,
+    "expected": 206.32999999999998,
+    "optimistic": 288.86199999999997,
+    "week": 2
+   },
+   {
+    "conservative": 185.697,
+    "expected": 309.495,
+    "optimistic": 433.293,
+    "week": 3
+   },
+   {
+    "conservative": 247.59599999999998,
+    "expected": 412.65999999999997,
+    "optimistic": 577.7239999999999,
+    "week": 4
+   },
+   {
+    "conservative": 309.49499999999995,
+    "expected": 515.8249999999999,
+    "optimistic": 722.1549999999999,
+    "week": 5
+   },
+   {
+    "conservative": 371.394,
+    "expected": 618.99,
+    "optimistic": 866.586,
+    "week": 6
+   },
+   {
+    "conservative": 433.29299999999995,
+    "expected": 722.155,
+    "optimistic": 1011.0169999999999,
+    "week": 7
+   },
+   {
+    "conservative": 495.19199999999995,
+    "expected": 825.3199999999999,
+    "optimistic": 1155.4479999999999,
+    "week": 8
+   },
+   {
+    "conservative": 557.0909999999999,
+    "expected": 928.4849999999999,
+    "optimistic": 1299.8789999999997,
+    "week": 9
+   },
+   {
+    "conservative": 618.9899999999999,
+    "expected": 1031.6499999999999,
+    "optimistic": 1444.3099999999997,
+    "week": 10
+   },
+   {
+    "conservative": 680.8889999999999,
+    "expected": 1134.8149999999998,
+    "optimistic": 1588.7409999999998,
+    "week": 11
+   },
+   {
+    "conservative": 742.788,
+    "expected": 1237.98,
+    "optimistic": 1733.172,
+    "week": 12
+   }
+  ],
+  "GrowthProjection[months12].tradesPerWeek": 2.25,
+  "GrowthProjection[months12].projectionData": [
+   {
+    "conservative": 0,
+    "expected": 0,
+    "optimistic": 0,
+    "week": 0
+   },
+   {
+    "conservative": 61.898999999999994,
+    "expected": 103.16499999999999,
+    "optimistic": 144.43099999999998,
+    "week": 1
+   },
+   {
+    "conservative": 123.79799999999999,
+    "expected": 206.32999999999998,
+    "optimistic": 288.86199999999997,
+    "week": 2
+   },
+   {
+    "conservative": 185.697,
+    "expected": 309.495,
+    "optimistic": 433.293,
+    "week": 3
+   },
+   {
+    "conservative": 247.59599999999998,
+    "expected": 412.65999999999997,
+    "optimistic": 577.7239999999999,
+    "week": 4
+   },
+   {
+    "conservative": 309.49499999999995,
+    "expected": 515.8249999999999,
+    "optimistic": 722.1549999999999,
+    "week": 5
+   },
+   {
+    "conservative": 371.394,
+    "expected": 618.99,
+    "optimistic": 866.586,
+    "week": 6
+   },
+   {
+    "conservative": 433.29299999999995,
+    "expected": 722.155,
+    "optimistic": 1011.0169999999999,
+    "week": 7
+   },
+   {
+    "conservative": 495.19199999999995,
+    "expected": 825.3199999999999,
+    "optimistic": 1155.4479999999999,
+    "week": 8
+   },
+   {
+    "conservative": 557.0909999999999,
+    "expected": 928.4849999999999,
+    "optimistic": 1299.8789999999997,
+    "week": 9
+   },
+   {
+    "conservative": 618.9899999999999,
+    "expected": 1031.6499999999999,
+    "optimistic": 1444.3099999999997,
+    "week": 10
+   },
+   {
+    "conservative": 680.8889999999999,
+    "expected": 1134.8149999999998,
+    "optimistic": 1588.7409999999998,
+    "week": 11
+   },
+   {
+    "conservative": 742.788,
+    "expected": 1237.98,
+    "optimistic": 1733.172,
+    "week": 12
+   },
+   {
+    "conservative": 804.687,
+    "expected": 1341.145,
+    "optimistic": 1877.6029999999998,
+    "week": 13
+   },
+   {
+    "conservative": 866.5859999999999,
+    "expected": 1444.31,
+    "optimistic": 2022.0339999999999,
+    "week": 14
+   },
+   {
+    "conservative": 928.4849999999999,
+    "expected": 1547.475,
+    "optimistic": 2166.4649999999997,
+    "week": 15
+   },
+   {
+    "conservative": 990.3839999999999,
+    "expected": 1650.6399999999999,
+    "optimistic": 2310.8959999999997,
+    "week": 16
+   },
+   {
+    "conservative": 1052.283,
+    "expected": 1753.8049999999998,
+    "optimistic": 2455.3269999999998,
+    "week": 17
+   },
+   {
+    "conservative": 1114.1819999999998,
+    "expected": 1856.9699999999998,
+    "optimistic": 2599.7579999999994,
+    "week": 18
+   },
+   {
+    "conservative": 1176.081,
+    "expected": 1960.1349999999998,
+    "optimistic": 2744.1889999999994,
+    "week": 19
+   },
+   {
+    "conservative": 1237.9799999999998,
+    "expected": 2063.2999999999997,
+    "optimistic": 2888.6199999999994,
+    "week": 20
+   },
+   {
+    "conservative": 1299.8789999999997,
+    "expected": 2166.4649999999997,
+    "optimistic": 3033.0509999999995,
+    "week": 21
+   },
+   {
+    "conservative": 1361.7779999999998,
+    "expected": 2269.6299999999997,
+    "optimistic": 3177.4819999999995,
+    "week": 22
+   },
+   {
+    "conservative": 1423.6769999999997,
+    "expected": 2372.7949999999996,
+    "optimistic": 3321.912999999999,
+    "week": 23
+   },
+   {
+    "conservative": 1485.576,
+    "expected": 2475.96,
+    "optimistic": 3466.344,
+    "week": 24
+   },
+   {
+    "conservative": 1547.475,
+    "expected": 2579.125,
+    "optimistic": 3610.7749999999996,
+    "week": 25
+   },
+   {
+    "conservative": 1609.374,
+    "expected": 2682.29,
+    "optimistic": 3755.2059999999997,
+    "week": 26
+   },
+   {
+    "conservative": 1671.273,
+    "expected": 2785.455,
+    "optimistic": 3899.6369999999997,
+    "week": 27
+   },
+   {
+    "conservative": 1733.1719999999998,
+    "expected": 2888.62,
+    "optimistic": 4044.0679999999998,
+    "week": 28
+   },
+   {
+    "conservative": 1795.071,
+    "expected": 2991.785,
+    "optimistic": 4188.499,
+    "week": 29
+   },
+   {
+    "conservative": 1856.9699999999998,
+    "expected": 3094.95,
+    "optimistic": 4332.929999999999,
+    "week": 30
+   },
+   {
+    "conservative": 1918.8689999999997,
+    "expected": 3198.115,
+    "optimistic": 4477.360999999999,
+    "week": 31
+   },
+   {
+    "conservative": 1980.7679999999998,
+    "expected": 3301.2799999999997,
+    "optimistic": 4621.7919999999995,
+    "week": 32
+   },
+   {
+    "conservative": 2042.6669999999997,
+    "expected": 3404.4449999999997,
+    "optimistic": 4766.222999999999,
+    "week": 33
+   },
+   {
+    "conservative": 2104.566,
+    "expected": 3507.6099999999997,
+    "optimistic": 4910.6539999999995,
+    "week": 34
+   },
+   {
+    "conservative": 2166.4649999999997,
+    "expected": 3610.7749999999996,
+    "optimistic": 5055.084999999999,
+    "week": 35
+   },
+   {
+    "conservative": 2228.3639999999996,
+    "expected": 3713.9399999999996,
+    "optimistic": 5199.515999999999,
+    "week": 36
+   },
+   {
+    "conservative": 2290.2629999999995,
+    "expected": 3817.1049999999996,
+    "optimistic": 5343.946999999999,
+    "week": 37
+   },
+   {
+    "conservative": 2352.162,
+    "expected": 3920.2699999999995,
+    "optimistic": 5488.377999999999,
+    "week": 38
+   },
+   {
+    "conservative": 2414.0609999999997,
+    "expected": 4023.4349999999995,
+    "optimistic": 5632.808999999999,
+    "week": 39
+   },
+   {
+    "conservative": 2475.9599999999996,
+    "expected": 4126.599999999999,
+    "optimistic": 5777.239999999999,
+    "week": 40
+   },
+   {
+    "conservative": 2537.8589999999995,
+    "expected": 4229.764999999999,
+    "optimistic": 5921.6709999999985,
+    "week": 41
+   },
+   {
+    "conservative": 2599.7579999999994,
+    "expected": 4332.929999999999,
+    "optimistic": 6066.101999999999,
+    "week": 42
+   },
+   {
+    "conservative": 2661.6569999999997,
+    "expected": 4436.094999999999,
+    "optimistic": 6210.5329999999985,
+    "week": 43
+   },
+   {
+    "conservative": 2723.5559999999996,
+    "expected": 4539.259999999999,
+    "optimistic": 6354.963999999999,
+    "week": 44
+   },
+   {
+    "conservative": 2785.4549999999995,
+    "expected": 4642.424999999999,
+    "optimistic": 6499.394999999999,
+    "week": 45
+   },
+   {
+    "conservative": 2847.3539999999994,
+    "expected": 4745.589999999999,
+    "optimistic": 6643.825999999998,
+    "week": 46
+   },
+   {
+    "conservative": 2909.2529999999992,
+    "expected": 4848.754999999999,
+    "optimistic": 6788.256999999999,
+    "week": 47
+   },
+   {
+    "conservative": 2971.152,
+    "expected": 4951.92,
+    "optimistic": 6932.688,
+    "week": 48
+   }
+  ],
+  "HourlyPnLChart.hourlyData": [
+   {
+    "count": 9,
+    "hour": 0,
+    "pnl": 412.65999999999997
+   }
+  ],
+  "ImprovementTracker.rollingMetrics": [],
+  "ImprovementTracker.trend": {
+   "$case": "insufficient",
+   "label": "Need more data",
+   "icon": "questionmark.circle"
+  },
+  "ImprovementTracker.insightText": "Keep trading to build enough history for trend detection",
+  "IntradayEquityCurve.hourBuckets": [
+   {
+    "avgPnL": 0,
+    "cumulativePnL": 0,
+    "hour": 9,
+    "id": 9,
+    "tradeCount": 0
+   },
+   {
+    "avgPnL": 0,
+    "cumulativePnL": 0,
+    "hour": 10,
+    "id": 10,
+    "tradeCount": 0
+   },
+   {
+    "avgPnL": 0,
+    "cumulativePnL": 0,
+    "hour": 11,
+    "id": 11,
+    "tradeCount": 0
+   },
+   {
+    "avgPnL": 0,
+    "cumulativePnL": 0,
+    "hour": 12,
+    "id": 12,
+    "tradeCount": 0
+   },
+   {
+    "avgPnL": 0,
+    "cumulativePnL": 0,
+    "hour": 13,
+    "id": 13,
+    "tradeCount": 0
+   },
+   {
+    "avgPnL": 0,
+    "cumulativePnL": 0,
+    "hour": 14,
+    "id": 14,
+    "tradeCount": 0
+   },
+   {
+    "avgPnL": 0,
+    "cumulativePnL": 0,
+    "hour": 15,
+    "id": 15,
+    "tradeCount": 0
+   }
+  ],
+  "IntradayEquityCurve.morningPnL": 0,
+  "IntradayEquityCurve.afternoonPnL": 0,
+  "IntradayEquityCurve.insightText": "Negative P&L across both sessions -- review trade selection",
+  "IntradayEquityCurve.maxAbsCumulative": 1,
+  "KillZoneOptimizer.tradingDays": 8,
+  "KillZoneOptimizer.hourlyStats": [
+   {
+    "count": 9,
+    "hour": 0,
+    "pnl": 412.65999999999997,
+    "winRate": 100
+   },
+   {
+    "count": 0,
+    "hour": 1,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 2,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 3,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 4,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 5,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 6,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 7,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 8,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 9,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 10,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 11,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 12,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 13,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 14,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 15,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 16,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 17,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 18,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 19,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 20,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 21,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 22,
+    "pnl": 0,
+    "winRate": 0
+   },
+   {
+    "count": 0,
+    "hour": 23,
+    "pnl": 0,
+    "winRate": 0
+   }
+  ],
+  "KillZoneOptimizer.recommendWindows": [],
+  "KillZoneOptimizer.avoidWindows": [],
+  "KillZoneOptimizer.topWindowMonthlyPnL": 0,
+  "MAEMFEChart.captureRatio": 0,
+  "MAEMFEChart.avgMAE": 0,
+  "MAEMFEChart.avgMFE": 0,
+  "MAEMFEChart.mfeToMaeRatio": 0,
+  "MAEMFEChart.insightText": "Drawdowns exceed favorable moves — review entry timing",
+  "MAEMFEChart.insightIcon": "exclamationmark.circle",
+  "MonteCarloSimulation.result": null,
+  "MonthlyReturns.monthlyData": [
+   {
+    "id": "2026-02",
+    "month": 2,
+    "profit": 375.01,
+    "tradeCount": 6,
+    "winRate": 100,
+    "year": 2026
+   },
+   {
+    "id": "2026-03",
+    "month": 3,
+    "profit": 37.65,
+    "tradeCount": 3,
+    "winRate": 100,
+    "year": 2026
+   }
+  ],
+  "MonthlyReturns.years": [
+   2026
+  ],
+  "OpeningRangeAnalysis.buckets": [
+   {
+    "avgPnL": 0,
+    "id": "5min",
+    "label": "First 5 min",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   },
+   {
+    "avgPnL": 0,
+    "id": "15min",
+    "label": "First 15 min",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   },
+   {
+    "avgPnL": 0,
+    "id": "30min",
+    "label": "First 30 min",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   },
+   {
+    "avgPnL": 0,
+    "id": "midmorn",
+    "label": "Mid-Morning",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   },
+   {
+    "avgPnL": 0,
+    "id": "lunch",
+    "label": "Lunch",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   },
+   {
+    "avgPnL": 0,
+    "id": "afternoon",
+    "label": "Afternoon",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   },
+   {
+    "avgPnL": 0,
+    "id": "power",
+    "label": "Power Hour",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   }
+  ],
+  "OpeningRangeAnalysis.activeBuckets": [],
+  "OpeningRangeAnalysis.bestBucket": null,
+  "OpeningRangeAnalysis.worstBucket": null,
+  "OpeningRangeAnalysis.hasData": false,
+  "OpeningRangeAnalysis.insightText": "Need more trades across different times for insights",
+  "PerformanceSummary.calendar": {
+   "calendar": {
+    "_firstWeekday": 2,
+    "_minimumDaysInFirstWeek": 4,
+    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
+    "gregorianStartYear": 1582,
+    "inf_ti": 4398046511104,
+    "julianCutoverDay": 2299161,
+    "kDefaultJulianCutoverDay": 2299161,
+    "kSecondsInDay": 86400,
+    "kSecondsInHour": 3600,
+    "kSecondsInMinute": 60,
+    "kSecondsInWeek": 604800,
+    "locale": {
+     "identifier": "en_US_POSIX",
+     "locale": "fixed en_US_POSIX"
+    },
+    "timeZone": {
+     "abbreviation": "EDT",
+     "identifier": "America/New_York",
+     "isDaylightSavingTime": true,
+     "secondsFromGMT": -14400,
+     "tz": {
+      "lock": {
+       "_buffer": {}
+      },
+      "name": "America/New_York"
+     }
+    }
+   },
+   "firstWeekday": 2,
+   "identifier": "gregorian",
+   "locale": {
+    "identifier": "en_US_POSIX",
+    "locale": "fixed en_US_POSIX"
+   },
+   "minimumDaysInFirstWeek": 4,
+   "timeZone": {
+    "abbreviation": "EDT",
+    "identifier": "America/New_York",
+    "isDaylightSavingTime": true,
+    "secondsFromGMT": -14400,
+    "tz": {
+     "lock": {
+      "_buffer": {}
+     },
+     "name": "America/New_York"
+    }
+   }
+  },
+  "PerformanceSummary.thisWeekTrades": [],
+  "PerformanceSummary.thisMonthTrades": [],
+  "PerformanceSummary.lastMonthTrades": [],
+  "PeriodComparison.currentPeriodTrades": [],
+  "PeriodComparison.previousPeriodTrades": [],
+  "PeriodComparison.comparisons": [
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "pnl",
+    "isPositiveGood": true,
+    "label": "P&L",
+    "previous": "$ 0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.0%",
+    "id": "wr",
+    "isPositiveGood": true,
+    "label": "Win Rate",
+    "previous": "0.0%"
+   },
+   {
+    "change": 0,
+    "current": "0.00",
+    "id": "pf",
+    "isPositiveGood": true,
+    "label": "Profit Factor",
+    "previous": "0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.00R",
+    "id": "avgr",
+    "isPositiveGood": true,
+    "label": "Avg R",
+    "previous": "0.00R"
+   },
+   {
+    "change": 0,
+    "current": "0",
+    "id": "trades",
+    "isPositiveGood": true,
+    "label": "Trades",
+    "previous": "0"
+   },
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "dd",
+    "isPositiveGood": false,
+    "label": "Max DD",
+    "previous": "$ 0.00"
+   }
+  ],
+  "PeriodComparison[week].currentPeriodTrades": [],
+  "PeriodComparison[week].previousPeriodTrades": [],
+  "PeriodComparison[week].comparisons": [
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "pnl",
+    "isPositiveGood": true,
+    "label": "P&L",
+    "previous": "$ 0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.0%",
+    "id": "wr",
+    "isPositiveGood": true,
+    "label": "Win Rate",
+    "previous": "0.0%"
+   },
+   {
+    "change": 0,
+    "current": "0.00",
+    "id": "pf",
+    "isPositiveGood": true,
+    "label": "Profit Factor",
+    "previous": "0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.00R",
+    "id": "avgr",
+    "isPositiveGood": true,
+    "label": "Avg R",
+    "previous": "0.00R"
+   },
+   {
+    "change": 0,
+    "current": "0",
+    "id": "trades",
+    "isPositiveGood": true,
+    "label": "Trades",
+    "previous": "0"
+   },
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "dd",
+    "isPositiveGood": false,
+    "label": "Max DD",
+    "previous": "$ 0.00"
+   }
+  ],
+  "PeriodComparison[quarter].currentPeriodTrades": [],
+  "PeriodComparison[quarter].previousPeriodTrades": [],
+  "PeriodComparison[quarter].comparisons": [
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "pnl",
+    "isPositiveGood": true,
+    "label": "P&L",
+    "previous": "$ 0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.0%",
+    "id": "wr",
+    "isPositiveGood": true,
+    "label": "Win Rate",
+    "previous": "0.0%"
+   },
+   {
+    "change": 0,
+    "current": "0.00",
+    "id": "pf",
+    "isPositiveGood": true,
+    "label": "Profit Factor",
+    "previous": "0.00"
+   },
+   {
+    "change": 0,
+    "current": "0.00R",
+    "id": "avgr",
+    "isPositiveGood": true,
+    "label": "Avg R",
+    "previous": "0.00R"
+   },
+   {
+    "change": 0,
+    "current": "0",
+    "id": "trades",
+    "isPositiveGood": true,
+    "label": "Trades",
+    "previous": "0"
+   },
+   {
+    "change": 0,
+    "current": "$ 0.00",
+    "id": "dd",
+    "isPositiveGood": false,
+    "label": "Max DD",
+    "previous": "$ 0.00"
+   }
+  ],
+  "PlaybookCatalog.setups": [],
+  "PlaybookCatalog.keepSetups": [],
+  "PlaybookCatalog.reviewSetups": [],
+  "PlaybookCatalog.dropSetups": [],
+  "PositionSizer.balance": 10000,
+  "PositionSizer.riskPerTrade": 100,
+  "PositionSizer.avgSLPoints": 20,
+  "PositionSizer.suggestedShares": 5,
+  "PositionSizer.currentAvgShares": 37.27777777777778,
+  "PositionSizer.isSizingAligned": false,
+  "PositionSizer[balance25k_risk2].balance": 25000,
+  "PositionSizer[balance25k_risk2].riskPerTrade": 500,
+  "PositionSizer[balance25k_risk2].avgSLPoints": 20,
+  "PositionSizer[balance25k_risk2].suggestedShares": 25,
+  "PositionSizer[balance25k_risk2].currentAvgShares": 37.27777777777778,
+  "PositionSizer[balance25k_risk2].isSizingAligned": true,
+  "PropFirmStatusBadge.accountSize": 100000,
+  "PropFirmStatusBadge.maxDailyLossPercent": 5,
+  "PropFirmStatusBadge.maxDrawdownPercent": 10,
+  "PropFirmStatusBadge.profitTargetPercent": 8,
+  "PropFirmStatusBadge.totalPnL": 412.65999999999997,
+  "PropFirmStatusBadge.dailyPnL": 0,
+  "PropFirmStatusBadge.maxDailyLossDollars": 5000,
+  "PropFirmStatusBadge.maxDrawdownDollars": 10000,
+  "PropFirmStatusBadge.profitTargetDollars": 8000,
+  "PropFirmStatusBadge.maxDrawdown": 0,
+  "PropFirmStatusBadge.dailyLossBreached": false,
+  "PropFirmStatusBadge.drawdownBreached": false,
+  "PropFirmStatusBadge.isBreached": false,
+  "PropFirmStatusBadge.profitProgress": 0.051582499999999996,
+  "PropFirmStatusBadge.dailyLossUsed": 0,
+  "PropFirmStatusBadge.dailyLossWarning": "none",
+  "PropFirmTracker.totalPnL": 412.65999999999997,
+  "PropFirmTracker.currentBalance": 100412.66,
+  "PropFirmTracker.profitTargetDollars": 8000,
+  "PropFirmTracker.maxDailyLossDollars": 5000,
+  "PropFirmTracker.maxDrawdownDollars": 10000,
+  "PropFirmTracker.dailyPnL": 0,
+  "PropFirmTracker.maxDrawdown": 0,
+  "PropFirmTracker.dailyLossBreached": false,
+  "PropFirmTracker.dailyLossUsedPercent": 0,
+  "PropFirmTracker.drawdownBreached": false,
+  "PropFirmTracker.tradingDays": 8,
+  "PropFirmTracker[custom].totalPnL": 412.65999999999997,
+  "PropFirmTracker[custom].currentBalance": 50412.66,
+  "PropFirmTracker[custom].profitTargetDollars": 5000,
+  "PropFirmTracker[custom].maxDailyLossDollars": 2000,
+  "PropFirmTracker[custom].maxDrawdownDollars": 4000,
+  "PropFirmTracker[custom].dailyPnL": 0,
+  "PropFirmTracker[custom].maxDrawdown": 0,
+  "PropFirmTracker[custom].dailyLossBreached": false,
+  "PropFirmTracker[custom].dailyLossUsedPercent": 0,
+  "PropFirmTracker[custom].drawdownBreached": false,
+  "PropFirmTracker[custom].tradingDays": 8,
+  "QuickInsight.insight": {
+   "icon": "clock.fill",
+   "message": "$ 412.66 across 9 trades with 100.0% win rate.",
+   "title": "Extended is your strongest session"
+  },
+  "QuickInsight.generateInsight": {
+   "icon": "clock.fill",
+   "message": "$ 412.66 across 9 trades with 100.0% win rate.",
+   "title": "Extended is your strongest session"
+  },
+  "QuickInsight.allInsights": [
+   {
+    "icon": "clock.fill",
+    "message": "$ 412.66 across 9 trades with 100.0% win rate.",
+    "title": "Extended is your strongest session"
+   },
+   {
+    "icon": "chart.bar.fill",
+    "message": "$ 148.06 profit, 100.0% win rate across 3 trades.",
+    "title": "FIXA is your top symbol"
+   },
+   {
+    "icon": "flame.fill",
+    "message": "Your best streak shows strong edge exploitation. Stay disciplined.",
+    "title": "Impressive win streak: 9 in a row"
+   },
+   {
+    "icon": "target",
+    "message": "Most retail traders average 40-50%. Keep focusing on quality setups.",
+    "title": "100.0% win rate — above average"
+   },
+   {
+    "icon": "chart.xyaxis.line",
+    "message": "A Sharpe above 1.0 indicates strong consistency relative to your volatility.",
+    "title": "Sharpe ratio 1.60 — excellent risk-adjusted returns"
+   },
+   {
+    "icon": "calendar",
+    "message": "$ 266.06 with 100.0% win rate. Consider focusing effort here.",
+    "title": "Wed is your best trading day"
+   }
+  ],
+  "RMultipleChart.buckets": [
+   {
+    "count": 9,
+    "midpoint": 0.25,
+    "range": "0.0R"
+   }
+  ],
+  "RMultipleChart.avgR": 0,
+  "RMultipleChart.medianR": 0,
+  "RMultipleChart.bestR": 0,
+  "RMultipleChart.worstR": 0,
+  "RegimeAnalysis.medianDayMAE": 0,
+  "RegimeAnalysis.tradingDays": [
+   {
+    "avgLoser": 0,
+    "avgMAE": 0,
+    "avgPnL": 48.955,
+    "avgWinner": 48.955,
+    "date": "2026-02-03T05:00:00.000Z",
+    "id": "2026-02-03",
+    "regime": {
+     "$case": "calm",
+     "$raw": "Calm",
+     "icon": "leaf.fill"
+    },
+    "totalPnL": 48.955,
+    "trades": [
+     "#7112847995892630009"
+    ],
+    "winRate": 100
+   },
+   {
+    "avgLoser": 0,
+    "avgMAE": 0,
+    "avgPnL": 98.955,
+    "avgWinner": 98.955,
+    "date": "2026-02-04T05:00:00.000Z",
+    "id": "2026-02-04",
+    "regime": {
+     "$case": "calm",
+     "$raw": "Calm",
+     "icon": "leaf.fill"
+    },
+    "totalPnL": 98.955,
+    "trades": [
+     "#651758429111483355"
+    ],
+    "winRate": 100
+   },
+   {
+    "avgLoser": 0,
+    "avgMAE": 0,
+    "avgPnL": 63.95,
+    "avgWinner": 63.95,
+    "date": "2026-02-11T05:00:00.000Z",
+    "id": "2026-02-11",
+    "regime": {
+     "$case": "calm",
+     "$raw": "Calm",
+     "icon": "leaf.fill"
+    },
+    "totalPnL": 127.9,
+    "trades": [
+     "#8094341537237864664",
+     "#8092904366104880805"
+    ],
+    "winRate": 100
+   },
+   {
+    "avgLoser": 0,
+    "avgMAE": 0,
+    "avgPnL": 39.2,
+    "avgWinner": 39.2,
+    "date": "2026-02-18T05:00:00.000Z",
+    "id": "2026-02-18",
+    "regime": {
+     "$case": "calm",
+     "$raw": "Calm",
+     "icon": "leaf.fill"
+    },
+    "totalPnL": 39.2,
+    "trades": [
+     "#8456898306838273080"
+    ],
+    "winRate": 100
+   },
+   {
+    "avgLoser": 0,
+    "avgMAE": 0,
+    "avgPnL": 60,
+    "avgWinner": 60,
+    "date": "2026-02-24T05:00:00.000Z",
+    "id": "2026-02-24",
+    "regime": {
+     "$case": "calm",
+     "$raw": "Calm",
+     "icon": "leaf.fill"
+    },
+    "totalPnL": 60,
+    "trades": [
+     "#7068568429894052897"
+    ],
+    "winRate": 100
+   },
+   {
+    "avgLoser": 0,
+    "avgMAE": 0,
+    "avgPnL": 25,
+    "avgWinner": 25,
+    "date": "2026-03-03T05:00:00.000Z",
+    "id": "2026-03-03",
+    "regime": {
+     "$case": "calm",
+     "$raw": "Calm",
+     "icon": "leaf.fill"
+    },
+    "totalPnL": 25,
+    "trades": [
+     "#5106938260674288597"
+    ],
+    "winRate": 100
+   },
+   {
+    "avgLoser": 0,
+    "avgMAE": 0,
+    "avgPnL": 12.5,
+    "avgWinner": 12.5,
+    "date": "2026-03-05T05:00:00.000Z",
+    "id": "2026-03-05",
+    "regime": {
+     "$case": "calm",
+     "$raw": "Calm",
+     "icon": "leaf.fill"
+    },
+    "totalPnL": 12.5,
+    "trades": [
+     "#1716536045982060688"
+    ],
+    "winRate": 100
+   },
+   {
+    "avgLoser": 0,
+    "avgMAE": 0,
+    "avgPnL": 0.15,
+    "avgWinner": 0.15,
+    "date": "2026-03-10T04:00:00.000Z",
+    "id": "2026-03-10",
+    "regime": {
+     "$case": "calm",
+     "$raw": "Calm",
+     "icon": "leaf.fill"
+    },
+    "totalPnL": 0.15,
+    "trades": [
+     "#2239254632406286775"
+    ],
+    "winRate": 100
+   }
+  ],
+  "RegimeAnalysis.regimeStats": [
+   {
+    "avgPnL": 51.582499999999996,
+    "dayCount": 8,
+    "id": "Calm",
+    "regime": {
+     "$case": "calm",
+     "$raw": "Calm",
+     "icon": "leaf.fill"
+    },
+    "totalPnL": 412.65999999999997,
+    "winRate": 100
+   }
+  ],
+  "RegimeAnalysis.bestRegime": {
+   "avgPnL": 51.582499999999996,
+   "dayCount": 8,
+   "id": "Calm",
+   "regime": {
+    "$case": "calm",
+    "$raw": "Calm",
+    "icon": "leaf.fill"
+   },
+   "totalPnL": 412.65999999999997,
+   "winRate": 100
+  },
+  "RegimeAnalysis.worstRegime": {
+   "avgPnL": 51.582499999999996,
+   "dayCount": 8,
+   "id": "Calm",
+   "regime": {
+    "$case": "calm",
+    "$raw": "Calm",
+    "icon": "leaf.fill"
+   },
+   "totalPnL": 412.65999999999997,
+   "winRate": 100
+  },
+  "RegimeAnalysis.currentRegime": {
+   "$case": "calm",
+   "$raw": "Calm",
+   "icon": "leaf.fill"
+  },
+  "RegimeAnalysis.maxRegimeDays": 8,
+  "RiskOfRuin.winRate": 1,
+  "RiskOfRuin.avgWin": 45.85111111111111,
+  "RiskOfRuin.avgLoss": 0,
+  "RiskOfRuin.rewardRiskRatio": 0,
+  "RiskOfRuin.riskOfRuin": 1,
+  "RiskOfRuin.kellyFraction": 0,
+  "RiskOfRuin.rorLevel": {
+   "$case": "veryHigh",
+   "label": "Very High",
+   "icon": "xmark.shield.fill"
+  },
+  "RiskOfRuin.insightIcon": "exclamationmark.circle",
+  "RiskOfRuin.insightText": "Critical — stop trading until edge improves. Current stats lead to account blowup",
+  "SectorExposure.sectorStats": [],
+  "SectorExposure.hasSectorData": false,
+  "SectorExposure.maxAbsPnL": 1,
+  "SectorExposure.concentrationWarning": null,
+  "SequenceAnalysis.sortedTrades": [
+   "#7112847995892630009",
+   "#651758429111483355",
+   "#8094341537237864664",
+   "#8092904366104880805",
+   "#8456898306838273080",
+   "#7068568429894052897",
+   "#5106938260674288597",
+   "#1716536045982060688",
+   "#2239254632406286775"
+  ],
+  "SequenceAnalysis.stats": null,
+  "SessionHeatmap.dateRangeLabel": "Feb 3 – Mar 10, 2026 · 1 active hour · 9 trades",
+  "SessionHeatmap.heatmapData": [
+   {
+    "day": "Mon",
+    "hour": 0,
+    "id": "Mon-0",
+    "profit": 306.63,
+    "tradeCount": 6
+   },
+   {
+    "day": "Tue",
+    "hour": 0,
+    "id": "Tue-0",
+    "profit": 93.53,
+    "tradeCount": 2
+   },
+   {
+    "day": "Wed",
+    "hour": 0,
+    "id": "Wed-0",
+    "profit": 0,
+    "tradeCount": 0
+   },
+   {
+    "day": "Thu",
+    "hour": 0,
+    "id": "Thu-0",
+    "profit": 12.5,
+    "tradeCount": 1
+   },
+   {
+    "day": "Fri",
+    "hour": 0,
+    "id": "Fri-0",
+    "profit": 0,
+    "tradeCount": 0
+   }
+  ],
+  "SessionHeatmap.sortedActiveHours": [
+   0
+  ],
+  "SessionHeatmap.maxAbsProfit": 306.63,
+  "SessionIntelligence.sessionData": [
+   {
+    "avgR": 0,
+    "id": "EXTENDED",
+    "profit": 412.65999999999997,
+    "profitFactor": "Infinity",
+    "recommendation": {
+     "$case": "neutral",
+     "label": "OK",
+     "icon": "minus.circle"
+    },
+    "session": "EXTENDED",
+    "tradeCount": 9,
+    "winRate": 100
+   }
+  ],
+  "SessionRankingCard.sessions": [
+   {
+    "name": "Extended",
+    "pnl": 412.65999999999997,
+    "rank": 1,
+    "trades": 9,
+    "winRate": 100
+   }
+  ],
+  "ShareSizeAnalysis.avgSharesWins": 37.27777777777778,
+  "ShareSizeAnalysis.avgSharesLosses": 0,
+  "ShareableSummary.summaryText": "📊 Greenwick Daily Summary\n─────────────────────\nP&L: +$ 412.66 | 9 trades\nWin Rate: 100.0% (9W/0L)\nPF: 99.99 | Exp: $ 45.85\nAvg R: 0.00R | Sharpe: 1.60\nStreak: 🔥 9W\n─────────────────────\nvia Greenwick",
+  "SlippageAnalysis.tradesWithSlippage": [],
+  "SlippageAnalysis.avgSlippage": 0,
+  "SlippageAnalysis.totalSlippageCost": 0,
+  "SlippageAnalysis.highSlippageTrades": 0,
+  "SlippageAnalysis.buckets": [
+   {
+    "avgPnL": 45.85111111111111,
+    "count": 9,
+    "id": "0-0.5",
+    "label": "0-0.5"
+   },
+   {
+    "avgPnL": 0,
+    "count": 0,
+    "id": "0.5-1",
+    "label": "0.5-1"
+   },
+   {
+    "avgPnL": 0,
+    "count": 0,
+    "id": "1-2",
+    "label": "1-2"
+   },
+   {
+    "avgPnL": 0,
+    "count": 0,
+    "id": "2-3",
+    "label": "2-3"
+   },
+   {
+    "avgPnL": 0,
+    "count": 0,
+    "id": "3+",
+    "label": "3+"
+   }
+  ],
+  "StreakCard.sortedTrades": [
+   "#7112847995892630009",
+   "#651758429111483355",
+   "#8094341537237864664",
+   "#8092904366104880805",
+   "#8456898306838273080",
+   "#7068568429894052897",
+   "#5106938260674288597",
+   "#1716536045982060688",
+   "#2239254632406286775"
+  ],
+  "StreakCard.currentStreak": 9,
+  "StreakCard.bestWinStreak": 9,
+  "StreakCard.bestLossStreak": 0,
+  "StreakCard.recentResults": [
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true,
+   true
+  ],
+  "StreakCard.isNearPersonalBest": true,
+  "StreakTimeline.segments": [
+   {
+    "count": 9,
+    "isWin": true,
+    "startIndex": 0
+   }
+  ],
+  "SymbolAnalytics.symbolGroups": [
+   {
+    "symbol": "FIXA",
+    "trades": [
+     "#2239254632406286775",
+     "#651758429111483355",
+     "#7112847995892630009"
+    ]
+   },
+   {
+    "symbol": "FIXB",
+    "trades": [
+     "#8094341537237864664",
+     "#8092904366104880805"
+    ]
+   },
+   {
+    "symbol": "FIXD",
+    "trades": [
+     "#7068568429894052897"
+    ]
+   },
+   {
+    "symbol": "FIXC",
+    "trades": [
+     "#8456898306838273080"
+    ]
+   },
+   {
+    "symbol": "FIXE",
+    "trades": [
+     "#5106938260674288597"
+    ]
+   },
+   {
+    "symbol": "FIX.B",
+    "trades": [
+     "#1716536045982060688"
+    ]
+   }
+  ],
+  "SymbolCorrelation.symbols": [
+   "FIX.B",
+   "FIXA",
+   "FIXB",
+   "FIXC",
+   "FIXD",
+   "FIXE"
+  ],
+  "SymbolCorrelation.symbolDailyPnL": {
+   "allDates": [
+    "2026-02-03",
+    "2026-02-04",
+    "2026-02-11",
+    "2026-02-18",
+    "2026-02-24",
+    "2026-03-03",
+    "2026-03-05",
+    "2026-03-10"
+   ],
+   "data": {
+    "FIX.B": {
+     "2026-03-05": 12.5
+    },
+    "FIXA": {
+     "2026-02-03": 48.955,
+     "2026-02-04": 98.955,
+     "2026-03-10": 0.15
+    },
+    "FIXB": {
+     "2026-02-11": 127.9
+    },
+    "FIXC": {
+     "2026-02-18": 39.2
+    },
+    "FIXD": {
+     "2026-02-24": 60
+    },
+    "FIXE": {
+     "2026-03-03": 25
+    }
+   }
+  },
+  "SymbolCorrelation.correlationMatrix": [
+   [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1
+   ]
+  ],
+  "SymbolCorrelation.dataQualitySummary": {
+   "maxOverlap": 0,
+   "sufficient": 0,
+   "total": 15
+  },
+  "TagAnalytics.tagData": [],
+  "TagAnalytics.taggedTradeCount": 0,
+  "TimeToMFEAnalysis.validTrades": [],
+  "TimeToMFEAnalysis.buckets": [],
+  "TimeToMFEAnalysis.medianTimeToMFE": 0,
+  "TimeToMFEAnalysis.avgHoldTime": 0,
+  "TimeToMFEAnalysis.avgExitEfficiency": null,
+  "TimeToMFEAnalysis.isOverholding": false,
+  "TradeCalendar.calendar": {
+   "calendar": {
+    "_firstWeekday": 1,
+    "_minimumDaysInFirstWeek": 4,
+    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
+    "gregorianStartYear": 1582,
+    "inf_ti": 4398046511104,
+    "julianCutoverDay": 2299161,
+    "kDefaultJulianCutoverDay": 2299161,
+    "kSecondsInDay": 86400,
+    "kSecondsInHour": 3600,
+    "kSecondsInMinute": 60,
+    "kSecondsInWeek": 604800,
+    "locale": {
+     "identifier": "en_US_POSIX",
+     "locale": "fixed en_US_POSIX"
+    },
+    "timeZone": {
+     "abbreviation": "EDT",
+     "identifier": "America/New_York",
+     "isDaylightSavingTime": true,
+     "secondsFromGMT": -14400,
+     "tz": {
+      "lock": {
+       "_buffer": {}
+      },
+      "name": "America/New_York"
+     }
+    }
+   },
+   "firstWeekday": 1,
+   "identifier": "gregorian",
+   "locale": {
+    "identifier": "en_US_POSIX",
+    "locale": "fixed en_US_POSIX"
+   },
+   "minimumDaysInFirstWeek": 4,
+   "timeZone": {
+    "abbreviation": "EDT",
+    "identifier": "America/New_York",
+    "isDaylightSavingTime": true,
+    "secondsFromGMT": -14400,
+    "tz": {
+     "lock": {
+      "_buffer": {}
+     },
+     "name": "America/New_York"
+    }
+   }
+  },
+  "TradeCalendar.dailyPnL": {
+   "2026-02-03T05:00:00.000Z": 48.955,
+   "2026-02-04T05:00:00.000Z": 98.955,
+   "2026-02-11T05:00:00.000Z": 127.9,
+   "2026-02-18T05:00:00.000Z": 39.2,
+   "2026-02-24T05:00:00.000Z": 60,
+   "2026-03-03T05:00:00.000Z": 25,
+   "2026-03-05T05:00:00.000Z": 12.5,
+   "2026-03-10T04:00:00.000Z": 0.15
+  },
+  "TradeCalendar.daysInMonth": [
+   "2026-10-01T04:00:00.000Z",
+   "2026-10-02T04:00:00.000Z",
+   "2026-10-03T04:00:00.000Z",
+   "2026-10-04T04:00:00.000Z",
+   "2026-10-05T04:00:00.000Z",
+   "2026-10-06T04:00:00.000Z",
+   "2026-10-07T04:00:00.000Z",
+   "2026-10-08T04:00:00.000Z",
+   "2026-10-09T04:00:00.000Z",
+   "2026-10-10T04:00:00.000Z",
+   "2026-10-11T04:00:00.000Z",
+   "2026-10-12T04:00:00.000Z",
+   "2026-10-13T04:00:00.000Z",
+   "2026-10-14T04:00:00.000Z",
+   "2026-10-15T04:00:00.000Z",
+   "2026-10-16T04:00:00.000Z",
+   "2026-10-17T04:00:00.000Z",
+   "2026-10-18T04:00:00.000Z",
+   "2026-10-19T04:00:00.000Z",
+   "2026-10-20T04:00:00.000Z",
+   "2026-10-21T04:00:00.000Z",
+   "2026-10-22T04:00:00.000Z",
+   "2026-10-23T04:00:00.000Z",
+   "2026-10-24T04:00:00.000Z",
+   "2026-10-25T04:00:00.000Z",
+   "2026-10-26T04:00:00.000Z",
+   "2026-10-27T04:00:00.000Z",
+   "2026-10-28T04:00:00.000Z",
+   "2026-10-29T04:00:00.000Z",
+   "2026-10-30T04:00:00.000Z",
+   "2026-10-31T04:00:00.000Z"
+  ],
+  "TradeCalendar.firstWeekdayOffset": 4,
+  "TradeCalendar[lastTradeMonth].calendar": {
+   "calendar": {
+    "_firstWeekday": 1,
+    "_minimumDaysInFirstWeek": 4,
+    "gregorianStartDate": "1582-10-15T00:00:00.000Z",
+    "gregorianStartYear": 1582,
+    "inf_ti": 4398046511104,
+    "julianCutoverDay": 2299161,
+    "kDefaultJulianCutoverDay": 2299161,
+    "kSecondsInDay": 86400,
+    "kSecondsInHour": 3600,
+    "kSecondsInMinute": 60,
+    "kSecondsInWeek": 604800,
+    "locale": {
+     "identifier": "en_US_POSIX",
+     "locale": "fixed en_US_POSIX"
+    },
+    "timeZone": {
+     "abbreviation": "EDT",
+     "identifier": "America/New_York",
+     "isDaylightSavingTime": true,
+     "secondsFromGMT": -14400,
+     "tz": {
+      "lock": {
+       "_buffer": {}
+      },
+      "name": "America/New_York"
+     }
+    }
+   },
+   "firstWeekday": 1,
+   "identifier": "gregorian",
+   "locale": {
+    "identifier": "en_US_POSIX",
+    "locale": "fixed en_US_POSIX"
+   },
+   "minimumDaysInFirstWeek": 4,
+   "timeZone": {
+    "abbreviation": "EDT",
+    "identifier": "America/New_York",
+    "isDaylightSavingTime": true,
+    "secondsFromGMT": -14400,
+    "tz": {
+     "lock": {
+      "_buffer": {}
+     },
+     "name": "America/New_York"
+    }
+   }
+  },
+  "TradeCalendar[lastTradeMonth].dailyPnL": {
+   "2026-02-03T05:00:00.000Z": 48.955,
+   "2026-02-04T05:00:00.000Z": 98.955,
+   "2026-02-11T05:00:00.000Z": 127.9,
+   "2026-02-18T05:00:00.000Z": 39.2,
+   "2026-02-24T05:00:00.000Z": 60,
+   "2026-03-03T05:00:00.000Z": 25,
+   "2026-03-05T05:00:00.000Z": 12.5,
+   "2026-03-10T04:00:00.000Z": 0.15
+  },
+  "TradeCalendar[lastTradeMonth].daysInMonth": [
+   "2026-03-01T05:00:00.000Z",
+   "2026-03-02T05:00:00.000Z",
+   "2026-03-03T05:00:00.000Z",
+   "2026-03-04T05:00:00.000Z",
+   "2026-03-05T05:00:00.000Z",
+   "2026-03-06T05:00:00.000Z",
+   "2026-03-07T05:00:00.000Z",
+   "2026-03-08T05:00:00.000Z",
+   "2026-03-09T04:00:00.000Z",
+   "2026-03-10T04:00:00.000Z",
+   "2026-03-11T04:00:00.000Z",
+   "2026-03-12T04:00:00.000Z",
+   "2026-03-13T04:00:00.000Z",
+   "2026-03-14T04:00:00.000Z",
+   "2026-03-15T04:00:00.000Z",
+   "2026-03-16T04:00:00.000Z",
+   "2026-03-17T04:00:00.000Z",
+   "2026-03-18T04:00:00.000Z",
+   "2026-03-19T04:00:00.000Z",
+   "2026-03-20T04:00:00.000Z",
+   "2026-03-21T04:00:00.000Z",
+   "2026-03-22T04:00:00.000Z",
+   "2026-03-23T04:00:00.000Z",
+   "2026-03-24T04:00:00.000Z",
+   "2026-03-25T04:00:00.000Z",
+   "2026-03-26T04:00:00.000Z",
+   "2026-03-27T04:00:00.000Z",
+   "2026-03-28T04:00:00.000Z",
+   "2026-03-29T04:00:00.000Z",
+   "2026-03-30T04:00:00.000Z",
+   "2026-03-31T04:00:00.000Z"
+  ],
+  "TradeCalendar[lastTradeMonth].firstWeekdayOffset": 0,
+  "TradeComparison.bestTrade": "#651758429111483355",
+  "TradeComparison.worstTrade": "#2239254632406286775",
+  "TradeTimeHeatmap.cells": [
+   {
+    "count": 6,
+    "day": "Mon",
+    "hour": 0,
+    "id": "Mon-0",
+    "pnl": 306.63
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 1,
+    "id": "Mon-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 2,
+    "id": "Mon-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 3,
+    "id": "Mon-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 4,
+    "id": "Mon-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 5,
+    "id": "Mon-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 6,
+    "id": "Mon-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 7,
+    "id": "Mon-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 8,
+    "id": "Mon-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 9,
+    "id": "Mon-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 10,
+    "id": "Mon-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 11,
+    "id": "Mon-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 12,
+    "id": "Mon-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 13,
+    "id": "Mon-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 14,
+    "id": "Mon-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 15,
+    "id": "Mon-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 16,
+    "id": "Mon-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 17,
+    "id": "Mon-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 18,
+    "id": "Mon-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 19,
+    "id": "Mon-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 20,
+    "id": "Mon-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 21,
+    "id": "Mon-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 22,
+    "id": "Mon-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Mon",
+    "hour": 23,
+    "id": "Mon-23",
+    "pnl": 0
+   },
+   {
+    "count": 2,
+    "day": "Tue",
+    "hour": 0,
+    "id": "Tue-0",
+    "pnl": 93.53
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 1,
+    "id": "Tue-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 2,
+    "id": "Tue-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 3,
+    "id": "Tue-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 4,
+    "id": "Tue-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 5,
+    "id": "Tue-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 6,
+    "id": "Tue-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 7,
+    "id": "Tue-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 8,
+    "id": "Tue-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 9,
+    "id": "Tue-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 10,
+    "id": "Tue-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 11,
+    "id": "Tue-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 12,
+    "id": "Tue-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 13,
+    "id": "Tue-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 14,
+    "id": "Tue-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 15,
+    "id": "Tue-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 16,
+    "id": "Tue-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 17,
+    "id": "Tue-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 18,
+    "id": "Tue-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 19,
+    "id": "Tue-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 20,
+    "id": "Tue-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 21,
+    "id": "Tue-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 22,
+    "id": "Tue-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Tue",
+    "hour": 23,
+    "id": "Tue-23",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 0,
+    "id": "Wed-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 1,
+    "id": "Wed-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 2,
+    "id": "Wed-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 3,
+    "id": "Wed-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 4,
+    "id": "Wed-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 5,
+    "id": "Wed-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 6,
+    "id": "Wed-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 7,
+    "id": "Wed-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 8,
+    "id": "Wed-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 9,
+    "id": "Wed-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 10,
+    "id": "Wed-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 11,
+    "id": "Wed-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 12,
+    "id": "Wed-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 13,
+    "id": "Wed-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 14,
+    "id": "Wed-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 15,
+    "id": "Wed-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 16,
+    "id": "Wed-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 17,
+    "id": "Wed-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 18,
+    "id": "Wed-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 19,
+    "id": "Wed-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 20,
+    "id": "Wed-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 21,
+    "id": "Wed-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 22,
+    "id": "Wed-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Wed",
+    "hour": 23,
+    "id": "Wed-23",
+    "pnl": 0
+   },
+   {
+    "count": 1,
+    "day": "Thu",
+    "hour": 0,
+    "id": "Thu-0",
+    "pnl": 12.5
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 1,
+    "id": "Thu-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 2,
+    "id": "Thu-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 3,
+    "id": "Thu-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 4,
+    "id": "Thu-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 5,
+    "id": "Thu-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 6,
+    "id": "Thu-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 7,
+    "id": "Thu-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 8,
+    "id": "Thu-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 9,
+    "id": "Thu-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 10,
+    "id": "Thu-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 11,
+    "id": "Thu-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 12,
+    "id": "Thu-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 13,
+    "id": "Thu-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 14,
+    "id": "Thu-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 15,
+    "id": "Thu-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 16,
+    "id": "Thu-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 17,
+    "id": "Thu-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 18,
+    "id": "Thu-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 19,
+    "id": "Thu-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 20,
+    "id": "Thu-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 21,
+    "id": "Thu-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 22,
+    "id": "Thu-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Thu",
+    "hour": 23,
+    "id": "Thu-23",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 0,
+    "id": "Fri-0",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 1,
+    "id": "Fri-1",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 2,
+    "id": "Fri-2",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 3,
+    "id": "Fri-3",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 4,
+    "id": "Fri-4",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 5,
+    "id": "Fri-5",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 6,
+    "id": "Fri-6",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 7,
+    "id": "Fri-7",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 8,
+    "id": "Fri-8",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 9,
+    "id": "Fri-9",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 10,
+    "id": "Fri-10",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 11,
+    "id": "Fri-11",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 12,
+    "id": "Fri-12",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 13,
+    "id": "Fri-13",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 14,
+    "id": "Fri-14",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 15,
+    "id": "Fri-15",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 16,
+    "id": "Fri-16",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 17,
+    "id": "Fri-17",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 18,
+    "id": "Fri-18",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 19,
+    "id": "Fri-19",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 20,
+    "id": "Fri-20",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 21,
+    "id": "Fri-21",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 22,
+    "id": "Fri-22",
+    "pnl": 0
+   },
+   {
+    "count": 0,
+    "day": "Fri",
+    "hour": 23,
+    "id": "Fri-23",
+    "pnl": 0
+   }
+  ],
+  "TradeTimeHeatmap.maxAbsPnL": 306.63,
+  "VolumeAnalysis.tradesWithVolume": [],
+  "VolumeAnalysis.hasVolumeData": false,
+  "VolumeAnalysis.buckets": [
+   {
+    "avgPnL": 0,
+    "id": "low",
+    "label": "Low (<0.5x)",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   },
+   {
+    "avgPnL": 0,
+    "id": "normal",
+    "label": "Normal (0.5-1.5x)",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   },
+   {
+    "avgPnL": 0,
+    "id": "high",
+    "label": "High (1.5-3x)",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   },
+   {
+    "avgPnL": 0,
+    "id": "vhigh",
+    "label": "Very High (>3x)",
+    "totalPnL": 0,
+    "tradeCount": 0,
+    "winRate": 0
+   }
+  ],
+  "VolumeAnalysis.insightText": "Most trades occur at normal relative volume",
+  "WeeklyHeatmap.weeklyData": [
+   {
+    "id": "2026-02-02",
+    "profit": 147.91,
+    "tradeCount": 2,
+    "weekStart": "2026-02-02T05:00:00.000Z",
+    "winRate": 100
+   },
+   {
+    "id": "2026-02-09",
+    "profit": 127.9,
+    "tradeCount": 2,
+    "weekStart": "2026-02-09T05:00:00.000Z",
+    "winRate": 100
+   },
+   {
+    "id": "2026-02-16",
+    "profit": 39.2,
+    "tradeCount": 1,
+    "weekStart": "2026-02-16T05:00:00.000Z",
+    "winRate": 100
+   },
+   {
+    "id": "2026-02-23",
+    "profit": 60,
+    "tradeCount": 1,
+    "weekStart": "2026-02-23T05:00:00.000Z",
+    "winRate": 100
+   },
+   {
+    "id": "2026-03-02",
+    "profit": 37.5,
+    "tradeCount": 2,
+    "weekStart": "2026-03-02T05:00:00.000Z",
+    "winRate": 100
+   },
+   {
+    "id": "2026-03-09",
+    "profit": 0.15,
+    "tradeCount": 1,
+    "weekStart": "2026-03-09T04:00:00.000Z",
+    "winRate": 100
+   }
+  ],
+  "WeeklyHeatmap.maxAbsProfit": 147.91,
+  "WeeklyHeatmap.calculateStreak": 6,
+  "WhatToCutAdvisor.tradingDays": 8,
+  "WhatToCutAdvisor.negativeConditions": [],
+  "WhatToCutAdvisor.totalPotentialSavings": 0,
+  "WhatToCutAdvisor.worstCondition": null,
+  "WhatToCutAdvisor.hasEnoughData": false,
+  "WinLossDistribution.buckets": [
+   {
+    "count": 2,
+    "isProfit": true,
+    "range": "0"
+   },
+   {
+    "count": 2,
+    "isProfit": true,
+    "range": "19"
+   },
+   {
+    "count": 2,
+    "isProfit": true,
+    "range": "39"
+   },
+   {
+    "count": 2,
+    "isProfit": true,
+    "range": "59"
+   }
+  ]
+ },
+ "skipped": {},
+ "now": "2026-10-27T21:27:52.732Z",
+ "environment": {
+  "tz": "UTC",
+  "locale": "en_US_POSIX",
+  "deterministicHashing": true
+ },
+ "nondeterministic": [
+  "outputs.CommissionAnalytics.symbolCosts",
+  "outputs.GapAnalysis.gapTrades",
+  "outputs.Metrics.allEdgeConditions[tradingDays=21]"
+ ]
+}

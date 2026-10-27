@@ -1,0 +1,26 @@
+{
+ "password": "fixture-password-1",
+ "files": [
+  {
+   "file": "dojix-plain.sqlite",
+   "format": "plain SQLite"
+  },
+  {
+   "file": "dojix-djxb.backup",
+   "format": "DJXB",
+   "iterations": 600000
+  },
+  {
+   "file": "dojix-dojx-legacy.backup",
+   "format": "DOJX (1.x)"
+  }
+ ],
+ "trades": 5,
+ "tickets": [
+  "61000005",
+  "61000004",
+  "61000003",
+  "61000002",
+  "61000001"
+ ]
+}

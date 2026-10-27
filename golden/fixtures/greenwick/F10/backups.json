@@ -1,0 +1,26 @@
+{
+ "password": "fixture-password-1",
+ "files": [
+  {
+   "file": "greenwick-plain.sqlite",
+   "format": "plain SQLite"
+  },
+  {
+   "file": "greenwick-gwbk.backup",
+   "format": "GWBK",
+   "iterations": 600000
+  },
+  {
+   "file": "greenwick-sjnl-legacy.backup",
+   "format": "SJNL (older)"
+  }
+ ],
+ "trades": 5,
+ "tickets": [
+  "4200005",
+  "4200004",
+  "4200003",
+  "4200002",
+  "4200001"
+ ]
+}

@@ -17,6 +17,12 @@ node tools/fixture-gen/src/cli.ts --check  # what CI runs: fails if anything dif
 SHA-256. Line endings, byte-order marks and encodings are part of the data, so `.gitattributes` marks
 this folder `-text`.
 
+`<brand>/<fixture>.trades.json` files are the **engine input** for `packages/core`'s parity suite:
+`{ "trades": StoredTrade[] }`, the journal the Mac app stored for that fixture (exported from the
+Tier B reference by `tools/swift-ref/export-trades.mjs`, one per reference file, so the F7 environment
+variants each have one). `F10/` and the `.trades.json` files come from CI, not from the generator,
+and the generator leaves them alone.
+
 ## Kinds
 
 - **file**: an import file. The Swift harness routes it the way the Mac's Import screen does: by
@@ -40,7 +46,7 @@ this folder `-text`.
 | **F7 time** | Midnight-UTC trades in the US (2026-03-08, 2026-11-01) and EU (2026-03-29, 2026-10-25) switch weeks, plus weekend opens. Run in UTC, Europe/Berlin, America/New_York, Asia/Kolkata and Asia/Tokyo with different locales (week starts) | ET trading-day, session and DST boundaries, and Friday-evening closes. Run in the same five environments |
 | **F8 tie traps** | Equal group totals. Swift's order is undefined, so these test only the desktop's tie-break and are never compared | Same |
 | **F9 scale** | 10k, 50k and 100k trades. Generated on demand (`--scale <dir>`), not committed; their SHA-256 is in the manifest | Same (NinjaTrader files) |
-| **F10 Mac backups** | Written by the Swift harness from F1 (`golden/reference/dojix/f10/`): plain SQLite, `DJXB`, `DOJX` | `golden/reference/greenwick/f10/`: plain, `GWBK`, `SJNL` |
+| **F10 Mac backups** | `dojix/F10/`, written by the Mac app's own backup code (Swift harness, CI) from F1: plain SQLite, `DJXB`, `DOJX` | `greenwick/F10/`: plain, `GWBK`, `SJNL` |
 
 Password of the F10 backups: `fixture-password-1` (fictional, test-only). Tampered-header,
 wrong-password and too-many-rounds cases are derived from these files in the desktop tests.

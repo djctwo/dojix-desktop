@@ -1,0 +1,334 @@
+{
+ "decimalToDouble": [
+  {
+   "text": "0.07",
+   "decimalDescription": "0.07",
+   "nsDecimalNumberDoubleValue": 0.06999999999999999,
+   "nsDecimalNumberBits": "3fb1eb851eb851eb",
+   "doubleTruncating": 0.06999999999999999,
+   "doubleFromText": 0.07,
+   "doubleFromTextBits": "3fb1eb851eb851ec",
+   "equalsCorrectlyRounded": false
+  },
+  {
+   "text": "0.1",
+   "decimalDescription": "0.1",
+   "nsDecimalNumberDoubleValue": 0.1,
+   "nsDecimalNumberBits": "3fb999999999999a",
+   "doubleTruncating": 0.1,
+   "doubleFromText": 0.1,
+   "doubleFromTextBits": "3fb999999999999a",
+   "equalsCorrectlyRounded": true
+  },
+  {
+   "text": "0.3",
+   "decimalDescription": "0.3",
+   "nsDecimalNumberDoubleValue": 0.3,
+   "nsDecimalNumberBits": "3fd3333333333333",
+   "doubleTruncating": 0.3,
+   "doubleFromText": 0.3,
+   "doubleFromTextBits": "3fd3333333333333",
+   "equalsCorrectlyRounded": true
+  },
+  {
+   "text": "1.1",
+   "decimalDescription": "1.1",
+   "nsDecimalNumberDoubleValue": 1.1,
+   "nsDecimalNumberBits": "3ff199999999999a",
+   "doubleTruncating": 1.1,
+   "doubleFromText": 1.1,
+   "doubleFromTextBits": "3ff199999999999a",
+   "equalsCorrectlyRounded": true
+  },
+  {
+   "text": "2.675",
+   "decimalDescription": "2.675",
+   "nsDecimalNumberDoubleValue": 2.675,
+   "nsDecimalNumberBits": "4005666666666666",
+   "doubleTruncating": 2.675,
+   "doubleFromText": 2.675,
+   "doubleFromTextBits": "4005666666666666",
+   "equalsCorrectlyRounded": true
+  },
+  {
+   "text": "1.0842",
+   "decimalDescription": "1.0842",
+   "nsDecimalNumberDoubleValue": 1.0842,
+   "nsDecimalNumberBits": "3ff158e219652bd4",
+   "doubleTruncating": 1.0842,
+   "doubleFromText": 1.0842,
+   "doubleFromTextBits": "3ff158e219652bd4",
+   "equalsCorrectlyRounded": true
+  },
+  {
+   "text": "151.42",
+   "decimalDescription": "151.42",
+   "nsDecimalNumberDoubleValue": 151.42000000000002,
+   "nsDecimalNumberBits": "4062ed70a3d70a3e",
+   "doubleTruncating": 151.42000000000002,
+   "doubleFromText": 151.42,
+   "doubleFromTextBits": "4062ed70a3d70a3d",
+   "equalsCorrectlyRounded": false
+  },
+  {
+   "text": "33.1",
+   "decimalDescription": "33.1",
+   "nsDecimalNumberDoubleValue": 33.1,
+   "nsDecimalNumberBits": "40408ccccccccccd",
+   "doubleTruncating": 33.1,
+   "doubleFromText": 33.1,
+   "doubleFromTextBits": "40408ccccccccccd",
+   "equalsCorrectlyRounded": true
+  },
+  {
+   "text": "123.45",
+   "decimalDescription": "123.45",
+   "nsDecimalNumberDoubleValue": 123.45,
+   "nsDecimalNumberBits": "405edccccccccccd",
+   "doubleTruncating": 123.45,
+   "doubleFromText": 123.45,
+   "doubleFromTextBits": "405edccccccccccd",
+   "equalsCorrectlyRounded": true
+  },
+  {
+   "text": "-30",
+   "decimalDescription": "-30",
+   "nsDecimalNumberDoubleValue": -30.0,
+   "nsDecimalNumberBits": "c03e000000000000",
+   "doubleTruncating": -30.0,
+   "doubleFromText": -30.0,
+   "doubleFromTextBits": "c03e000000000000",
+   "equalsCorrectlyRounded": true
+  },
+  {
+   "text": "-0.07",
+   "decimalDescription": "-0.07",
+   "nsDecimalNumberDoubleValue": -0.06999999999999999,
+   "nsDecimalNumberBits": "bfb1eb851eb851eb",
+   "doubleTruncating": -0.06999999999999999,
+   "doubleFromText": -0.07,
+   "doubleFromTextBits": "bfb1eb851eb851ec",
+   "equalsCorrectlyRounded": false
+  },
+  {
+   "text": "999999999999.99",
+   "decimalDescription": "999999999999.99",
+   "nsDecimalNumberDoubleValue": 999999999999.99,
+   "nsDecimalNumberBits": "426d1a94a1ffffae",
+   "doubleTruncating": 999999999999.99,
+   "doubleFromText": 999999999999.99,
+   "doubleFromTextBits": "426d1a94a1ffffae",
+   "equalsCorrectlyRounded": true
+  },
+  {
+   "text": "0.000001",
+   "decimalDescription": "0.000001",
+   "nsDecimalNumberDoubleValue": 1.0000000000000002e-06,
+   "nsDecimalNumberBits": "3eb0c6f7a0b5ed8e",
+   "doubleTruncating": 1.0000000000000002e-06,
+   "doubleFromText": 1e-06,
+   "doubleFromTextBits": "3eb0c6f7a0b5ed8d",
+   "equalsCorrectlyRounded": false
+  },
+  {
+   "text": "1e-7",
+   "decimalDescription": "0.0000001",
+   "nsDecimalNumberDoubleValue": 1.0000000000000002e-07,
+   "nsDecimalNumberBits": "3e7ad7f29abcaf4a",
+   "doubleTruncating": 1.0000000000000002e-07,
+   "doubleFromText": 1e-07,
+   "doubleFromTextBits": "3e7ad7f29abcaf48",
+   "equalsCorrectlyRounded": false
+  },
+  {
+   "text": "1.0000000000000002",
+   "decimalDescription": "1.0000000000000002",
+   "nsDecimalNumberDoubleValue": 1.0000000000000004,
+   "nsDecimalNumberBits": "3ff0000000000002",
+   "doubleTruncating": 1.0000000000000004,
+   "doubleFromText": 1.0000000000000002,
+   "doubleFromTextBits": "3ff0000000000001",
+   "equalsCorrectlyRounded": false
+  },
+  {
+   "text": "12345678901234567890.123",
+   "decimalDescription": "12345678901234567890.123",
+   "nsDecimalNumberDoubleValue": 1.234567890123457e+19,
+   "nsDecimalNumberBits": "43e56a95319d63e2",
+   "doubleTruncating": 1.234567890123457e+19,
+   "doubleFromText": 1.2345678901234567e+19,
+   "doubleFromTextBits": "43e56a95319d63e1",
+   "equalsCorrectlyRounded": false
+  }
+ ],
+ "dst": [
+  {
+   "zone": "America/New_York",
+   "wallTime": "2026-03-08 02:30:00",
+   "kind": "skipped",
+   "dateFormatter": null,
+   "calendarDateFromComponents": {
+    "utc": "2026-03-08T07:30:00.000Z",
+    "offsetSeconds": -14400
+   },
+   "startOfDay": {
+    "utc": "2026-03-08T05:00:00.000Z",
+    "offsetSeconds": -18000
+   },
+   "dayLengthHours": 23.0
+  },
+  {
+   "zone": "America/New_York",
+   "wallTime": "2026-11-01 01:30:00",
+   "kind": "repeated",
+   "dateFormatter": {
+    "utc": "2026-11-01T06:30:00.000Z",
+    "offsetSeconds": -18000
+   },
+   "calendarDateFromComponents": {
+    "utc": "2026-11-01T05:30:00.000Z",
+    "offsetSeconds": -14400
+   },
+   "startOfDay": {
+    "utc": "2026-11-01T04:00:00.000Z",
+    "offsetSeconds": -14400
+   },
+   "dayLengthHours": 25.0
+  },
+  {
+   "zone": "Europe/Berlin",
+   "wallTime": "2026-03-29 02:30:00",
+   "kind": "skipped",
+   "dateFormatter": null,
+   "calendarDateFromComponents": {
+    "utc": "2026-03-29T01:30:00.000Z",
+    "offsetSeconds": 7200
+   },
+   "startOfDay": {
+    "utc": "2026-03-28T23:00:00.000Z",
+    "offsetSeconds": 3600
+   },
+   "dayLengthHours": 23.0
+  },
+  {
+   "zone": "Europe/Berlin",
+   "wallTime": "2026-10-25 02:30:00",
+   "kind": "repeated",
+   "dateFormatter": {
+    "utc": "2026-10-25T01:30:00.000Z",
+    "offsetSeconds": 3600
+   },
+   "calendarDateFromComponents": {
+    "utc": "2026-10-25T00:30:00.000Z",
+    "offsetSeconds": 7200
+   },
+   "startOfDay": {
+    "utc": "2026-10-24T22:00:00.000Z",
+    "offsetSeconds": 7200
+   },
+   "dayLengthHours": 25.0
+  },
+  {
+   "zone": "America/New_York",
+   "wallTime": "2026-03-08 00:00:00",
+   "kind": "start of a 23-hour day",
+   "dateFormatter": {
+    "utc": "2026-03-08T05:00:00.000Z",
+    "offsetSeconds": -18000
+   },
+   "calendarDateFromComponents": {
+    "utc": "2026-03-08T05:00:00.000Z",
+    "offsetSeconds": -18000
+   },
+   "startOfDay": {
+    "utc": "2026-03-08T05:00:00.000Z",
+    "offsetSeconds": -18000
+   },
+   "dayLengthHours": 23.0
+  },
+  {
+   "zone": "America/New_York",
+   "wallTime": "2026-11-01 00:00:00",
+   "kind": "start of a 25-hour day",
+   "dateFormatter": {
+    "utc": "2026-11-01T04:00:00.000Z",
+    "offsetSeconds": -14400
+   },
+   "calendarDateFromComponents": {
+    "utc": "2026-11-01T04:00:00.000Z",
+    "offsetSeconds": -14400
+   },
+   "startOfDay": {
+    "utc": "2026-11-01T04:00:00.000Z",
+    "offsetSeconds": -14400
+   },
+   "dayLengthHours": 25.0
+  }
+ ],
+ "brand": {
+  "parseDateTime": [
+   {
+    "text": "03/08/2026 02:30:00",
+    "format": "MM/dd/yyyy HH:mm:ss",
+    "utc": "2026-08-03T06:30:00.000Z"
+   },
+   {
+    "text": "11/01/2026 01:30:00",
+    "format": "MM/dd/yyyy HH:mm:ss",
+    "utc": "2026-11-01T06:30:00.000Z"
+   },
+   {
+    "text": "3/8/2026",
+    "format": "M/d/yyyy",
+    "utc": "2026-03-08T05:00:00.000Z"
+   },
+   {
+    "text": "11/1/2026",
+    "format": "M/d/yyyy",
+    "utc": "2026-11-01T04:00:00.000Z"
+   },
+   {
+    "text": "2026-03-08T02:30:00Z",
+    "format": "yyyy-MM-dd'T'HH:mm:ssZ",
+    "utc": "2026-03-08T02:30:00.000Z"
+   },
+   {
+    "text": "06/30/2026 10:00:00 EDT",
+    "format": "MM/dd/yyyy HH:mm:ss",
+    "utc": null
+   },
+   {
+    "text": "03/08/26",
+    "format": "MM/dd/yy",
+    "utc": "2026-03-08T05:00:00.000Z"
+   }
+  ],
+  "tradingDays": [
+   {
+    "dayKey": "2026-03-08",
+    "start": "2026-03-08T05:00:00.000Z",
+    "hours": 23.0,
+    "roundTrip": "2026-03-08"
+   },
+   {
+    "dayKey": "2026-11-01",
+    "start": "2026-11-01T04:00:00.000Z",
+    "hours": 25.0,
+    "roundTrip": "2026-11-01"
+   },
+   {
+    "dayKey": "2026-06-15",
+    "start": "2026-06-15T04:00:00.000Z",
+    "hours": 24.0,
+    "roundTrip": "2026-06-15"
+   }
+  ]
+ },
+ "environment": {
+  "tz": "GMT",
+  "locale": "en_US_POSIX",
+  "firstWeekday": 1,
+  "minimumDaysInFirstWeek": 1,
+  "operatingSystem": "Version 15.7.9 (Build 24G830)"
+ }
+}

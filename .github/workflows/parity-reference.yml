@@ -13,6 +13,10 @@ on:
       - "tools/swift-ref/**"
       - "tools/fixture-gen/**"
       - "golden/fixtures/**"
+      # Outputs of this workflow, committed from its artifact: don't re-trigger on them.
+      - "!golden/fixtures/*/F10/**"
+      - "!golden/fixtures/*/*.trades.json"
+      - "!golden/fixtures/README.md"
       - ".github/workflows/parity-reference.yml"
 
 permissions:

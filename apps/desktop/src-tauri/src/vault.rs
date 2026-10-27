@@ -47,7 +47,7 @@ impl OsVault {
             Ok(()) => Ok(Self {
                 service: service.to_string(),
             }),
-            Err(e) => Err(describe(&e)),
+            Err(e) => Err(describe(e)),
         }
     }
 

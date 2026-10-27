@@ -138,10 +138,11 @@ mod win {
     use windows_sys::Win32::Foundation::{CloseHandle, LocalFree, HANDLE};
     use windows_sys::Win32::Security::Authorization::{
         ConvertSecurityDescriptorToStringSecurityDescriptorW, ConvertSidToStringSidW,
-        ConvertStringSecurityDescriptorToSecurityDescriptorW, SDDL_REVISION_1,
+        ConvertStringSecurityDescriptorToSecurityDescriptorW, SetNamedSecurityInfoW,
+        SDDL_REVISION_1, SE_FILE_OBJECT,
     };
     use windows_sys::Win32::Security::{
-        GetFileSecurityW, GetTokenInformation, SetFileSecurityW, TokenUser,
+        GetFileSecurityW, GetSecurityDescriptorDacl, GetTokenInformation, TokenUser, ACL,
         DACL_SECURITY_INFORMATION, PROTECTED_DACL_SECURITY_INFORMATION, PSECURITY_DESCRIPTOR,
         TOKEN_QUERY, TOKEN_USER,
     };
@@ -216,17 +217,43 @@ mod win {
             {
                 return Err(io::Error::last_os_error());
             }
-            let ok = SetFileSecurityW(
+            let mut present = 0;
+            let mut defaulted = 0;
+            let mut dacl: *mut ACL = ptr::null_mut();
+            if GetSecurityDescriptorDacl(sd, &mut present, &mut dacl, &mut defaulted) == 0
+                || present == 0
+            {
+                let err = io::Error::last_os_error();
+                LocalFree(sd);
+                return Err(err);
+            }
+            // SetNamedSecurityInfoW honours the protected flag (no inheritance from the parent)
+            // and propagates the new ACEs to existing children.
+            let status = SetNamedSecurityInfoW(
                 path.as_ptr(),
+                SE_FILE_OBJECT,
                 DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION,
-                sd,
+                ptr::null_mut(),
+                ptr::null_mut(),
+                dacl,
+                ptr::null(),
             );
             LocalFree(sd);
-            if ok == 0 {
-                return Err(io::Error::last_os_error());
+            if status != 0 {
+                return Err(io::Error::from_raw_os_error(status as i32));
             }
         }
         Ok(())
+    }
+
+    /// The folder's DACL as SDDL, for test diagnostics.
+    #[cfg(test)]
+    pub fn describe(dir: &Path) -> String {
+        format!(
+            "actual {:?}, expected {:?}",
+            dacl_sddl(dir).map(|s| normalise(&s)),
+            expected_sddl().map(|s| normalise(&s))
+        )
     }
 
     fn dacl_sddl(dir: &Path) -> io::Result<String> {
@@ -342,6 +369,9 @@ mod tests {
         let tmp = tempfile::tempdir().unwrap();
         let dir = tmp.path().join("data").join("nested");
         create_private_dir(&dir).unwrap();
+        #[cfg(windows)]
+        assert!(dir_is_private(&dir).unwrap(), "{}", win::describe(&dir));
+        #[cfg(unix)]
         assert!(dir_is_private(&dir).unwrap());
     }
 
@@ -371,8 +401,8 @@ mod tests {
         let tmp = tempfile::tempdir().unwrap();
         let plain = tmp.path().join("plain");
         fs::create_dir(&plain).unwrap();
-        assert!(!dir_is_private(&plain).unwrap());
+        assert!(!dir_is_private(&plain).unwrap(), "{}", win::describe(&plain));
         make_dir_private(&plain).unwrap();
-        assert!(dir_is_private(&plain).unwrap());
+        assert!(dir_is_private(&plain).unwrap(), "{}", win::describe(&plain));
     }
 }

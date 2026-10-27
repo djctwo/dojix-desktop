@@ -7,15 +7,20 @@ $ErrorActionPreference = 'Stop'
 $brands = @{ dojix = 'Dojix'; greenwick = 'Greenwick' }
 $failures = 0
 
-function Find-InstalledExe([string]$product, [string]$brand) {
-  $candidates = @(
-    (Join-Path $env:LOCALAPPDATA "$product\$brand.exe"),
-    (Join-Path $env:LOCALAPPDATA "Programs\$product\$brand.exe"),
-    (Join-Path $env:ProgramFiles "$product\$brand.exe")
-  )
+function Find-InstalledExe([string]$product, [string]$brand, [string]$kind) {
+  if ($kind -eq 'nsis') {
+    # Per-user install.
+    $candidates = @(
+      (Join-Path $env:LOCALAPPDATA "$product\$brand.exe"),
+      (Join-Path $env:LOCALAPPDATA "Programs\$product\$brand.exe")
+    )
+    $roots = @('HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*')
+  } else {
+    # Per-machine install.
+    $candidates = @((Join-Path $env:ProgramFiles "$product\$brand.exe"))
+    $roots = @('HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*')
+  }
   foreach ($c in $candidates) { if (Test-Path $c) { return $c } }
-  $roots = @('HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*',
-             'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*')
   foreach ($r in $roots) {
     $entry = Get-ItemProperty $r -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -eq $product } | Select-Object -First 1
     if ($entry -and $entry.InstallLocation) {
@@ -57,13 +62,16 @@ foreach ($brand in $brands.Keys) {
     Write-Host "== $product NSIS: $($setup.Name)"
     $p = Start-Process -FilePath $setup.FullName -ArgumentList '/S' -Wait -PassThru
     if ($p.ExitCode -ne 0) { throw "NSIS install exit code $($p.ExitCode)" }
-    $exe = Find-InstalledExe $product $brand
+    $exe = Find-InstalledExe $product $brand 'nsis'
     if (-not $exe) { throw "installed $brand.exe not found" }
     Write-Host "installed at $exe"
-    Invoke-SelfTest $exe "$brand-nsis"
-    $uninstaller = Join-Path (Split-Path $exe) 'uninstall.exe'
-    $p = Start-Process -FilePath $uninstaller -ArgumentList '/S' -Wait -PassThru
-    Wait-Gone $exe
+    try {
+      Invoke-SelfTest $exe "$brand-nsis"
+    } finally {
+      $uninstaller = Join-Path (Split-Path $exe) 'uninstall.exe'
+      Start-Process -FilePath $uninstaller -ArgumentList '/S' -Wait | Out-Null
+      Wait-Gone $exe
+    }
     Write-Host "ok - $product NSIS install, self-test, uninstall"
   } catch {
     $failures++
@@ -78,14 +86,17 @@ foreach ($brand in $brands.Keys) {
     $log = Join-Path $env:RUNNER_TEMP "msi-$brand-install.log"
     $p = Start-Process msiexec.exe -ArgumentList "/i `"$($msi.FullName)`" /qn /norestart /l*v `"$log`"" -Wait -PassThru
     if ($p.ExitCode -ne 0) { throw "MSI install exit code $($p.ExitCode) (log: $log)" }
-    $exe = Find-InstalledExe $product $brand
+    $exe = Find-InstalledExe $product $brand 'msi'
     if (-not $exe) { throw "installed $brand.exe not found" }
     Write-Host "installed at $exe"
-    Invoke-SelfTest $exe "$brand-msi"
-    $ulog = Join-Path $env:RUNNER_TEMP "msi-$brand-uninstall.log"
-    $p = Start-Process msiexec.exe -ArgumentList "/x `"$($msi.FullName)`" /qn /norestart /l*v `"$ulog`"" -Wait -PassThru
-    if ($p.ExitCode -ne 0) { throw "MSI uninstall exit code $($p.ExitCode)" }
-    Wait-Gone $exe
+    try {
+      Invoke-SelfTest $exe "$brand-msi"
+    } finally {
+      $ulog = Join-Path $env:RUNNER_TEMP "msi-$brand-uninstall.log"
+      $p = Start-Process msiexec.exe -ArgumentList "/x `"$($msi.FullName)`" /qn /norestart /l*v `"$ulog`"" -Wait -PassThru
+      if ($p.ExitCode -ne 0) { throw "MSI uninstall exit code $($p.ExitCode)" }
+      Wait-Gone $exe
+    }
     Write-Host "ok - $product MSI install, self-test, uninstall"
   } catch {
     $failures++

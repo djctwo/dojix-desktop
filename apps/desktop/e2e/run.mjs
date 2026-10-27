@@ -134,9 +134,9 @@ async function main() {
   if (opts["native-driver"]) driverArgs.push("--native-driver", opts["native-driver"]);
   const driver = spawn(opts.driver, driverArgs, { stdio: ["ignore", "inherit", "inherit"] });
   let failed = false;
+  const dataDir = mkdtempSync(join(tmpdir(), `e2e-${opts.brand}-`));
   try {
     await waitForDriver();
-    const dataDir = mkdtempSync(join(tmpdir(), `e2e-${opts.brand}-`));
     const vaultService = `e2e.${opts.brand}.${process.pid}.${Date.now()}`;
     const appArgs = ["--data-dir", dataDir, "--vault-service", vaultService];
 
@@ -191,6 +191,10 @@ async function main() {
   } catch (err) {
     failed = true;
     console.error(err.stack ?? String(err));
+    // The app's own log is the best clue; it holds no paths or trade data by design.
+    for (const file of filesUnder(dataDir).filter((f) => f.endsWith(".log"))) {
+      console.error(`--- ${file.slice(dataDir.length)}\n${readFileSync(file, "utf8")}`);
+    }
   } finally {
     driver.kill();
   }

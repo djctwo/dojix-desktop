@@ -80,6 +80,39 @@ jobs:
             tools/ci/copy-binary.sh $brand
           done
 
+      - name: Self-test of the e2e binaries (diagnostics before the WebDriver run)
+        run: |
+          WRAP=""
+          if [ "$RUNNER_OS" = "Linux" ]; then WRAP="tools/ci/with-keyring.sh"; fi
+          for brand in dojix greenwick; do
+            dir="$RUNNER_TEMP/selftest-$brand"
+            set +e
+            $WRAP e2e-bin/$brand/$brand --self-test --data-dir "$dir" --vault-service "e2e.selftest.$brand"
+            code=$?
+            set -e
+            echo "$brand self-test exit code: $code"
+            cat "$dir"/logs/*.log 2>/dev/null || echo "(no log)"
+            [ "$code" = "0" ] || exit 1
+          done
+
+      - name: Launch each brand directly for 15 s (Windows diagnostics)
+        if: runner.os == 'Windows'
+        run: |
+          for brand in dojix greenwick; do
+            dir="$RUNNER_TEMP/launch-$brand"
+            e2e-bin/$brand/$brand.exe --data-dir "$dir" --vault-service "e2e.launch.$brand" &
+            pid=$!
+            sleep 15
+            if kill -0 $pid 2>/dev/null; then
+              echo "$brand is running after 15 s"
+              taskkill //F //IM $brand.exe >/dev/null 2>&1 || kill $pid || true
+            else
+              set +e; wait $pid; code=$?; set -e
+              echo "::warning::$brand exited early with code $code"
+            fi
+            cat "$dir"/logs/*.log 2>/dev/null || echo "(no log)"
+          done
+
       - name: Run the smoke test for each brand
         run: |
           set -euo pipefail

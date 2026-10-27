@@ -6,7 +6,7 @@ authors = ["Douglas Cleary"]
 license = "GPL-3.0-or-later"
 repository = "https://github.com/djctwo/dojix-desktop"
 edition = "2021"
-rust-version = "1.85"
+rust-version = "1.89"
 publish = false
 
 [lib]

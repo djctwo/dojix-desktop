@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parityContext } from "../engine/context";
 import { fxSeries } from "../test-support/trades";
 import { compareParity, decodeReferenceNumber, pathWithin } from "./compare";
-import { coveredBy, coveringIds, parseDivergences } from "./divergences";
+import { coveredBy, coveringIds, isProposal, parseDivergences, unapprovedHeadlineFixes } from "./divergences";
 import { decodeReferenceNow, parseReferenceFile, referenceContext, registerParityResolver, resolveParityOutput } from "./reference";
 
 describe("compareParity (SPEC §10.1)", () => {
@@ -109,6 +109,15 @@ describe("golden/divergences.yaml", () => {
     expect(coveredBy(d, "dojix/f5-oanda", "outputs.Metrics.winRate")).toBeUndefined();
     expect(coveredBy(d, "greenwick/f5-ctrader", "import.parsed")).toBeUndefined();
     expect(coveringIds(d, "dojix/f5-ctrader", "outputs.WinLossDistribution")).toEqual(["D-01", "D-15"]);
+  });
+
+  it("proposals cover nothing; an implemented headline fix needs approval", () => {
+    const proposal = parseDivergences(yaml.replace("approved: true\n  reason: bare", "approved: false\n  reason: bare"));
+    expect(proposal.map(isProposal)).toEqual([false, true]);
+    expect(coveredBy(proposal, "dojix/f5-ctrader", "import.parsed")).toBeUndefined();
+    expect(unapprovedHeadlineFixes(proposal)).toEqual([]);
+    const headline = parseDivergences(yaml.replace("headline: false\n  approved: true\n  reason: \"Win", "headline: true\n  approved: false\n  reason: \"Win"));
+    expect(unapprovedHeadlineFixes(headline)).toEqual(["D-01"]);
   });
 
   it("rejects unsupported syntax and incomplete entries", () => {

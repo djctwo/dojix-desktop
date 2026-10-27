@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { type ReferenceDoc, loadReferences, runParity, verifyChecksums } from "./check.ts";
 import { compareValues, numbersEqual } from "./compare.ts";
-import { coveredBy, coveringIds, parseDivergences } from "./divergences.ts";
+import { coveredBy, coveringIds, isProposal, parseDivergences, unapprovedHeadlineFixes, type Divergence } from "./divergences.ts";
 
 const golden = resolve(dirname(fileURLToPath(import.meta.url)), "../../../golden");
 const divergences = parseDivergences(readFileSync(join(golden, "divergences.yaml"), "utf8"));
@@ -45,9 +45,18 @@ describe("divergences.yaml", () => {
   it("lists every intentional fix from PARITY.md, headline ones approved", () => {
     const ids = divergences.map((d) => d.id);
     for (const id of ["D-01", "D-04", "D-05", "D-06", "D-15", "D-16", "D-18", "D-22", "D-23", "D-27"]) expect(ids).toContain(id);
-    const headline = divergences.filter((d) => d.headline).map((d) => d.id).sort();
-    expect(headline).toEqual(["D-16", "D-18", "D-22", "D-23", "D-27"]);
-    expect(divergences.filter((d) => d.headline).every((d) => d.approved)).toBe(true);
+    const approvedHeadline = divergences.filter((d) => d.headline && d.approved).map((d) => d.id).sort();
+    expect(approvedHeadline).toEqual(["D-16", "D-18", "D-22", "D-23", "D-27"]);
+    expect(unapprovedHeadlineFixes(divergences)).toEqual([]);
+  });
+
+  it("keeps proposals (not approved, no test) out of the coverage", () => {
+    const proposals = divergences.filter(isProposal).map((d) => d.id);
+    expect(proposals).toEqual(["D-30", "D-31", "D-32"]);
+    expect(coveredBy(divergences, "dojix/f5-ctrader-compact", "outputs.Metrics.totalTrades")?.id).not.toBe("D-31");
+    const implemented = [{ ...(divergences.find((d) => d.id === "D-31") as Divergence), test: "x.test.ts" }];
+    expect(unapprovedHeadlineFixes(implemented)).toEqual(["D-31"]);
+    expect(runParity([], {}, implemented).errors).toEqual(["D-31: changes a headline number but is not approved"]);
   });
 
   it("scopes an entry to its app, fixtures and paths", () => {

@@ -135,8 +135,8 @@ context.
 - In `swift` compat every value must match, including the ones an approved D-xx changes. In
   `fixed` compat (what the app ships) a difference fails unless `divergences.yaml` covers that path
   for that fixture. A headline (Dashboard) number also needs an approved headline entry.
-- F8 (`compare: false` in the manifest) is never compared. The `import.*` keys and the F9 scale sets
-  (whose only input is the import file) are compared by packages/importers.
+- F8 (`compare: false` in the manifest) is never compared. The `import.*` keys and
+  `TicketKeyCounter.vectors` are compared by `packages/importers/src/golden.test.ts`.
 
 ```sh
 node tools/parity-check/src/cli.ts            # summary; fails on unexplained differences

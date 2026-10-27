@@ -7,8 +7,10 @@
 # "import.parsed", "import.journal", or "*" for every value of the listed fixtures), and
 # fixtures (fixture ids the entry applies to; [] = all).
 #
-# parity-check fails when a reference value differs without an entry, when an entry has no
-# test (--strict, from Phase 2), or when a headline entry is not approved.
+# parity-check fails when a reference value differs without an entry, when an approved entry has
+# no test (--strict, from Phase 2), or when a headline fix is implemented (has a test) without
+# approval. An entry with approved: false and test: null is a proposal: it records a Mac behaviour
+# someone wants to fix and covers no difference until the maintainer approves it.
 
 - id: D-01
   app: both
@@ -194,3 +196,29 @@
   test: null
   affects: []
   fixtures: []
+# Proposed by the importers team (Phase 2), not decided by the maintainer: approved false, no
+# fix in either compat mode yet (test: null), so they cover no difference until approved.
+- id: D-30
+  app: greenwick
+  headline: true
+  approved: false
+  reason: "PROPOSED. A skipped ET wall time (spring-forward gap) is not re-read day-first (Mac: DateFormatter rejects '03/08/2026 02:30:00' as MM/dd/yyyy and parseDateTime then reads it as dd/MM/yyyy, 3 August 2026; golden/README.md probes)"
+  test: null
+  affects: ["import.parsed", "import.journal", "outputs.*"]
+  fixtures: []
+- id: D-31
+  app: dojix
+  headline: true
+  approved: false
+  reason: "PROPOSED. The compact cTrader header (PositionId/EntryTime/CloseTime/ClosePrice without spaces) maps its close columns (Mac: detected as cTrader but closeTime/closePrice unmapped, so the file imports 0 trades; golden/reference/dojix/f5-ctrader-compact.json)"
+  test: null
+  affects: ["*"]
+  fixtures: ["dojix/f5-ctrader-compact"]
+- id: D-32
+  app: greenwick
+  headline: true
+  approved: false
+  reason: "PROPOSED. Fidelity without a price column never takes the month of the Run Date as the price (Mac: column 0, '02/03/2026', is read as price 2 and the trades are imported; golden/reference/greenwick/f6-fidelity-no-price.json). Overlaps D-24, whose 'silently skipped' the reference contradicts"
+  test: null
+  affects: ["*"]
+  fixtures: ["greenwick/f6-fidelity-no-price"]

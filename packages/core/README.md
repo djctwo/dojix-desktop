@@ -90,5 +90,5 @@ ported and cite their file. `properties.test.ts` runs fast-check over hostile in
   annotation); `skipped` values are not compared; F8 (manifest `compare: false`) never is;
 - the same values in `fixed` compat may differ from the Mac only where `golden/divergences.yaml`
   covers the path;
-- `import.parsed` / `import.journal` and the import-only F9 sets are reported as "importer parity
-  pending" (packages/importers).
+- `import.parsed` / `import.journal` and `TicketKeyCounter` are compared by
+  packages/importers/src/golden.test.ts; the F9 scale sets have no stored journal to compare.

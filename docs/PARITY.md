@@ -169,6 +169,15 @@ B3 and are now parity.
 **"Headline? yes"** means the entry can change a number on the Dashboard header for some input.
 `parity-check` then requires the entry to be marked approved (see "Open questions").
 
+**Proposed, not approved** (in `golden/divergences.yaml` with `approved: false`, no fix in either
+compat mode; they cover no difference until the maintainer decides, see C3):
+
+| ID | App | Mac behaviour (confirmed by the Tier B reference) | Proposed fix | Headline? |
+|---|---|---|---|---|
+| D-30 | Greenwick | A skipped ET wall time (spring-forward gap) fails `MM/dd/yyyy` and is then read day-first: `03/08/2026 02:30:00` becomes 3 August 2026 | Don't fall through to a day-first format for a time the gap rejected | yes |
+| D-31 | Dojix | The compact cTrader header (`PositionId`, `EntryTime`, `CloseTime`, `ClosePrice`) is detected as cTrader but its close columns stay unmapped: 0 trades | Map the compact close columns | yes |
+| D-32 | Greenwick | Fidelity without a price column reads column 0 (the Run Date) as the price, so the month becomes the price (`02/03/2026` → 2) | Never take the price from the date; report the row (as D-24 intends) | yes |
+
 ### B2. Platform and design differences
 
 | Area | Mac | Desktop | Reason |
@@ -247,3 +256,6 @@ Both were answered on 2026-10-27:
    Robinhood fees). Each is logged and tested.
 2. **No Windows → Mac backup export in v1.** Mac → Windows is supported; the reverse can follow when
    someone asks.
+3. **Open: D-30, D-31 and D-32** (proposed by the importers team, 2026-10-27; table under B1). Each
+   would change Dashboard numbers for the affected files, so each needs an approval before it is
+   implemented.

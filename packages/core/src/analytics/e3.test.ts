@@ -88,8 +88,11 @@ const INSTANCES: Record<string, readonly string[]> = {
   PropFirmTracker: ["custom"],
 };
 
-/** Random on the Mac (unseeded shuffle): only invariants are compared (D-05). */
-const NOT_RESOLVED = new Set(["MonteCarloSimulation.result"]);
+/**
+ * Every member resolves. MonteCarloSimulation.result is random on the Mac (unseeded shuffle):
+ * the reference marks its random parts nondeterministic and the invariants are compared (D-05).
+ */
+const NOT_RESOLVED = new Set<string>();
 
 const DAY = 86_400_000;
 const START = Date.UTC(2026, 0, 5, 9, 0);

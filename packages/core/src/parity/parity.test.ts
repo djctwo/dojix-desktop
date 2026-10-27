@@ -13,15 +13,16 @@
 // - golden/divergences.yaml: `swift` mode must match the Mac everywhere, including values an
 //   approved D-xx changes. The same values are then computed in `fixed` mode (what the app
 //   ships): there, a difference from the Mac is allowed only where an entry covers that path.
-// - Import keys (`import.parsed`, `import.journal`) and fixtures whose only input is an import
-//   file (F9) belong to packages/importers: reported here as "importer parity pending".
+// - Import keys (`import.parsed`, `import.journal`, TicketKeyCounter) are compared by
+//   packages/importers/src/golden.test.ts. The F9 scale sets have no stored journal (their input
+//   file is generated in the reference workflow only).
 
 import { describe, expect, it } from "vitest";
 import { registerE3Parity } from "../analytics/e3";
 import { toEngineTrade, type StoredTrade } from "../model/stored";
 import type { Trade } from "../model/trade";
 import { compareParity, pathWithin, type ParityMismatch } from "./compare";
-import { coveredBy, parseDivergences } from "./divergences";
+import { coveredBy, parseDivergences, unapprovedHeadlineFixes } from "./divergences";
 import { parseReferenceFile, referenceContext, resolveParityOutput, type ReferenceFile } from "./reference";
 // Component resolvers register themselves on import.
 import "../analytics/greenwick/parity";
@@ -61,10 +62,10 @@ const references = Object.entries(referenceJson)
  */
 const NOT_IN_CORE: readonly { prefix: string; reason: string }[] = [
   { prefix: "QuickInsight.", reason: "not ported: dead code in both apps, tagged DROP in SPEC §2.3" },
-  { prefix: "TicketKeyCounter.", reason: "importer parity pending: ticket hashing is packages/importers" },
+  { prefix: "TicketKeyCounter.", reason: "compared by packages/importers/src/golden.test.ts (ticket hashing)" },
   {
     prefix: "Trade.derived",
-    reason: "importer parity pending: the per-trade record includes the storage validation (Trade+Sanitize / TradeLimits) of packages/importers",
+    reason: "not compared yet: the per-trade record needs the storage validation of packages/importers (Trade+Sanitize / TradeLimits) next to the core accessors",
   },
 ];
 
@@ -87,8 +88,9 @@ describe("parity with the Mac apps (golden/reference)", () => {
     expect(manifest.size).toBeGreaterThan(0);
   });
 
-  it("every headline divergence is approved (PARITY.md B1)", () => {
-    expect(divergences.filter((d) => d.headline && !d.approved).map((d) => d.id)).toEqual([]);
+  it("no headline fix is implemented without the maintainer's approval (PARITY.md B1)", () => {
+    // Proposals (approved: false, test: null) are allowed; they cover no difference.
+    expect(unapprovedHeadlineFixes(divergences)).toEqual([]);
   });
 
   for (const ref of references) {
@@ -99,11 +101,11 @@ describe("parity with the Mac apps (golden/reference)", () => {
         return;
       }
       if (ref.import.parsed !== undefined || ref.import.journal !== undefined) {
-        it.skip(`import.parsed / import.journal: importer parity pending (packages/importers, format ${fixture?.format ?? "?"})`, () => {});
+        it.skip(`import.parsed / import.journal: compared by packages/importers/src/golden.test.ts (format ${fixture?.format ?? "?"})`, () => {});
       }
       const trades = fixtureTrades(ref);
       if (trades === null) {
-        it.skip(`importer parity pending: ${ref.fixtureId} has no stored journal; its input is the ${fixture?.format ?? "?"} file, read through packages/importers`, () => {});
+        it.skip(`${ref.fixtureId}: no stored journal in the reference (F9 scale set, metrics only); its ${fixture?.format ?? "?"} input is generated in the reference workflow, not committed`, () => {});
         return;
       }
       const swiftCtx = referenceContext(ref, "swift");

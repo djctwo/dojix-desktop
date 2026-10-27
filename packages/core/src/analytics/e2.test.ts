@@ -279,7 +279,15 @@ describe("E2 parity resolvers", () => {
     expect(resolveE2Output("Metrics.winRate", ctx, trades)).toBeUndefined();
     expect(resolveE2Output("HourlyPnLChart.body", ctx, trades)).toBeUndefined();
     expect(resolveE2Output("HourlyPnLChart[week].hourlyData", ctx, trades)).toBeUndefined();
-    expect(resolveE2Output("PerformanceSummary.calendar", ctx, trades)).toBeUndefined();
+    expect(resolveE2Output("PerformanceSummary.body", ctx, trades)).toBeUndefined();
+    // The component's Calendar, as the harness encodes it (its settings; Foundation calls UTC "GMT").
+    expect(resolveE2Output("PerformanceSummary.calendar", ctx, trades)?.value).toEqual({
+      firstWeekday: 1,
+      identifier: "gregorian",
+      locale: "en_US_POSIX",
+      minimumDaysInFirstWeek: 1,
+      timeZone: "GMT",
+    });
     expect(resolveE2Output("not a key", ctx, trades)).toBeUndefined();
     expect(E2_PARITY_COMPONENTS).toContain("SymbolAnalytics");
     expect(E2_INTEGER_KEYS).toContain("KillZoneOptimizer.tradingDays");

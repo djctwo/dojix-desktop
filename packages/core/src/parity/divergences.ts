@@ -74,18 +74,35 @@ function affectsPath(pattern: string, path: string): boolean {
   return path === pattern || path.startsWith(`${pattern}.`) || path.startsWith(`${pattern}[`);
 }
 
-/** The first entry that covers `path` of `fixture` ("<brand>/<id>"), if any. */
+/**
+ * A proposal: not approved and not implemented (`test: null`). It documents a Mac behaviour
+ * someone wants to fix and covers no difference until the maintainer approves it.
+ */
+export function isProposal(d: Divergence): boolean {
+  return !d.approved && d.test === null;
+}
+
+/**
+ * Entries that break the approval rule (PARITY.md B1): a fix that changes a headline number is
+ * implemented (has a test) without the maintainer's approval.
+ */
+export function unapprovedHeadlineFixes(divs: readonly Divergence[]): string[] {
+  return divs.filter((d) => d.headline && !d.approved && d.test !== null).map((d) => d.id);
+}
+
+/** The first approved entry that covers `path` of `fixture` ("<brand>/<id>"), if any. */
 export function coveredBy(divs: readonly Divergence[], fixture: string, path: string): Divergence | undefined {
   const brand = fixture.split("/")[0];
   return divs.find(
     (d) =>
+      d.approved &&
       (d.app === "both" || d.app === brand) &&
       (d.fixtures.length === 0 || d.fixtures.includes(fixture)) &&
       d.affects.some((a) => affectsPath(a, path)),
   );
 }
 
-/** Every entry that covers `path` of `fixture`. */
+/** Every approved entry that covers `path` of `fixture`. */
 export function coveringIds(divs: readonly Divergence[], fixture: string, path: string): string[] {
   return divs.filter((d) => coveredBy([d], fixture, path)).map((d) => d.id);
 }

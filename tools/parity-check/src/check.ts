@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { compareValues, type Mismatch } from "./compare.ts";
-import { coveredBy, type Divergence } from "./divergences.ts";
+import { coveredBy, isProposal, unapprovedHeadlineFixes, type Divergence } from "./divergences.ts";
 
 /** One golden/reference/<brand>/<fixture>[@variant].json file, as tools/swift-ref writes it. */
 export interface ReferenceDoc {
@@ -115,9 +115,10 @@ export function runParity(docs: readonly { file: string; doc: ReferenceDoc }[], 
   divergences: readonly Divergence[], opts: RunOptions = {}): CheckResult {
   const result: CheckResult = { files: docs.length, compared: 0, notImplemented: 0, failures: [], allowed: [], warnings: [], errors: [] };
 
+  for (const id of unapprovedHeadlineFixes(divergences)) result.errors.push(`${id}: changes a headline number but is not approved`);
   for (const d of divergences) {
-    if (d.headline && !d.approved) result.errors.push(`${d.id}: changes a headline number but is not approved`);
-    if (opts.strict && !d.test) result.errors.push(`${d.id}: no red→green test`);
+    if (opts.strict && d.approved && !d.test) result.errors.push(`${d.id}: no red→green test`);
+    if (isProposal(d)) result.warnings.push(`${d.id}: proposed, waiting for the maintainer (covers nothing yet)`);
   }
 
   for (const { file, doc } of docs) {

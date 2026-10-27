@@ -28,5 +28,10 @@ if (-not $ok) { throw "could not download msedgedriver $version" }
 Expand-Archive -Path $zip -DestinationPath $dest -Force
 $driver = Join-Path $dest 'msedgedriver.exe'
 if (-not (Test-Path $driver)) { throw 'msedgedriver.exe missing from the archive' }
-"MSEDGEDRIVER=$driver" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-Write-Host "msedgedriver installed at $driver"
+# A wrapper that turns on msedgedriver's verbose log (tauri-driver passes only --port/--host).
+$log = Join-Path $env:RUNNER_TEMP 'msedgedriver.log'
+$wrapper = Join-Path $dest 'msedgedriver-verbose.cmd'
+"@echo off`r`n`"$driver`" --verbose --log-path=`"$log`" %*`r`n" | Out-File -FilePath $wrapper -Encoding ascii
+"MSEDGEDRIVER=$wrapper" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+"MSEDGEDRIVER_LOG=$log" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+Write-Host "msedgedriver installed at $driver (wrapper $wrapper)"

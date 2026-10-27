@@ -7,6 +7,20 @@ $ErrorActionPreference = 'Stop'
 $brands = @{ dojix = 'Dojix'; greenwick = 'Greenwick' }
 $failures = 0
 
+function Log([string]$msg) { Write-Host ("[{0:HH:mm:ss}] {1}" -f (Get-Date), $msg) }
+
+# Starts a process and waits at most $seconds; a hang is reported and the process killed.
+function Invoke-Bounded([string]$file, [string]$arguments, [int]$seconds, [string]$what) {
+  Log "start: $what"
+  $p = Start-Process -FilePath $file -ArgumentList $arguments -PassThru
+  if (-not $p.WaitForExit($seconds * 1000)) {
+    try { $p.Kill($true) } catch { }
+    throw "$what did not finish within $seconds s"
+  }
+  Log "done: $what (exit $($p.ExitCode))"
+  return $p.ExitCode
+}
+
 function Find-InstalledExe([string]$product, [string]$brand, [string]$kind) {
   if ($kind -eq 'nsis') {
     # Per-user install.
@@ -34,8 +48,13 @@ function Find-InstalledExe([string]$product, [string]$brand, [string]$kind) {
 function Invoke-SelfTest([string]$exe, [string]$label) {
   $out = Join-Path $env:RUNNER_TEMP "selftest-$label.json"
   $err = Join-Path $env:RUNNER_TEMP "selftest-$label.err"
-  $p = Start-Process -FilePath $exe -ArgumentList '--self-test' -Wait -PassThru -NoNewWindow `
+  Log "start: self-test $label"
+  $p = Start-Process -FilePath $exe -ArgumentList '--self-test' -PassThru -NoNewWindow `
     -RedirectStandardOutput $out -RedirectStandardError $err
+  if (-not $p.WaitForExit(120000)) {
+    try { $p.Kill($true) } catch { }
+    throw "self-test for $label did not finish within 120 s"
+  }
   $json = Get-Content $out -Raw
   Write-Host "self-test ($label) exit $($p.ExitCode): $json"
   if ($p.ExitCode -ne 0) { throw "self-test failed for $label" }
@@ -60,8 +79,8 @@ foreach ($brand in $brands.Keys) {
     $setup = Get-ChildItem -Path $dir -Filter '*-setup.exe' | Select-Object -First 1
     if (-not $setup) { throw "no NSIS installer for $brand" }
     Write-Host "== $product NSIS: $($setup.Name)"
-    $p = Start-Process -FilePath $setup.FullName -ArgumentList '/S' -Wait -PassThru
-    if ($p.ExitCode -ne 0) { throw "NSIS install exit code $($p.ExitCode)" }
+    $code = Invoke-Bounded $setup.FullName '/S' 300 "NSIS install $product"
+    if ($code -ne 0) { throw "NSIS install exit code $code" }
     $exe = Find-InstalledExe $product $brand 'nsis'
     if (-not $exe) { throw "installed $brand.exe not found" }
     Write-Host "installed at $exe"
@@ -69,7 +88,7 @@ foreach ($brand in $brands.Keys) {
       Invoke-SelfTest $exe "$brand-nsis"
     } finally {
       $uninstaller = Join-Path (Split-Path $exe) 'uninstall.exe'
-      Start-Process -FilePath $uninstaller -ArgumentList '/S' -Wait | Out-Null
+      Invoke-Bounded $uninstaller '/S' 300 "NSIS uninstall $product" | Out-Null
       Wait-Gone $exe
     }
     Write-Host "ok - $product NSIS install, self-test, uninstall"
@@ -84,8 +103,8 @@ foreach ($brand in $brands.Keys) {
     if (-not $msi) { throw "no MSI for $brand" }
     Write-Host "== $product MSI: $($msi.Name)"
     $log = Join-Path $env:RUNNER_TEMP "msi-$brand-install.log"
-    $p = Start-Process msiexec.exe -ArgumentList "/i `"$($msi.FullName)`" /qn /norestart /l*v `"$log`"" -Wait -PassThru
-    if ($p.ExitCode -ne 0) { throw "MSI install exit code $($p.ExitCode) (log: $log)" }
+    $code = Invoke-Bounded 'msiexec.exe' "/i `"$($msi.FullName)`" /qn /norestart /l*v `"$log`"" 300 "MSI install $product"
+    if ($code -ne 0) { throw "MSI install exit code $code (log: $log)" }
     $exe = Find-InstalledExe $product $brand 'msi'
     if (-not $exe) { throw "installed $brand.exe not found" }
     Write-Host "installed at $exe"
@@ -93,8 +112,8 @@ foreach ($brand in $brands.Keys) {
       Invoke-SelfTest $exe "$brand-msi"
     } finally {
       $ulog = Join-Path $env:RUNNER_TEMP "msi-$brand-uninstall.log"
-      $p = Start-Process msiexec.exe -ArgumentList "/x `"$($msi.FullName)`" /qn /norestart /l*v `"$ulog`"" -Wait -PassThru
-      if ($p.ExitCode -ne 0) { throw "MSI uninstall exit code $($p.ExitCode)" }
+      $code = Invoke-Bounded 'msiexec.exe' "/x `"$($msi.FullName)`" /qn /norestart /l*v `"$ulog`"" 300 "MSI uninstall $product"
+      if ($code -ne 0) { throw "MSI uninstall exit code $code" }
       Wait-Gone $exe
     }
     Write-Host "ok - $product MSI install, self-test, uninstall"

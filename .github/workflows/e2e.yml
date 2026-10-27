@@ -131,6 +131,12 @@ jobs:
           done
           exit $status
 
+      - name: msedgedriver log (Windows, on failure)
+        if: failure() && runner.os == 'Windows'
+        run: |
+          grep -iE "launch|command line|binary|args|exited|crash|error|DevTools" "$MSEDGEDRIVER_LOG" | head -80 || true
+          ls "$LOCALAPPDATA"/io.github.djctwo.*/logs/ 2>/dev/null && cat "$LOCALAPPDATA"/io.github.djctwo.*/logs/*.log || true
+
       - name: Upload screenshots and logs
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

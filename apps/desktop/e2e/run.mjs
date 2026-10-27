@@ -138,7 +138,8 @@ async function main() {
   try {
     await waitForDriver();
     const vaultService = `e2e.${opts.brand}.${process.pid}.${Date.now()}`;
-    const appArgs = ["--data-dir", dataDir, "--vault-service", vaultService];
+    // "--flag=value" form: msedgedriver treats every arg as a Chromium-style switch.
+    const appArgs = [`--data-dir=${dataDir}`, `--vault-service=${vaultService}`];
 
     // Launch 1: empty journal, brand visible, add one trade.
     let session = await newSession(appArgs);

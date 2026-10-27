@@ -51,12 +51,12 @@ export const GREENWICK_ONLY_PARITY_OUTPUTS: Readonly<Record<string, (ctx: Engine
       concentrationWarning: m.concentrationWarning,
     };
   },
-  VolumeAnalysis: (_ctx, trades) => {
-    const m = computeVolumeAnalysis(trades);
+  VolumeAnalysis: (ctx, trades) => {
+    const m = computeVolumeAnalysis(trades, ctx.locale);
     return { tradesWithVolume: refs(m.tradesWithVolume), hasVolumeData: m.hasVolumeData, buckets: m.buckets, insightText: m.insightText };
   },
-  GapAnalysis: (_ctx, trades) => {
-    const m = computeGapAnalysis(trades);
+  GapAnalysis: (ctx, trades) => {
+    const m = computeGapAnalysis(trades, ctx.locale);
     return {
       gapTrades: m.gapTrades.map((g) => ({
         trade: ticketRef(g.trade),
@@ -70,8 +70,8 @@ export const GREENWICK_ONLY_PARITY_OUTPUTS: Readonly<Record<string, (ctx: Engine
       bestStrategy: m.bestStrategy,
     };
   },
-  OpeningRangeAnalysis: (_ctx, trades) => {
-    const m = computeOpeningRange(trades);
+  OpeningRangeAnalysis: (ctx, trades) => {
+    const m = computeOpeningRange(trades, ctx.locale);
     return {
       buckets: m.buckets.map(openingBucket),
       activeBuckets: m.activeBuckets.map(openingBucket),
@@ -104,7 +104,7 @@ export const GREENWICK_ONLY_PARITY_OUTPUTS: Readonly<Record<string, (ctx: Engine
     };
   },
   RegimeAnalysis: (ctx, trades) => {
-    const m = computeRegimeAnalysis(trades, ctx.compat);
+    const m = computeRegimeAnalysis(trades, ctx.compat, ctx.locale);
     return {
       medianDayMAE: m.medianDayMAE,
       tradingDays: m.tradingDays.map((d) => ({

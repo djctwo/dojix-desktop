@@ -59,12 +59,12 @@ function avgPnL(trades: readonly GreenwickTrade[]): number {
   return total / trades.length;
 }
 
-function signedCurrency(x: number): string {
-  return x >= 0 ? `+${asCurrency(x)}` : asCurrency(x);
+function signedCurrency(x: number, locale: string): string {
+  return x >= 0 ? `+${asCurrency(x, locale)}` : asCurrency(x, locale);
 }
 
 /** VolumeAnalysis.swift:19-72. No minimum trade count. */
-export function computeVolumeAnalysis(trades: readonly GreenwickTrade[]): VolumeAnalysisModel {
+export function computeVolumeAnalysis(trades: readonly GreenwickTrade[], locale: string): VolumeAnalysisModel {
   const tradesWithVolume = trades.filter((t) => t.volume > 0 && t.avgVolume > 0);
 
   const buckets = VOLUME_BUCKET_RANGES.map(({ id, label, lo, hi }): VolumeBucket => {
@@ -89,7 +89,7 @@ export function computeVolumeAnalysis(trades: readonly GreenwickTrade[]): Volume
   const insightText =
     high.length === 0 && low.length === 0
       ? "Most trades occur at normal relative volume"
-      : `Trades on high relative volume days average ${signedCurrency(highAvg)} vs ${signedCurrency(lowAvg)} on low volume`;
+      : `Trades on high relative volume days average ${signedCurrency(highAvg, locale)} vs ${signedCurrency(lowAvg, locale)} on low volume`;
 
   return {
     hasVolumeData: tradesWithVolume.length > 0,

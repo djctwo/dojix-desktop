@@ -124,7 +124,7 @@ function avgProfit(trades: readonly GreenwickTrade[]): number {
  * RegimeAnalysis.swift:63-185. The card needs 10 trades (the registry guard) and 3 trading
  * days ("Need at least 3 trading days for regime classification").
  */
-export function computeRegimeAnalysis(trades: readonly GreenwickTrade[], compat: CompatMode): RegimeAnalysisModel {
+export function computeRegimeAnalysis(trades: readonly GreenwickTrade[], compat: CompatMode, locale: string): RegimeAnalysisModel {
   const byDay = new Map<string, GreenwickTrade[]>();
   for (const t of trades) {
     const k = TRADING_CALENDAR.dayKey(t.closeTime);
@@ -202,11 +202,11 @@ export function computeRegimeAnalysis(trades: readonly GreenwickTrade[], compat:
     // regimeInsights (:377-404)
     bestInsight:
       bestRegime && bestRegime.avgPnL > 0
-        ? `You thrive in ${bestRegime.regime} days -- avg ${asCurrency(bestRegime.avgPnL)}/day across ${bestRegime.dayCount} days`
+        ? `You thrive in ${bestRegime.regime} days -- avg ${asCurrency(bestRegime.avgPnL, locale)}/day across ${bestRegime.dayCount} days`
         : null,
     worstInsight:
       worstRegime && worstRegime.totalPnL < 0
-        ? `Consider sitting out ${worstRegime.regime} days -- costs you ${asCurrency(Math.abs(worstRegime.totalPnL))} total`
+        ? `Consider sitting out ${worstRegime.regime} days -- costs you ${asCurrency(Math.abs(worstRegime.totalPnL), locale)} total`
         : null,
     needsMoreVariety: regimeStats.length <= 1,
   };

@@ -20,12 +20,12 @@ import { computeVolumeAnalysis } from "./volume-analysis";
 
 const ALL = (trades: readonly GreenwickTrade[], compat: CompatMode): unknown[] => [
   computeSectorExposure(trades),
-  computeVolumeAnalysis(trades),
-  computeGapAnalysis(trades),
-  computeOpeningRange(trades),
+  computeVolumeAnalysis(trades, "en_US"),
+  computeGapAnalysis(trades, "en_US"),
+  computeOpeningRange(trades, "en_US"),
   computeExecutionQuality(trades, compat),
   computeIntradayEquityCurve(trades),
-  computeRegimeAnalysis(trades, compat),
+  computeRegimeAnalysis(trades, compat, "en_US"),
   computeEarningsImpact(trades, compat),
   computeDiversificationScore(trades),
 ];
@@ -115,7 +115,7 @@ describe("Greenwick-only analytics: properties", () => {
         expect(e.catalystTrades.length + e.normalTrades.length).toBe(trades.length);
         const s = computeSectorExposure(trades);
         expect(s.sectorStats.reduce((a, x) => a + x.tradeCount, 0)).toBe(trades.filter((t) => t.sector !== "").length);
-        const r = computeRegimeAnalysis(trades, mode);
+        const r = computeRegimeAnalysis(trades, mode, "en_US");
         expect(r.tradingDays.reduce((a, d) => a + d.trades.length, 0)).toBe(trades.length);
         const d = computeDiversificationScore(trades);
         for (const row of d.correlationMatrix) for (const c of row) expect(Math.abs(c)).toBeLessThanOrEqual(1 + 1e-9);

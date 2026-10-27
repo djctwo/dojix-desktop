@@ -255,7 +255,7 @@ describe("E2 parity resolvers", () => {
       },
     ]);
     const comparisons = resolveE2Output("PeriodComparison.comparisons", ctx, trades)?.value as { id: string; current: string }[];
-    expect(comparisons.map((c) => `${c.id}=${c.current}`)).toEqual(["pnl=$70.00", "wr=50.0%", "pf=3.33", "avgr=1.00R", "trades=2", "dd=$30.00"]);
+    expect(comparisons.map((c) => `${c.id}=${c.current}`)).toEqual(["pnl=$\u00a070.00", "wr=50.0%", "pf=3.33", "avgr=1.00R", "trades=2", "dd=$\u00a030.00"]);
   });
 
   it("answers the windows, conditions and Greenwick-only members", () => {

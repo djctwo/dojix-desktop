@@ -21,7 +21,7 @@ function fourDays(d3mae: number | null = 20, d4mae: number | null = 1, d12mae: n
 
 describe("RegimeAnalysis (RegimeAnalysis.swift:63-185)", () => {
   it("classifies each ET close day and summarises by regime", () => {
-    const m = computeRegimeAnalysis([...fourDays()].reverse(), "swift");
+    const m = computeRegimeAnalysis([...fourDays()].reverse(), "swift", "en_US");
     expect(m.medianDayMAE).toBe(1);
     expect(m.tradingDays.map((d) => [d.dayKey, d.regime])).toEqual([
       ["2026-10-19", "Trending"],
@@ -51,7 +51,7 @@ describe("RegimeAnalysis (RegimeAnalysis.swift:63-185)", () => {
     const calm = (day: number) => [on(day, "10"), on(day, "-10")];
     const choppy = (day: number) => [on(day, "-10"), on(day, "-10")];
     const trades = [...choppy(12), ...choppy(13), ...calm(14), ...calm(15), ...choppy(16), ...calm(19), ...calm(20)];
-    const m = computeRegimeAnalysis(trades, "fixed");
+    const m = computeRegimeAnalysis(trades, "fixed", "en_US");
     expect(m.tradingDays).toHaveLength(7);
     expect(m.currentRegime).toBe("Calm"); // last five days: 14, 15, 16, 19, 20 = Calm ×4, Choppy ×1
     expect(m.bestInsight).toBeNull(); // Calm average 0
@@ -60,10 +60,10 @@ describe("RegimeAnalysis (RegimeAnalysis.swift:63-185)", () => {
 
   it("D-18: unknown MAE counts as 0 on the Mac, is skipped in fixed mode", () => {
     const trades = fourDays(3, 1, null);
-    const swift = computeRegimeAnalysis(trades, "swift");
+    const swift = computeRegimeAnalysis(trades, "swift", "en_US");
     expect(swift.medianDayMAE).toBe(0.5); // [0, 0, 1, 3]
     expect(swift.tradingDays[2]?.regime).toBe("Volatile");
-    const fixed = computeRegimeAnalysis(trades, "fixed");
+    const fixed = computeRegimeAnalysis(trades, "fixed", "en_US");
     expect(fixed.medianDayMAE).toBe(2); // [1, 3]
     expect(fixed.tradingDays[2]?.regime).toBe("Calm");
     expect(fixed.tradingDays[0]?.avgMAE).toBeNull();
@@ -75,7 +75,7 @@ describe("RegimeAnalysis (RegimeAnalysis.swift:63-185)", () => {
     expect(reg.run("RegimeAnalysis", ctx, fourDays())).not.toBeNull();
     const twoDays = Array.from({ length: 10 }, (_, i) => on(19 + (i % 2), "1"));
     expect(reg.run("RegimeAnalysis", ctx, twoDays)).toBeNull();
-    const empty = computeRegimeAnalysis([], "swift");
+    const empty = computeRegimeAnalysis([], "swift", "en_US");
     expect(empty).toMatchObject({ tradingDays: [], bestRegime: null, worstRegime: null, currentRegime: null, maxRegimeDays: 1, needsMoreVariety: true });
   });
 

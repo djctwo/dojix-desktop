@@ -11,7 +11,7 @@
 //   (recent < 0 and previous > 0, priority 0). Recent WR = wins / 10 × 100.
 // - Current session (from ctx.now; Dojix app buckets in UTC, Greenwick ET) with ≥ 3 trades whose
 //   stored session equals it: "edge" when its Decimal P&L > 0 else "caution" (priority 2).
-// - edgeByPair / edgeBySymbol: best = `max(by: profit <)` (the last of equal maxima) when > 0
+// - edgeByPair / edgeBySymbol: best = `max(by: profit <)` (the first of equal maxima) when > 0
 //   (priority 3); worst = `min(by:)` (the first) when < 0 (priority 1). The breakdown is sorted
 //   by profit, and equal-profit groups come in first-appearance order (the Mac's dictionary
 //   order is random there).
@@ -73,8 +73,8 @@ export function generateBriefSignals(ctx: EngineContext, trades: readonly Trade[
       signals.push({
         icon: "arrow.up.right",
         title: "Hot streak — last 10 trades trending up",
-        detail: `Recent P&L ${asCurrency(recentPnL)} vs previous ${asCurrency(previousPnL)}. Win rate ${asPercent(recentWR)}.`,
-        value: asCurrency(recentPnL),
+        detail: `Recent P&L ${asCurrency(recentPnL, ctx.locale)} vs previous ${asCurrency(previousPnL, ctx.locale)}. Win rate ${asPercent(recentWR)}.`,
+        value: asCurrency(recentPnL, ctx.locale),
         tone: "green",
         priority: 1,
       });
@@ -82,8 +82,8 @@ export function generateBriefSignals(ctx: EngineContext, trades: readonly Trade[
       signals.push({
         icon: "arrow.down.right",
         title: "Performance dip — last 10 trades negative",
-        detail: `Recent P&L ${asCurrency(recentPnL)} vs previous ${asCurrency(previousPnL)}. Review recent entries.`,
-        value: asCurrency(recentPnL),
+        detail: `Recent P&L ${asCurrency(recentPnL, ctx.locale)} vs previous ${asCurrency(previousPnL, ctx.locale)}. Review recent entries.`,
+        value: asCurrency(recentPnL, ctx.locale),
         tone: "red",
         priority: 0,
       });
@@ -104,7 +104,7 @@ export function generateBriefSignals(ctx: EngineContext, trades: readonly Trade[
     signals.push({
       icon: sessionPnL > 0 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill",
       title: `${sessionName} session: ${word} based on ${sessionTrades.length} trades`,
-      detail: `Your ${sessionName} history: ${asPercent(sessionWR)} WR, ${asCurrency(sessionPnL)} total.`,
+      detail: `Your ${sessionName} history: ${asPercent(sessionWR)} WR, ${asCurrency(sessionPnL, ctx.locale)} total.`,
       value: asPercent(sessionWR),
       tone: sessionPnL > 0 ? "green" : "amber",
       priority: 2,
@@ -120,7 +120,7 @@ export function generateBriefSignals(ctx: EngineContext, trades: readonly Trade[
       icon: "star.fill",
       title: `${best.label} is your top performer`,
       detail: `${best.tradeCount} trades, ${asPercent(best.winRate)} win rate.`,
-      value: asCurrency(best.profit),
+      value: asCurrency(best.profit, ctx.locale),
       tone: "blue",
       priority: 3,
     });
@@ -129,7 +129,7 @@ export function generateBriefSignals(ctx: EngineContext, trades: readonly Trade[
   if (worst && worst.profit < 0) {
     signals.push({
       icon: "xmark.circle.fill",
-      title: `${worst.label} is costing you ${asCurrency(worst.profit)}`,
+      title: `${worst.label} is costing you ${asCurrency(worst.profit, ctx.locale)}`,
       detail: `${worst.tradeCount} trades at ${asPercent(worst.winRate)} WR. Consider sitting out or reducing size.`,
       value: null,
       tone: "red",
@@ -141,7 +141,7 @@ export function generateBriefSignals(ctx: EngineContext, trades: readonly Trade[
     signals.push({
       icon: "arrow.down.circle.fill",
       title: "Drawdown exceeds total profit",
-      detail: `${asCurrency(metrics.maxDrawdown)} max DD vs ${asCurrency(metrics.totalProfit)} total P&L. Tighten stops.`,
+      detail: `${asCurrency(metrics.maxDrawdown, ctx.locale)} max DD vs ${asCurrency(metrics.totalProfit, ctx.locale)} total P&L. Tighten stops.`,
       value: null,
       tone: "amber",
       priority: 0,

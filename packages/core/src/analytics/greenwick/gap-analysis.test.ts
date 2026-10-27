@@ -25,7 +25,7 @@ describe("GapAnalysis (GapAnalysis.swift:33-171)", () => {
     const e = tr("FICT", 11, [9, 31], [9, 40], "100.6", "100.7"); // 0.0995% vs 100.5: not significant
     const f = tr("FAKE", 9, [10, 0], [12, 0], "51", "50");
     const g = tr("FAKE", 10, [9, 45], [11, 0], "48", "50.5", "BUY", "25"); // −4%, high 50.5 ≥ 50: filled
-    const m = computeGapAnalysis([e, d, c, b, a, g, f]);
+    const m = computeGapAnalysis([e, d, c, b, a, g, f], "en_US");
 
     expect(m.gapTrades.map((x) => [x.trade, x.gapType, x.gapFilled])).toEqual([
       [c, "Gap Up", false],
@@ -45,11 +45,11 @@ describe("GapAnalysis (GapAnalysis.swift:33-171)", () => {
   it("gap-and-go vs gap-and-fade", () => {
     const prev = tr("FICT", 9, [10, 0], [11, 0], "100", "100");
     const day2 = (dir: TradeDirection, pnl: string, minute: number) => tr("FICT", 10, [9, 31 + minute], [12, 0], "101", "101", dir, pnl);
-    const go = computeGapAnalysis([prev, day2("BUY", "10", 0), day2("BUY", "20", 1), day2("SELL", "-5", 2)]);
+    const go = computeGapAnalysis([prev, day2("BUY", "10", 0), day2("BUY", "20", 1), day2("SELL", "-5", 2)], "en_US");
     expect(go.bestStrategy).toBe("Gap-and-go works better for you (avg $15.00 vs -$5.00 fade)");
-    const fade = computeGapAnalysis([prev, day2("BUY", "10", 0), day2("BUY", "20", 1), day2("SELL", "40", 2)]);
+    const fade = computeGapAnalysis([prev, day2("BUY", "10", 0), day2("BUY", "20", 1), day2("SELL", "40", 2)], "en_US");
     expect(fade.bestStrategy).toBe("Gap-and-fade works better for you (avg $40.00 vs $15.00 go)");
-    const same = computeGapAnalysis([prev, day2("BUY", "15", 0), day2("BUY", "15", 1), day2("SELL", "15", 2)]);
+    const same = computeGapAnalysis([prev, day2("BUY", "15", 0), day2("BUY", "15", 1), day2("SELL", "15", 2)], "en_US");
     expect(same.bestStrategy).toBe("Gap-and-go and gap-and-fade perform similarly");
     expect(fade.gapAndGoAvgPnL).toBe(15);
     expect(fade.gapAndFadeAvgPnL).toBe(40);
@@ -58,7 +58,7 @@ describe("GapAnalysis (GapAnalysis.swift:33-171)", () => {
   it("only gap-downs: nothing to compare", () => {
     const prev = tr("FICT", 9, [10, 0], [11, 0], "100", "100");
     const trades = [0, 1, 2].map((i) => tr("FICT", 10, [9, 31 + i], [12, 0], "98", "97"));
-    expect(computeGapAnalysis([prev, ...trades]).bestStrategy).toBe("Need both long and short gap trades to compare strategies");
+    expect(computeGapAnalysis([prev, ...trades], "en_US").bestStrategy).toBe("Need both long and short gap trades to compare strategies");
   });
 
   it("previous close = the last of equal close times; today's open = the first of equal open times", () => {
@@ -81,7 +81,7 @@ describe("GapAnalysis (GapAnalysis.swift:33-171)", () => {
     expect(findGapTrades([tr("FICT", 9, [10, 0], [11, 0], "1", "1")])).toEqual([]);
     expect(findGapTrades([tr("X", 9, [10, 0], [11, 0], "1", "0"), tr("X", 10, [10, 0], [11, 0], "5", "5")])).toEqual([]);
     expect(findGapTrades([tr("X", 9, [10, 0], [11, 0], "1", "1"), tr("X", 10, [10, 0], [11, 0], "oops", "5")])).toEqual([]);
-    const empty = computeGapAnalysis([]);
+    const empty = computeGapAnalysis([], "en_US");
     expect(empty).toMatchObject({ hasEnoughData: false, overallFillRate: 0, gapTrades: [] });
     expect(gapStats([], "Gap Up")).toEqual({ type: "Gap Up", count: 0, avgPnL: 0, winRate: 0, totalPnL: 0, fillRate: 0 });
   });

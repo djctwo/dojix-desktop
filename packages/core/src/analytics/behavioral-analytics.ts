@@ -164,7 +164,7 @@ export function computeBehavioralAnalytics(ctx: EngineContext, trades: readonly 
       name: "Overtrading",
       score: otScore,
       detail:
-        otDays === 0 ? "No overtrading days detected" : `${otDays} day${plural(otDays)} with 2× avg volume (${asCurrency(otPnL)} P&L)`,
+        otDays === 0 ? "No overtrading days detected" : `${otDays} day${plural(otDays)} with 2× avg volume (${asCurrency(otPnL, ctx.locale)} P&L)`,
       icon: "speedometer",
     },
     {
@@ -173,7 +173,7 @@ export function computeBehavioralAnalytics(ctx: EngineContext, trades: readonly 
       detail:
         revengeTrades === 0
           ? "No revenge trades detected"
-          : `${revengeTrades} trades within 10m of a loss (${intSaturating(revengeWR * 100, flavor)}% WR, ${asCurrency(revengePnL)})`,
+          : `${revengeTrades} trades within 10m of a loss (${intSaturating(revengeWR * 100, flavor)}% WR, ${asCurrency(revengePnL, ctx.locale)})`,
       icon: "flame",
     },
     {

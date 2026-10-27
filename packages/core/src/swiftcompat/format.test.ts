@@ -7,7 +7,10 @@ import {
   asPoints,
   asProfitFactor,
   asRMultiple,
+  bcp47,
   formatFixed,
+  isPosixLocale,
+  monthAbbreviation,
   icuRoundHalfEven,
   swiftFormat,
 } from "./format";
@@ -97,14 +100,14 @@ describe("Double+Formatting (both apps)", () => {
     expect(asRMultiple(-0.3)).toBe("-0.30R");
     expect(asProfitFactor(1.85)).toBe("1.85");
     expect(asProfitFactor(0)).toBe("0.00");
-    expect(asCompactCurrency(15300)).toContain("15.3K");
-    expect(asCompactCurrency(1200000)).toContain("1.2M");
-    expect(asCompactCurrency(500)).toContain("500.00");
-    expect(asCompactCurrency(-5000)).toBe("-$5.0K");
-    expect(asCurrency(1234.56)).toBe("$1,234.56");
-    expect(asCurrency(-500)).toBe("-$500.00");
-    expect(asCurrency(0)).toBe("$0.00");
-    expect(asCurrency(250.75)).toBe("$250.75");
+    expect(asCompactCurrency(15300, "en_US")).toContain("15.3K");
+    expect(asCompactCurrency(1200000, "en_US")).toContain("1.2M");
+    expect(asCompactCurrency(500, "en_US")).toContain("500.00");
+    expect(asCompactCurrency(-5000, "en_US")).toBe("-$5.0K");
+    expect(asCurrency(1234.56, "en_US")).toBe("$1,234.56");
+    expect(asCurrency(-500, "en_US")).toBe("-$500.00");
+    expect(asCurrency(0, "en_US")).toBe("$0.00");
+    expect(asCurrency(250.75, "en_US")).toBe("$250.75");
   });
 
   it("shows an infinite profit factor as 99.99", () => {
@@ -114,23 +117,70 @@ describe("Double+Formatting (both apps)", () => {
   });
 
   it("rounds currency like ICU: shortest digits, half-even", () => {
-    expect(asCurrency(2.675)).toBe("$2.68"); // printf would say 2.67
-    expect(asCurrency(0.125)).toBe("$0.12");
-    expect(asCurrency(0.135)).toBe("$0.14");
-    expect(asCurrency(1234567.891)).toBe("$1,234,567.89");
-    expect(asCurrency(0.005)).toBe("$0.00");
-    expect(asCurrency(0.0051)).toBe("$0.01");
-    expect(asCurrency(1e-7)).toBe("$0.00");
-    expect(asCurrency(9.995)).toBe("$10.00");
-    expect(asCurrency(-0)).toBe("-$0.00");
-    expect(asCurrency(NaN)).toBe("NaN");
-    expect(asCurrency(Infinity)).toBe("$∞");
-    expect(asCurrency(-Infinity)).toBe("-$∞");
+    expect(asCurrency(2.675, "en_US")).toBe("$2.68"); // printf would say 2.67
+    expect(asCurrency(0.125, "en_US")).toBe("$0.12");
+    expect(asCurrency(0.135, "en_US")).toBe("$0.14");
+    expect(asCurrency(1234567.891, "en_US")).toBe("$1,234,567.89");
+    expect(asCurrency(0.005, "en_US")).toBe("$0.00");
+    expect(asCurrency(0.0051, "en_US")).toBe("$0.01");
+    expect(asCurrency(1e-7, "en_US")).toBe("$0.00");
+    expect(asCurrency(9.995, "en_US")).toBe("$10.00");
+    expect(asCurrency(-0, "en_US")).toBe("-$0.00");
+    expect(asCurrency(NaN, "en_US")).toBe("NaN");
+    expect(asCurrency(Infinity, "en_US")).toBe("$∞");
+    expect(asCurrency(-Infinity, "en_US")).toBe("-$∞");
     expect(icuRoundHalfEven(1e21, 2)).toBe("1000000000000000000000.00");
   });
 
   it("compact currency keeps the Mac thresholds", () => {
-    expect(asCompactCurrency(999.99)).toBe("$999.99");
-    expect(asCompactCurrency(999999)).toBe("$1000.0K");
+    expect(asCompactCurrency(999.99, "en_US")).toBe("$999.99");
+    expect(asCompactCurrency(999999, "en_US")).toBe("$1000.0K");
+  });
+});
+
+describe("Locale.current formatting (ctx.locale)", () => {
+  it("en_US_POSIX, the Tier B harness locale: a no-break space and no grouping", () => {
+    // golden/reference: "$ 180.00" (F1 DailyBrief), "-$ 1747.54", "$ 999999999999.99".
+    expect(asCurrency(180, "en_US_POSIX")).toBe("$\u00a0180.00");
+    expect(asCurrency(-1747.54, "en_US_POSIX")).toBe("-$\u00a01747.54");
+    expect(asCurrency(999999999999.99, "en_US_POSIX")).toBe("$\u00a0999999999999.99");
+    expect(asCurrency(2.675, "en_US_POSIX")).toBe("$\u00a02.68"); // ICU digits in every locale
+    expect(asCurrency(-0, "en_US_POSIX")).toBe("-$\u00a00.00");
+    expect(asCurrency(Infinity, "en_US_POSIX")).toBe("$\u00a0∞");
+    expect(asCurrency(NaN, "en_US_POSIX")).toBe("NaN");
+    expect(asCompactCurrency(-5000, "en_US_POSIX")).toBe("-$5.0K"); // fixed text, not the formatter
+    expect(asCompactCurrency(12.5, "en_US_POSIX")).toBe("$\u00a012.50");
+  });
+
+  it("the F7 variant locales: en_GB writes US$, en_IN groups in lakhs, ja_JP like en_US", () => {
+    // golden/reference/*/f7-*@Europe-Berlin_en_GB.json: "-US$9.83"; en_US, en_IN, ja_JP: "-$9.83".
+    expect(asCurrency(-9.83, "en_GB")).toBe("-US$9.83");
+    expect(asCurrency(-9.83, "en_IN")).toBe("-$9.83");
+    expect(asCurrency(-9.83, "ja_JP")).toBe("-$9.83");
+    expect(asCurrency(1234567.891, "en_IN")).toBe("$12,34,567.89");
+    expect(asCurrency(1234567.891, "en_GB")).toBe("US$1,234,567.89");
+    expect(asCurrency(0.125, "en_GB")).toBe("US$0.12"); // half-even on the shortest digits
+    expect(asCurrency(-Infinity, "en_GB")).toBe("-US$∞");
+    expect(asCurrency(1, "en-US")).toBe("$1.00"); // BCP 47 spelling is accepted too
+  });
+
+  it("maps Foundation identifiers to BCP 47 and falls back to en-US", () => {
+    expect(isPosixLocale("en_US_POSIX")).toBe(true);
+    expect(isPosixLocale("en_US")).toBe(false);
+    expect(bcp47("en_GB")).toBe("en-GB");
+    expect(bcp47("ja_JP@calendar=japanese")).toBe("ja-JP");
+    expect(bcp47("not a locale!")).toBe("en-US");
+    expect(asCurrency(3, "not a locale!")).toBe("$3.00");
+  });
+
+  it("DateFormatter MMM month names follow the locale", () => {
+    // golden/reference/*/f7-*@Asia-Tokyo_ja_JP.json SessionHeatmap: "3月 2 – 11月 3, 2026".
+    expect(monthAbbreviation(3, "ja_JP")).toBe("3月");
+    expect(monthAbbreviation(11, "ja_JP")).toBe("11月");
+    expect(monthAbbreviation(3, "en_US_POSIX")).toBe("Mar");
+    expect(monthAbbreviation(9, "en_US")).toBe("Sep");
+    expect(monthAbbreviation(3, "en_GB")).toBe("Mar");
+    expect(() => monthAbbreviation(0, "en_US")).toThrow(RangeError);
+    expect(() => monthAbbreviation(13, "en_US")).toThrow(RangeError);
   });
 });

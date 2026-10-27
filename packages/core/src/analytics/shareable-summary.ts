@@ -29,7 +29,7 @@ export interface ShareableSummaryOptions {
 const APP_NAME: Readonly<Record<BrandId, string>> = { dojix: "Dojix", greenwick: "Greenwick" };
 const RULE = "─────────────────────";
 
-export function summaryTextOf(brand: BrandId, m: PortfolioMetrics): string {
+export function summaryTextOf(brand: BrandId, m: PortfolioMetrics, locale: string): string {
   if (m.totalTrades <= 0) return "";
   const pnlSign = m.totalProfit >= 0 ? "+" : "";
   const streak = m.currentStreak;
@@ -39,9 +39,9 @@ export function summaryTextOf(brand: BrandId, m: PortfolioMetrics): string {
   return [
     `📊 ${app} Daily Summary`,
     RULE,
-    `P&L: ${pnlSign}${asCurrency(m.totalProfit)} | ${m.totalTrades} trades`,
+    `P&L: ${pnlSign}${asCurrency(m.totalProfit, locale)} | ${m.totalTrades} trades`,
     `Win Rate: ${asPercent(m.winRate)} (${m.wins}W/${m.losses}L)`,
-    `PF: ${asProfitFactor(m.profitFactor)} | Exp: ${asCurrency(m.expectancy)}`,
+    `PF: ${asProfitFactor(m.profitFactor)} | Exp: ${asCurrency(m.expectancy, locale)}`,
     `Avg R: ${asRMultiple(m.averageRMultiple)} | Sharpe: ${swiftFormat("%.2f", m.sharpeRatio)}`,
     `Streak: ${icon} ${Math.abs(streak)}${dir}`,
     RULE,
@@ -54,7 +54,7 @@ export function computeShareableSummary(
   trades: readonly Trade[],
   options: ShareableSummaryOptions = {},
 ): ShareableSummaryModel {
-  return { summaryText: summaryTextOf(ctx.brand, options.metrics ?? calculateMetrics(trades, ctx)) };
+  return { summaryText: summaryTextOf(ctx.brand, options.metrics ?? calculateMetrics(trades, ctx), ctx.locale) };
 }
 
 export const shareableSummaryComponent = defineComponent<BrandId, ShareableSummaryModel>({

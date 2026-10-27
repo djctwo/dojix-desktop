@@ -157,7 +157,7 @@ export function swiftFormat(format: string, ...args: FormatArg[]): string {
   });
 }
 
-// --- Foundation NumberFormatter (currency, en_US) -------------------------------------
+// --- Foundation NumberFormatter (currency) ------------------------------------------------
 
 /**
  * Rounds a double the way ICU's NumberFormatter does: it starts from the *shortest*
@@ -189,23 +189,64 @@ export function icuRoundHalfEven(x: number, fractionDigits: number): string {
   return insertPoint(kept.toString(), fractionDigits);
 }
 
-function groupThousands(body: string): string {
-  const [int = "0", frac] = body.split(".");
-  const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  return frac === undefined ? grouped : `${grouped}.${frac}`;
+// --- Locale (Foundation `Locale.current`) ------------------------------------------------
+
+/** True for Foundation's `en_US_POSIX` (the Tier B harness pin, SPEC §10.2). */
+export function isPosixLocale(locale: string): boolean {
+  return /^en[-_]US[-_]POSIX$/i.test(locale);
 }
 
 /**
- * `Double.asCurrency` (both apps, `Extensions/Double+Formatting.swift:15-17`): a USD currency
- * NumberFormatter with two fraction digits, read in en_US: "$1,234.56", "-$1,234.56".
- * Display only; parity of formatted strings is tested with en-US vectors (SPEC §10.1).
+ * A Foundation locale identifier as a BCP 47 tag for Intl ("en_GB" → "en-GB"). Unknown or
+ * malformed identifiers fall back to "en-US", like Foundation falls back to root data.
  */
-export function asCurrency(x: number): string {
+export function bcp47(locale: string): string {
+  const tag = locale.split("@")[0]?.replace(/_/g, "-") ?? "";
+  try {
+    return Intl.getCanonicalLocales(tag)[0] ?? "en-US";
+  } catch {
+    return "en-US";
+  }
+}
+
+const currencyFormats = new Map<string, Intl.NumberFormat>();
+
+function currencyFormat(locale: string): Intl.NumberFormat {
+  let f = currencyFormats.get(locale);
+  if (!f) {
+    f = new Intl.NumberFormat(bcp47(locale), {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    currencyFormats.set(locale, f);
+  }
+  return f;
+}
+
+/**
+ * `Double.asCurrency` (both apps, `Extensions/Double+Formatting.swift:5-17`): a NumberFormatter
+ * with `.currency`, currency code USD and two fraction digits, in the user's locale
+ * (`Locale.current`; the desktop passes `ctx.locale`). So "$1,234.56" / "-$1,234.56" in en_US,
+ * "US$1,234.56" in en_GB, "$1,23,456.78" in en_IN, and "$\u00a01234.56" / "-$\u00a01234.56"
+ * (no grouping) in en_US_POSIX, the Tier B harness locale.
+ *
+ * The digits are ICU's: the shortest round-trip decimal of the double, rounded half-to-even
+ * (`icuRoundHalfEven`); Intl only lays out the locale's symbol, sign and grouping around that
+ * exact decimal text. NaN is "NaN" in every locale, as in ICU.
+ */
+export function asCurrency(x: number, locale: string): string {
   if (Number.isNaN(x)) return "NaN";
-  if (!Number.isFinite(x)) return x < 0 ? "-$∞" : "$∞";
-  const body = groupThousands(icuRoundHalfEven(x, 2));
   const negative = x < 0 || Object.is(x, -0);
-  return negative ? `-$${body}` : `$${body}`;
+  if (isPosixLocale(locale)) {
+    const body = Number.isFinite(x) ? icuRoundHalfEven(x, 2) : "∞";
+    return `${negative ? "-" : ""}$\u00a0${body}`;
+  }
+  if (!Number.isFinite(x)) return currencyFormat(locale).format(x);
+  const digits = icuRoundHalfEven(x, 2);
+  // Intl formats a decimal string exactly (no second rounding); "-0.00" keeps its sign.
+  return currencyFormat(locale).format((negative ? `-${digits}` : digits) as unknown as number);
 }
 
 /** `Double.asPips` (Dojix `Double+Formatting.swift:20-22`): "12.5 pips". */
@@ -234,11 +275,36 @@ export function asProfitFactor(x: number): string {
   return formatFixed(x, 2);
 }
 
-/** `Double.asCompactCurrency` (both apps, `Double+Formatting.swift:41-50`): "$1.2K", "-$15.3M". */
-export function asCompactCurrency(x: number): string {
+/**
+ * `Double.asCompactCurrency` (both apps, `Double+Formatting.swift:41-50`): "$1.2K", "-$15.3M"
+ * (fixed text in every locale); below 1,000 it is `asCurrency` in the user's locale.
+ */
+export function asCompactCurrency(x: number, locale: string): string {
   const abs = Math.abs(x);
   const sign = x < 0 ? "-" : "";
   if (abs >= 1_000_000) return `${sign}$${formatFixed(abs / 1_000_000, 1)}M`;
   if (abs >= 1_000) return `${sign}$${formatFixed(abs / 1_000, 1)}K`;
-  return asCurrency(x);
+  return asCurrency(x, locale);
+}
+
+// --- DateFormatter month names ----------------------------------------------------------------
+
+const POSIX_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
+const monthNames = new Map<string, readonly string[]>();
+
+/**
+ * The "MMM" field of a `DateFormatter` with a fixed `dateFormat` and the default locale
+ * (`Locale.current`): "Mar" in en_US / en_US_POSIX, "Sept" in en_GB, "3月" in ja_JP.
+ * `month` is 1 … 12.
+ */
+export function monthAbbreviation(month: number, locale: string): string {
+  if (!Number.isInteger(month) || month < 1 || month > 12) throw new RangeError(`month ${month} out of range`);
+  if (isPosixLocale(locale)) return POSIX_MONTHS[month - 1] as string;
+  let names = monthNames.get(locale);
+  if (!names) {
+    const f = new Intl.DateTimeFormat(bcp47(locale), { month: "short", timeZone: "UTC" });
+    names = POSIX_MONTHS.map((_, i) => f.format(Date.UTC(2001, i, 15)));
+    monthNames.set(locale, names);
+  }
+  return names[month - 1] as string;
 }

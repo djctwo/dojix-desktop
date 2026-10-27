@@ -32,8 +32,8 @@ export const VolumeAnalysis = defineComponent({
   brands: ST,
   tab: "pairs",
   minTrades: 0,
-  compute: (_ctx, trades) => {
-    const m = computeVolumeAnalysis(trades);
+  compute: (ctx, trades) => {
+    const m = computeVolumeAnalysis(trades, ctx.locale);
     return m.hasVolumeData ? m : null;
   },
 });
@@ -43,8 +43,8 @@ export const GapAnalysis = defineComponent({
   brands: ST,
   tab: "timing",
   minTrades: 0,
-  compute: (_ctx, trades) => {
-    const m = computeGapAnalysis(trades);
+  compute: (ctx, trades) => {
+    const m = computeGapAnalysis(trades, ctx.locale);
     return m.hasEnoughData ? m : null;
   },
 });
@@ -54,8 +54,8 @@ export const OpeningRangeAnalysis = defineComponent({
   brands: ST,
   tab: "timing",
   minTrades: 0,
-  compute: (_ctx, trades) => {
-    const m = computeOpeningRange(trades);
+  compute: (ctx, trades) => {
+    const m = computeOpeningRange(trades, ctx.locale);
     return m.hasData ? m : null;
   },
 });
@@ -88,7 +88,7 @@ export const RegimeAnalysis = defineComponent({
   tab: "advanced",
   minTrades: 10,
   compute: (ctx, trades) => {
-    const m = computeRegimeAnalysis(trades, ctx.compat);
+    const m = computeRegimeAnalysis(trades, ctx.compat, ctx.locale);
     return m.tradingDays.length >= 3 ? m : null;
   },
 });

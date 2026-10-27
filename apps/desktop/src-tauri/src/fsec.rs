@@ -252,7 +252,9 @@ mod win {
         format!(
             "actual {:?}, expected {:?}",
             dacl_sddl(dir).map(|s| normalise(&s)),
-            expected_sddl().map(|s| normalise(&s))
+            expected_sddl()
+                .and_then(|s| canonical_sddl(&s))
+                .map(|s| normalise(&s))
         )
     }
 
@@ -296,11 +298,43 @@ mod win {
         }
     }
 
+    /// Round-trips an SDDL string through a security descriptor, so it is written the way
+    /// Windows writes it (well-known SIDs become aliases such as SY, or LA for the built-in
+    /// Administrator account).
+    fn canonical_sddl(sddl: &str) -> io::Result<String> {
+        let wide_sddl = wide(OsStr::new(sddl));
+        unsafe {
+            let mut sd: PSECURITY_DESCRIPTOR = ptr::null_mut();
+            if ConvertStringSecurityDescriptorToSecurityDescriptorW(
+                wide_sddl.as_ptr(),
+                SDDL_REVISION_1,
+                &mut sd,
+                ptr::null_mut(),
+            ) == 0
+            {
+                return Err(io::Error::last_os_error());
+            }
+            let mut out: *mut u16 = ptr::null_mut();
+            let ok = ConvertSecurityDescriptorToStringSecurityDescriptorW(
+                sd,
+                SDDL_REVISION_1,
+                DACL_SECURITY_INFORMATION,
+                &mut out,
+                ptr::null_mut(),
+            );
+            LocalFree(sd);
+            if ok == 0 {
+                return Err(io::Error::last_os_error());
+            }
+            Ok(take_local_wstr(out))
+        }
+    }
+
     /// True when the folder's DACL is protected and grants access to exactly the current user
     /// and SYSTEM.
     pub fn dir_is_protected(dir: &Path) -> io::Result<bool> {
         let actual = dacl_sddl(dir)?;
-        let expected = expected_sddl()?;
+        let expected = canonical_sddl(&expected_sddl()?)?;
         Ok(normalise(&actual) == normalise(&expected))
     }
 
@@ -401,7 +435,11 @@ mod tests {
         let tmp = tempfile::tempdir().unwrap();
         let plain = tmp.path().join("plain");
         fs::create_dir(&plain).unwrap();
-        assert!(!dir_is_private(&plain).unwrap(), "{}", win::describe(&plain));
+        assert!(
+            !dir_is_private(&plain).unwrap(),
+            "{}",
+            win::describe(&plain)
+        );
         make_dir_private(&plain).unwrap();
         assert!(dir_is_private(&plain).unwrap(), "{}", win::describe(&plain));
     }

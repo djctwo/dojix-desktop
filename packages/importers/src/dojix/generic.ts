@@ -356,7 +356,7 @@ class RowError extends Error {
 }
 
 /** `mapToTrade` (GenericCSVParser.swift:200-337), in Mac (`swift`) form. */
-function mapToTrade(fields: readonly string[], mapping: DojixColumnMapping, dates: DateParsers, compat: ImportContext["compat"]): MappedRow {
+function mapToTrade(fields: readonly string[], mapping: DojixColumnMapping, dates: DateParsers): MappedRow {
   const symbol = dojixCleanSymbol(at(fields, mapping.symbol) ?? "");
   if (symbol === "") throw new RowError({ code: "missing_symbol", reason: "No symbol" });
   const dirStr = trimWs((at(fields, mapping.direction) ?? "").toUpperCase());
@@ -390,7 +390,6 @@ function mapToTrade(fields: readonly string[], mapping: DojixColumnMapping, date
   const parsedTicket = ticketText !== undefined ? swiftInt64(ticketText) : null;
   const ticket = parsedTicket !== null && parsedTicket !== NO_TICKET ? parsedTicket : NO_TICKET;
   const { slDistPips, rMultiple } = dojixSlDistAndR(symbol, openPrice, sl, profit, lots, "swift");
-  void compat;
   return {
     trade: {
       ...emptyDojixTrade(),
@@ -453,7 +452,7 @@ export function parseDojixMapped(
     }
     let mapped: MappedRow;
     try {
-      mapped = mapToTrade(fields, mapping, dates, ctx.compat);
+      mapped = mapToTrade(fields, mapping, dates);
     } catch (e) {
       /* c8 ignore next */
       if (!(e instanceof RowError)) throw e;
@@ -541,8 +540,8 @@ function parseTradingViewPaired(
     let entry: MappedRow;
     let exit: MappedRow;
     try {
-      entry = mapToTrade(g.entry.fields, mapping, dates, "fixed");
-      exit = mapToTrade(g.exit.fields, mapping, dates, "fixed");
+      entry = mapToTrade(g.entry.fields, mapping, dates);
+      exit = mapToTrade(g.exit.fields, mapping, dates);
     } catch (e) {
       /* c8 ignore next */
       if (!(e instanceof RowError)) throw e;

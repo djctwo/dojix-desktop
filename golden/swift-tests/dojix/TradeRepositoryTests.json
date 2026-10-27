@@ -1,0 +1,845 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/TradeRepositoryTests.swift",
+  "helpers": {
+    "setUp": {
+      "line": 10,
+      "defaults": {
+        "database": "DatabaseManager(inMemory: true)"
+      },
+      "notes": "Every test starts from an empty in-memory journal."
+    },
+    "makeTrade": {
+      "line": 18,
+      "defaults": {
+        "ticket": 100001,
+        "symbol": "GBPUSD",
+        "netProfit": 50,
+        "session": "LONDON",
+        "closeTime": {
+          "relative_seconds": 0
+        },
+        "hour": 10,
+        "tags": "",
+        "notes": "",
+        "direction": "BUY",
+        "lots": 0.1,
+        "openTime": {
+          "expr": "closeTime - 3600 s"
+        },
+        "durationMin": 60,
+        "openPrice": 1.25,
+        "closePrice": 1.26,
+        "sl": 1.24,
+        "tp": 1.27,
+        "maePips": 5.0,
+        "mfePips": 10.0,
+        "rMultiple": 1.5,
+        "dayOfWeek": "Mon",
+        "rangeSize": 40,
+        "sweepDepth": 10,
+        "usedFVG": false,
+        "volRegime": "MED",
+        "hitBreakeven": false,
+        "scaledIn": false,
+        "magic": 12345,
+        "comment": "",
+        "timeToMFEMin": 30,
+        "slDistPips": 20,
+        "slippagePips": 0.5,
+        "postClose15m": 5,
+        "postClose30m": 10,
+        "biasAtEntry": "WITH"
+      },
+      "notes": "closeTime defaults to Date() per call (call order = ascending close order). Decimal fields given as Swift float literals (e.g. openPrice 1.26) are built through Double (Decimal(floatLiteral:)), so they may carry binary noise; no assertion here depends on them."
+    }
+  },
+  "cases": [
+    {
+      "id": "TradeRepositoryTests.testInsertIfNew",
+      "line": 45,
+      "subject": "TradeRepository.insertIfNew",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "insertIfNew": {}
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "inserted",
+          "op": "true",
+          "line": 48,
+          "derived": false
+        },
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 1,
+          "line": 51,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeRepositoryTests.testInsertIfNewSkipsDuplicate",
+      "line": 54,
+      "subject": "TradeRepository.insertIfNew",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "insertIfNew": {
+              "ticket": 100001
+            }
+          },
+          {
+            "insertIfNew": {
+              "ticket": 100001
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "first",
+          "op": "true",
+          "line": 57,
+          "derived": false
+        },
+        {
+          "path": "second",
+          "op": "false",
+          "line": 60,
+          "derived": false
+        },
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 1,
+          "line": 62,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "A trade is skipped when a row with the same ticket already exists (checked before each insert, so duplicates inside one batch are caught too); inserted rows go through Trade.sanitizedForStorage()."
+    },
+    {
+      "id": "TradeRepositoryTests.testBulkInsert",
+      "line": 65,
+      "subject": "TradeRepository.bulkInsert",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1
+              },
+              {
+                "ticket": 2
+              },
+              {
+                "ticket": 3
+              }
+            ]
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "inserted",
+          "op": "eq",
+          "value": 3,
+          "line": 72,
+          "derived": false
+        },
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 3,
+          "line": 73,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeRepositoryTests.testBulkInsertSkipsDuplicates",
+      "line": 76,
+      "subject": "TradeRepository.bulkInsert",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "insertIfNew": {
+              "ticket": 2
+            }
+          },
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1
+              },
+              {
+                "ticket": 2
+              },
+              {
+                "ticket": 3
+              }
+            ]
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "inserted",
+          "op": "eq",
+          "value": 2,
+          "line": 85,
+          "derived": false
+        },
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 3,
+          "line": 86,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "A trade is skipped when a row with the same ticket already exists (checked before each insert, so duplicates inside one batch are caught too); inserted rows go through Trade.sanitizedForStorage()."
+    },
+    {
+      "id": "TradeRepositoryTests.testFetchAll",
+      "line": 91,
+      "subject": "TradeRepository.fetchAll",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1,
+                "closeTime": {
+                  "relative_seconds": -200
+                }
+              },
+              {
+                "ticket": 2,
+                "closeTime": {
+                  "relative_seconds": -100
+                }
+              },
+              {
+                "ticket": 3,
+                "closeTime": {
+                  "relative_seconds": 0
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 3,
+          "line": 99,
+          "derived": false
+        },
+        {
+          "path": "trades[0].ticket",
+          "op": "eq",
+          "value": 3,
+          "line": 101,
+          "derived": false
+        },
+        {
+          "path": "trades[1].ticket",
+          "op": "eq",
+          "value": 2,
+          "line": 102,
+          "derived": false
+        },
+        {
+          "path": "trades[2].ticket",
+          "op": "eq",
+          "value": 1,
+          "line": 103,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "fetchAll orders by closeTime descending."
+    },
+    {
+      "id": "TradeRepositoryTests.testFetchBySymbol",
+      "line": 106,
+      "subject": "TradeRepository.fetchBySymbol",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1,
+                "symbol": "GBPUSD"
+              },
+              {
+                "ticket": 2,
+                "symbol": "EURUSD"
+              },
+              {
+                "ticket": 3,
+                "symbol": "GBPUSD"
+              }
+            ]
+          }
+        ],
+        "queries": [
+          "GBPUSD",
+          "EURUSD"
+        ]
+      },
+      "expect": [
+        {
+          "path": "GBPUSD.count",
+          "op": "eq",
+          "value": 2,
+          "line": 114,
+          "derived": false
+        },
+        {
+          "path": "EURUSD.count",
+          "op": "eq",
+          "value": 1,
+          "line": 117,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeRepositoryTests.testFetchBySession",
+      "line": 120,
+      "subject": "TradeRepository.fetchBySession",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1,
+                "session": "LONDON"
+              },
+              {
+                "ticket": 2,
+                "session": "ASIAN"
+              },
+              {
+                "ticket": 3,
+                "session": "LONDON"
+              }
+            ]
+          }
+        ],
+        "queries": [
+          "LONDON",
+          "ASIAN"
+        ]
+      },
+      "expect": [
+        {
+          "path": "LONDON.count",
+          "op": "eq",
+          "value": 2,
+          "line": 128,
+          "derived": false
+        },
+        {
+          "path": "ASIAN.count",
+          "op": "eq",
+          "value": 1,
+          "line": 131,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeRepositoryTests.testFetchByDateRange",
+      "line": 134,
+      "subject": "TradeRepository.fetchByDateRange",
+      "kind": "calendar",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1,
+                "closeTime": {
+                  "relative_seconds": -432000
+                }
+              },
+              {
+                "ticket": 2,
+                "closeTime": {
+                  "relative_seconds": -172800
+                }
+              },
+              {
+                "ticket": 3,
+                "closeTime": {
+                  "relative_seconds": 0
+                }
+              }
+            ]
+          }
+        ],
+        "query": {
+          "from": {
+            "relative_seconds": -259200
+          },
+          "to": {
+            "relative_seconds": 0
+          }
+        }
+      },
+      "expect": [
+        {
+          "path": "trades.count",
+          "op": "eq",
+          "value": 2,
+          "line": 146,
+          "derived": false
+        },
+        {
+          "path": "trades[0].ticket",
+          "op": "eq",
+          "value": 3,
+          "line": 134,
+          "derived": true
+        },
+        {
+          "path": "trades[1].ticket",
+          "op": "eq",
+          "value": 2,
+          "line": 134,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "closeTime >= from AND closeTime <= to (both inclusive; the trade at exactly `to` is included), ordered by closeTime descending."
+    },
+    {
+      "id": "TradeRepositoryTests.testTicketExists",
+      "line": 149,
+      "subject": "TradeRepository.ticketExists",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "insertIfNew": {
+              "ticket": 99999
+            }
+          }
+        ],
+        "queries": [
+          99999,
+          11111
+        ]
+      },
+      "expect": [
+        {
+          "path": "99999",
+          "op": "true",
+          "line": 152,
+          "derived": false
+        },
+        {
+          "path": "11111",
+          "op": "false",
+          "line": 153,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeRepositoryTests.testDeleteAll",
+      "line": 158,
+      "subject": "TradeRepository.deleteAll",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1
+              },
+              {
+                "ticket": 2
+              }
+            ]
+          },
+          "count",
+          "deleteAll",
+          "count"
+        ]
+      },
+      "expect": [
+        {
+          "path": "countBefore",
+          "op": "eq",
+          "value": 2,
+          "line": 163,
+          "derived": false
+        },
+        {
+          "path": "countAfter",
+          "op": "eq",
+          "value": 0,
+          "line": 166,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeRepositoryTests.testUpdateNotes",
+      "line": 171,
+      "subject": "TradeRepository.updateNotes",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "insertIfNew": {
+              "ticket": 1
+            }
+          },
+          {
+            "updateNotes": "Great trade setup"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "updated.notes",
+          "op": "eq",
+          "value": "Great trade setup",
+          "line": 178,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeRepositoryTests.testUpdateTags",
+      "line": 181,
+      "subject": "TradeRepository.updateTags",
+      "kind": "import",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "insertIfNew": {
+              "ticket": 1
+            }
+          },
+          {
+            "updateTags": "sniper,setup-A"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "updated.tags",
+          "op": "eq",
+          "value": "sniper,setup-A",
+          "line": 188,
+          "derived": false
+        },
+        {
+          "path": "updated.tagList",
+          "op": "eq",
+          "value": [
+            "sniper",
+            "setup-A"
+          ],
+          "line": 181,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeRepositoryTests.testTotalProfit",
+      "line": 193,
+      "subject": "TradeRepository.totalProfit",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1,
+                "netProfit": 100
+              },
+              {
+                "ticket": 2,
+                "netProfit": -30
+              },
+              {
+                "ticket": 3,
+                "netProfit": 50
+              }
+            ]
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "total",
+          "op": "approx",
+          "value": 120.0,
+          "accuracy": 0.01,
+          "line": 201,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "SQL: SUM(CAST(netProfit AS REAL)) over the stored decimal text."
+    },
+    {
+      "id": "TradeRepositoryTests.testProfitBySymbol",
+      "line": 204,
+      "subject": "TradeRepository.profitBySymbol",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1,
+                "symbol": "GBPUSD",
+                "netProfit": 100
+              },
+              {
+                "ticket": 2,
+                "symbol": "GBPUSD",
+                "netProfit": -30
+              },
+              {
+                "ticket": 3,
+                "symbol": "EURUSD",
+                "netProfit": 50
+              }
+            ]
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 2,
+          "line": 212,
+          "derived": false
+        },
+        {
+          "path": "[symbol=GBPUSD]",
+          "op": "notNil",
+          "line": 215,
+          "derived": false
+        },
+        {
+          "path": "[symbol=GBPUSD].profit",
+          "op": "approx",
+          "value": 70.0,
+          "accuracy": 0.01,
+          "line": 216,
+          "derived": false
+        },
+        {
+          "path": "[symbol=GBPUSD].count",
+          "op": "eq",
+          "value": 2,
+          "line": 217,
+          "derived": false
+        },
+        {
+          "path": "[0].symbol",
+          "op": "eq",
+          "value": "GBPUSD",
+          "line": 204,
+          "derived": true
+        },
+        {
+          "path": "[1].symbol",
+          "op": "eq",
+          "value": "EURUSD",
+          "line": 204,
+          "derived": true
+        },
+        {
+          "path": "[1].profit",
+          "op": "eq",
+          "value": 50.0,
+          "line": 204,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Grouped by symbol, ordered by profit descending. [symbol=X] selects the row for that symbol."
+    },
+    {
+      "id": "TradeRepositoryTests.testProfitBySession",
+      "line": 220,
+      "subject": "TradeRepository.profitBySession",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1,
+                "netProfit": 100,
+                "session": "LONDON"
+              },
+              {
+                "ticket": 2,
+                "netProfit": -30,
+                "session": "ASIAN"
+              }
+            ]
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 2,
+          "line": 227,
+          "derived": false
+        },
+        {
+          "path": "[0].session",
+          "op": "eq",
+          "value": "LONDON",
+          "line": 220,
+          "derived": true
+        },
+        {
+          "path": "[0].profit",
+          "op": "eq",
+          "value": 100.0,
+          "line": 220,
+          "derived": true
+        },
+        {
+          "path": "[1].session",
+          "op": "eq",
+          "value": "ASIAN",
+          "line": 220,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Grouped by stored session raw value, ordered by profit descending."
+    },
+    {
+      "id": "TradeRepositoryTests.testEquityCurve",
+      "line": 230,
+      "subject": "TradeRepository.equityCurve",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "steps": [
+          {
+            "bulkInsert": [
+              {
+                "ticket": 1,
+                "netProfit": 100,
+                "closeTime": {
+                  "relative_seconds": -200
+                }
+              },
+              {
+                "ticket": 2,
+                "netProfit": -30,
+                "closeTime": {
+                  "relative_seconds": -100
+                }
+              },
+              {
+                "ticket": 3,
+                "netProfit": 50,
+                "closeTime": {
+                  "relative_seconds": 0
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 3,
+          "line": 239,
+          "derived": false
+        },
+        {
+          "path": "[0].cumulative",
+          "op": "approx",
+          "value": 100.0,
+          "accuracy": 0.01,
+          "line": 240,
+          "derived": false
+        },
+        {
+          "path": "[1].cumulative",
+          "op": "approx",
+          "value": 70.0,
+          "accuracy": 0.01,
+          "line": 241,
+          "derived": false
+        },
+        {
+          "path": "[2].cumulative",
+          "op": "approx",
+          "value": 120.0,
+          "accuracy": 0.01,
+          "line": 242,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Cumulative P&L in ascending close-time order."
+    }
+  ],
+  "skipped": []
+}

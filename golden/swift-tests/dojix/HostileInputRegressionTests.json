@@ -1,0 +1,236 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/HostileInputRegressionTests.swift",
+  "helpers": {
+    "trade": {
+      "line": 7,
+      "defaults": {
+        "ticket": null,
+        "lots": 0.1,
+        "durationMin": 60,
+        "symbol": "EURUSD",
+        "direction": "BUY",
+        "closeTime": "2026-01-01T00:00:00Z",
+        "openTime": "2025-12-31T23:00:00Z",
+        "openPrice": 1.1,
+        "closePrice": 1.101,
+        "sl": 1.09,
+        "tp": 1.12,
+        "netProfit": 10,
+        "maePips": 3,
+        "mfePips": 8,
+        "rMultiple": 1,
+        "session": "LONDON",
+        "dayOfWeek": "Thu",
+        "hour": 10,
+        "rangeSize": 20,
+        "sweepDepth": 4,
+        "usedFVG": false,
+        "volRegime": "MED",
+        "hitBreakeven": false,
+        "scaledIn": false,
+        "magic": 0,
+        "comment": "Sample (fictional)",
+        "timeToMFEMin": 10,
+        "slDistPips": 10,
+        "slippagePips": 0,
+        "postClose15m": 0,
+        "postClose30m": 0,
+        "biasAtEntry": "NEUTRAL",
+        "importedAt": "2026-01-01T00:00:00Z"
+      },
+      "notes": "closeTime = Date(timeIntervalSince1970: 1_767_225_600); openTime = closeTime - 3600 s (fixed, not from durationMin). Decimal fields given as Swift float literals (e.g. openPrice 1.26) are built through Double (Decimal(floatLiteral:)), so they may carry binary noise; no assertion here depends on them."
+    }
+  },
+  "cases": [
+    {
+      "id": "HostileInputRegressionTests.testSanitizerEnforcesMinimumLotSize",
+      "line": 22,
+      "subject": "Trade.sanitizedForStorage",
+      "kind": "sanitize",
+      "input": {
+        "helper": "trade",
+        "trades": [
+          {
+            "ticket": 1,
+            "lots": 1e-15
+          },
+          {
+            "ticket": 2,
+            "lots": -1e-09
+          },
+          {
+            "ticket": 3,
+            "lots": 0
+          },
+          {
+            "ticket": 4,
+            "lots": 0.01
+          },
+          {
+            "ticket": 5,
+            "lots": 5000000000.0
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "trades[0].lots",
+          "op": "eq",
+          "value": 1e-05,
+          "line": 23,
+          "derived": false
+        },
+        {
+          "path": "trades[1].lots",
+          "op": "eq",
+          "value": 1e-05,
+          "line": 24,
+          "derived": false
+        },
+        {
+          "path": "trades[2].lots",
+          "op": "eq",
+          "value": 0,
+          "line": 25,
+          "derived": false
+        },
+        {
+          "path": "trades[3].lots",
+          "op": "eq",
+          "value": 0.01,
+          "line": 26,
+          "derived": false
+        },
+        {
+          "path": "trades[4].lots",
+          "op": "eq",
+          "value": 1000000,
+          "line": 27,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "lots -> min(|finite(lots)|, 1_000_000); a size in (0, 0.00001) becomes 0.00001; 0 (unknown size) stays 0; non-finite -> 0. Path trades[i] is input.trades[i] after sanitizing."
+    },
+    {
+      "id": "HostileInputRegressionTests.testDurationAverageDoesNotOverflow",
+      "line": 31,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "trade",
+        "trades": [
+          {
+            "ticket": 1,
+            "durationMin": "9223372036854775797"
+          },
+          {
+            "ticket": 2,
+            "durationMin": "9223372036854775797"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "averageDuration",
+          "op": "gt",
+          "value": 0,
+          "line": 34,
+          "derived": false
+        },
+        {
+          "path": "averageDuration",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 31,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "durationMin = Int.max - 10 (written as a string: beyond JS safe integers); trades are not sanitized. averageDuration sums in Double (2 x 9.223372036854775797e18 rounds to 2^64) and converts with Int(saturating:), giving Int.max (string)."
+    },
+    {
+      "id": "HostileInputRegressionTests.testCSVFieldWithBareCRIsNeutralised",
+      "line": 38,
+      "subject": "CSVExporter.sanitizeCSVField",
+      "kind": "sanitize",
+      "input": {
+        "fields": [
+          "EURUSD\r=HYPERLINK(\"http://x\",\"y\")",
+          "=1+2",
+          "-12.50",
+          "a,b",
+          "\t=cmd"
+        ]
+      },
+      "expect": [
+        {
+          "path": "[0]",
+          "op": "notContains",
+          "value": "\r",
+          "line": 40,
+          "derived": false
+        },
+        {
+          "path": "[0]",
+          "op": "notContains",
+          "value": "\n",
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "[1]",
+          "op": "eq",
+          "value": "'=1+2",
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "[2]",
+          "op": "eq",
+          "value": "-12.50",
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "[3]",
+          "op": "eq",
+          "value": "\"a,b\"",
+          "line": 44,
+          "derived": false
+        },
+        {
+          "path": "[4]",
+          "op": "eq",
+          "value": "'=cmd",
+          "line": 46,
+          "derived": false
+        },
+        {
+          "path": "[0]",
+          "op": "eq",
+          "value": "\"EURUSD=HYPERLINK(\"\"http://x\"\",\"\"y\"\")\"",
+          "line": 38,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Path [i] = sanitizeCSVField(fields[i]). Steps: remove control characters; prefix \"'\" when the first character is one of = + @ - and Swift Double(value) fails to parse; quote (doubling quotes) when the value contains , \" LF or CR. PARITY TRAP: Swift Double(String) also accepts \"inf\", \"-inf\", \"nan\", \"-infinity\", hex floats etc., so e.g. \"-inf\" is NOT prefixed on the Mac."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "HostileInputRegressionTests.testDotDotScreenshotNameDeletesNothing",
+      "line": 50,
+      "reason": "Screenshot file deletion / path traversal (file system security)."
+    },
+    {
+      "id": "HostileInputRegressionTests.testOnlyAppCreatedScreenshotNamesCanBeDeleted",
+      "line": 82,
+      "reason": "Screenshot file deletion (file system security)."
+    }
+  ]
+}

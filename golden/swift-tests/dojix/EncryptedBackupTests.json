@@ -1,0 +1,135 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/EncryptedBackupTests.swift",
+  "helpers": {},
+  "cases": [
+    {
+      "id": "EncryptedBackupTests.testPasswordRule",
+      "line": 163,
+      "subject": "PasswordRules.problem",
+      "kind": "validation",
+      "input": {
+        "calls": [
+          {
+            "password": "",
+            "confirmation": ""
+          },
+          {
+            "password": "abcdefgh",
+            "confirmation": "abcdefgx"
+          },
+          {
+            "password": "short",
+            "confirmation": "short"
+          },
+          {
+            "password": "abcdefgh",
+            "confirmation": "abcdefgh"
+          },
+          {
+            "password": "x * 129",
+            "confirmation": "x * 129"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "[0]",
+          "op": "eq",
+          "value": "Password cannot be empty",
+          "line": 164,
+          "derived": false
+        },
+        {
+          "path": "[1]",
+          "op": "eq",
+          "value": "Passwords do not match",
+          "line": 165,
+          "derived": false
+        },
+        {
+          "path": "[2]",
+          "op": "eq",
+          "value": "Password must be at least 8 characters",
+          "line": 166,
+          "derived": false
+        },
+        {
+          "path": "[3]",
+          "op": "nil",
+          "line": 167,
+          "derived": false
+        },
+        {
+          "path": "[4]",
+          "op": "notNil",
+          "line": 169,
+          "derived": false
+        },
+        {
+          "path": "[4]",
+          "op": "eq",
+          "value": "Password must be at most 128 characters",
+          "line": 163,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Path [i] = problem(calls[i]); \"x * 129\" = the letter x repeated 129 times. Checks in order: empty, mismatch, < 8, > 128 (Character count). Same rule as App Lock."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "EncryptedBackupTests.testProtectedBackupRoundTripWithTheRealIterationCount",
+      "line": 55,
+      "reason": "Encrypted backup format / KDF / lock state (crypto); covered by the F10 Mac-backup fixtures, not Tier A."
+    },
+    {
+      "id": "EncryptedBackupTests.testPlainBackupStillRestoresWithoutAPassword",
+      "line": 71,
+      "reason": "Encrypted backup format / KDF / lock state (crypto); covered by the F10 Mac-backup fixtures, not Tier A."
+    },
+    {
+      "id": "EncryptedBackupTests.testProtectedBackupAsksForItsPassword",
+      "line": 82,
+      "reason": "Encrypted backup format / KDF / lock state (crypto); covered by the F10 Mac-backup fixtures, not Tier A."
+    },
+    {
+      "id": "EncryptedBackupTests.testWrongPasswordIsRefusedClearly",
+      "line": 88,
+      "reason": "Encrypted backup format / KDF / lock state (crypto); covered by the F10 Mac-backup fixtures, not Tier A."
+    },
+    {
+      "id": "EncryptedBackupTests.testChangedHeaderIsRefused",
+      "line": 94,
+      "reason": "Encrypted backup format / KDF / lock state (crypto); covered by the F10 Mac-backup fixtures, not Tier A."
+    },
+    {
+      "id": "EncryptedBackupTests.testAbsurdIterationCountIsRefusedBeforeAnyWork",
+      "line": 112,
+      "reason": "Encrypted backup format / KDF / lock state (crypto); covered by the F10 Mac-backup fixtures, not Tier A."
+    },
+    {
+      "id": "EncryptedBackupTests.testTruncatedProtectedBackupIsRefused",
+      "line": 126,
+      "reason": "Encrypted backup format / KDF / lock state (crypto); covered by the F10 Mac-backup fixtures, not Tier A."
+    },
+    {
+      "id": "EncryptedBackupTests.testEmptyPasswordNeverWritesABackup",
+      "line": 132,
+      "reason": "Encrypted backup format / KDF / lock state (crypto); covered by the F10 Mac-backup fixtures, not Tier A."
+    },
+    {
+      "id": "EncryptedBackupTests.testLegacyEncryptedBackupStillRestores",
+      "line": 140,
+      "reason": "Encrypted backup format / KDF / lock state (crypto); covered by the F10 Mac-backup fixtures, not Tier A."
+    },
+    {
+      "id": "EncryptedBackupTests.testNoBackupIsWrittenWhileTheJournalIsLocked",
+      "line": 154,
+      "reason": "Encrypted backup format / KDF / lock state (crypto); covered by the F10 Mac-backup fixtures, not Tier A."
+    }
+  ]
+}

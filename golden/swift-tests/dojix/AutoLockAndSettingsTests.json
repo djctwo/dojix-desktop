@@ -1,0 +1,82 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/AutoLockAndSettingsTests.swift",
+  "helpers": {},
+  "cases": [
+    {
+      "id": "AutoLockAndSettingsTests.testInvalidStoredValuesFallBackToDefaults",
+      "line": 83,
+      "subject": "PropFirmSettings.load / PropFirmSettings.save",
+      "kind": "validation",
+      "input": {
+        "stored": {
+          "propFirm_accountSize": "nan",
+          "propFirm_profitTarget": "-3",
+          "propFirm_maxDailyLoss": "1e300",
+          "propFirm_maxTotalDrawdown": "x"
+        },
+        "then_save": {
+          "accountSize": "Infinity",
+          "others": "defaults"
+        }
+      },
+      "expect": [
+        {
+          "path": "loaded",
+          "op": "eq",
+          "value": {
+            "accountSize": 100000.0,
+            "profitTarget": 8.0,
+            "maxDailyLoss": 5.0,
+            "maxTotalDrawdown": 10.0
+          },
+          "line": 88,
+          "derived": false
+        },
+        {
+          "path": "stored.propFirm_accountSize",
+          "op": "eq",
+          "value": "nan",
+          "line": 91,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Asserted 'loaded' value is PropFirmSettings() (the defaults, spelled out here). A stored value is used only if Double(text) parses, is finite, > 0, and <= 1e12 (account size) or <= 100 (the three percentages); otherwise the default. save() writes only valid values, so an infinite accountSize leaves the previous text (\"nan\") in place."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "AutoLockAndSettingsTests.testLocksOnScreenLockSleepUserSwitchHideAndMinimize",
+      "line": 35,
+      "reason": "Auto-lock on OS notifications (security/UI)."
+    },
+    {
+      "id": "AutoLockAndSettingsTests.testUnrelatedNotificationsDoNotLock",
+      "line": 45,
+      "reason": "Auto-lock on OS notifications (security/UI)."
+    },
+    {
+      "id": "AutoLockAndSettingsTests.testStoppedMonitorNoLongerLocks",
+      "line": 52,
+      "reason": "Auto-lock monitor lifecycle (security/UI)."
+    },
+    {
+      "id": "AutoLockAndSettingsTests.testSettingsAreStoredInTheJournalNotUserDefaults",
+      "line": 72,
+      "reason": "Where settings are stored (journal vs UserDefaults), not a value rule."
+    },
+    {
+      "id": "AutoLockAndSettingsTests.testLegacyDefaultsMoveIntoTheJournalAndAreDeleted",
+      "line": 95,
+      "reason": "Legacy UserDefaults migration (storage mechanism)."
+    },
+    {
+      "id": "AutoLockAndSettingsTests.testEraseAllRemovesLegacyDefaults",
+      "line": 113,
+      "reason": "Erase-all behaviour (security)."
+    }
+  ]
+}

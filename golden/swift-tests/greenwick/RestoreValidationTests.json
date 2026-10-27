@@ -1,0 +1,778 @@
+{
+  "app": "greenwick",
+  "source_repo": "djctwo/greenwick",
+  "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+  "file": "GreenwickTests/RestoreValidationTests.swift",
+  "helpers": {
+    "makeLiveJournal": {
+      "line": 10,
+      "defaults": {
+        "trades": [
+          {
+            "base": "sampleTrades()[0]",
+            "ticket": 42,
+            "symbol": "MINE",
+            "isSample": false
+          }
+        ]
+      },
+      "notes": "The journal being restored into: one trade of the user's own (\"MINE\")."
+    },
+    "assertRefused": {
+      "line": 20,
+      "defaults": {},
+      "notes": "BackupService.restore(from: bytes, password: nil, into: live) must throw; when an expected BackupValidator.ValidationError is given it must be equal; localizedDescription non-empty; afterwards the live journal still holds exactly [\"MINE\"] (never partly applied)."
+    },
+    "backupBytes": {
+      "line": 152,
+      "defaults": {
+        "database": "in-memory, current schema"
+      },
+      "notes": "GreenwickTests/TestSupport.swift: bulk-inserts the given trades (rowid 1..N in input order), runs the raw SQL, serializes the SQLite file. rowid k = sampleTrades()[k-1]."
+    },
+    "sampleTrades": {
+      "line": 148,
+      "defaults": {
+        "generator": "DemoDataGenerator.generateTrades"
+      },
+      "notes": "GreenwickTests/TestSupport.swift: the 30 fictional sample trades (tickets 900000...900029, see SampleTradesTests.json)."
+    }
+  },
+  "cases": [
+    {
+      "id": "RestoreValidationTests.testValidBackupReplacesTheJournal",
+      "line": 34,
+      "subject": "BackupService.restore",
+      "kind": "validation",
+      "input": {
+        "helper": "backupBytes",
+        "trades": {
+          "helper": "sampleTrades"
+        },
+        "sql": [],
+        "live": {
+          "helper": "makeLiveJournal"
+        }
+      },
+      "expect": [
+        {
+          "path": "live.fetchAll().count",
+          "op": "eq",
+          "value": 30,
+          "line": 38,
+          "derived": false
+        },
+        {
+          "path": "live.fetchAll()[].symbol",
+          "op": "notContains",
+          "value": "MINE",
+          "line": 39,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "A valid restore replaces the journal (the user's \"MINE\" trade is gone)."
+    },
+    {
+      "id": "RestoreValidationTests.testOverflowingDurationsAreRefused",
+      "line": 61,
+      "subject": "BackupValidator.validate (Trade.storageViolations)",
+      "kind": "validation",
+      "input": {
+        "helper": "backupBytes",
+        "trades": {
+          "helper": "sampleTrades"
+        },
+        "sql": [
+          "UPDATE trades SET durationMin = 9223372036854775807 WHERE rowid IN (1, 2)"
+        ],
+        "live": {
+          "helper": "makeLiveJournal"
+        },
+        "set": [
+          {
+            "rowids": [
+              1,
+              2
+            ],
+            "field": "durationMin",
+            "value": "9223372036854775807"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "restore",
+          "op": "throws",
+          "value": null,
+          "line": 65,
+          "derived": false
+        },
+        {
+          "path": "error",
+          "op": "eq",
+          "value": {
+            "invalidRow": {
+              "table": "trades",
+              "row": 1,
+              "fields": [
+                "durationMin"
+              ]
+            }
+          },
+          "line": 65,
+          "derived": false
+        },
+        {
+          "path": "live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 65,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Row index is 1-based in rowid order; the first bad row stops the restore. Value is Int64.max (string)."
+    },
+    {
+      "id": "RestoreValidationTests.testOutOfRangeNumbersAreRefused",
+      "line": 68,
+      "subject": "BackupValidator.validate (Trade.storageViolations)",
+      "kind": "validation",
+      "input": {
+        "helper": "backupBytes",
+        "trades": {
+          "helper": "sampleTrades"
+        },
+        "live": {
+          "helper": "makeLiveJournal"
+        },
+        "variants": [
+          {
+            "sql": [
+              "UPDATE trades SET shares = 1e-12 WHERE rowid = 3"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  3
+                ],
+                "field": "shares",
+                "value": 1e-12
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET netProfit = '-1000000000000000000000' WHERE rowid = 3"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  3
+                ],
+                "field": "netProfit",
+                "value": "-1000000000000000000000"
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET hour = 99 WHERE rowid = 3"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  3
+                ],
+                "field": "hour",
+                "value": 99
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET volume = -5 WHERE rowid = 3"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  3
+                ],
+                "field": "volume",
+                "value": -5
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET rMultiple = 1e300 WHERE rowid = 3"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  3
+                ],
+                "field": "rMultiple",
+                "value": 1e+300
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET direction = 'SIDEWAYS' WHERE rowid = 3"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  3
+                ],
+                "field": "direction",
+                "value": "SIDEWAYS"
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET shares = 'many' WHERE rowid = 3"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  3
+                ],
+                "field": "shares",
+                "value": "many (TEXT)"
+              }
+            ]
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "variants[0].restore",
+          "op": "throws",
+          "value": null,
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[0].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[1].restore",
+          "op": "throws",
+          "value": null,
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[1].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[2].restore",
+          "op": "throws",
+          "value": null,
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[2].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[3].restore",
+          "op": "throws",
+          "value": null,
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[3].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[4].restore",
+          "op": "throws",
+          "value": null,
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[4].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[5].restore",
+          "op": "throws",
+          "value": null,
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[5].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[6].restore",
+          "op": "throws",
+          "value": null,
+          "line": 78,
+          "derived": false
+        },
+        {
+          "path": "variants[6].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 78,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Each variant is a separate backup. The error kind is not asserted. Limits: shares [1e-6, 1e9]; amounts |x| <= 1e12 (netProfit stored as decimal TEXT); hour 0-23; volume 0...1e12; points |x| <= 1e9; direction must decode as BUY/SELL and shares as a number (decode failure = invalidRow \"unreadable value\")."
+    },
+    {
+      "id": "RestoreValidationTests.testControlCharactersInTextAreRefused",
+      "line": 83,
+      "subject": "BackupValidator.validate (Trade.controlCharacterFields)",
+      "kind": "validation",
+      "input": {
+        "helper": "backupBytes",
+        "trades": {
+          "helper": "sampleTrades"
+        },
+        "sql": [
+          "UPDATE trades SET symbol = 'AAPL' || char(13) || '=cmd()' WHERE rowid = 1"
+        ],
+        "live": {
+          "helper": "makeLiveJournal"
+        },
+        "set": [
+          {
+            "rowids": [
+              1
+            ],
+            "field": "symbol",
+            "value": "AAPL\r=cmd()"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "restore",
+          "op": "throws",
+          "value": null,
+          "line": 84,
+          "derived": false
+        },
+        {
+          "path": "error",
+          "op": "eq",
+          "value": {
+            "invalidRow": {
+              "table": "trades",
+              "row": 1,
+              "fields": [
+                "symbol"
+              ]
+            }
+          },
+          "line": 84,
+          "derived": false
+        },
+        {
+          "path": "live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 84,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Restore rejects control characters (import/repository strip them instead)."
+    },
+    {
+      "id": "RestoreValidationTests.testForeignScreenshotNamesAreRefused",
+      "line": 90,
+      "subject": "BackupValidator.validate (Trade.storageViolations)",
+      "kind": "validation",
+      "input": {
+        "helper": "backupBytes",
+        "trades": {
+          "helper": "sampleTrades"
+        },
+        "live": {
+          "helper": "makeLiveJournal"
+        },
+        "variants": [
+          {
+            "sql": [
+              "UPDATE trades SET screenshots = '..' WHERE rowid = 1"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  1
+                ],
+                "field": "screenshots",
+                "value": ".."
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET screenshots = '.' WHERE rowid = 1"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  1
+                ],
+                "field": "screenshots",
+                "value": "."
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET screenshots = '.hidden' WHERE rowid = 1"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  1
+                ],
+                "field": "screenshots",
+                "value": ".hidden"
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET screenshots = '../x.jpg' WHERE rowid = 1"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  1
+                ],
+                "field": "screenshots",
+                "value": "../x.jpg"
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET screenshots = 'shot.jpg' WHERE rowid = 1"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  1
+                ],
+                "field": "screenshots",
+                "value": "shot.jpg"
+              }
+            ]
+          },
+          {
+            "sql": [
+              "UPDATE trades SET screenshots = '<UUID>.jpg' WHERE rowid = 1"
+            ],
+            "set": [
+              {
+                "rowids": [
+                  1
+                ],
+                "field": "screenshots",
+                "value": "<UUID>.jpg"
+              }
+            ],
+            "accepted": true
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "variants[0].error",
+          "op": "eq",
+          "value": {
+            "invalidRow": {
+              "table": "trades",
+              "row": 1,
+              "fields": [
+                "screenshots"
+              ]
+            }
+          },
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "variants[0].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "variants[1].error",
+          "op": "eq",
+          "value": {
+            "invalidRow": {
+              "table": "trades",
+              "row": 1,
+              "fields": [
+                "screenshots"
+              ]
+            }
+          },
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "variants[1].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "variants[2].error",
+          "op": "eq",
+          "value": {
+            "invalidRow": {
+              "table": "trades",
+              "row": 1,
+              "fields": [
+                "screenshots"
+              ]
+            }
+          },
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "variants[2].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "variants[3].error",
+          "op": "eq",
+          "value": {
+            "invalidRow": {
+              "table": "trades",
+              "row": 1,
+              "fields": [
+                "screenshots"
+              ]
+            }
+          },
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "variants[3].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "variants[4].error",
+          "op": "eq",
+          "value": {
+            "invalidRow": {
+              "table": "trades",
+              "row": 1,
+              "fields": [
+                "screenshots"
+              ]
+            }
+          },
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "variants[4].live.fetchAll()[].symbol",
+          "op": "eq",
+          "value": [
+            "MINE"
+          ],
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "variants[5].live.count()",
+          "op": "eq",
+          "value": 30,
+          "line": 101,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Screenshot names must be <UUID>.jpg (40 chars); the app's own name restores."
+    },
+    {
+      "id": "RestoreValidationTests.testOlderBackupIsMigratedAfterValidation",
+      "line": 154,
+      "subject": "BackupService.restore",
+      "kind": "sample",
+      "input": {
+        "helper": "backupBytes",
+        "live": {
+          "helper": "makeLiveJournal"
+        },
+        "trades": [
+          {
+            "helper": "sampleTrades"
+          },
+          {
+            "base": "sampleTrades()[0]",
+            "ticket": 123,
+            "isSample": false,
+            "comment": "Demo"
+          }
+        ],
+        "sql": [
+          "DROP TABLE settings",
+          "ALTER TABLE trades DROP COLUMN isSample",
+          "UPDATE trades SET comment = 'Demo'",
+          "DELETE FROM grdb_migrations WHERE identifier IN ('v4_createSettings', 'v5_markSampleTrades')"
+        ]
+      },
+      "expect": [
+        {
+          "path": "live.count()",
+          "op": "eq",
+          "value": 31,
+          "line": 170,
+          "derived": false
+        },
+        {
+          "path": "live.sampleTradeCount()",
+          "op": "eq",
+          "value": 30,
+          "line": 171,
+          "derived": false
+        },
+        {
+          "path": "live.deleteSampleTrades()",
+          "op": "eq",
+          "value": 30,
+          "line": 172,
+          "derived": false
+        },
+        {
+          "path": "live.fetchAll()[].ticket",
+          "op": "eq",
+          "value": [
+            123
+          ],
+          "line": 173,
+          "derived": false
+        },
+        {
+          "path": "live.tableExists(\"settings\")",
+          "op": "true",
+          "value": null,
+          "line": 174,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Pre-v5 backup (no isSample column): rows are marked sample by comment in (Demo, Sample (fictional)) AND ticket 900000...900029; ticket 123 with comment \"Demo\" stays a real trade. Relevant to Mac-backup mapping (SPEC §4.4)."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "RestoreValidationTests.testPasswordProtectedBackupRestores",
+      "line": 42,
+      "reason": "Backup encryption (password), not row validation; see SPEC §6.8."
+    },
+    {
+      "id": "RestoreValidationTests.testHiddenGeneratedColumnsAreRefused",
+      "line": 53,
+      "reason": "Schema check (generated column -> unexpectedSchema(\"table trades definition\")), not row validation; SQLite-file specific."
+    },
+    {
+      "id": "RestoreValidationTests.testTriggersViewsAndForeignTablesAreRefused",
+      "line": 104,
+      "reason": "Schema check (triggers/views/extra tables), not row validation."
+    },
+    {
+      "id": "RestoreValidationTests.testAlteredTablesAreRefused",
+      "line": 117,
+      "reason": "Schema check (columns, defaults, indexes), not row validation."
+    },
+    {
+      "id": "RestoreValidationTests.testTriggerNeverLandsInTheJournal",
+      "line": 131,
+      "reason": "Schema check (sqlite_master after restore), not row validation."
+    },
+    {
+      "id": "RestoreValidationTests.testBackupFromANewerVersionIsRefused",
+      "line": 148,
+      "reason": "Migration-version check (newerVersion), not row validation; behaviour in PARITY A2.14."
+    },
+    {
+      "id": "RestoreValidationTests.testNonDatabasesAndDamagedFilesAreRefused",
+      "line": 177,
+      "reason": "File-format check (not SQLite / damaged pages), not row validation."
+    },
+    {
+      "id": "RestoreValidationTests.testWALModeBackupFileIsAccepted",
+      "line": 186,
+      "reason": "SQLite file-header detail (WAL-mode byte 18 = 2), not row validation."
+    }
+  ]
+}

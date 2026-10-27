@@ -1,0 +1,200 @@
+{
+  "app": "dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "files": [
+    {
+      "file": "DojixTests/AnalyticsClampTests.swift",
+      "json": "AnalyticsClampTests.json",
+      "cases": 4,
+      "skipped": 2
+    },
+    {
+      "file": "DojixTests/AnalyticsComponentTests.swift",
+      "json": "AnalyticsComponentTests.json",
+      "cases": 26,
+      "skipped": 2
+    },
+    {
+      "file": "DojixTests/AutoLockAndSettingsTests.swift",
+      "json": "AutoLockAndSettingsTests.json",
+      "cases": 1,
+      "skipped": 6
+    },
+    {
+      "file": "DojixTests/CSVParserTests.swift",
+      "json": "CSVParserTests.json",
+      "cases": 7,
+      "skipped": 0
+    },
+    {
+      "file": "DojixTests/EncryptedBackupTests.swift",
+      "json": "EncryptedBackupTests.json",
+      "cases": 1,
+      "skipped": 10
+    },
+    {
+      "file": "DojixTests/FormattingTests.swift",
+      "json": "FormattingTests.json",
+      "cases": 19,
+      "skipped": 0
+    },
+    {
+      "file": "DojixTests/GenericCSVParserTests.swift",
+      "json": "GenericCSVParserTests.json",
+      "cases": 16,
+      "skipped": 0
+    },
+    {
+      "file": "DojixTests/HostileInputRegressionTests.swift",
+      "json": "HostileInputRegressionTests.json",
+      "cases": 3,
+      "skipped": 2
+    },
+    {
+      "file": "DojixTests/ImportHardeningTests.swift",
+      "json": "ImportHardeningTests.json",
+      "cases": 6,
+      "skipped": 0
+    },
+    {
+      "file": "DojixTests/MetricsCalculatorTests.swift",
+      "json": "MetricsCalculatorTests.json",
+      "cases": 16,
+      "skipped": 0
+    },
+    {
+      "file": "DojixTests/OANDAServiceTests.swift",
+      "json": "OANDAServiceTests.json",
+      "cases": 10,
+      "skipped": 10
+    },
+    {
+      "file": "DojixTests/PerformanceTests.swift",
+      "json": "PerformanceTests.json",
+      "cases": 2,
+      "skipped": 9
+    },
+    {
+      "file": "DojixTests/ReimportDedupeTests.swift",
+      "json": "ReimportDedupeTests.json",
+      "cases": 2,
+      "skipped": 1
+    },
+    {
+      "file": "DojixTests/RestoreValidationTests.swift",
+      "json": "RestoreValidationTests.json",
+      "cases": 5,
+      "skipped": 7
+    },
+    {
+      "file": "DojixTests/SampleFileCrossCheckTests.swift",
+      "json": "SampleFileCrossCheckTests.json",
+      "cases": 2,
+      "skipped": 0
+    },
+    {
+      "file": "DojixTests/SecurityFullRegressionTests.swift",
+      "json": "SecurityFullRegressionTests.json",
+      "cases": 3,
+      "skipped": 10
+    },
+    {
+      "file": "DojixTests/TradeGraderTests.swift",
+      "json": "TradeGraderTests.json",
+      "cases": 40,
+      "skipped": 5
+    },
+    {
+      "file": "DojixTests/TradeModelTests.swift",
+      "json": "TradeModelTests.json",
+      "cases": 19,
+      "skipped": 0
+    },
+    {
+      "file": "DojixTests/TradeRepositoryTests.swift",
+      "json": "TradeRepositoryTests.json",
+      "cases": 16,
+      "skipped": 0
+    }
+  ],
+  "not_ported": [
+    {
+      "file": "DojixTests/AppLockKeyVaultTests.swift",
+      "reason": "App Lock key wrapping in the Keychain (crypto/credential storage)."
+    },
+    {
+      "file": "DojixTests/AppLockStateTests.swift",
+      "reason": "App Lock state machine (security/UI)."
+    },
+    {
+      "file": "DojixTests/AtRestRegressionTests.swift",
+      "reason": "Journal never plaintext on disk (encryption at rest)."
+    },
+    {
+      "file": "DojixTests/DatabaseRaceTests.swift",
+      "reason": "Rekey/restore/save races with locking (concurrency, durability)."
+    },
+    {
+      "file": "DojixTests/EncryptedJournalTests.swift",
+      "reason": "Sealed journal format and key handling (crypto)."
+    },
+    {
+      "file": "DojixTests/FileWatcherTests.swift",
+      "reason": "MT5 folder watcher timing and file-system events (platform; the desktop watcher is redesigned, PARITY B2)."
+    },
+    {
+      "file": "DojixTests/FinishLineFixTests.swift",
+      "reason": "Concurrent key operations and lock-screen state (security/concurrency); no math/import/validation cases."
+    },
+    {
+      "file": "DojixTests/IdleLockTests.swift",
+      "reason": "Idle auto-lock timing and UI (security/UI)."
+    },
+    {
+      "file": "DojixTests/KeyRotationSafetyTests.swift",
+      "reason": "Crash-safe key rotation (crypto)."
+    },
+    {
+      "file": "DojixTests/KeyRotationTests.swift",
+      "reason": "Key rotation (crypto)."
+    },
+    {
+      "file": "DojixTests/LocalDataEraserTests.swift",
+      "reason": "Erase all local data (security)."
+    },
+    {
+      "file": "DojixTests/RereviewFixTests.swift",
+      "reason": "Erase/lock/key-rotation races, Keychain failures, relaunch lock (security/concurrency); no math/import/validation cases."
+    },
+    {
+      "file": "DojixTests/RollbackProtectionTests.swift",
+      "reason": "Older-copy (rollback) detection of the sealed journal (security)."
+    },
+    {
+      "file": "DojixTests/SecurityTests.swift",
+      "reason": "Journal/export encryption round trips, TLS session configuration (crypto/network)."
+    },
+    {
+      "file": "DojixTests/SettingsLockTests.swift",
+      "reason": "App Lock password change/disable flows and throttling (security/UI)."
+    },
+    {
+      "file": "DojixTests/ThrottleReadErrorTests.swift",
+      "reason": "Password-attempt throttle with unreadable Keychain (security)."
+    },
+    {
+      "file": "DojixTests/LegacyExportWriter.swift",
+      "reason": "Test support file (1.x encrypted-export writer); contains no tests."
+    },
+    {
+      "file": "DojixTests/RaceTestSupport.swift",
+      "reason": "Test support file (race helpers); contains no tests."
+    },
+    {
+      "file": "DojixTests/SecurityFixTestSupport.swift",
+      "reason": "Test support file (SecFixture, MemorySecretStore); contains no tests. SecFixture.trade is documented in the helpers of the files that use it."
+    }
+  ],
+  "total_tests_in_source": 374,
+  "total_cases_ported": 198
+}

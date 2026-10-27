@@ -1,0 +1,181 @@
+{
+  "app": "greenwick",
+  "source_repo": "djctwo/greenwick",
+  "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+  "file": "GreenwickTests/SecurityReviewTests.swift",
+  "helpers": {},
+  "cases": [
+    {
+      "id": "SecurityReviewTests.testHostilePropFirmValuesFallBackToDefaults",
+      "line": 79,
+      "subject": "PropFirmSettings.load",
+      "kind": "validation",
+      "input": {
+        "settings_keys": [
+          "propFirm_accountSize",
+          "propFirm_profitTarget",
+          "propFirm_maxDailyLoss",
+          "propFirm_maxTotalDrawdown"
+        ],
+        "stored_text_values": [
+          "nan",
+          "inf",
+          "-5",
+          "1e300",
+          "abc",
+          "0"
+        ],
+        "saved": {
+          "accountSize": "Infinity",
+          "profitTarget": 500,
+          "maxDailyLoss": -1,
+          "maxTotalDrawdown": "NaN"
+        }
+      },
+      "expect": [
+        {
+          "path": "load() after each stored_text_values[*] in all 4 keys",
+          "op": "eq",
+          "value": {
+            "accountSize": 100000,
+            "profitTarget": 8,
+            "maxDailyLoss": 5,
+            "maxTotalDrawdown": 10
+          },
+          "line": 88,
+          "derived": false
+        },
+        {
+          "path": "load() after save(saved)",
+          "op": "eq",
+          "value": {
+            "accountSize": 100000,
+            "profitTarget": 8,
+            "maxDailyLoss": 5,
+            "maxTotalDrawdown": 10
+          },
+          "line": 92,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "A value is kept only if finite, > 0 and <= max (accountSize <= 1e12; percentages <= 100); otherwise that field falls back to its default. Defaults: 100000 / 8 / 5 / 10. Infinity/NaN written as strings (JSON). Prop-firm settings live in the encrypted journal settings table."
+    },
+    {
+      "id": "SecurityReviewTests.testAnalyticsCSVNeutralisesImportedLabels",
+      "line": 177,
+      "subject": "AnalyticsCSV.content",
+      "kind": "format",
+      "input": {
+        "conditions": [
+          {
+            "dimension": "Symbol",
+            "label": "=HYPERLINK(\"https://evil.example\")",
+            "profit": -10,
+            "tradeCount": 12,
+            "winRate": 10,
+            "expectancy": -1,
+            "profitFactor": 0.5,
+            "monthlyImpact": -20
+          },
+          {
+            "dimension": "Sector",
+            "label": "A,B\r",
+            "profit": -10,
+            "tradeCount": 12,
+            "winRate": 10,
+            "expectancy": -1,
+            "profitFactor": 0.5,
+            "monthlyImpact": -20
+          }
+        ],
+        "totalSavings": -40,
+        "rows": "WhatToCutAdvisor.csvRows(conditions, totalSavings)"
+      },
+      "expect": [
+        {
+          "path": "csv.split(\"\\n\").count",
+          "op": "eq",
+          "value": 5,
+          "line": 187,
+          "derived": false
+        },
+        {
+          "path": "lines[1]",
+          "op": "eq",
+          "value": "Symbol,\"'=HYPERLINK(\"\"https://evil.example\"\")\",-10.00,10.0,12,-1.00,0.50,-20.00",
+          "line": 188,
+          "derived": false
+        },
+        {
+          "path": "lines[2]",
+          "op": "eq",
+          "value": "Sector,\"A,B\",-10.00,10.0,12,-1.00,0.50,-20.00",
+          "line": 189,
+          "derived": false
+        },
+        {
+          "path": "csv",
+          "op": "notContains",
+          "value": "\r",
+          "line": 190,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Fields that parse as Double are left as-is (so -10.00 is not prefixed); others go through sanitizeCSVField. Columns: Dimension, Condition, P&L %.2f, Win Rate %.1f, Trades, Expectancy %.2f, Profit Factor %.2f, Monthly Impact %.2f; then an empty row and \"Total Potential Savings (monthly),%.2f\". Swift Double(\"...\") also accepts \"nan\"/\"inf\" labels as numbers."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "SecurityReviewTests.testFailedSaveIsReportedToTheApp",
+      "line": 21,
+      "reason": "Journal save failure reporting (storage/security), not math."
+    },
+    {
+      "id": "SecurityReviewTests.testPropFirmSettingsAreSealedInTheJournal",
+      "line": 40,
+      "reason": "Encryption at rest (ciphertext check)."
+    },
+    {
+      "id": "SecurityReviewTests.testPropFirmPreferencesFromOlderVersionsMoveIntoTheJournal",
+      "line": 57,
+      "reason": "macOS UserDefaults -> journal migration; no desktop equivalent. (Pins the same defaults: profitTarget 8, maxTotalDrawdown 10.)"
+    },
+    {
+      "id": "SecurityReviewTests.testJournalFromANewerVersionIsNeverErased",
+      "line": 100,
+      "reason": "Journal migration safety (storage)."
+    },
+    {
+      "id": "SecurityReviewTests.testOverwritingAKeychainItemUpdatesItInPlace",
+      "line": 135,
+      "reason": "Keychain."
+    },
+    {
+      "id": "SecurityReviewTests.testGRDBIsPinnedToACommit",
+      "line": 160,
+      "reason": "Build/dependency hygiene."
+    },
+    {
+      "id": "SecureFileWriteTests.testSealedJournalWriteNeverFollowsAPlantedSymlink",
+      "line": 208,
+      "reason": "File-system security (class SecureFileWriteTests in this file)."
+    },
+    {
+      "id": "SecureFileWriteTests.testSealedJournalIsOwnerOnly",
+      "line": 230,
+      "reason": "File permissions (class SecureFileWriteTests)."
+    },
+    {
+      "id": "SecureFileWriteTests.testBackupExportIsOwnerOnlyAndNeverFollowsASymlink",
+      "line": 241,
+      "reason": "File permissions / symlinks (class SecureFileWriteTests)."
+    },
+    {
+      "id": "SecurityEventLogTests.testAppLockEventsAreLogged",
+      "line": 276,
+      "reason": "App Lock unified-log messages (class SecurityEventLogTests)."
+    }
+  ]
+}

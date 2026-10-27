@@ -1,0 +1,551 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/OANDAServiceTests.swift",
+  "helpers": {},
+  "cases": [
+    {
+      "id": "OANDAServiceTests.testTransactionDecodeFromJSON",
+      "line": 53,
+      "subject": "OANDAService.OANDATransaction (JSONDecoder)",
+      "kind": "import",
+      "input": {
+        "json": "{\n    \"id\": \"12345\",\n    \"type\": \"ORDER_FILL\",\n    \"time\": \"2025-03-15T10:30:00.000000000Z\",\n    \"instrument\": \"EUR_USD\",\n    \"units\": \"100000\",\n    \"price\": \"1.08542\",\n    \"tradeOpened\": {\n        \"tradeID\": \"12345\"\n    }\n}"
+      },
+      "expect": [
+        {
+          "path": "id",
+          "op": "eq",
+          "value": "12345",
+          "line": 69,
+          "derived": false
+        },
+        {
+          "path": "type",
+          "op": "eq",
+          "value": "ORDER_FILL",
+          "line": 70,
+          "derived": false
+        },
+        {
+          "path": "time",
+          "op": "eq",
+          "value": "2025-03-15T10:30:00.000000000Z",
+          "line": 71,
+          "derived": false
+        },
+        {
+          "path": "instrument",
+          "op": "eq",
+          "value": "EUR_USD",
+          "line": 72,
+          "derived": false
+        },
+        {
+          "path": "units",
+          "op": "eq",
+          "value": "100000",
+          "line": 73,
+          "derived": false
+        },
+        {
+          "path": "price",
+          "op": "eq",
+          "value": "1.08542",
+          "line": 74,
+          "derived": false
+        },
+        {
+          "path": "tradeOpened.tradeID",
+          "op": "eq",
+          "value": "12345",
+          "line": 75,
+          "derived": false
+        },
+        {
+          "path": "tradesClosed",
+          "op": "nil",
+          "line": 76,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "All transaction fields are optional strings; numbers stay strings at decode time."
+    },
+    {
+      "id": "OANDAServiceTests.testTransactionDecodeClosingFill",
+      "line": 79,
+      "subject": "OANDAService.OANDATransaction (JSONDecoder)",
+      "kind": "import",
+      "input": {
+        "json": "{\n    \"id\": \"12350\",\n    \"type\": \"ORDER_FILL\",\n    \"time\": \"2025-03-15T14:00:00.000000000Z\",\n    \"instrument\": \"EUR_USD\",\n    \"units\": \"-100000\",\n    \"price\": \"1.08650\",\n    \"tradesClosed\": [\n        {\n            \"tradeID\": \"12345\",\n            \"realizedPL\": \"108.00\"\n        }\n    ]\n}"
+      },
+      "expect": [
+        {
+          "path": "id",
+          "op": "eq",
+          "value": "12350",
+          "line": 98,
+          "derived": false
+        },
+        {
+          "path": "units",
+          "op": "eq",
+          "value": "-100000",
+          "line": 99,
+          "derived": false
+        },
+        {
+          "path": "tradeOpened",
+          "op": "nil",
+          "line": 100,
+          "derived": false
+        },
+        {
+          "path": "tradesClosed.count",
+          "op": "eq",
+          "value": 1,
+          "line": 101,
+          "derived": false
+        },
+        {
+          "path": "tradesClosed[0].tradeID",
+          "op": "eq",
+          "value": "12345",
+          "line": 102,
+          "derived": false
+        },
+        {
+          "path": "tradesClosed[0].realizedPL",
+          "op": "eq",
+          "value": "108.00",
+          "line": 103,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "OANDAServiceTests.testTransactionDecodeMinimalFields",
+      "line": 106,
+      "subject": "OANDAService.OANDATransaction (JSONDecoder)",
+      "kind": "import",
+      "input": {
+        "json": "{}"
+      },
+      "expect": [
+        {
+          "path": "id",
+          "op": "nil",
+          "line": 113,
+          "derived": false
+        },
+        {
+          "path": "type",
+          "op": "nil",
+          "line": 114,
+          "derived": false
+        },
+        {
+          "path": "time",
+          "op": "nil",
+          "line": 115,
+          "derived": false
+        },
+        {
+          "path": "instrument",
+          "op": "nil",
+          "line": 116,
+          "derived": false
+        },
+        {
+          "path": "units",
+          "op": "nil",
+          "line": 117,
+          "derived": false
+        },
+        {
+          "path": "price",
+          "op": "nil",
+          "line": 118,
+          "derived": false
+        },
+        {
+          "path": "tradeOpened",
+          "op": "nil",
+          "line": 119,
+          "derived": false
+        },
+        {
+          "path": "tradesClosed",
+          "op": "nil",
+          "line": 120,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "OANDAServiceTests.testTransactionRoundTrip",
+      "line": 123,
+      "subject": "OANDAService.OANDATransaction (JSONEncoder -> JSONDecoder)",
+      "kind": "import",
+      "input": {
+        "value": {
+          "id": "99",
+          "type": "ORDER_FILL",
+          "time": "2025-06-01T08:15:30.123456789Z",
+          "instrument": "GBP_JPY",
+          "units": "-50000",
+          "price": "192.345",
+          "tradeOpened": null,
+          "tradesClosed": [
+            {
+              "tradeID": "88",
+              "realizedPL": "-42.50"
+            }
+          ]
+        }
+      },
+      "expect": [
+        {
+          "path": "decoded.id",
+          "op": "eq",
+          "value": {
+            "ref": "original.id"
+          },
+          "line": 140,
+          "derived": false
+        },
+        {
+          "path": "decoded.type",
+          "op": "eq",
+          "value": {
+            "ref": "original.type"
+          },
+          "line": 141,
+          "derived": false
+        },
+        {
+          "path": "decoded.time",
+          "op": "eq",
+          "value": {
+            "ref": "original.time"
+          },
+          "line": 142,
+          "derived": false
+        },
+        {
+          "path": "decoded.instrument",
+          "op": "eq",
+          "value": {
+            "ref": "original.instrument"
+          },
+          "line": 143,
+          "derived": false
+        },
+        {
+          "path": "decoded.units",
+          "op": "eq",
+          "value": {
+            "ref": "original.units"
+          },
+          "line": 144,
+          "derived": false
+        },
+        {
+          "path": "decoded.price",
+          "op": "eq",
+          "value": {
+            "ref": "original.price"
+          },
+          "line": 145,
+          "derived": false
+        },
+        {
+          "path": "decoded.tradeOpened",
+          "op": "nil",
+          "line": 146,
+          "derived": false
+        },
+        {
+          "path": "decoded.tradesClosed.count",
+          "op": "eq",
+          "value": 1,
+          "line": 147,
+          "derived": false
+        },
+        {
+          "path": "decoded.tradesClosed[0].tradeID",
+          "op": "eq",
+          "value": "88",
+          "line": 148,
+          "derived": false
+        },
+        {
+          "path": "decoded.tradesClosed[0].realizedPL",
+          "op": "eq",
+          "value": "-42.50",
+          "line": 149,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "original = input.value; encode then decode."
+    },
+    {
+      "id": "OANDAServiceTests.testTransactionMultipleClosedRefs",
+      "line": 152,
+      "subject": "OANDAService.OANDATransaction (JSONDecoder)",
+      "kind": "import",
+      "input": {
+        "json": "{\n    \"id\": \"200\",\n    \"type\": \"ORDER_FILL\",\n    \"time\": \"2025-04-10T12:00:00Z\",\n    \"instrument\": \"AUD_USD\",\n    \"units\": \"-200000\",\n    \"price\": \"0.66200\",\n    \"tradesClosed\": [\n        { \"tradeID\": \"150\", \"realizedPL\": \"35.00\" },\n        { \"tradeID\": \"160\", \"realizedPL\": \"22.50\" }\n    ]\n}"
+      },
+      "expect": [
+        {
+          "path": "tradesClosed.count",
+          "op": "eq",
+          "value": 2,
+          "line": 170,
+          "derived": false
+        },
+        {
+          "path": "tradesClosed[0].tradeID",
+          "op": "eq",
+          "value": "150",
+          "line": 171,
+          "derived": false
+        },
+        {
+          "path": "tradesClosed[1].tradeID",
+          "op": "eq",
+          "value": "160",
+          "line": 172,
+          "derived": false
+        },
+        {
+          "path": "tradesClosed[0].realizedPL",
+          "op": "eq",
+          "value": "35.00",
+          "line": 152,
+          "derived": true
+        },
+        {
+          "path": "tradesClosed[1].realizedPL",
+          "op": "eq",
+          "value": "22.50",
+          "line": 152,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "OANDAServiceTests.testAccountSummaryDecodeFromJSON",
+      "line": 177,
+      "subject": "OANDAService.AccountSummary (JSONDecoder)",
+      "kind": "import",
+      "input": {
+        "json": "{\n    \"id\": \"101-004-12345678-001\",\n    \"currency\": \"USD\",\n    \"balance\": \"10542.83\"\n}"
+      },
+      "expect": [
+        {
+          "path": "id",
+          "op": "eq",
+          "value": "101-004-12345678-001",
+          "line": 187,
+          "derived": false
+        },
+        {
+          "path": "currency",
+          "op": "eq",
+          "value": "USD",
+          "line": 188,
+          "derived": false
+        },
+        {
+          "path": "balance",
+          "op": "eq",
+          "value": "10542.83",
+          "line": 189,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Fictional account id."
+    },
+    {
+      "id": "OANDAServiceTests.testAccountSummaryRoundTrip",
+      "line": 192,
+      "subject": "OANDAService.AccountSummary (JSONEncoder -> JSONDecoder)",
+      "kind": "import",
+      "input": {
+        "value": {
+          "id": "001-002-33333333-444",
+          "currency": "EUR",
+          "balance": "25000.00"
+        }
+      },
+      "expect": [
+        {
+          "path": "decoded.id",
+          "op": "eq",
+          "value": {
+            "ref": "original.id"
+          },
+          "line": 202,
+          "derived": false
+        },
+        {
+          "path": "decoded.currency",
+          "op": "eq",
+          "value": {
+            "ref": "original.currency"
+          },
+          "line": 203,
+          "derived": false
+        },
+        {
+          "path": "decoded.balance",
+          "op": "eq",
+          "value": {
+            "ref": "original.balance"
+          },
+          "line": 204,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "OANDAServiceTests.testTradeRefDecodeAndEncode",
+      "line": 209,
+      "subject": "OANDAService.TradeRef (JSONDecoder, round trip)",
+      "kind": "import",
+      "input": {
+        "json": "{ \"tradeID\": \"77777\" }"
+      },
+      "expect": [
+        {
+          "path": "tradeID",
+          "op": "eq",
+          "value": "77777",
+          "line": 215,
+          "derived": false
+        },
+        {
+          "path": "roundTripped.tradeID",
+          "op": "eq",
+          "value": "77777",
+          "line": 219,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "OANDAServiceTests.testTradeClosedRefWithPL",
+      "line": 224,
+      "subject": "OANDAService.TradeClosedRef (JSONDecoder)",
+      "kind": "import",
+      "input": {
+        "json": "{ \"tradeID\": \"555\", \"realizedPL\": \"-75.25\" }"
+      },
+      "expect": [
+        {
+          "path": "tradeID",
+          "op": "eq",
+          "value": "555",
+          "line": 230,
+          "derived": false
+        },
+        {
+          "path": "realizedPL",
+          "op": "eq",
+          "value": "-75.25",
+          "line": 231,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "OANDAServiceTests.testTradeClosedRefWithoutPL",
+      "line": 234,
+      "subject": "OANDAService.TradeClosedRef (JSONDecoder)",
+      "kind": "import",
+      "input": {
+        "json": "{ \"tradeID\": \"556\" }"
+      },
+      "expect": [
+        {
+          "path": "tradeID",
+          "op": "eq",
+          "value": "556",
+          "line": 240,
+          "derived": false
+        },
+        {
+          "path": "realizedPL",
+          "op": "nil",
+          "line": 241,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    }
+  ],
+  "skipped": [
+    {
+      "id": "OANDAServiceTests.testInvalidURLErrorHasDescription",
+      "line": 8,
+      "reason": "Error message copy (UI text), not parsing or conversion."
+    },
+    {
+      "id": "OANDAServiceTests.testInvalidResponseErrorHasDescription",
+      "line": 15,
+      "reason": "Error message copy (UI text), not parsing or conversion."
+    },
+    {
+      "id": "OANDAServiceTests.testUnauthorizedErrorHasDescription",
+      "line": 22,
+      "reason": "Error message copy (UI text), not parsing or conversion."
+    },
+    {
+      "id": "OANDAServiceTests.testHTTPErrorIncludesStatusCode",
+      "line": 29,
+      "reason": "Error message copy (UI text), not parsing or conversion."
+    },
+    {
+      "id": "OANDAServiceTests.testNoAccountErrorHasDescription",
+      "line": 35,
+      "reason": "Error message copy (UI text), not parsing or conversion."
+    },
+    {
+      "id": "OANDAServiceTests.testAllErrorCasesHaveUniqueDescriptions",
+      "line": 42,
+      "reason": "Error message copy (UI text), not parsing or conversion."
+    },
+    {
+      "id": "OANDAServiceTests.testServiceInitSetsProperties",
+      "line": 246,
+      "reason": "Service construction (stores token/account/isLive); no parsing."
+    },
+    {
+      "id": "OANDAServiceTests.testServiceInitLiveMode",
+      "line": 253,
+      "reason": "Service construction; no parsing."
+    },
+    {
+      "id": "OANDAServiceTests.testOnlyHTTPSOandaHostsAreTrusted",
+      "line": 260,
+      "reason": "Token-safety host allow-list (security), not parsing."
+    },
+    {
+      "id": "OANDAServiceTests.testAccountIDValidation",
+      "line": 270,
+      "reason": "Account-ID path-injection guard (security), not parsing."
+    }
+  ]
+}

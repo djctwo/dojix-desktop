@@ -1,0 +1,167 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/ReimportDedupeTests.swift",
+  "helpers": {
+    "ticketlessMapping": {
+      "line": 22,
+      "defaults": {
+        "platform": "generic",
+        "ticket": null,
+        "symbol": 0,
+        "direction": 1,
+        "lots": 2,
+        "openTime": 3,
+        "closeTime": 4,
+        "openPrice": 5,
+        "closePrice": 6,
+        "sl": null,
+        "tp": null,
+        "profit": 7,
+        "commission": null,
+        "swap": null,
+        "maePips": null,
+        "mfePips": null,
+        "pips": null,
+        "dateFormat": "yyyy-MM-dd HH:mm:ss"
+      },
+      "notes": "A hand-built GenericCSVParser.ColumnMapping (column indexes) with no ticket column."
+    },
+    "csv": {
+      "line": 29,
+      "defaults": {
+        "text": "Symbol,Side,Qty,Open,Close,OpenPrice,ClosePrice,Profit\nEURUSD,BUY,0.10,2026-02-02 09:00:00,2026-02-02 10:00:00,1.08000,1.08200,20.00\nGBPUSD,SELL,0.20,2026-02-03 13:00:00,2026-02-03 14:30:00,1.27000,1.27100,-20.00\nGBPUSD,SELL,0.20,2026-02-03 13:00:00,2026-02-03 14:30:00,1.27000,1.27100,-20.00"
+      },
+      "notes": "Shared file text (property csv); written with the write helper (UTF-8 temp file)."
+    }
+  },
+  "cases": [
+    {
+      "id": "ReimportDedupeTests.testReimportingTicketlessFileAddsNothing",
+      "line": 36,
+      "subject": "GenericCSVParser.parse + TradeRepository.bulkInsert",
+      "kind": "ticket",
+      "input": {
+        "csv": "Symbol,Side,Qty,Open,Close,OpenPrice,ClosePrice,Profit\nEURUSD,BUY,0.10,2026-02-02 09:00:00,2026-02-02 10:00:00,1.08000,1.08200,20.00\nGBPUSD,SELL,0.20,2026-02-03 13:00:00,2026-02-03 14:30:00,1.27000,1.27100,-20.00\nGBPUSD,SELL,0.20,2026-02-03 13:00:00,2026-02-03 14:30:00,1.27000,1.27100,-20.00",
+        "mapping": "ticketlessMapping",
+        "steps": [
+          "parse -> bulkInsert",
+          "parse again -> bulkInsert"
+        ]
+      },
+      "expect": [
+        {
+          "path": "first.inserted",
+          "op": "eq",
+          "value": 3,
+          "line": 41,
+          "derived": false
+        },
+        {
+          "path": "second.inserted",
+          "op": "eq",
+          "value": 0,
+          "line": 44,
+          "derived": false
+        },
+        {
+          "path": "repo.count",
+          "op": "eq",
+          "value": 3,
+          "line": 45,
+          "derived": false
+        },
+        {
+          "path": "first.trades[0].ticket",
+          "op": "eq",
+          "value": "8613384322437977735",
+          "line": 36,
+          "derived": true
+        },
+        {
+          "path": "first.trades[1].ticket",
+          "op": "eq",
+          "value": "8300082836342979218",
+          "line": 36,
+          "derived": true
+        },
+        {
+          "path": "first.trades[2].ticket",
+          "op": "eq",
+          "value": "8800917197084781226",
+          "line": 36,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "No broker ticket: ticket = 8e18 + (first 8 bytes of SHA-256(contentKey + \"#\" + occurrence), big-endian UInt64) mod 1e18, contentKey = symbol|direction|String(format:\"%.8f\", lots)|String(openTime.timeIntervalSince1970)|String(closeTime...)|openPrice.description|closePrice.description|netProfit.description; occurrence counts identical keys within one file (0, 1, ...). Two identical rows are two trades. Derived tickets are strings (beyond JS safe integers); keys: EURUSD|BUY|0.10000000|1770022800.0|1770026400.0|1.08|1.082|20#0 ; GBPUSD|SELL|0.20000000|1770123600.0|1770129000.0|1.27|1.271|-20#0 ; GBPUSD|SELL|0.20000000|1770123600.0|1770129000.0|1.27|1.271|-20#1"
+    },
+    {
+      "id": "ReimportDedupeTests.testPerExportTradeNumbersDoNotHideNewTrades",
+      "line": 48,
+      "subject": "GenericCSVParser.detect + parse + TradeRepository.bulkInsert",
+      "kind": "ticket",
+      "input": {
+        "csvs": {
+          "exportA": "Trade #,Instrument,Market position,Quantity,Entry price,Exit price,Entry time,Exit time,Profit,Commission\n1,EURUSD,Long,1,1.0800,1.0820,02/02/2026 09:00:00,02/02/2026 10:00:00,200,0\n",
+          "exportB": "Trade #,Instrument,Market position,Quantity,Entry price,Exit price,Entry time,Exit time,Profit,Commission\n1,GBPUSD,Short,1,1.2700,1.2690,02/09/2026 09:00:00,02/09/2026 10:00:00,100,0\n"
+        },
+        "steps": [
+          "for each file: detect -> parse -> bulkInsert"
+        ]
+      },
+      "expect": [
+        {
+          "path": "exportA.mapping",
+          "op": "notNil",
+          "line": 59,
+          "derived": false
+        },
+        {
+          "path": "exportB.mapping",
+          "op": "notNil",
+          "line": 59,
+          "derived": false
+        },
+        {
+          "path": "repo.count",
+          "op": "eq",
+          "value": 2,
+          "line": 62,
+          "derived": false
+        },
+        {
+          "path": "exportA.platform",
+          "op": "eq",
+          "value": "ninjaTrader",
+          "line": 48,
+          "derived": true
+        },
+        {
+          "path": "exportA.trades[0].ticket",
+          "op": "eq",
+          "value": "8019240513727927531",
+          "line": 48,
+          "derived": true
+        },
+        {
+          "path": "exportB.trades[0].ticket",
+          "op": "eq",
+          "value": "8764749586507666905",
+          "line": 48,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "NinjaTrader \"Trade #\" restarts at 1 per export, so it is not used as a ticket; content tickets keep the trades distinct. Commission 0 is added to Profit (netProfit 200 / 100)."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "StreamingQuotesTests.testStreamedPricesAreDisplayed",
+      "line": 69,
+      "reason": "Second XCTestCase class in this file: live streaming quote display in PulseViewModel (UI/live data), not import math."
+    }
+  ]
+}

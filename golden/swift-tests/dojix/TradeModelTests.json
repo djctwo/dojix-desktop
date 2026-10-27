@@ -1,0 +1,697 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/TradeModelTests.swift",
+  "helpers": {
+    "makeTrade": {
+      "line": 8,
+      "defaults": {
+        "netProfit": 50,
+        "direction": "BUY",
+        "symbol": "GBPUSD",
+        "rMultiple": 1.5,
+        "tags": "",
+        "notes": "",
+        "id": 1,
+        "ticket": 100001,
+        "lots": 0.1,
+        "openTime": {
+          "relative_seconds": 0
+        },
+        "closeTime": {
+          "relative_seconds": 0
+        },
+        "durationMin": 60,
+        "openPrice": 1.25,
+        "closePrice": 1.26,
+        "sl": 1.24,
+        "tp": 1.27,
+        "maePips": 5.0,
+        "mfePips": 10.0,
+        "session": "LONDON",
+        "dayOfWeek": "Mon",
+        "hour": 10,
+        "rangeSize": 40,
+        "sweepDepth": 10,
+        "usedFVG": false,
+        "volRegime": "MED",
+        "hitBreakeven": false,
+        "scaledIn": false,
+        "magic": 12345,
+        "comment": "test",
+        "timeToMFEMin": 30,
+        "slDistPips": 20,
+        "slippagePips": 0.5,
+        "postClose15m": 5,
+        "postClose30m": 10,
+        "biasAtEntry": "WITH"
+      },
+      "notes": "openTime and closeTime are both Date() at call time. Decimal fields given as Swift float literals (e.g. openPrice 1.26) are built through Double (Decimal(floatLiteral:)), so they may carry binary noise; no assertion here depends on them."
+    }
+  },
+  "cases": [
+    {
+      "id": "TradeModelTests.testIsWin",
+      "line": 32,
+      "subject": "Trade.isWin",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "netProfit": 50
+          },
+          {
+            "netProfit": -50
+          },
+          {
+            "netProfit": 0
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "trades[0].isWin",
+          "op": "true",
+          "line": 33,
+          "derived": false
+        },
+        {
+          "path": "trades[1].isWin",
+          "op": "false",
+          "line": 34,
+          "derived": false
+        },
+        {
+          "path": "trades[2].isWin",
+          "op": "false",
+          "line": 35,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "One trade per entry of input.trades; path trades[i].isWin is that trade's property."
+    },
+    {
+      "id": "TradeModelTests.testIsLoss",
+      "line": 38,
+      "subject": "Trade.isLoss",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "netProfit": -50
+          },
+          {
+            "netProfit": 50
+          },
+          {
+            "netProfit": 0
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "trades[0].isLoss",
+          "op": "true",
+          "line": 39,
+          "derived": false
+        },
+        {
+          "path": "trades[1].isLoss",
+          "op": "false",
+          "line": 40,
+          "derived": false
+        },
+        {
+          "path": "trades[2].isLoss",
+          "op": "false",
+          "line": 41,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "One trade per entry of input.trades; path trades[i].isLoss is that trade's property."
+    },
+    {
+      "id": "TradeModelTests.testProfitDouble",
+      "line": 44,
+      "subject": "Trade.profitDouble",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "netProfit": "123.45"
+        }
+      },
+      "expect": [
+        {
+          "path": "profitDouble",
+          "op": "approx",
+          "value": 123.45,
+          "accuracy": 0.01,
+          "line": 46,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "netProfit = Decimal(string: \"123.45\"); profitDouble = NSDecimalNumber(decimal:).doubleValue."
+    },
+    {
+      "id": "TradeModelTests.testProfitDoubleNegative",
+      "line": 49,
+      "subject": "Trade.profitDouble",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "netProfit": "-67.89"
+        }
+      },
+      "expect": [
+        {
+          "path": "profitDouble",
+          "op": "approx",
+          "value": -67.89,
+          "accuracy": 0.01,
+          "line": 51,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "netProfit = Decimal(string: \"-67.89\")."
+    },
+    {
+      "id": "TradeModelTests.testDirectionSymbol",
+      "line": 54,
+      "subject": "Trade.directionSymbol",
+      "kind": "format",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "direction": "BUY"
+          },
+          {
+            "direction": "SELL"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "trades[0].directionSymbol",
+          "op": "eq",
+          "value": "↑",
+          "line": 55,
+          "derived": false
+        },
+        {
+          "path": "trades[1].directionSymbol",
+          "op": "eq",
+          "value": "↓",
+          "line": 56,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "One trade per entry of input.trades; path trades[i].directionSymbol is that trade's property."
+    },
+    {
+      "id": "TradeModelTests.testPairDisplay",
+      "line": 59,
+      "subject": "Trade.pairDisplay",
+      "kind": "format",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "symbol": "GBPUSD"
+          },
+          {
+            "symbol": "EURUSD"
+          },
+          {
+            "symbol": "USDJPY"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "trades[0].pairDisplay",
+          "op": "eq",
+          "value": "GBP/USD",
+          "line": 60,
+          "derived": false
+        },
+        {
+          "path": "trades[1].pairDisplay",
+          "op": "eq",
+          "value": "EUR/USD",
+          "line": 61,
+          "derived": false
+        },
+        {
+          "path": "trades[2].pairDisplay",
+          "op": "eq",
+          "value": "USD/JPY",
+          "line": 62,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "pairDisplay = first 3 characters + \"/\" + last 3 characters of the symbol."
+    },
+    {
+      "id": "TradeModelTests.testTagListEmpty",
+      "line": 67,
+      "subject": "Trade.tagList",
+      "kind": "sanitize",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "tags": ""
+        }
+      },
+      "expect": [
+        {
+          "path": "tagList.isEmpty",
+          "op": "true",
+          "line": 69,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "tagList splits tags on ',', trims spaces/tabs, drops empty entries."
+    },
+    {
+      "id": "TradeModelTests.testTagListSingle",
+      "line": 72,
+      "subject": "Trade.tagList",
+      "kind": "sanitize",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "tags": "sniper"
+        }
+      },
+      "expect": [
+        {
+          "path": "tagList",
+          "op": "eq",
+          "value": [
+            "sniper"
+          ],
+          "line": 74,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "tagList splits tags on ',', trims spaces/tabs, drops empty entries."
+    },
+    {
+      "id": "TradeModelTests.testTagListMultiple",
+      "line": 77,
+      "subject": "Trade.tagList",
+      "kind": "sanitize",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "tags": "setup-A,sniper,FOMO"
+        }
+      },
+      "expect": [
+        {
+          "path": "tagList",
+          "op": "eq",
+          "value": [
+            "setup-A",
+            "sniper",
+            "FOMO"
+          ],
+          "line": 79,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "tagList splits tags on ',', trims spaces/tabs, drops empty entries."
+    },
+    {
+      "id": "TradeModelTests.testTagListWithSpaces",
+      "line": 82,
+      "subject": "Trade.tagList",
+      "kind": "sanitize",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "tags": "setup-A , sniper , FOMO"
+        }
+      },
+      "expect": [
+        {
+          "path": "tagList",
+          "op": "eq",
+          "value": [
+            "setup-A",
+            "sniper",
+            "FOMO"
+          ],
+          "line": 84,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "tagList splits tags on ',', trims spaces/tabs, drops empty entries."
+    },
+    {
+      "id": "TradeModelTests.testTagListFiltersEmpty",
+      "line": 87,
+      "subject": "Trade.tagList",
+      "kind": "sanitize",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "tags": "a,,b, ,c"
+        }
+      },
+      "expect": [
+        {
+          "path": "tagList",
+          "op": "eq",
+          "value": [
+            "a",
+            "b",
+            "c"
+          ],
+          "line": 89,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "tagList splits tags on ',', trims spaces/tabs, drops empty entries."
+    },
+    {
+      "id": "TradeModelTests.testWithTag",
+      "line": 92,
+      "subject": "Trade.withTag",
+      "kind": "sanitize",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "tags": "setup-A"
+        },
+        "call": {
+          "method": "withTag",
+          "tag": "sniper"
+        }
+      },
+      "expect": [
+        {
+          "path": "updated.tagList",
+          "op": "eq",
+          "value": [
+            "setup-A",
+            "sniper"
+          ],
+          "line": 95,
+          "derived": false
+        },
+        {
+          "path": "updated.tags",
+          "op": "eq",
+          "value": "setup-A,sniper",
+          "line": 92,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "withTag returns a copy; the stored tags string is the tag list joined with ','."
+    },
+    {
+      "id": "TradeModelTests.testWithTagNoDuplicate",
+      "line": 98,
+      "subject": "Trade.withTag",
+      "kind": "sanitize",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "tags": "setup-A,sniper"
+        },
+        "call": {
+          "method": "withTag",
+          "tag": "sniper"
+        }
+      },
+      "expect": [
+        {
+          "path": "updated.tagList",
+          "op": "eq",
+          "value": [
+            "setup-A",
+            "sniper"
+          ],
+          "line": 101,
+          "derived": false
+        },
+        {
+          "path": "updated.tags",
+          "op": "eq",
+          "value": "setup-A,sniper",
+          "line": 98,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "withTag returns a copy; the stored tags string is the tag list joined with ','."
+    },
+    {
+      "id": "TradeModelTests.testWithoutTag",
+      "line": 104,
+      "subject": "Trade.withoutTag",
+      "kind": "sanitize",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "tags": "setup-A,sniper,FOMO"
+        },
+        "call": {
+          "method": "withoutTag",
+          "tag": "sniper"
+        }
+      },
+      "expect": [
+        {
+          "path": "updated.tagList",
+          "op": "eq",
+          "value": [
+            "setup-A",
+            "FOMO"
+          ],
+          "line": 107,
+          "derived": false
+        },
+        {
+          "path": "updated.tags",
+          "op": "eq",
+          "value": "setup-A,FOMO",
+          "line": 104,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "withoutTag returns a copy; the stored tags string is the tag list joined with ','."
+    },
+    {
+      "id": "TradeModelTests.testWithoutTagNotPresent",
+      "line": 110,
+      "subject": "Trade.withoutTag",
+      "kind": "sanitize",
+      "input": {
+        "helper": "makeTrade",
+        "trade": {
+          "tags": "setup-A"
+        },
+        "call": {
+          "method": "withoutTag",
+          "tag": "nonexistent"
+        }
+      },
+      "expect": [
+        {
+          "path": "updated.tagList",
+          "op": "eq",
+          "value": [
+            "setup-A"
+          ],
+          "line": 113,
+          "derived": false
+        },
+        {
+          "path": "updated.tags",
+          "op": "eq",
+          "value": "setup-A",
+          "line": 110,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "withoutTag returns a copy; the stored tags string is the tag list joined with ','."
+    },
+    {
+      "id": "TradeModelTests.testTradeDirectionRawValues",
+      "line": 118,
+      "subject": "TradeDirection.rawValue",
+      "kind": "format",
+      "input": {
+        "enum": "TradeDirection"
+      },
+      "expect": [
+        {
+          "path": "buy",
+          "op": "eq",
+          "value": "BUY",
+          "line": 119,
+          "derived": false
+        },
+        {
+          "path": "sell",
+          "op": "eq",
+          "value": "SELL",
+          "line": 120,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeModelTests.testTradingSessionDisplayNames",
+      "line": 123,
+      "subject": "TradingSession.displayName",
+      "kind": "format",
+      "input": {
+        "enum": "TradingSession"
+      },
+      "expect": [
+        {
+          "path": "asian",
+          "op": "eq",
+          "value": "Asian",
+          "line": 124,
+          "derived": false
+        },
+        {
+          "path": "london",
+          "op": "eq",
+          "value": "London",
+          "line": 125,
+          "derived": false
+        },
+        {
+          "path": "nyOverlap",
+          "op": "eq",
+          "value": "NY Overlap",
+          "line": 126,
+          "derived": false
+        },
+        {
+          "path": "ny",
+          "op": "eq",
+          "value": "New York",
+          "line": 127,
+          "derived": false
+        },
+        {
+          "path": "late",
+          "op": "eq",
+          "value": "Late",
+          "line": 128,
+          "derived": false
+        },
+        {
+          "path": "asian.rawValue",
+          "op": "eq",
+          "value": "ASIAN",
+          "line": 123,
+          "derived": true
+        },
+        {
+          "path": "nyOverlap.rawValue",
+          "op": "eq",
+          "value": "NY_OVERLAP",
+          "line": 123,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Paths are enum case names; value is the displayName."
+    },
+    {
+      "id": "TradeModelTests.testVolatilityRegimeRawValues",
+      "line": 131,
+      "subject": "VolatilityRegime.rawValue",
+      "kind": "format",
+      "input": {
+        "enum": "VolatilityRegime"
+      },
+      "expect": [
+        {
+          "path": "low",
+          "op": "eq",
+          "value": "LOW",
+          "line": 132,
+          "derived": false
+        },
+        {
+          "path": "med",
+          "op": "eq",
+          "value": "MED",
+          "line": 133,
+          "derived": false
+        },
+        {
+          "path": "high",
+          "op": "eq",
+          "value": "HIGH",
+          "line": 134,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "TradeModelTests.testBiasAlignmentRawValues",
+      "line": 137,
+      "subject": "BiasAlignment.rawValue",
+      "kind": "format",
+      "input": {
+        "enum": "BiasAlignment"
+      },
+      "expect": [
+        {
+          "path": "with",
+          "op": "eq",
+          "value": "WITH",
+          "line": 138,
+          "derived": false
+        },
+        {
+          "path": "against",
+          "op": "eq",
+          "value": "AGAINST",
+          "line": 139,
+          "derived": false
+        },
+        {
+          "path": "neutral",
+          "op": "eq",
+          "value": "NEUTRAL",
+          "line": 140,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    }
+  ],
+  "skipped": []
+}

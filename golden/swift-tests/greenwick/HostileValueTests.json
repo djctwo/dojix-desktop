@@ -1,0 +1,664 @@
+{
+  "app": "greenwick",
+  "source_repo": "djctwo/greenwick",
+  "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+  "file": "GreenwickTests/HostileValueTests.swift",
+  "helpers": {
+    "trade": {
+      "line": 10,
+      "defaults": {
+        "base": "DemoDataGenerator.generateTrades()[0] (AAPL BUY, template 0; see SampleTradesTests.json)",
+        "ticket": "5000000 + i",
+        "shares": 100,
+        "durationMin": 30,
+        "openTime": "1772000000 + i*3600 (Unix seconds)",
+        "closeTime": "openTime + 1800 s"
+      },
+      "notes": "trade(i, profit:, shares:, durationMin:) overrides ticket, netProfit, shares, durationMin, openTime, closeTime on sample trade 0. i = 0 -> openTime 2026-02-25T06:13:20Z."
+    }
+  },
+  "cases": [
+    {
+      "id": "HostileValueTests.testSaturatingConversionNeverTraps",
+      "line": 24,
+      "subject": "Int.init(saturating:)",
+      "kind": "sanitize",
+      "input": {
+        "values": [
+          "NaN",
+          "Infinity",
+          "-Infinity",
+          1e+21,
+          -1e+21,
+          9223372036854776000,
+          42.9,
+          -42.9
+        ]
+      },
+      "expect": [
+        {
+          "path": "Int(saturating: NaN)",
+          "op": "eq",
+          "value": 0,
+          "line": 25,
+          "derived": false
+        },
+        {
+          "path": "Int(saturating: Infinity)",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 26,
+          "derived": false
+        },
+        {
+          "path": "Int(saturating: -Infinity)",
+          "op": "eq",
+          "value": "-9223372036854775808",
+          "line": 27,
+          "derived": false
+        },
+        {
+          "path": "Int(saturating: 1e21)",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 28,
+          "derived": false
+        },
+        {
+          "path": "Int(saturating: -1e21)",
+          "op": "eq",
+          "value": "-9223372036854775808",
+          "line": 29,
+          "derived": false
+        },
+        {
+          "path": "Int(saturating: 9223372036854775807.0)",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 30,
+          "derived": false
+        },
+        {
+          "path": "Int(saturating: 42.9)",
+          "op": "eq",
+          "value": 42,
+          "line": 31,
+          "derived": false
+        },
+        {
+          "path": "Int(saturating: -42.9)",
+          "op": "eq",
+          "value": -42,
+          "line": 32,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Int.max / Int.min as strings (beyond 2^53). 9223372036854775807.0 rounds to 2^63 as a Double, so it saturates to Int.max. Truncates toward zero."
+    },
+    {
+      "id": "HostileValueTests.testCraftedShareSizesDoNotCrashTheRiskTab",
+      "line": 38,
+      "subject": "BehavioralAnalytics.report",
+      "kind": "component",
+      "input": {
+        "helper": "trade",
+        "trades": [
+          {
+            "i": 0,
+            "netProfit": "10",
+            "shares": 1000000000
+          },
+          {
+            "i": 1,
+            "netProfit": "-10",
+            "shares": 1e-12
+          },
+          {
+            "i": 2,
+            "netProfit": "10",
+            "shares": 1000000000
+          },
+          {
+            "i": 3,
+            "netProfit": "-10",
+            "shares": 1e-12
+          },
+          {
+            "i": 4,
+            "netProfit": "10",
+            "shares": 1000000000
+          },
+          {
+            "i": 5,
+            "netProfit": "-10",
+            "shares": 1e-12
+          },
+          {
+            "i": 6,
+            "netProfit": "10",
+            "shares": 1000000000
+          },
+          {
+            "i": 7,
+            "netProfit": "-10",
+            "shares": 1e-12
+          },
+          {
+            "i": 8,
+            "netProfit": "10",
+            "shares": 1000000000
+          },
+          {
+            "i": 9,
+            "netProfit": "-10",
+            "shares": 1e-12
+          },
+          {
+            "i": 10,
+            "netProfit": "10",
+            "shares": 1000000000
+          },
+          {
+            "i": 11,
+            "netProfit": "-10",
+            "shares": 1e-12
+          },
+          {
+            "i": 12,
+            "netProfit": "10",
+            "shares": 1000000000
+          },
+          {
+            "i": 13,
+            "netProfit": "-10",
+            "shares": 1e-12
+          },
+          {
+            "i": 14,
+            "netProfit": "10",
+            "shares": 1000000000
+          },
+          {
+            "i": 15,
+            "netProfit": "-10",
+            "shares": 1e-12
+          },
+          {
+            "i": 16,
+            "netProfit": "10",
+            "shares": 1000000000
+          },
+          {
+            "i": 17,
+            "netProfit": "-10",
+            "shares": 1e-12
+          },
+          {
+            "i": 18,
+            "netProfit": "10",
+            "shares": 1000000000
+          },
+          {
+            "i": 19,
+            "netProfit": "-10",
+            "shares": 1e-12
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "report.disciplineScore",
+          "op": "notNil",
+          "value": null,
+          "line": 46,
+          "derived": false
+        },
+        {
+          "path": "report.disciplineScore",
+          "op": "ge",
+          "value": 0,
+          "line": 47,
+          "derived": false
+        },
+        {
+          "path": "report.disciplineScore",
+          "op": "le",
+          "value": 100,
+          "line": 47,
+          "derived": false
+        },
+        {
+          "path": "report.dimensions[*].score",
+          "op": "ge",
+          "value": 0,
+          "line": 49,
+          "derived": false
+        },
+        {
+          "path": "report.dimensions[*].score",
+          "op": "le",
+          "value": 100,
+          "line": 49,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "size-after-loss / size-after-win ~ 1e21; Behavioral scores clamp to 0-100 (+inf -> 100, NaN -> 0). Shares 1e-12 bypass TradeLimits here (in-memory trades). (0...100).contains(x) recorded as ge 0 + le 100."
+    },
+    {
+      "id": "HostileValueTests.testHugePnLDoesNotCrashTheDistributionChart",
+      "line": 55,
+      "subject": "WinLossDistribution.buckets",
+      "kind": "component",
+      "input": {
+        "helper": "trade",
+        "trades": [
+          {
+            "i": 0,
+            "netProfit": "-1000000000000000000000"
+          },
+          {
+            "i": 1,
+            "netProfit": "25"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "buckets.isEmpty",
+          "op": "false",
+          "value": null,
+          "line": 58,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "P&L -1e21 is beyond Int range; bucket math must not trap. D-01 (top bucket edge) does not affect emptiness."
+    },
+    {
+      "id": "HostileValueTests.testDurationAveragesCannotOverflow",
+      "line": 63,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "trade",
+        "trades": [
+          {
+            "i": 0,
+            "netProfit": "10",
+            "durationMin": "9223372036854775807"
+          },
+          {
+            "i": 1,
+            "netProfit": "-5",
+            "durationMin": "9223372036854775807"
+          },
+          {
+            "i": 2,
+            "netProfit": "7",
+            "durationMin": "9223372036854775807"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "metrics.averageDuration",
+          "op": "gt",
+          "value": 0,
+          "line": 67,
+          "derived": false
+        },
+        {
+          "path": "[Int.max, Int.max].overflowSafeAverage()",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 69,
+          "derived": false
+        },
+        {
+          "path": "[10, 20, 31].overflowSafeAverage()",
+          "op": "eq",
+          "value": 20,
+          "line": 70,
+          "derived": false
+        },
+        {
+          "path": "[].overflowSafeAverage()",
+          "op": "eq",
+          "value": 0,
+          "line": 71,
+          "derived": false
+        },
+        {
+          "path": "[Int.max, 1].saturatingSum()",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 72,
+          "derived": false
+        },
+        {
+          "path": "[Int.min, -1].saturatingSum()",
+          "op": "eq",
+          "value": "-9223372036854775808",
+          "line": 73,
+          "derived": false
+        },
+        {
+          "path": "metrics.averageDuration",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 67,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "durationMin Int.max (string). Average computed in Double then Int(saturating:) -> Int.max; [10,20,31] -> 20.33 truncated to 20. PromptBuilder.edgeAnalysis must not trap (no assert). Durations this large are refused by TradeLimits on every write path; engine-level only."
+    },
+    {
+      "id": "HostileValueTests.testImportRejectsAbsurdlySmallShareCounts",
+      "line": 78,
+      "subject": "GenericCSVParser.parseShares",
+      "kind": "validation",
+      "input": {
+        "values": [
+          "0.000000000001",
+          "1e-12",
+          "0.5",
+          "0.000001"
+        ]
+      },
+      "expect": [
+        {
+          "path": "parseShares(\"0.000000000001\")",
+          "op": "nil",
+          "value": null,
+          "line": 79,
+          "derived": false
+        },
+        {
+          "path": "parseShares(\"1e-12\")",
+          "op": "nil",
+          "value": null,
+          "line": 80,
+          "derived": false
+        },
+        {
+          "path": "parseShares(\"0.5\")",
+          "op": "eq",
+          "value": 0.5,
+          "line": 81,
+          "derived": false
+        },
+        {
+          "path": "parseShares(\"0.000001\")",
+          "op": "eq",
+          "value": 0.000001,
+          "line": 82,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Shares accepted in [1e-6, 1e9] (abs value; commas stripped)."
+    },
+    {
+      "id": "HostileValueTests.testFIFOPairingRefusesPnLBeyondTheMaximum",
+      "line": 86,
+      "subject": "GenericCSVParser.pairTransactions",
+      "kind": "fifo",
+      "input": {
+        "platform": "Generic CSV",
+        "importedAt": "2026-02-25T06:13:20Z",
+        "transactions": [
+          {
+            "symbol": "XYZ",
+            "isBuy": true,
+            "shares": 1000000000,
+            "price": "1000000000000",
+            "date": "2026-02-25T06:13:20Z",
+            "commission": "0",
+            "fees": "0"
+          },
+          {
+            "symbol": "XYZ",
+            "isBuy": false,
+            "shares": 1000000000,
+            "price": "0.01",
+            "date": "2026-02-25T06:14:20Z",
+            "commission": "0",
+            "fees": "0"
+          },
+          {
+            "symbol": "ABC",
+            "isBuy": true,
+            "shares": 10,
+            "price": "100",
+            "date": "2026-02-25T06:13:20Z",
+            "commission": "1",
+            "fees": "0"
+          },
+          {
+            "symbol": "ABC",
+            "isBuy": false,
+            "shares": 10,
+            "price": "101",
+            "date": "2026-02-25T06:14:20Z",
+            "commission": "1",
+            "fees": "0"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "trades[].symbol",
+          "op": "eq",
+          "value": [
+            "ABC"
+          ],
+          "line": 99,
+          "derived": false
+        },
+        {
+          "path": "trades[*].netProfit (abs)",
+          "op": "le",
+          "value": "1000000000000",
+          "line": 101,
+          "derived": false
+        },
+        {
+          "path": "trades[0].netProfit",
+          "op": "eq",
+          "value": "8",
+          "line": 99,
+          "derived": true
+        },
+        {
+          "path": "trades[0].commission",
+          "op": "eq",
+          "value": "2",
+          "line": 99,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "A pair whose |net P&L| (or |costs|) exceeds 1e12 is skipped (XYZ: ~-1e21). Derived ABC: (101-100)*10 - (1*10/10 + 1*10/10)."
+    },
+    {
+      "id": "HostileValueTests.testRepositoryRefusesOutOfRangeTradesAndStripsControlCharacters",
+      "line": 106,
+      "subject": "TradeRepository.bulkInsert",
+      "kind": "validation",
+      "input": {
+        "helper": "trade",
+        "trades": [
+          {
+            "i": 1,
+            "netProfit": "5",
+            "durationMin": "9223372036854775807"
+          },
+          {
+            "i": 2,
+            "netProfit": "5",
+            "shares": 1e-12,
+            "ticket": 7000002
+          },
+          {
+            "i": 3,
+            "netProfit": "5",
+            "symbol": "AA\rPL",
+            "notes": "line one\nline two\u0007",
+            "screenshots": "..,<UUID>.jpg,../x.jpg"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "bulkInsert(trades)",
+          "op": "eq",
+          "value": 1,
+          "line": 117,
+          "derived": false
+        },
+        {
+          "path": "fetchAll()[0].symbol",
+          "op": "eq",
+          "value": "AAPL",
+          "line": 119,
+          "derived": false
+        },
+        {
+          "path": "fetchAll()[0].notes",
+          "op": "eq",
+          "value": "line one\nline two",
+          "line": 120,
+          "derived": false
+        },
+        {
+          "path": "fetchAll()[0].screenshotList.count",
+          "op": "eq",
+          "value": 1,
+          "line": 121,
+          "derived": false
+        },
+        {
+          "path": "insertIfNew(trades[0])",
+          "op": "false",
+          "value": null,
+          "line": 122,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "TradeLimits on every write: durationMin > 20*366*24*60 and shares < 1e-6 reject the row; control chars stripped (CR from symbol, BEL from notes; notes keep \\n and \\t); screenshot names not matching <UUID>.jpg are dropped. <UUID> = UUID().uuidString."
+    },
+    {
+      "id": "HostileValueTests.testCSVExportNeutralisesCarriageReturnsAndControlCharacters",
+      "line": 127,
+      "subject": "CSVExporter.sanitizeCSVField",
+      "kind": "format",
+      "input": {
+        "helper": "trade",
+        "trades": [
+          {
+            "i": 0,
+            "netProfit": "5",
+            "symbol": "AAPL\r=HYPERLINK(\"http://example.invalid\")"
+          }
+        ],
+        "fields": [
+          "a\u0000b\u001bc",
+          "\r-cmd"
+        ]
+      },
+      "expect": [
+        {
+          "path": "exportText",
+          "op": "notContains",
+          "value": "\r",
+          "line": 134,
+          "derived": false
+        },
+        {
+          "path": "exportText.split(\"\\n\").count",
+          "op": "eq",
+          "value": 2,
+          "line": 135,
+          "derived": false
+        },
+        {
+          "path": "exportText.lines[*].cells[*] (parsed with GenericCSVParser.parseCSVLine)",
+          "op": "notContains",
+          "value": "leading \"=\"",
+          "line": 138,
+          "derived": false
+        },
+        {
+          "path": "sanitizeCSVField(\"a\\u0000b\\u001Bc\")",
+          "op": "eq",
+          "value": "abc",
+          "line": 142,
+          "derived": false
+        },
+        {
+          "path": "sanitizeCSVField(\"\\r-cmd\")",
+          "op": "eq",
+          "value": "'-cmd",
+          "line": 143,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Order: strip control chars first, then prefix =\"+@-\\t\\r with a single quote, then quote fields with , \" \\n \\r. So \"\\r-cmd\" -> \"-cmd\" -> \"'-cmd\". Export = header line + one row, no trailing newline (split count 2). Desktop appends extra columns (PARITY B2) but the row count is the same. The \"leading =\" expect is XCTAssertFalse(cell.hasPrefix(\"=\")) per cell."
+    },
+    {
+      "id": "HostileValueTests.testOnlyTheAppsOwnScreenshotNamesAreAccepted",
+      "line": 148,
+      "subject": "ScreenshotManager.isValidFilename",
+      "kind": "validation",
+      "input": {
+        "tradeId": 42,
+        "good": "<UUID>.jpg",
+        "hostile": [
+          "..",
+          ".",
+          ".hidden.jpg",
+          "../<UUID>.jpg",
+          "/etc/passwd",
+          "shot.jpg",
+          "",
+          "<UUID>.jpg/..",
+          "<UUID>.jpg.exe",
+          "<UUID>.png"
+        ]
+      },
+      "expect": [
+        {
+          "path": "imageURL(\"<UUID>.jpg\", 42).parent",
+          "op": "eq",
+          "value": {
+            "ref": "screenshotDir(42)"
+          },
+          "line": 152,
+          "derived": false
+        },
+        {
+          "path": "imageURL(hostile[*], 42)",
+          "op": "nil",
+          "value": null,
+          "line": 155,
+          "derived": false
+        },
+        {
+          "path": "deleteImage(\"..\", 42)",
+          "op": "throws",
+          "value": null,
+          "line": 157,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Rule (ScreenshotManager.isValidFilename): exactly 40 chars, suffix \".jpg\" (case-insensitive), the first 36 chars parse as a UUID. Same rule rejects rows in restore validation."
+    }
+  ],
+  "skipped": []
+}

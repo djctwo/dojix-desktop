@@ -1,0 +1,501 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/AnalyticsClampTests.swift",
+  "helpers": {
+    "SecFixture.trade": {
+      "line": 41,
+      "defaults": {
+        "ticket": null,
+        "symbol": "EURUSD",
+        "lots": 0.1,
+        "netProfit": 10,
+        "durationMin": 60,
+        "closeTime": "2026-01-01T00:00:00Z",
+        "screenshots": "",
+        "direction": "BUY",
+        "openTime": {
+          "expr": "closeTime - 3600 s"
+        },
+        "openPrice": 1.1,
+        "closePrice": 1.101,
+        "sl": 1.09,
+        "tp": 1.12,
+        "maePips": 3,
+        "mfePips": 8,
+        "rMultiple": 1,
+        "session": "LONDON",
+        "dayOfWeek": "Thu",
+        "hour": 10,
+        "rangeSize": 20,
+        "sweepDepth": 4,
+        "usedFVG": false,
+        "volRegime": "MED",
+        "hitBreakeven": false,
+        "scaledIn": false,
+        "magic": 0,
+        "comment": "Sample (fictional)",
+        "timeToMFEMin": 10,
+        "slDistPips": 10,
+        "slippagePips": 0,
+        "postClose15m": 0,
+        "postClose30m": 0,
+        "biasAtEntry": "NEUTRAL",
+        "importedAt": {
+          "expr": "closeTime"
+        }
+      },
+      "notes": "Shared helper defined in DojixTests/SecurityFixTestSupport.swift (line 41), not in this file. closeTime default = Date(timeIntervalSince1970: 1_767_225_600). ticket is required. Decimal prices come from Swift float literals (via Double)."
+    }
+  },
+  "cases": [
+    {
+      "id": "AnalyticsClampTests.testSaturatingConversion",
+      "line": 8,
+      "subject": "Int(saturating:) / [Int].saturatingSum / [Int].saturatingAverage",
+      "kind": "sanitize",
+      "input": {
+        "calls": [
+          {
+            "fn": "Int(saturating:)",
+            "arg": "NaN"
+          },
+          {
+            "fn": "Int(saturating:)",
+            "arg": "Infinity"
+          },
+          {
+            "fn": "Int(saturating:)",
+            "arg": "-Infinity"
+          },
+          {
+            "fn": "Int(saturating:)",
+            "arg": 1e+21
+          },
+          {
+            "fn": "Int(saturating:)",
+            "arg": -1e+21
+          },
+          {
+            "fn": "Int(saturating:)",
+            "arg": 42.9
+          },
+          {
+            "fn": "Int(saturating:)",
+            "arg": -42.9
+          },
+          {
+            "fn": "saturatingSum",
+            "arg": [
+              "9223372036854775807",
+              5
+            ]
+          },
+          {
+            "fn": "saturatingSum",
+            "arg": [
+              "-9223372036854775808",
+              -5
+            ]
+          },
+          {
+            "fn": "saturatingAverage",
+            "arg": [
+              "9223372036854775807",
+              "9223372036854775807"
+            ]
+          },
+          {
+            "fn": "saturatingAverage",
+            "arg": []
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "[0]",
+          "op": "eq",
+          "value": 0,
+          "line": 9,
+          "derived": false
+        },
+        {
+          "path": "[1]",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 10,
+          "derived": false
+        },
+        {
+          "path": "[2]",
+          "op": "eq",
+          "value": "-9223372036854775808",
+          "line": 11,
+          "derived": false
+        },
+        {
+          "path": "[3]",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 12,
+          "derived": false
+        },
+        {
+          "path": "[4]",
+          "op": "eq",
+          "value": "-9223372036854775808",
+          "line": 13,
+          "derived": false
+        },
+        {
+          "path": "[5]",
+          "op": "eq",
+          "value": 42,
+          "line": 14,
+          "derived": false
+        },
+        {
+          "path": "[6]",
+          "op": "eq",
+          "value": -42,
+          "line": 15,
+          "derived": false
+        },
+        {
+          "path": "[7]",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 16,
+          "derived": false
+        },
+        {
+          "path": "[8]",
+          "op": "eq",
+          "value": "-9223372036854775808",
+          "line": 17,
+          "derived": false
+        },
+        {
+          "path": "[9]",
+          "op": "eq",
+          "value": "9223372036854775807",
+          "line": 18,
+          "derived": false
+        },
+        {
+          "path": "[10]",
+          "op": "eq",
+          "value": 0,
+          "line": 19,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Path [i] is the result of input.calls[i]. Int(saturating:) truncates toward zero; NaN -> 0; values >= 9.223372036854775e18 -> Int.max, <= -9.223372036854775e18 -> Int.min. saturatingSum clamps on overflow; saturatingAverage sums in Double and converts with Int(saturating:) (0 for empty). Int64 extremes are written as decimal strings (beyond the JS safe-integer range): Int.max = \"9223372036854775807\", Int.min = \"-9223372036854775808\". Non-finite doubles are the strings \"NaN\", \"Infinity\", \"-Infinity\"."
+    },
+    {
+      "id": "AnalyticsClampTests.testBehavioralScoreWithExtremeLotRatio",
+      "line": 25,
+      "subject": "BehavioralAnalytics.report",
+      "kind": "component",
+      "input": {
+        "helper": "SecFixture.trade",
+        "trades": [
+          {
+            "ticket": 0,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-01T00:00:00Z"
+          },
+          {
+            "ticket": 1,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-01T02:00:00Z"
+          },
+          {
+            "ticket": 2,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-01T04:00:00Z"
+          },
+          {
+            "ticket": 3,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-01T06:00:00Z"
+          },
+          {
+            "ticket": 4,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-01T08:00:00Z"
+          },
+          {
+            "ticket": 5,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-01T10:00:00Z"
+          },
+          {
+            "ticket": 6,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-01T12:00:00Z"
+          },
+          {
+            "ticket": 7,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-01T14:00:00Z"
+          },
+          {
+            "ticket": 8,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-01T16:00:00Z"
+          },
+          {
+            "ticket": 9,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-01T18:00:00Z"
+          },
+          {
+            "ticket": 10,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-01T20:00:00Z"
+          },
+          {
+            "ticket": 11,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-01T22:00:00Z"
+          },
+          {
+            "ticket": 12,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-02T00:00:00Z"
+          },
+          {
+            "ticket": 13,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-02T02:00:00Z"
+          },
+          {
+            "ticket": 14,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-02T04:00:00Z"
+          },
+          {
+            "ticket": 15,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-02T06:00:00Z"
+          },
+          {
+            "ticket": 16,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-02T08:00:00Z"
+          },
+          {
+            "ticket": 17,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-02T10:00:00Z"
+          },
+          {
+            "ticket": 18,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-02T12:00:00Z"
+          },
+          {
+            "ticket": 19,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-02T14:00:00Z"
+          },
+          {
+            "ticket": 20,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-02T16:00:00Z"
+          },
+          {
+            "ticket": 21,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-02T18:00:00Z"
+          },
+          {
+            "ticket": 22,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-02T20:00:00Z"
+          },
+          {
+            "ticket": 23,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-02T22:00:00Z"
+          },
+          {
+            "ticket": 24,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-03T00:00:00Z"
+          },
+          {
+            "ticket": 25,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-03T02:00:00Z"
+          },
+          {
+            "ticket": 26,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-03T04:00:00Z"
+          },
+          {
+            "ticket": 27,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-03T06:00:00Z"
+          },
+          {
+            "ticket": 28,
+            "netProfit": 10,
+            "lots": 1e-15,
+            "closeTime": "2026-01-03T08:00:00Z"
+          },
+          {
+            "ticket": 29,
+            "netProfit": -10,
+            "lots": 1000000,
+            "closeTime": "2026-01-03T10:00:00Z"
+          }
+        ],
+        "variant_zeroed": "same trades with every lots < 1 set to 0 (wins get lots 0)"
+      },
+      "expect": [
+        {
+          "path": "report",
+          "op": "notNil",
+          "line": 36,
+          "derived": false
+        },
+        {
+          "path": "report.disciplineScore",
+          "op": "ge",
+          "value": 0,
+          "line": 37,
+          "derived": false
+        },
+        {
+          "path": "report.disciplineScore",
+          "op": "le",
+          "value": 100,
+          "line": 37,
+          "derived": false
+        },
+        {
+          "path": "zeroed.report",
+          "op": "notNil",
+          "line": 41,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Lots are set AFTER construction (unsanitized, as if already in the database): wins (even i) 1e-15, losses 1_000_000. Line 37 asserts (0...100).contains(disciplineScore). No crash with an infinite size ratio."
+    },
+    {
+      "id": "AnalyticsClampTests.testWinLossBucketsWithHugeProfit",
+      "line": 46,
+      "subject": "WinLossDistribution.buckets",
+      "kind": "component",
+      "input": {
+        "helper": "SecFixture.trade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": "-1e21"
+          },
+          {
+            "ticket": 2,
+            "netProfit": "1e21"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "buckets.isEmpty",
+          "op": "false",
+          "line": 51,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "netProfit = Decimal(string: \"-1e21\") / \"1e21\" (beyond Int range); bucket labels use Int(saturating:). Unsanitized trades (not stored)."
+    },
+    {
+      "id": "AnalyticsClampTests.testScreenshotNameWhitelist",
+      "line": 62,
+      "subject": "ScreenshotManager.isValidFilename",
+      "kind": "validation",
+      "input": {
+        "valid": [
+          "<UUID>.jpg"
+        ],
+        "invalid": [
+          "..",
+          ".",
+          "",
+          ".jpg",
+          "../x.jpg",
+          "a/b.jpg",
+          "<UUID>.png",
+          ".<UUID>.jpg",
+          "<UUID>.jpg/..",
+          "x.jpg"
+        ],
+        "uuid_example": "00000000-0000-4000-8000-000000000001"
+      },
+      "expect": [
+        {
+          "path": "valid[0]",
+          "op": "true",
+          "line": 63,
+          "derived": false
+        },
+        {
+          "path": "invalid[*]",
+          "op": "false",
+          "line": 66,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Path invalid[*] = every entry of input.invalid. <UUID> = a fresh UUID().uuidString (upper-case 8-4-4-4-12 hex) in the test; the example is a fixed stand-in. Rule: exactly 40 characters, ends \".jpg\", stem parses as a UUID (case-insensitive). The same rule makes a restored row's screenshots field a storage violation. The imageURL path assertions (lines 69-71) are Mac folder layout and are not ported."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "AnalyticsClampTests.testDevelopmentOverridesIgnoredWhenNotAllowed",
+      "line": 54,
+      "reason": "Configuration/dev-override gating (security), not math."
+    },
+    {
+      "id": "AnalyticsClampTests.testScreenshotsAreEncryptedOnDisk",
+      "line": 74,
+      "reason": "Screenshot encryption at rest (crypto/file system)."
+    }
+  ]
+}

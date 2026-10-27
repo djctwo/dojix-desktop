@@ -1,0 +1,1485 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/MetricsCalculatorTests.swift",
+  "helpers": {
+    "makeTrade": {
+      "line": 8,
+      "defaults": {
+        "ticket": 1,
+        "symbol": "GBPUSD",
+        "direction": "BUY",
+        "netProfit": null,
+        "rMultiple": 1.0,
+        "maePips": 5.0,
+        "mfePips": 10.0,
+        "session": "LONDON",
+        "dayOfWeek": "Mon",
+        "hour": 10,
+        "durationMin": 60,
+        "closeTime": {
+          "relative_seconds": 0
+        },
+        "biasAtEntry": "WITH",
+        "volRegime": "MED",
+        "lots": 0.1,
+        "openTime": {
+          "expr": "closeTime - durationMin*60 s"
+        },
+        "openPrice": 1.25,
+        "closePrice": 1.26,
+        "sl": 1.24,
+        "tp": 1.27,
+        "rangeSize": 40,
+        "sweepDepth": 10,
+        "usedFVG": false,
+        "hitBreakeven": false,
+        "scaledIn": false,
+        "magic": 0,
+        "comment": "",
+        "timeToMFEMin": 30,
+        "slDistPips": 20,
+        "slippagePips": 0.5,
+        "postClose15m": 5,
+        "postClose30m": 10,
+        "notes": "",
+        "tags": "",
+        "emotion": "",
+        "checklistData": "",
+        "commission": 0,
+        "swap": 0
+      },
+      "notes": "netProfit is required (no default). closeTime defaults to Date() evaluated per call, so trades built in sequence without an explicit closeTime are ascending in call order (ascending close order = input order). relative_seconds are offsets from the test's Date()."
+    }
+  },
+  "cases": [
+    {
+      "id": "MetricsCalculatorTests.testEmptyTrades",
+      "line": 41,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "trades": []
+      },
+      "expect": [
+        {
+          "path": "totalTrades",
+          "op": "eq",
+          "value": 0,
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "wins",
+          "op": "eq",
+          "value": 0,
+          "line": 44,
+          "derived": false
+        },
+        {
+          "path": "losses",
+          "op": "eq",
+          "value": 0,
+          "line": 45,
+          "derived": false
+        },
+        {
+          "path": "winRate",
+          "op": "eq",
+          "value": 0,
+          "line": 46,
+          "derived": false
+        },
+        {
+          "path": "totalProfit",
+          "op": "eq",
+          "value": 0,
+          "line": 47,
+          "derived": false
+        },
+        {
+          "path": "profitFactor",
+          "op": "eq",
+          "value": 0.0,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "expectancy",
+          "op": "eq",
+          "value": 0.0,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "maxDrawdown",
+          "op": "eq",
+          "value": 0.0,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "sharpeRatio",
+          "op": "eq",
+          "value": 0.0,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "calmarRatio",
+          "op": "eq",
+          "value": 0.0,
+          "line": 41,
+          "derived": true
+        },
+        {
+          "path": "averageDuration",
+          "op": "eq",
+          "value": 0,
+          "line": 41,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Empty input returns PortfolioMetrics.empty (all zeros)."
+    },
+    {
+      "id": "MetricsCalculatorTests.testSingleWinningTrade",
+      "line": 50,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "netProfit": 50
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "totalTrades",
+          "op": "eq",
+          "value": 1,
+          "line": 54,
+          "derived": false
+        },
+        {
+          "path": "wins",
+          "op": "eq",
+          "value": 1,
+          "line": 55,
+          "derived": false
+        },
+        {
+          "path": "losses",
+          "op": "eq",
+          "value": 0,
+          "line": 56,
+          "derived": false
+        },
+        {
+          "path": "winRate",
+          "op": "eq",
+          "value": 100.0,
+          "line": 57,
+          "derived": false
+        },
+        {
+          "path": "totalProfit",
+          "op": "approx",
+          "value": 50.0,
+          "accuracy": 0.01,
+          "line": 58,
+          "derived": false
+        },
+        {
+          "path": "grossProfit",
+          "op": "approx",
+          "value": 50.0,
+          "accuracy": 0.01,
+          "line": 59,
+          "derived": false
+        },
+        {
+          "path": "grossLoss",
+          "op": "eq",
+          "value": 0,
+          "line": 60,
+          "derived": false
+        },
+        {
+          "path": "averageWin",
+          "op": "approx",
+          "value": 50.0,
+          "accuracy": 0.01,
+          "line": 61,
+          "derived": false
+        },
+        {
+          "path": "averageLoss",
+          "op": "eq",
+          "value": 0,
+          "line": 62,
+          "derived": false
+        },
+        {
+          "path": "bestTrade",
+          "op": "approx",
+          "value": 50.0,
+          "accuracy": 0.01,
+          "line": 63,
+          "derived": false
+        },
+        {
+          "path": "profitFactor",
+          "op": "eq",
+          "value": "Infinity",
+          "line": 50,
+          "derived": true
+        },
+        {
+          "path": "expectancy",
+          "op": "eq",
+          "value": 50.0,
+          "line": 50,
+          "derived": true
+        },
+        {
+          "path": "maxDrawdown",
+          "op": "eq",
+          "value": 0.0,
+          "line": 50,
+          "derived": true
+        },
+        {
+          "path": "sharpeRatio",
+          "op": "eq",
+          "value": 0.0,
+          "line": 50,
+          "derived": true
+        },
+        {
+          "path": "calmarRatio",
+          "op": "eq",
+          "value": 10.0,
+          "line": 50,
+          "derived": true
+        },
+        {
+          "path": "currentStreak",
+          "op": "eq",
+          "value": 1,
+          "line": 50,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Derived: profitFactor +Infinity (no losses; JSON string \"Infinity\"), Sharpe 0 (sigma = 0), Calmar 10 (no drawdown, profitable)."
+    },
+    {
+      "id": "MetricsCalculatorTests.testSingleLosingTrade",
+      "line": 66,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "netProfit": -30
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "totalTrades",
+          "op": "eq",
+          "value": 1,
+          "line": 70,
+          "derived": false
+        },
+        {
+          "path": "wins",
+          "op": "eq",
+          "value": 0,
+          "line": 71,
+          "derived": false
+        },
+        {
+          "path": "losses",
+          "op": "eq",
+          "value": 1,
+          "line": 72,
+          "derived": false
+        },
+        {
+          "path": "winRate",
+          "op": "eq",
+          "value": 0,
+          "line": 73,
+          "derived": false
+        },
+        {
+          "path": "totalProfit",
+          "op": "approx",
+          "value": -30.0,
+          "accuracy": 0.01,
+          "line": 74,
+          "derived": false
+        },
+        {
+          "path": "worstTrade",
+          "op": "approx",
+          "value": -30.0,
+          "accuracy": 0.01,
+          "line": 75,
+          "derived": false
+        },
+        {
+          "path": "grossLoss",
+          "op": "eq",
+          "value": 30.0,
+          "line": 66,
+          "derived": true
+        },
+        {
+          "path": "averageLoss",
+          "op": "eq",
+          "value": 30.0,
+          "line": 66,
+          "derived": true
+        },
+        {
+          "path": "profitFactor",
+          "op": "eq",
+          "value": 0.0,
+          "line": 66,
+          "derived": true
+        },
+        {
+          "path": "expectancy",
+          "op": "eq",
+          "value": -30.0,
+          "line": 66,
+          "derived": true
+        },
+        {
+          "path": "maxDrawdown",
+          "op": "eq",
+          "value": 30.0,
+          "line": 66,
+          "derived": true
+        },
+        {
+          "path": "calmarRatio",
+          "op": "eq",
+          "value": -1.0,
+          "line": 66,
+          "derived": true
+        },
+        {
+          "path": "currentStreak",
+          "op": "eq",
+          "value": -1,
+          "line": 66,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "MetricsCalculatorTests.testMixedTrades",
+      "line": 78,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 100,
+            "closeTime": {
+              "relative_seconds": 0
+            }
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 100
+            }
+          },
+          {
+            "ticket": 3,
+            "netProfit": -30,
+            "closeTime": {
+              "relative_seconds": 200
+            }
+          },
+          {
+            "ticket": 4,
+            "netProfit": -20,
+            "closeTime": {
+              "relative_seconds": 300
+            }
+          },
+          {
+            "ticket": 5,
+            "netProfit": 80,
+            "closeTime": {
+              "relative_seconds": 400
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "totalTrades",
+          "op": "eq",
+          "value": 5,
+          "line": 89,
+          "derived": false
+        },
+        {
+          "path": "wins",
+          "op": "eq",
+          "value": 3,
+          "line": 90,
+          "derived": false
+        },
+        {
+          "path": "losses",
+          "op": "eq",
+          "value": 2,
+          "line": 91,
+          "derived": false
+        },
+        {
+          "path": "winRate",
+          "op": "approx",
+          "value": 60.0,
+          "accuracy": 0.01,
+          "line": 92,
+          "derived": false
+        },
+        {
+          "path": "totalProfit",
+          "op": "approx",
+          "value": 180.0,
+          "accuracy": 0.01,
+          "line": 93,
+          "derived": false
+        },
+        {
+          "path": "grossProfit",
+          "op": "approx",
+          "value": 230.0,
+          "accuracy": 0.01,
+          "line": 94,
+          "derived": false
+        },
+        {
+          "path": "grossLoss",
+          "op": "approx",
+          "value": 50.0,
+          "accuracy": 0.01,
+          "line": 95,
+          "derived": false
+        },
+        {
+          "path": "profitFactor",
+          "op": "approx",
+          "value": 4.6,
+          "accuracy": 0.01,
+          "line": 96,
+          "derived": false
+        },
+        {
+          "path": "averageWin",
+          "op": "approx",
+          "value": 76.66666666666667,
+          "accuracy": 0.01,
+          "line": 97,
+          "derived": false
+        },
+        {
+          "path": "averageLoss",
+          "op": "approx",
+          "value": 25.0,
+          "accuracy": 0.01,
+          "line": 98,
+          "derived": false
+        },
+        {
+          "path": "bestTrade",
+          "op": "approx",
+          "value": 100.0,
+          "accuracy": 0.01,
+          "line": 99,
+          "derived": false
+        },
+        {
+          "path": "worstTrade",
+          "op": "approx",
+          "value": -30.0,
+          "accuracy": 0.01,
+          "line": 100,
+          "derived": false
+        },
+        {
+          "path": "expectancy",
+          "op": "eq",
+          "value": 36.0,
+          "line": 78,
+          "derived": true
+        },
+        {
+          "path": "maxDrawdown",
+          "op": "eq",
+          "value": 50.0,
+          "line": 78,
+          "derived": true
+        },
+        {
+          "path": "sharpeRatio",
+          "op": "approx",
+          "value": 0.6872431934890912,
+          "accuracy": 1e-09,
+          "line": 78,
+          "derived": true
+        },
+        {
+          "path": "calmarRatio",
+          "op": "approx",
+          "value": 3.6,
+          "accuracy": 1e-09,
+          "line": 78,
+          "derived": true
+        },
+        {
+          "path": "maxWinStreak",
+          "op": "eq",
+          "value": 2,
+          "line": 78,
+          "derived": true
+        },
+        {
+          "path": "maxLossStreak",
+          "op": "eq",
+          "value": 2,
+          "line": 78,
+          "derived": true
+        },
+        {
+          "path": "currentStreak",
+          "op": "eq",
+          "value": 1,
+          "line": 78,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Same P&L set as fixture F1 tiny. profitFactor/averageWin/averageLoss literals are Swift expressions 230.0/50.0, 230.0/3.0, 50.0/2.0 (evaluated)."
+    },
+    {
+      "id": "MetricsCalculatorTests.testProfitFactorAllWins",
+      "line": 103,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 50
+          },
+          {
+            "ticket": 2,
+            "netProfit": 100
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "profitFactor",
+          "op": "eq",
+          "value": "Infinity",
+          "line": 109,
+          "derived": false
+        },
+        {
+          "path": "totalProfit",
+          "op": "eq",
+          "value": 150.0,
+          "line": 103,
+          "derived": true
+        },
+        {
+          "path": "calmarRatio",
+          "op": "eq",
+          "value": 10.0,
+          "line": 103,
+          "derived": true
+        },
+        {
+          "path": "maxWinStreak",
+          "op": "eq",
+          "value": 2,
+          "line": 103,
+          "derived": true
+        },
+        {
+          "path": "currentStreak",
+          "op": "eq",
+          "value": 2,
+          "line": 103,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Asserted value is Swift .infinity, written here as the JSON string \"Infinity\"."
+    },
+    {
+      "id": "MetricsCalculatorTests.testMaxDrawdown",
+      "line": 112,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 100,
+            "closeTime": {
+              "relative_seconds": 0
+            }
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 100
+            }
+          },
+          {
+            "ticket": 3,
+            "netProfit": -100,
+            "closeTime": {
+              "relative_seconds": 200
+            }
+          },
+          {
+            "ticket": 4,
+            "netProfit": -20,
+            "closeTime": {
+              "relative_seconds": 300
+            }
+          },
+          {
+            "ticket": 5,
+            "netProfit": 100,
+            "closeTime": {
+              "relative_seconds": 400
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "maxDrawdown",
+          "op": "approx",
+          "value": 120.0,
+          "accuracy": 0.01,
+          "line": 123,
+          "derived": false
+        },
+        {
+          "path": "totalProfit",
+          "op": "eq",
+          "value": 130.0,
+          "line": 112,
+          "derived": true
+        },
+        {
+          "path": "calmarRatio",
+          "op": "approx",
+          "value": 1.0833333333333333,
+          "accuracy": 1e-09,
+          "line": 112,
+          "derived": true
+        },
+        {
+          "path": "maxLossStreak",
+          "op": "eq",
+          "value": 2,
+          "line": 112,
+          "derived": true
+        },
+        {
+          "path": "currentStreak",
+          "op": "eq",
+          "value": 1,
+          "line": 112,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "MetricsCalculatorTests.testStreaks",
+      "line": 126,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 10,
+            "closeTime": {
+              "relative_seconds": 0
+            }
+          },
+          {
+            "ticket": 2,
+            "netProfit": 20,
+            "closeTime": {
+              "relative_seconds": 100
+            }
+          },
+          {
+            "ticket": 3,
+            "netProfit": 30,
+            "closeTime": {
+              "relative_seconds": 200
+            }
+          },
+          {
+            "ticket": 4,
+            "netProfit": -10,
+            "closeTime": {
+              "relative_seconds": 300
+            }
+          },
+          {
+            "ticket": 5,
+            "netProfit": -20,
+            "closeTime": {
+              "relative_seconds": 400
+            }
+          },
+          {
+            "ticket": 6,
+            "netProfit": 15,
+            "closeTime": {
+              "relative_seconds": 500
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "maxWinStreak",
+          "op": "eq",
+          "value": 3,
+          "line": 138,
+          "derived": false
+        },
+        {
+          "path": "maxLossStreak",
+          "op": "eq",
+          "value": 2,
+          "line": 139,
+          "derived": false
+        },
+        {
+          "path": "currentStreak",
+          "op": "eq",
+          "value": 1,
+          "line": 140,
+          "derived": false
+        },
+        {
+          "path": "wins",
+          "op": "eq",
+          "value": 4,
+          "line": 126,
+          "derived": true
+        },
+        {
+          "path": "losses",
+          "op": "eq",
+          "value": 2,
+          "line": 126,
+          "derived": true
+        },
+        {
+          "path": "totalProfit",
+          "op": "eq",
+          "value": 45.0,
+          "line": 126,
+          "derived": true
+        },
+        {
+          "path": "maxDrawdown",
+          "op": "eq",
+          "value": 30.0,
+          "line": 126,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "MetricsCalculatorTests.testCurrentStreakNegative",
+      "line": 143,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 50,
+            "closeTime": {
+              "relative_seconds": 0
+            }
+          },
+          {
+            "ticket": 2,
+            "netProfit": -10,
+            "closeTime": {
+              "relative_seconds": 100
+            }
+          },
+          {
+            "ticket": 3,
+            "netProfit": -20,
+            "closeTime": {
+              "relative_seconds": 200
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "currentStreak",
+          "op": "eq",
+          "value": -2,
+          "line": 151,
+          "derived": false
+        },
+        {
+          "path": "maxWinStreak",
+          "op": "eq",
+          "value": 1,
+          "line": 143,
+          "derived": true
+        },
+        {
+          "path": "maxLossStreak",
+          "op": "eq",
+          "value": 2,
+          "line": 143,
+          "derived": true
+        },
+        {
+          "path": "maxDrawdown",
+          "op": "eq",
+          "value": 30.0,
+          "line": 143,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "MetricsCalculatorTests.testAverageDuration",
+      "line": 154,
+      "subject": "MetricsCalculator.calculate",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 10,
+            "durationMin": 30
+          },
+          {
+            "ticket": 2,
+            "netProfit": 20,
+            "durationMin": 60
+          },
+          {
+            "ticket": 3,
+            "netProfit": -5,
+            "durationMin": 90
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "averageDuration",
+          "op": "eq",
+          "value": 60,
+          "line": 161,
+          "derived": false
+        },
+        {
+          "path": "totalProfit",
+          "op": "eq",
+          "value": 25.0,
+          "line": 154,
+          "derived": true
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "MetricsCalculatorTests.testEdgeBySession",
+      "line": 166,
+      "subject": "MetricsCalculator.edgeBySession",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 100,
+            "session": "LONDON"
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50,
+            "session": "LONDON"
+          },
+          {
+            "ticket": 3,
+            "netProfit": -30,
+            "session": "ASIAN"
+          },
+          {
+            "ticket": 4,
+            "netProfit": 80,
+            "session": "NY"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 3,
+          "line": 175,
+          "derived": false
+        },
+        {
+          "path": "[0].label",
+          "op": "eq",
+          "value": "London",
+          "line": 177,
+          "derived": false
+        },
+        {
+          "path": "[0].profit",
+          "op": "approx",
+          "value": 150.0,
+          "accuracy": 0.01,
+          "line": 178,
+          "derived": false
+        },
+        {
+          "path": "[0].tradeCount",
+          "op": "eq",
+          "value": 2,
+          "line": 179,
+          "derived": false
+        },
+        {
+          "path": "[0].winRate",
+          "op": "eq",
+          "value": 100.0,
+          "line": 166,
+          "derived": true
+        },
+        {
+          "path": "[1].label",
+          "op": "eq",
+          "value": "New York",
+          "line": 166,
+          "derived": true
+        },
+        {
+          "path": "[1].profit",
+          "op": "eq",
+          "value": 80.0,
+          "line": 166,
+          "derived": true
+        },
+        {
+          "path": "[2].label",
+          "op": "eq",
+          "value": "Asian",
+          "line": 166,
+          "derived": true
+        },
+        {
+          "path": "[2].profit",
+          "op": "eq",
+          "value": -30.0,
+          "line": 166,
+          "derived": true
+        },
+        {
+          "path": "[2].winRate",
+          "op": "eq",
+          "value": 0.0,
+          "line": 166,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Result is an array sorted by profit descending; path [i] indexes it."
+    },
+    {
+      "id": "MetricsCalculatorTests.testEdgeByPair",
+      "line": 182,
+      "subject": "MetricsCalculator.edgeByPair",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "symbol": "GBPUSD",
+            "netProfit": 100
+          },
+          {
+            "ticket": 2,
+            "symbol": "GBPUSD",
+            "netProfit": -20
+          },
+          {
+            "ticket": 3,
+            "symbol": "EURUSD",
+            "netProfit": 50
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 2,
+          "line": 190,
+          "derived": false
+        },
+        {
+          "path": "[0].label",
+          "op": "eq",
+          "value": "GBPUSD",
+          "line": 191,
+          "derived": false
+        },
+        {
+          "path": "[0].profit",
+          "op": "approx",
+          "value": 80.0,
+          "accuracy": 0.01,
+          "line": 192,
+          "derived": false
+        },
+        {
+          "path": "[0].tradeCount",
+          "op": "eq",
+          "value": 2,
+          "line": 182,
+          "derived": true
+        },
+        {
+          "path": "[0].winRate",
+          "op": "eq",
+          "value": 50.0,
+          "line": 182,
+          "derived": true
+        },
+        {
+          "path": "[1].label",
+          "op": "eq",
+          "value": "EURUSD",
+          "line": 182,
+          "derived": true
+        },
+        {
+          "path": "[1].profit",
+          "op": "eq",
+          "value": 50.0,
+          "line": 182,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Result is an array sorted by profit descending; path [i] indexes it."
+    },
+    {
+      "id": "MetricsCalculatorTests.testEdgeByHour",
+      "line": 195,
+      "subject": "MetricsCalculator.edgeByHour",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 100,
+            "hour": 10
+          },
+          {
+            "ticket": 2,
+            "netProfit": -30,
+            "hour": 10
+          },
+          {
+            "ticket": 3,
+            "netProfit": 50,
+            "hour": 14
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 2,
+          "line": 203,
+          "derived": false
+        },
+        {
+          "path": "[0].profit",
+          "op": "approx",
+          "value": 70.0,
+          "accuracy": 0.01,
+          "line": 205,
+          "derived": false
+        },
+        {
+          "path": "[0].label",
+          "op": "eq",
+          "value": "10:00",
+          "line": 206,
+          "derived": false
+        },
+        {
+          "path": "[0].winRate",
+          "op": "eq",
+          "value": 50.0,
+          "line": 195,
+          "derived": true
+        },
+        {
+          "path": "[1].label",
+          "op": "eq",
+          "value": "14:00",
+          "line": 195,
+          "derived": true
+        },
+        {
+          "path": "[1].profit",
+          "op": "eq",
+          "value": 50.0,
+          "line": 195,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Result is an array sorted by profit descending; path [i] indexes it."
+    },
+    {
+      "id": "MetricsCalculatorTests.testEdgeByDay",
+      "line": 209,
+      "subject": "MetricsCalculator.edgeByDay",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 100,
+            "dayOfWeek": "Mon"
+          },
+          {
+            "ticket": 2,
+            "netProfit": 50,
+            "dayOfWeek": "Tue"
+          },
+          {
+            "ticket": 3,
+            "netProfit": -80,
+            "dayOfWeek": "Mon"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 2,
+          "line": 217,
+          "derived": false
+        },
+        {
+          "path": "[0].label",
+          "op": "eq",
+          "value": "Tue",
+          "line": 218,
+          "derived": false
+        },
+        {
+          "path": "[0].profit",
+          "op": "eq",
+          "value": 50.0,
+          "line": 209,
+          "derived": true
+        },
+        {
+          "path": "[1].label",
+          "op": "eq",
+          "value": "Mon",
+          "line": 209,
+          "derived": true
+        },
+        {
+          "path": "[1].profit",
+          "op": "eq",
+          "value": 20.0,
+          "line": 209,
+          "derived": true
+        },
+        {
+          "path": "[1].winRate",
+          "op": "eq",
+          "value": 50.0,
+          "line": 209,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Result is an array sorted by profit descending; path [i] indexes it."
+    },
+    {
+      "id": "MetricsCalculatorTests.testEdgeByBias",
+      "line": 221,
+      "subject": "MetricsCalculator.edgeByBias",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 100,
+            "biasAtEntry": "WITH"
+          },
+          {
+            "ticket": 2,
+            "netProfit": -50,
+            "biasAtEntry": "AGAINST"
+          },
+          {
+            "ticket": 3,
+            "netProfit": 30,
+            "biasAtEntry": "WITH"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 2,
+          "line": 229,
+          "derived": false
+        },
+        {
+          "path": "[0].label",
+          "op": "eq",
+          "value": "WITH",
+          "line": 230,
+          "derived": false
+        },
+        {
+          "path": "[0].profit",
+          "op": "approx",
+          "value": 130.0,
+          "accuracy": 0.01,
+          "line": 231,
+          "derived": false
+        },
+        {
+          "path": "[0].tradeCount",
+          "op": "eq",
+          "value": 2,
+          "line": 221,
+          "derived": true
+        },
+        {
+          "path": "[1].label",
+          "op": "eq",
+          "value": "AGAINST",
+          "line": 221,
+          "derived": true
+        },
+        {
+          "path": "[1].profit",
+          "op": "eq",
+          "value": -50.0,
+          "line": 221,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Result is an array sorted by profit descending; path [i] indexes it."
+    },
+    {
+      "id": "MetricsCalculatorTests.testEdgeByVolRegime",
+      "line": 234,
+      "subject": "MetricsCalculator.edgeByVolRegime",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 80,
+            "volRegime": "MED"
+          },
+          {
+            "ticket": 2,
+            "netProfit": -30,
+            "volRegime": "HIGH"
+          },
+          {
+            "ticket": 3,
+            "netProfit": 40,
+            "volRegime": "LOW"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 3,
+          "line": 242,
+          "derived": false
+        },
+        {
+          "path": "[0].label",
+          "op": "eq",
+          "value": "MED",
+          "line": 243,
+          "derived": false
+        },
+        {
+          "path": "[0].profit",
+          "op": "approx",
+          "value": 80.0,
+          "accuracy": 0.01,
+          "line": 244,
+          "derived": false
+        },
+        {
+          "path": "[1].label",
+          "op": "eq",
+          "value": "LOW",
+          "line": 234,
+          "derived": true
+        },
+        {
+          "path": "[1].profit",
+          "op": "eq",
+          "value": 40.0,
+          "line": 234,
+          "derived": true
+        },
+        {
+          "path": "[2].label",
+          "op": "eq",
+          "value": "HIGH",
+          "line": 234,
+          "derived": true
+        },
+        {
+          "path": "[2].profit",
+          "op": "eq",
+          "value": -30.0,
+          "line": 234,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Result is an array sorted by profit descending; path [i] indexes it."
+    },
+    {
+      "id": "MetricsCalculatorTests.testWinRateInEdgeBreakdown",
+      "line": 247,
+      "subject": "MetricsCalculator.edgeBySession",
+      "kind": "metric",
+      "input": {
+        "helper": "makeTrade",
+        "trades": [
+          {
+            "ticket": 1,
+            "netProfit": 100,
+            "session": "LONDON"
+          },
+          {
+            "ticket": 2,
+            "netProfit": -20,
+            "session": "LONDON"
+          },
+          {
+            "ticket": 3,
+            "netProfit": 30,
+            "session": "LONDON"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "[0].winRate",
+          "op": "approx",
+          "value": 66.66666666666667,
+          "accuracy": 0.1,
+          "line": 255,
+          "derived": false
+        },
+        {
+          "path": "count",
+          "op": "eq",
+          "value": 1,
+          "line": 247,
+          "derived": true
+        },
+        {
+          "path": "[0].profit",
+          "op": "eq",
+          "value": 110.0,
+          "line": 247,
+          "derived": true
+        },
+        {
+          "path": "[0].tradeCount",
+          "op": "eq",
+          "value": 3,
+          "line": 247,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Result is an array sorted by profit descending; path [i] indexes it."
+    }
+  ],
+  "skipped": []
+}

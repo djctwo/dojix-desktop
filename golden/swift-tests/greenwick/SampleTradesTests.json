@@ -1,0 +1,877 @@
+{
+  "app": "greenwick",
+  "source_repo": "djctwo/greenwick",
+  "source_sha": "64495e28b0c9a8016ea86adf43098a569307e074",
+  "file": "GreenwickTests/SampleTradesTests.swift",
+  "helpers": {
+    "makeRepository": {
+      "line": 9,
+      "defaults": {
+        "database": "in-memory"
+      },
+      "notes": "TradeRepository over an empty in-memory journal."
+    },
+    "DemoDataGenerator.generateTrades": {
+      "line": 18,
+      "defaults": {
+        "sampleComment": "Sample (fictional)",
+        "ticketBase": 900000,
+        "sampleCount": 30,
+        "isSample": true,
+        "openPriceBySymbol": {
+          "AAPL": "185.50",
+          "TSLA": "248.30",
+          "NVDA": "875.20",
+          "MSFT": "420.15",
+          "AMD": "162.80",
+          "META": "505.40",
+          "GOOGL": "175.60",
+          "AMZN": "185.90"
+        },
+        "templates": [
+          {
+            "index": 0,
+            "ticket": 900000,
+            "symbol": "AAPL",
+            "direction": "BUY",
+            "shares": 100,
+            "netProfit": "185",
+            "rMultiple": 1.7,
+            "session": "REGULAR",
+            "hour": 10,
+            "durationMin": 42,
+            "maePoints": 1.2,
+            "mfePoints": 2.8,
+            "slDistPoints": 1.65,
+            "sector": "Technology",
+            "industry": "Consumer Electronics"
+          },
+          {
+            "index": 1,
+            "ticket": 900001,
+            "symbol": "TSLA",
+            "direction": "SELL",
+            "shares": 50,
+            "netProfit": "-95",
+            "rMultiple": -0.9,
+            "session": "REGULAR",
+            "hour": 11,
+            "durationMin": 28,
+            "maePoints": 4.4,
+            "mfePoints": 2,
+            "slDistPoints": 3,
+            "sector": "Consumer Discretionary",
+            "industry": "Auto Manufacturers"
+          },
+          {
+            "index": 2,
+            "ticket": 900002,
+            "symbol": "NVDA",
+            "direction": "BUY",
+            "shares": 75,
+            "netProfit": "320",
+            "rMultiple": 2.4,
+            "session": "REGULAR",
+            "hour": 10,
+            "durationMin": 55,
+            "maePoints": 1.6,
+            "mfePoints": 7.6,
+            "slDistPoints": 2.8,
+            "sector": "Technology",
+            "industry": "Semiconductors"
+          },
+          {
+            "index": 3,
+            "ticket": 900003,
+            "symbol": "MSFT",
+            "direction": "BUY",
+            "shares": 100,
+            "netProfit": "-120",
+            "rMultiple": -1.2,
+            "session": "PRE_MARKET",
+            "hour": 7,
+            "durationMin": 35,
+            "maePoints": 2.5,
+            "mfePoints": 0.8,
+            "slDistPoints": 1.4,
+            "sector": "Technology",
+            "industry": "Software"
+          },
+          {
+            "index": 4,
+            "ticket": 900004,
+            "symbol": "AMD",
+            "direction": "BUY",
+            "shares": 150,
+            "netProfit": "105",
+            "rMultiple": 1,
+            "session": "PRE_MARKET",
+            "hour": 8,
+            "durationMin": 20,
+            "maePoints": 1,
+            "mfePoints": 1.8,
+            "slDistPoints": 1.2,
+            "sector": "Technology",
+            "industry": "Semiconductors"
+          },
+          {
+            "index": 5,
+            "ticket": 900005,
+            "symbol": "META",
+            "direction": "SELL",
+            "shares": 60,
+            "netProfit": "195",
+            "rMultiple": 1.9,
+            "session": "REGULAR",
+            "hour": 13,
+            "durationMin": 48,
+            "maePoints": 2.5,
+            "mfePoints": 5.3,
+            "slDistPoints": 3,
+            "sector": "Technology",
+            "industry": "Internet Content"
+          },
+          {
+            "index": 6,
+            "ticket": 900006,
+            "symbol": "GOOGL",
+            "direction": "BUY",
+            "shares": 80,
+            "netProfit": "155",
+            "rMultiple": 1.1,
+            "session": "REGULAR",
+            "hour": 14,
+            "durationMin": 30,
+            "maePoints": 1.4,
+            "mfePoints": 2.2,
+            "slDistPoints": 1.5,
+            "sector": "Technology",
+            "industry": "Internet Content"
+          },
+          {
+            "index": 7,
+            "ticket": 900007,
+            "symbol": "AAPL",
+            "direction": "SELL",
+            "shares": 100,
+            "netProfit": "-175",
+            "rMultiple": -1.5,
+            "session": "REGULAR",
+            "hour": 15,
+            "durationMin": 40,
+            "maePoints": 3,
+            "mfePoints": 1.2,
+            "slDistPoints": 1.65,
+            "sector": "Technology",
+            "industry": "Consumer Electronics"
+          },
+          {
+            "index": 8,
+            "ticket": 900008,
+            "symbol": "AMZN",
+            "direction": "SELL",
+            "shares": 50,
+            "netProfit": "140",
+            "rMultiple": 1.4,
+            "session": "REGULAR",
+            "hour": 15,
+            "durationMin": 25,
+            "maePoints": 1,
+            "mfePoints": 4.8,
+            "slDistPoints": 2.8,
+            "sector": "Consumer Discretionary",
+            "industry": "Internet Retail"
+          },
+          {
+            "index": 9,
+            "ticket": 900009,
+            "symbol": "META",
+            "direction": "BUY",
+            "shares": 60,
+            "netProfit": "-100",
+            "rMultiple": -1,
+            "session": "REGULAR",
+            "hour": 10,
+            "durationMin": 32,
+            "maePoints": 3.2,
+            "mfePoints": 1.6,
+            "slDistPoints": 3,
+            "sector": "Technology",
+            "industry": "Internet Content"
+          },
+          {
+            "index": 10,
+            "ticket": 900010,
+            "symbol": "AMD",
+            "direction": "SELL",
+            "shares": 150,
+            "netProfit": "120",
+            "rMultiple": 1.1,
+            "session": "AFTER_HOURS",
+            "hour": 17,
+            "durationMin": 18,
+            "maePoints": 0.8,
+            "mfePoints": 1.6,
+            "slDistPoints": 1.2,
+            "sector": "Technology",
+            "industry": "Semiconductors"
+          },
+          {
+            "index": 11,
+            "ticket": 900011,
+            "symbol": "TSLA",
+            "direction": "BUY",
+            "shares": 50,
+            "netProfit": "350",
+            "rMultiple": 3,
+            "session": "REGULAR",
+            "hour": 11,
+            "durationMin": 65,
+            "maePoints": 1.2,
+            "mfePoints": 9,
+            "slDistPoints": 3,
+            "sector": "Consumer Discretionary",
+            "industry": "Auto Manufacturers"
+          },
+          {
+            "index": 12,
+            "ticket": 900012,
+            "symbol": "GOOGL",
+            "direction": "SELL",
+            "shares": 80,
+            "netProfit": "165",
+            "rMultiple": 1.3,
+            "session": "REGULAR",
+            "hour": 13,
+            "durationMin": 38,
+            "maePoints": 1.2,
+            "mfePoints": 2.5,
+            "slDistPoints": 1.5,
+            "sector": "Technology",
+            "industry": "Internet Content"
+          },
+          {
+            "index": 13,
+            "ticket": 900013,
+            "symbol": "AAPL",
+            "direction": "BUY",
+            "shares": 100,
+            "netProfit": "190",
+            "rMultiple": 1.8,
+            "session": "REGULAR",
+            "hour": 10,
+            "durationMin": 50,
+            "maePoints": 1,
+            "mfePoints": 3,
+            "slDistPoints": 1.65,
+            "sector": "Technology",
+            "industry": "Consumer Electronics"
+          },
+          {
+            "index": 14,
+            "ticket": 900014,
+            "symbol": "MSFT",
+            "direction": "BUY",
+            "shares": 100,
+            "netProfit": "90",
+            "rMultiple": 0.9,
+            "session": "PRE_MARKET",
+            "hour": 8,
+            "durationMin": 22,
+            "maePoints": 1.5,
+            "mfePoints": 2,
+            "slDistPoints": 1.4,
+            "sector": "Technology",
+            "industry": "Software"
+          },
+          {
+            "index": 15,
+            "ticket": 900015,
+            "symbol": "NVDA",
+            "direction": "SELL",
+            "shares": 75,
+            "netProfit": "-225",
+            "rMultiple": -1.7,
+            "session": "REGULAR",
+            "hour": 15,
+            "durationMin": 55,
+            "maePoints": 7,
+            "mfePoints": 1.6,
+            "slDistPoints": 2.8,
+            "sector": "Technology",
+            "industry": "Semiconductors"
+          },
+          {
+            "index": 16,
+            "ticket": 900016,
+            "symbol": "AMD",
+            "direction": "BUY",
+            "shares": 150,
+            "netProfit": "90",
+            "rMultiple": 0.8,
+            "session": "PRE_MARKET",
+            "hour": 5,
+            "durationMin": 15,
+            "maePoints": 0.8,
+            "mfePoints": 1.4,
+            "slDistPoints": 1.2,
+            "sector": "Technology",
+            "industry": "Semiconductors"
+          },
+          {
+            "index": 17,
+            "ticket": 900017,
+            "symbol": "AAPL",
+            "direction": "SELL",
+            "shares": 100,
+            "netProfit": "-80",
+            "rMultiple": -0.8,
+            "session": "REGULAR",
+            "hour": 12,
+            "durationMin": 28,
+            "maePoints": 1.8,
+            "mfePoints": 1,
+            "slDistPoints": 1.65,
+            "sector": "Technology",
+            "industry": "Consumer Electronics"
+          },
+          {
+            "index": 18,
+            "ticket": 900018,
+            "symbol": "AMZN",
+            "direction": "BUY",
+            "shares": 50,
+            "netProfit": "175",
+            "rMultiple": 1.5,
+            "session": "REGULAR",
+            "hour": 10,
+            "durationMin": 45,
+            "maePoints": 1,
+            "mfePoints": 5.6,
+            "slDistPoints": 2.8,
+            "sector": "Consumer Discretionary",
+            "industry": "Internet Retail"
+          },
+          {
+            "index": 19,
+            "ticket": 900019,
+            "symbol": "TSLA",
+            "direction": "BUY",
+            "shares": 50,
+            "netProfit": "210",
+            "rMultiple": 2.2,
+            "session": "REGULAR",
+            "hour": 9,
+            "durationMin": 58,
+            "maePoints": 1.6,
+            "mfePoints": 7,
+            "slDistPoints": 3,
+            "sector": "Consumer Discretionary",
+            "industry": "Auto Manufacturers"
+          },
+          {
+            "index": 20,
+            "ticket": 900020,
+            "symbol": "MSFT",
+            "direction": "SELL",
+            "shares": 100,
+            "netProfit": "-110",
+            "rMultiple": -1.1,
+            "session": "AFTER_HOURS",
+            "hour": 18,
+            "durationMin": 30,
+            "maePoints": 2.2,
+            "mfePoints": 1,
+            "slDistPoints": 1.4,
+            "sector": "Technology",
+            "industry": "Software"
+          },
+          {
+            "index": 21,
+            "ticket": 900021,
+            "symbol": "META",
+            "direction": "BUY",
+            "shares": 60,
+            "netProfit": "160",
+            "rMultiple": 1.6,
+            "session": "REGULAR",
+            "hour": 14,
+            "durationMin": 42,
+            "maePoints": 1.2,
+            "mfePoints": 4.5,
+            "slDistPoints": 3,
+            "sector": "Technology",
+            "industry": "Internet Content"
+          },
+          {
+            "index": 22,
+            "ticket": 900022,
+            "symbol": "AMD",
+            "direction": "SELL",
+            "shares": 150,
+            "netProfit": "-105",
+            "rMultiple": -1,
+            "session": "REGULAR",
+            "hour": 10,
+            "durationMin": 25,
+            "maePoints": 1.6,
+            "mfePoints": 0.8,
+            "slDistPoints": 1.2,
+            "sector": "Technology",
+            "industry": "Semiconductors"
+          },
+          {
+            "index": 23,
+            "ticket": 900023,
+            "symbol": "GOOGL",
+            "direction": "SELL",
+            "shares": 80,
+            "netProfit": "100",
+            "rMultiple": 1,
+            "session": "REGULAR",
+            "hour": 15,
+            "durationMin": 35,
+            "maePoints": 1.4,
+            "mfePoints": 2,
+            "slDistPoints": 1.5,
+            "sector": "Technology",
+            "industry": "Internet Content"
+          },
+          {
+            "index": 24,
+            "ticket": 900024,
+            "symbol": "NVDA",
+            "direction": "BUY",
+            "shares": 75,
+            "netProfit": "280",
+            "rMultiple": 2.6,
+            "session": "REGULAR",
+            "hour": 11,
+            "durationMin": 70,
+            "maePoints": 1,
+            "mfePoints": 8.4,
+            "slDistPoints": 2.8,
+            "sector": "Technology",
+            "industry": "Semiconductors"
+          },
+          {
+            "index": 25,
+            "ticket": 900025,
+            "symbol": "MSFT",
+            "direction": "BUY",
+            "shares": 100,
+            "netProfit": "120",
+            "rMultiple": 1.2,
+            "session": "PRE_MARKET",
+            "hour": 8,
+            "durationMin": 28,
+            "maePoints": 1,
+            "mfePoints": 2.2,
+            "slDistPoints": 1.4,
+            "sector": "Technology",
+            "industry": "Software"
+          },
+          {
+            "index": 26,
+            "ticket": 900026,
+            "symbol": "META",
+            "direction": "SELL",
+            "shares": 60,
+            "netProfit": "-140",
+            "rMultiple": -1.4,
+            "session": "REGULAR",
+            "hour": 10,
+            "durationMin": 38,
+            "maePoints": 4.5,
+            "mfePoints": 1.6,
+            "slDistPoints": 3,
+            "sector": "Technology",
+            "industry": "Internet Content"
+          },
+          {
+            "index": 27,
+            "ticket": 900027,
+            "symbol": "AMD",
+            "direction": "BUY",
+            "shares": 150,
+            "netProfit": "75",
+            "rMultiple": 0.7,
+            "session": "PRE_MARKET",
+            "hour": 7,
+            "durationMin": 12,
+            "maePoints": 0.6,
+            "mfePoints": 1.2,
+            "slDistPoints": 1.2,
+            "sector": "Technology",
+            "industry": "Semiconductors"
+          },
+          {
+            "index": 28,
+            "ticket": 900028,
+            "symbol": "TSLA",
+            "direction": "BUY",
+            "shares": 50,
+            "netProfit": "-180",
+            "rMultiple": -1.8,
+            "session": "AFTER_HOURS",
+            "hour": 19,
+            "durationMin": 45,
+            "maePoints": 6.4,
+            "mfePoints": 1.6,
+            "slDistPoints": 3,
+            "sector": "Consumer Discretionary",
+            "industry": "Auto Manufacturers"
+          },
+          {
+            "index": 29,
+            "ticket": 900029,
+            "symbol": "AAPL",
+            "direction": "BUY",
+            "shares": 100,
+            "netProfit": "80",
+            "rMultiple": 0.8,
+            "session": "REGULAR",
+            "hour": 9,
+            "durationMin": 22,
+            "maePoints": 1.2,
+            "mfePoints": 1.8,
+            "slDistPoints": 1.65,
+            "sector": "Technology",
+            "industry": "Consumer Electronics"
+          }
+        ],
+        "date_rule": "daysBack = 28 - (index*28/30) (Int division); date = now - daysBack days in TradingCalendar.calendar (ET); while ET weekend: -1 day; openTime = that ET date at template hour, minute random 5...55; closeTime = openTime + durationMin",
+        "derived_fields": "closePrice = openPrice +/- Decimal(netProfit/shares) (BUY +, SELL -); sl = openPrice -/+ slDistPoints; tp = openPrice +/- 2*mfePoints; dayOfWeek = ET weekday of open; session and hour = template values (NOT recomputed from openTime)",
+        "random_fields": "minute 5...55, rangeSize 2...8, hitBreakeven (winners only, random), timeToMFEMin = Int(durationMin * U(0.3,0.8)), slippagePoints 0.01...0.10, volume 5e6...8e7, avgVolume 1e7...6e7, commission %.2f of U(0.50,2.00) (NOT subtracted: netProfit is the template value)"
+      },
+      "notes": "line refers to StockJournal/Services/Demo/DemoDataGenerator.swift (app source, not the test file). The 30 fictional sample trades; dates relative to Date()."
+    }
+  },
+  "cases": [
+    {
+      "id": "SampleTradesTests.testLoadingAddsThe30SampleTradesWithTheKnownHeadline",
+      "line": 13,
+      "subject": "TradeRepository.loadSampleTrades",
+      "kind": "sample",
+      "input": {
+        "helper": "makeRepository",
+        "generator": "DemoDataGenerator.generateTrades",
+        "now": "Date() (relative)"
+      },
+      "expect": [
+        {
+          "path": "loadSampleTrades()",
+          "op": "eq",
+          "value": 30,
+          "line": 15,
+          "derived": false
+        },
+        {
+          "path": "fetchAll().count",
+          "op": "eq",
+          "value": 30,
+          "line": 17,
+          "derived": false
+        },
+        {
+          "path": "all(trades, isSample && comment == \"Sample (fictional)\")",
+          "op": "true",
+          "value": null,
+          "line": 18,
+          "derived": false
+        },
+        {
+          "path": "metrics.totalProfit.asCurrency",
+          "op": "eq",
+          "value": "$1,975.00",
+          "line": 20,
+          "derived": false
+        },
+        {
+          "path": "String(format: \"%.1f%%\", metrics.winRate)",
+          "op": "eq",
+          "value": "66.7%",
+          "line": 21,
+          "derived": false
+        },
+        {
+          "path": "metrics.wins",
+          "op": "eq",
+          "value": 20,
+          "line": 20,
+          "derived": true
+        },
+        {
+          "path": "metrics.losses",
+          "op": "eq",
+          "value": 10,
+          "line": 20,
+          "derived": true
+        },
+        {
+          "path": "metrics.grossProfit",
+          "op": "approx",
+          "value": 3305,
+          "accuracy": 0.001,
+          "line": 20,
+          "derived": true
+        },
+        {
+          "path": "metrics.grossLoss",
+          "op": "approx",
+          "value": 1330,
+          "accuracy": 0.001,
+          "line": 20,
+          "derived": true
+        },
+        {
+          "path": "metrics.profitFactor",
+          "op": "approx",
+          "value": 2.484962,
+          "accuracy": 0.0001,
+          "line": 20,
+          "derived": true
+        },
+        {
+          "path": "metrics.expectancy",
+          "op": "approx",
+          "value": 65.833333,
+          "accuracy": 0.001,
+          "line": 20,
+          "derived": true
+        },
+        {
+          "path": "metrics.bestTrade",
+          "op": "eq",
+          "value": 350,
+          "line": 20,
+          "derived": true
+        },
+        {
+          "path": "metrics.worstTrade",
+          "op": "eq",
+          "value": -225,
+          "line": 20,
+          "derived": true
+        },
+        {
+          "path": "metrics.averageDuration",
+          "op": "eq",
+          "value": 36,
+          "line": 20,
+          "derived": true
+        },
+        {
+          "path": "min(trades[].ticket)",
+          "op": "eq",
+          "value": 900000,
+          "line": 20,
+          "derived": true
+        },
+        {
+          "path": "max(trades[].ticket)",
+          "op": "eq",
+          "value": 900029,
+          "line": 20,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Derived values are order-independent (templates fix netProfit and durationMin); drawdown/streaks depend on random minutes and are not derived. asCurrency = en_US currency format."
+    },
+    {
+      "id": "SampleTradesTests.testLoadingTwiceDoesNotDuplicate",
+      "line": 24,
+      "subject": "TradeRepository.loadSampleTrades",
+      "kind": "sample",
+      "input": {
+        "helper": "makeRepository",
+        "calls": [
+          "loadSampleTrades",
+          "loadSampleTrades"
+        ]
+      },
+      "expect": [
+        {
+          "path": "loadSampleTrades()#1",
+          "op": "eq",
+          "value": 30,
+          "line": 26,
+          "derived": false
+        },
+        {
+          "path": "loadSampleTrades()#2",
+          "op": "eq",
+          "value": 0,
+          "line": 27,
+          "derived": false
+        },
+        {
+          "path": "count()",
+          "op": "eq",
+          "value": 30,
+          "line": 28,
+          "derived": false
+        },
+        {
+          "path": "sampleTradeCount()",
+          "op": "eq",
+          "value": 30,
+          "line": 29,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Fixed tickets 900000...900029 dedupe the second load."
+    },
+    {
+      "id": "SampleTradesTests.testRemovingDeletesOnlyTheSampleTrades",
+      "line": 32,
+      "subject": "TradeRepository.deleteSampleTrades",
+      "kind": "sample",
+      "input": {
+        "helper": "makeRepository",
+        "trades": [
+          {
+            "base": "DemoDataGenerator.generateTrades()[3]",
+            "ticket": 900030,
+            "isSample": false,
+            "notes": "my own trade"
+          },
+          {
+            "base": "DemoDataGenerator.generateTrades()[3]",
+            "ticket": 4242,
+            "isSample": false,
+            "notes": "my own trade",
+            "comment": "Sample (fictional)"
+          }
+        ],
+        "then": [
+          "bulkInsert(trades)",
+          "loadSampleTrades",
+          "deleteSampleTrades",
+          "deleteSampleTrades"
+        ]
+      },
+      "expect": [
+        {
+          "path": "bulkInsert(trades)",
+          "op": "eq",
+          "value": 2,
+          "line": 42,
+          "derived": false
+        },
+        {
+          "path": "loadSampleTrades()",
+          "op": "eq",
+          "value": 30,
+          "line": 43,
+          "derived": false
+        },
+        {
+          "path": "deleteSampleTrades()#1",
+          "op": "eq",
+          "value": 30,
+          "line": 45,
+          "derived": false
+        },
+        {
+          "path": "set(fetchAll()[].ticket)",
+          "op": "eq",
+          "value": [
+            900030,
+            4242
+          ],
+          "line": 47,
+          "derived": false
+        },
+        {
+          "path": "all(fetchAll(), notes == \"my own trade\" && !isSample)",
+          "op": "true",
+          "value": null,
+          "line": 48,
+          "derived": false
+        },
+        {
+          "path": "deleteSampleTrades()#2",
+          "op": "eq",
+          "value": 0,
+          "line": 49,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Removal keys on the isSample flag only: a real trade with the sample comment, or with ticket 900030 next to the range, is kept."
+    },
+    {
+      "id": "SampleTradesTests.testImportedTradesAreNeverSamples",
+      "line": 52,
+      "subject": "GenericCSVParser.parse",
+      "kind": "sample",
+      "input": {
+        "platform": "Thinkorswim",
+        "csv": "Exec Time,Symbol,Side,Qty,Price,Net Price,P/L,Commission\n03/24/26 09:31:15,AAPL,BUY,100,171.25,171.30,25.00,0.65"
+      },
+      "expect": [
+        {
+          "path": "trades.isEmpty",
+          "op": "false",
+          "value": null,
+          "line": 61,
+          "derived": false
+        },
+        {
+          "path": "all(trades, !isSample)",
+          "op": "true",
+          "value": null,
+          "line": 62,
+          "derived": false
+        }
+      ],
+      "parity": "match"
+    },
+    {
+      "id": "SampleTradesTests.testMigrationMarksSampleTradesFromEarlierVersions",
+      "line": 67,
+      "subject": "DatabaseManager.makeMigrator (v5_markSampleTrades)",
+      "kind": "sample",
+      "input": {
+        "migrate_from": "v4_createSettings",
+        "rows": [
+          {
+            "ticket": 900000,
+            "comment": "Demo"
+          },
+          {
+            "ticket": 900029,
+            "comment": "Demo"
+          },
+          {
+            "ticket": 900030,
+            "comment": "Demo"
+          },
+          {
+            "ticket": 900001,
+            "comment": "my note"
+          }
+        ],
+        "rule_sql": "UPDATE trades SET isSample = 1 WHERE comment IN ('Demo', 'Sample (fictional)') AND ticket BETWEEN 900000 AND 900029"
+      },
+      "expect": [
+        {
+          "path": "SELECT ticket FROM trades WHERE isSample ORDER BY ticket",
+          "op": "eq",
+          "value": [
+            900000,
+            900029
+          ],
+          "line": 85,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Legacy sample rule (also applied when restoring a pre-v5 backup): comment \"Demo\" or \"Sample (fictional)\" AND ticket in [900000, 900029]. Other legacy columns of the inserted rows are fixed placeholders (AAPL BUY 1 share, 2026-03-24 14:00/14:30 UTC)."
+    }
+  ],
+  "skipped": []
+}

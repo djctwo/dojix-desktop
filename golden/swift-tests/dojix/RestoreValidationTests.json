@@ -1,0 +1,485 @@
+{
+  "app": "dojix",
+  "source_repo": "djctwo/dojix",
+  "source_sha": "614bd6a0bd85adcbb0a8a48891c7fa708a6b2605",
+  "file": "DojixTests/RestoreValidationTests.swift",
+  "helpers": {
+    "SecFixture.trade": {
+      "line": 41,
+      "defaults": {
+        "ticket": null,
+        "symbol": "EURUSD",
+        "lots": 0.1,
+        "netProfit": 10,
+        "durationMin": 60,
+        "closeTime": "2026-01-01T00:00:00Z",
+        "screenshots": "",
+        "direction": "BUY",
+        "openTime": {
+          "expr": "closeTime - 3600 s"
+        },
+        "openPrice": 1.1,
+        "closePrice": 1.101,
+        "sl": 1.09,
+        "tp": 1.12,
+        "maePips": 3,
+        "mfePips": 8,
+        "rMultiple": 1,
+        "session": "LONDON",
+        "dayOfWeek": "Thu",
+        "hour": 10,
+        "rangeSize": 20,
+        "sweepDepth": 4,
+        "usedFVG": false,
+        "volRegime": "MED",
+        "hitBreakeven": false,
+        "scaledIn": false,
+        "magic": 0,
+        "comment": "Sample (fictional)",
+        "timeToMFEMin": 10,
+        "slDistPips": 10,
+        "slippagePips": 0,
+        "postClose15m": 0,
+        "postClose30m": 0,
+        "biasAtEntry": "NEUTRAL",
+        "importedAt": {
+          "expr": "closeTime"
+        }
+      },
+      "notes": "Shared helper defined in DojixTests/SecurityFixTestSupport.swift (line 41), not in this file. closeTime default = Date(timeIntervalSince1970: 1_767_225_600). ticket is required. Decimal prices come from Swift float literals (via Double)."
+    },
+    "setUpWithError": {
+      "line": 12,
+      "defaults": {
+        "live_tickets": [
+          900,
+          901
+        ]
+      },
+      "notes": "The live journal holds SecFixture.trade(ticket: 900) and (ticket: 901) before every test."
+    },
+    "makeBackup": {
+      "line": 25,
+      "defaults": {
+        "backup_tickets": [
+          1,
+          2,
+          3
+        ],
+        "tamper_sql": null,
+        "tamper_args": []
+      },
+      "notes": "A genuine backup of SecFixture.trade(ticket: 1...3) written by BackupService.writeBackup, then optionally modified with raw SQL (tamper_sql) on the backup file."
+    },
+    "assertRefused": {
+      "line": 42,
+      "defaults": {},
+      "notes": "Asserts BackupService.restore(from:into:) throws (line 43) and the live journal's tickets are still [900, 901] (line 44); failures are reported at the caller's line, which is the line used in expect."
+    }
+  },
+  "cases": [
+    {
+      "id": "RestoreValidationTests.testHugeDurationIsRefused",
+      "line": 67,
+      "subject": "BackupService.restore (row validation: Trade.storageViolations)",
+      "kind": "validation",
+      "input": {
+        "helper": "makeBackup",
+        "tamper_sql": "UPDATE trades SET durationMin = ?",
+        "tamper_args": [
+          "9223372036854775806"
+        ],
+        "row_effect": {
+          "1": {
+            "durationMin": "9223372036854775806"
+          },
+          "2": {
+            "durationMin": "9223372036854775806"
+          },
+          "3": {
+            "durationMin": "9223372036854775806"
+          }
+        }
+      },
+      "expect": [
+        {
+          "path": "restore",
+          "op": "throws",
+          "line": 69,
+          "derived": false
+        },
+        {
+          "path": "liveTickets",
+          "op": "eq",
+          "value": [
+            900,
+            901
+          ],
+          "line": 69,
+          "derived": false
+        },
+        {
+          "path": "rowViolations[ticket=1]",
+          "op": "eq",
+          "value": [
+            "durationMin"
+          ],
+          "line": 67,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "durationMin = Int.max - 1 (string: beyond JS safe integers) on every row; allowed range is 0...5_270_400. Derived rowViolations[ticket=N] = Trade.storageViolations() for that backup row (field names, in check order); restore refuses the whole backup on the first row with any violation (BackupError.invalidValues)."
+    },
+    {
+      "id": "RestoreValidationTests.testTraversalScreenshotNameIsRefused",
+      "line": 72,
+      "subject": "BackupService.restore (row validation: Trade.storageViolations)",
+      "kind": "validation",
+      "input": {
+        "helper": "makeBackup",
+        "variants": [
+          {
+            "tamper_sql": "UPDATE trades SET screenshots = '..' WHERE ticket = 1",
+            "tamper_args": [],
+            "row_effect": {
+              "1": {
+                "screenshots": ".."
+              }
+            }
+          },
+          {
+            "tamper_sql": "UPDATE trades SET screenshots = '.hidden.jpg' WHERE ticket = 1",
+            "tamper_args": [],
+            "row_effect": {
+              "1": {
+                "screenshots": ".hidden.jpg"
+              }
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "variants[0].restore",
+          "op": "throws",
+          "line": 74,
+          "derived": false
+        },
+        {
+          "path": "variants[0].liveTickets",
+          "op": "eq",
+          "value": [
+            900,
+            901
+          ],
+          "line": 74,
+          "derived": false
+        },
+        {
+          "path": "variants[0].rowViolations[ticket=1]",
+          "op": "eq",
+          "value": [
+            "screenshots"
+          ],
+          "line": 72,
+          "derived": true
+        },
+        {
+          "path": "variants[1].restore",
+          "op": "throws",
+          "line": 75,
+          "derived": false
+        },
+        {
+          "path": "variants[1].liveTickets",
+          "op": "eq",
+          "value": [
+            900,
+            901
+          ],
+          "line": 75,
+          "derived": false
+        },
+        {
+          "path": "variants[1].rowViolations[ticket=1]",
+          "op": "eq",
+          "value": [
+            "screenshots"
+          ],
+          "line": 72,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Every comma-separated screenshot name must be <UUID>.jpg (ScreenshotManager.isValidFilename). Derived rowViolations[ticket=N] = Trade.storageViolations() for that backup row (field names, in check order); restore refuses the whole backup on the first row with any violation (BackupError.invalidValues)."
+    },
+    {
+      "id": "RestoreValidationTests.testControlCharacterInSymbolIsRefused",
+      "line": 78,
+      "subject": "BackupService.restore (row validation: Trade.storageViolations)",
+      "kind": "validation",
+      "input": {
+        "helper": "makeBackup",
+        "tamper_sql": "UPDATE trades SET symbol = 'EURUSD' || char(13) || '=HYPERLINK(1)' WHERE ticket = 1",
+        "tamper_args": [],
+        "row_effect": {
+          "1": {
+            "symbol": "EURUSD\r=HYPERLINK(1)"
+          }
+        }
+      },
+      "expect": [
+        {
+          "path": "restore",
+          "op": "throws",
+          "line": 80,
+          "derived": false
+        },
+        {
+          "path": "liveTickets",
+          "op": "eq",
+          "value": [
+            900,
+            901
+          ],
+          "line": 80,
+          "derived": false
+        },
+        {
+          "path": "rowViolations[ticket=1]",
+          "op": "eq",
+          "value": [
+            "symbol"
+          ],
+          "line": 78,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "symbol must be 1-32 characters with no control characters. Derived rowViolations[ticket=N] = Trade.storageViolations() for that backup row (field names, in check order); restore refuses the whole backup on the first row with any violation (BackupError.invalidValues)."
+    },
+    {
+      "id": "RestoreValidationTests.testTinyOrHugeValuesAreRefused",
+      "line": 83,
+      "subject": "BackupService.restore (row validation: Trade.storageViolations)",
+      "kind": "validation",
+      "input": {
+        "helper": "makeBackup",
+        "variants": [
+          {
+            "tamper_sql": "UPDATE trades SET lots = 1e-15 WHERE ticket = 1",
+            "tamper_args": [],
+            "row_effect": {
+              "1": {
+                "lots": 1e-15
+              }
+            }
+          },
+          {
+            "tamper_sql": "UPDATE trades SET netProfit = '1e30' WHERE ticket = 2",
+            "tamper_args": [],
+            "row_effect": {
+              "2": {
+                "netProfit": "1e30"
+              }
+            }
+          },
+          {
+            "tamper_sql": "UPDATE trades SET hour = 99 WHERE ticket = 3",
+            "tamper_args": [],
+            "row_effect": {
+              "3": {
+                "hour": 99
+              }
+            }
+          },
+          {
+            "tamper_sql": "UPDATE trades SET maePips = 1e300 WHERE ticket = 3",
+            "tamper_args": [],
+            "row_effect": {
+              "3": {
+                "maePips": 1e+300
+              }
+            }
+          }
+        ]
+      },
+      "expect": [
+        {
+          "path": "variants[0].restore",
+          "op": "throws",
+          "line": 85,
+          "derived": false
+        },
+        {
+          "path": "variants[0].liveTickets",
+          "op": "eq",
+          "value": [
+            900,
+            901
+          ],
+          "line": 85,
+          "derived": false
+        },
+        {
+          "path": "variants[0].rowViolations[ticket=1]",
+          "op": "eq",
+          "value": [
+            "lots"
+          ],
+          "line": 83,
+          "derived": true
+        },
+        {
+          "path": "variants[1].restore",
+          "op": "throws",
+          "line": 86,
+          "derived": false
+        },
+        {
+          "path": "variants[1].liveTickets",
+          "op": "eq",
+          "value": [
+            900,
+            901
+          ],
+          "line": 86,
+          "derived": false
+        },
+        {
+          "path": "variants[1].rowViolations[ticket=2]",
+          "op": "eq",
+          "value": [
+            "netProfit"
+          ],
+          "line": 83,
+          "derived": true
+        },
+        {
+          "path": "variants[2].restore",
+          "op": "throws",
+          "line": 87,
+          "derived": false
+        },
+        {
+          "path": "variants[2].liveTickets",
+          "op": "eq",
+          "value": [
+            900,
+            901
+          ],
+          "line": 87,
+          "derived": false
+        },
+        {
+          "path": "variants[2].rowViolations[ticket=3]",
+          "op": "eq",
+          "value": [
+            "hour"
+          ],
+          "line": 83,
+          "derived": true
+        },
+        {
+          "path": "variants[3].restore",
+          "op": "throws",
+          "line": 88,
+          "derived": false
+        },
+        {
+          "path": "variants[3].liveTickets",
+          "op": "eq",
+          "value": [
+            900,
+            901
+          ],
+          "line": 88,
+          "derived": false
+        },
+        {
+          "path": "variants[3].rowViolations[ticket=3]",
+          "op": "eq",
+          "value": [
+            "maePips"
+          ],
+          "line": 83,
+          "derived": true
+        }
+      ],
+      "parity": "match",
+      "notes": "Limits: lots finite, 0 or within [0.00001, 1_000_000]; money fields |x| <= 1e12 and not NaN (netProfit is stored as decimal TEXT); metrics finite and |x| <= 1e9; hour 0-23. Derived rowViolations[ticket=N] = Trade.storageViolations() for that backup row (field names, in check order); restore refuses the whole backup on the first row with any violation (BackupError.invalidValues)."
+    },
+    {
+      "id": "RestoreValidationTests.testFreeTextIsCleanedButKept",
+      "line": 137,
+      "subject": "BackupService.restore (Trade.sanitizedForRestore)",
+      "kind": "sanitize",
+      "input": {
+        "helper": "makeBackup",
+        "tamper_sql": "UPDATE trades SET notes = 'line one' || char(10) || 'two' || char(13) || '!', tags = 'a' || char(7) || 'b' WHERE ticket = 1",
+        "row_effect": {
+          "1": {
+            "notes": "line one\ntwo\r!",
+            "tags": "a\u0007b"
+          }
+        }
+      },
+      "expect": [
+        {
+          "path": "restored[ticket=1].notes",
+          "op": "eq",
+          "value": "line one\ntwo!",
+          "line": 141,
+          "derived": false
+        },
+        {
+          "path": "restored[ticket=1].tags",
+          "op": "eq",
+          "value": "ab",
+          "line": 142,
+          "derived": false
+        }
+      ],
+      "parity": "match",
+      "notes": "Restore keeps free text but strips control characters: notes keep LF and TAB (CR removed); tags, emotion and checklistData lose every control character."
+    }
+  ],
+  "skipped": [
+    {
+      "id": "RestoreValidationTests.testGenuineBackupRestoresInPlace",
+      "line": 47,
+      "reason": "Backup/restore mechanism and on-disk plaintext checks (storage security), not row validation."
+    },
+    {
+      "id": "RestoreValidationTests.testBackupFromAnOlderBuildInWALModeRestores",
+      "line": 56,
+      "reason": "Legacy WAL-mode backup file handling (storage mechanism)."
+    },
+    {
+      "id": "RestoreValidationTests.testTriggersViewsAndForeignTablesAreRefused",
+      "line": 91,
+      "reason": "SQLite schema-shape validation of the backup file (storage security), not row rules."
+    },
+    {
+      "id": "RestoreValidationTests.testAllowedTableWithDifferentShapeIsRefused",
+      "line": 97,
+      "reason": "SQLite schema-shape validation of the backup file (storage security), not row rules."
+    },
+    {
+      "id": "RestoreValidationTests.testRestoredJournalHasExactlyDojixSchema",
+      "line": 110,
+      "reason": "Restored SQLite schema equality (storage mechanism)."
+    },
+    {
+      "id": "RestoreValidationTests.testNewerOrForeignMigrationsAreRefused",
+      "line": 118,
+      "reason": "Migration-identifier check (BackupError.newerVersion), not row rules."
+    },
+    {
+      "id": "RestoreValidationTests.testNonDatabaseFilesAreRefused",
+      "line": 126,
+      "reason": "Non-SQLite / damaged file handling (storage mechanism)."
+    }
+  ]
+}

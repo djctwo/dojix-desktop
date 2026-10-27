@@ -15,7 +15,7 @@ const fx = createEngineContext({ brand: "dojix", now: NOW, compat: "swift" });
 const st = createEngineContext({ brand: "greenwick", now: NOW, compat: "swift" });
 
 describe("HourlyPnLChart", () => {
-  it("sums per stored hour, drops empty hours and picks the last maximum", () => {
+  it("sums per stored hour, drops empty hours and picks the first maximum", () => {
     const trades = [
       fxTrade({ hour: 22, netProfit: "70" }),
       fxTrade({ hour: 9, netProfit: "100" }),
@@ -30,8 +30,8 @@ describe("HourlyPnLChart", () => {
       { hour: 14, pnl: 70, count: 1 },
       { hour: 22, pnl: 70, count: 1 },
     ]);
-    // Three hours tie at 70: Swift's max(by:) returns the last one.
-    expect(m.best).toEqual({ hour: 22, pnl: 70, count: 1 });
+    // Three hours tie at 70: Swift's max(by:) returns the first one.
+    expect(m.best).toEqual({ hour: 9, pnl: 70, count: 2 });
     expect(m.sampleSize).toBe(6);
     expect(m.zoneLabel).toBe("UTC");
   });
@@ -69,9 +69,9 @@ describe("DurationAnalysis", () => {
     expect(m.sampleSize).toBe(5);
   });
 
-  it("shows the sweet spot when the best bucket has ≥ 3 trades (last of ties)", () => {
+  it("shows the sweet spot when the best bucket has ≥ 3 trades (first of ties)", () => {
     const trades = [5, 5, 5, 40, 40, 40].map((d) => fxTrade({ durationMin: d, netProfit: "1", rMultiple: 1 }));
-    expect(durationAnalysis(fx, trades).sweetSpot?.label).toBe("30-60m");
+    expect(durationAnalysis(fx, trades).sweetSpot?.label).toBe("0-5m");
     expect(durationAnalysis(fx, []).buckets).toEqual([]);
   });
 });

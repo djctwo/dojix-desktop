@@ -72,11 +72,11 @@ describe("DrawdownRecovery", () => {
     ]);
   });
 
-  it("deepest and longest take the last of equal events (max(by:))", () => {
+  it("deepest and longest take the first of equal events (max(by:))", () => {
     const m = computeDrawdownRecovery(swift, fxSeries([...pad(14), "-10", "10", "-10", "10", "-10", "10"]));
     expect(m.drawdownEvents).toHaveLength(3);
-    expect(m.deepestEvent).toBe(m.drawdownEvents[2]);
-    expect(m.longestEvent).toBe(m.drawdownEvents[2]);
+    expect(m.deepestEvent).toBe(m.drawdownEvents[0]);
+    expect(m.longestEvent).toBe(m.drawdownEvents[0]);
     expect(m.topEvents).toEqual(m.drawdownEvents); // stable sort keeps equal depths in order
     expect(m.moreEventsCount).toBe(0);
   });

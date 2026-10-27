@@ -52,7 +52,7 @@ here reproduces Swift and says which Swift line it matches.
 | `String(format: "%.2f")` | exact binary value, ties to even, "-0.00", "nan"/"inf" | `toFixed` ties up, "0.00", exponent at 1e21 | `formatFixed`, `swiftFormat` |
 | Currency formatter | ICU: shortest digits, then half-even (2.675 → "2.68") | — | `asCurrency` |
 | `.rounded()` | half away from zero | `Math.round` half up (−2.5 → −2) | `swiftRounded` |
-| `max(by:)` / `min(by:)` | max returns the **last** tie, min the **first** | — | `maxBy`, `minBy` |
+| `max(by:)` / `min(by:)` | both return the **first** tie (max replaces only on `result < e`; confirmed by Tier B) | — | `maxBy`, `minBy` |
 | `max(x, y)` / `[Double].max()` with NaN | NaN handled asymmetrically | `Math.max` returns NaN | `swiftMax`, `seqMax` |
 | Sort | stable | stable (ES2019), but needs a 3-way comparator | `stableSorted(items, less)` |
 | Dictionary order | random per process | — | `groupByFirstAppearance` (desktop tie-break) |

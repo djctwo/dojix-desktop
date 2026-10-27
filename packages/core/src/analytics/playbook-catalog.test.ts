@@ -29,7 +29,7 @@ describe("PlaybookCatalog", () => {
     expect(m.setups.map((s) => s.name)).toEqual(["keep", "drop", "review"]);
     const keep = m.setups[0];
     expect(keep).toMatchObject({ tradeCount: 5, winRate: 60, avgR: 1, totalPnL: 90, profitFactor: 4, classification: "KEEP" });
-    expect(keep?.bestSession).toBe("ASIAN"); // LONDON 40, NY 10, ASIAN 40: the last maximum in first-appearance order
+    expect(keep?.bestSession).toBe("LONDON"); // LONDON 40, NY 10, ASIAN 40: the first maximum in first-appearance order
     expect(keep?.worstSession).toBe("NY");
     expect(keep?.recentPnL).toEqual([50, -20, 30, 40, -10]);
     const drop = m.setups[1];

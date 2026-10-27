@@ -30,7 +30,7 @@ describe("ExecutionQuality (ExecutionQuality.swift:26-102)", () => {
       { hour: 9, avgSlippage: 1, tradeCount: 2 },
       { hour: 10, avgSlippage: 1, tradeCount: 3 },
     ]);
-    expect(m.worstHour?.hour).toBe(10); // max(by:) keeps the last tie
+    expect(m.worstHour?.hour).toBe(9); // max(by:) keeps the first tie
     expect(m.maxHourlySlippage).toBe(1);
     expect(m.symbolSlippage.map((s) => s.symbol)).toEqual(["AAA", "BBB", "CCC", "DDD"]);
     expect(m.symbolSlippage[0]).toEqual({ symbol: "AAA", tradeCount: 2, avgSlippage: 1, estimatedCost: 200 });

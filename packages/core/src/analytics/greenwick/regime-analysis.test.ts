@@ -40,7 +40,7 @@ describe("RegimeAnalysis (RegimeAnalysis.swift:63-185)", () => {
     expect(m.regimeStats[0]?.winRate).toBeCloseTo((2 / 3) * 100, 12);
     expect(m.bestRegime?.regime).toBe("Trending");
     expect(m.worstRegime?.regime).toBe("Choppy");
-    expect(m.currentRegime).toBe("Calm"); // four-way tie: the last regime to appear (desktop tie-break)
+    expect(m.currentRegime).toBe("Trending"); // four-way tie: the first regime to appear (desktop tie-break)
     expect(m.maxRegimeDays).toBe(1);
     expect(m.bestInsight).toBe("You thrive in Trending days -- avg $400.00/day across 1 days");
     expect(m.worstInsight).toBe("Consider sitting out Choppy days -- costs you $90.00 total");

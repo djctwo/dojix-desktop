@@ -156,16 +156,16 @@ describe("EventImpactProfiler results", () => {
     expect(few.insightText).toBe("Need more event-day trades for a recommendation. Keep trading and check back.");
   });
 
-  it("insight picks the first lowest / last highest average among events with ≥ 5 trades", () => {
+  it("insight picks the first lowest / first highest average among events with ≥ 5 trades", () => {
     const cpiDays = [[2, 10], [3, 10], [3, 11], [11, 10], [11, 11]] as const;
     const cpi = (p: string) => cpiDays.map(([mo, d]) => fxAt(utc(2026, mo, d), p));
     // FOMC −5 avg (10 trades) vs CPI −50 avg (5 trades): the worst is CPI, but it has < 10 trades → best branch
     const m = computeEventImpactProfiler(fxSwift, [...fomcLosers("-5"), ...cpi("-50"), ...nfpTrades()]);
     expect(m.insightText).toBe("Best event: NFP — 80% WR, $+14.00 avg per trade.");
-    // Two winners with the same average: max(by:) keeps the last one (CPI after NFP in count order)
+    // Two winners with the same average: max(by:) keeps the first one (NFP before CPI in count order)
     const n = computeEventImpactProfiler(fxSwift, [...NFP_DAYS.slice(0, 5).map(([mo, d]) => fxAt(utc(2026, mo, d, 13), "7")), ...cpi("7")]);
     expect(n.results.map((r) => r.eventType.rawValue)).toEqual(["NFP", "CPI"]);
-    expect(n.insightText).toBe("Best event: CPI — 100% WR, $+7.00 avg per trade.");
+    expect(n.insightText).toBe("Best event: NFP — 100% WR, $+7.00 avg per trade.");
   });
 
   it("compares event vs quiet days and builds the symbol-impact rows", () => {

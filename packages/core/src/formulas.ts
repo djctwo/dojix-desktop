@@ -212,10 +212,10 @@ export const FORMULA_INDEX: readonly FormulaEntry[] = [
 
   // --- Appendix A, shared ------------------------------------------------------------------
   done("LotSizeAnalysis / ShareSizeAnalysis", "analytics/size-analysis.ts", ["sizeAnalysis"], BOTH, at("pairs", "pairs")),
-  done("HourlyPnLChart", "analytics/hourly-pnl.ts", ["hourlyPnL"], BOTH, at("timing", "timing"), undefined, "best = the last maximum (maxBy)"),
+  done("HourlyPnLChart", "analytics/hourly-pnl.ts", ["hourlyPnL"], BOTH, at("timing", "timing"), undefined, "best = the first maximum (maxBy)"),
   done("WinLossDistribution", "analytics/win-loss-distribution.ts", ["winLossDistribution"], BOTH, at("pairs", "pairs"), ["D-01"]),
   e3("DrawdownChart", BOTH, at("overview", "risk"), "analytics/drawdown-chart.ts", ["computeDrawdownChart", "drawdownChartComponent", "drawdownChartParity"]),
-  e3("TradeComparison", BOTH, at("behavioral", "behavioral"), "analytics/trade-comparison.ts", ["computeTradeComparison", "tradeComparisonComponent", "tradeComparisonParity"], { note: "best = maxBy (last of ties), worst = minBy (first)" }),
+  e3("TradeComparison", BOTH, at("behavioral", "behavioral"), "analytics/trade-comparison.ts", ["computeTradeComparison", "tradeComparisonComponent", "tradeComparisonParity"], { note: "best = maxBy, worst = minBy (both the first of ties)" }),
   done("DurationAnalysis", "analytics/duration-analysis.ts", ["durationAnalysis", "DURATION_RANGES"], BOTH, at("timing", "timing")),
   done("DayOfWeekChart", "analytics/day-of-week.ts", ["dayOfWeekChart"], BOTH, at("timing", "timing")),
   done("RMultipleChart", "analytics/r-multiple.ts", ["rMultipleChart", "R_MULTIPLE_RANGES"], BOTH, at("sessions", "sessions")),

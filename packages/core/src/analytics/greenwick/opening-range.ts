@@ -27,7 +27,7 @@ export interface OpeningRangeModel {
   activeBuckets: OpeningRangeBucket[];
   /** Some bucket has trades (else "No regular session trades to analyze"). */
   hasData: boolean;
-  /** Highest average P&L (last of ties). Highlighted only when more than one bucket is active. */
+  /** Highest average P&L (first of ties). Highlighted only when more than one bucket is active. */
   bestBucket: OpeningRangeBucket | null;
   /** Lowest average P&L (first of ties). Highlighted only when more than one bucket is active and its average is negative. */
   worstBucket: OpeningRangeBucket | null;

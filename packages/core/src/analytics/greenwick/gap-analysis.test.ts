@@ -61,16 +61,17 @@ describe("GapAnalysis (GapAnalysis.swift:33-171)", () => {
     expect(computeGapAnalysis([prev, ...trades], "en_US").bestStrategy).toBe("Need both long and short gap trades to compare strategies");
   });
 
-  it("previous close = the last of equal close times; today's open = the first of equal open times", () => {
-    const p1 = tr("FICT", 9, [10, 0], [15, 0], "100", "200");
-    const p2 = tr("FICT", 9, [11, 0], [15, 0], "100", "100"); // same close time, opened later: max(by:) keeps it
+  it("previous close = the first of equal close times; today's open = the first of equal open times", () => {
+    const p1 = tr("FICT", 9, [10, 0], [15, 0], "100", "200"); // same close time, opened first: max(by:) keeps it
+    const p2 = tr("FICT", 9, [11, 0], [15, 0], "100", "100");
     const t1 = tr("FICT", 10, [9, 31], [10, 0], "103", "103");
     const t2 = tr("FICT", 10, [9, 31], [10, 0], "50", "50"); // same open time: min(by:) keeps t1
     const gaps = findGapTrades([p1, p2, t1, t2]); // the stable sort by open time keeps t1 before t2
     expect(gaps).toHaveLength(2);
-    expect(gaps[0]?.previousClose).toBe(100);
-    expect(gaps[0]?.gapPercent).toBeCloseTo(3, 12);
-    expect(gaps.every((g) => g.gapFilled)).toBe(true); // t2's low 50 ≤ 100
+    expect(gaps[0]?.previousClose).toBe(200);
+    expect(gaps[0]?.gapPercent).toBeCloseTo(-48.5, 12); // t1's open 103, not t2's 50
+    expect(gaps[0]?.gapType).toBe("Gap Down");
+    expect(gaps.some((g) => g.gapFilled)).toBe(false); // no trade reaches 200
   });
 
   it("days come from the ET open; one day per symbol, bad prices and empty input", () => {

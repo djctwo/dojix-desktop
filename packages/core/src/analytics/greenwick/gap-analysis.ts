@@ -4,7 +4,7 @@
 // - Days are the ET date of the **open** (`TradingCalendar.dayKey(openTime)`), zero-padded, so
 //   sorting the keys as strings is date order (the Mac's D-13 fix, now parity).
 // - Previous close = the close price of the previous traded day's last close (`max(by:)`, the
-//   last of equal close times); today's open = the open price of the day's first open
+//   first of equal close times in open-time order); today's open = the open price of the day's first open
 //   (`min(by:)`, the first of equal open times).
 // - Prices go through Foundation's Decimal → Double (`NSDecimalNumber.doubleValue`).
 // - The Mac walks symbols in dictionary order (random); the desktop walks them in first

@@ -1496,7 +1496,7 @@ apps gained after that draft, and the larger import and parity surface.
   - median: mean of the two middle values when the count is even.
   - **D-01:** a value equal to +maxAbs falls outside every bucket.
 - **DrawdownChart:** ASC; dd = cum − peak (≤ 0, both starting at 0); "Max" = min(dd).
-- **TradeComparison:** best = max (the last of ties); worst = min (the first of ties).
+- **TradeComparison:** best = max (the first of ties); worst = min (the first of ties).
 - **DurationAnalysis:**
   - buckets 0–5, 6–15, 16–30, 31–60, 61–120, 121–999999 min;
   - per bucket: profit, WR%, avgR;

@@ -5,7 +5,7 @@
 // day of the close (`TradingCalendar.groupedByWeekday`), so a stored "Fr." or an after-hours
 // Friday close seen from Tokyo still lands on "Fri".
 //
-// Rows Mon…Fri only (a weekend label is ignored); best = `max(by:)` (last of ties), worst =
+// Rows Mon…Fri only (a weekend label is ignored); best = `max(by:)` (first of ties), worst =
 // `min(by:)` (first of ties).
 
 import type { EngineContext } from "../engine/context";

@@ -7,7 +7,7 @@
 //   (`ctx.calendar`), Greenwick `TradingCalendar.monthKey` (the ET trading day's month, so a Friday
 //   18:50 ET close on 31 July stays in July for a user anywhere).
 // - Per month: profit (summed in input order), count, WR% (wins / count × 100); sorted by key.
-// - Year total = Σ month profits in month order; best = `max(by:)` (last of ties), worst =
+// - Year total = Σ month profits in month order; best = `max(by:)` (first of ties), worst =
 //   `min(by:)` (first of ties).
 // - Greenwick also requires best.month and worst.month in 1…12 before showing them (always true
 //   for keys it builds itself).

@@ -9,9 +9,17 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run --coverage",
+    "test:props": "PROPERTY_RUNS=100000 vitest run src/properties.test.ts src/swift/swift.test.ts",
+    "test:perf": "PERF_FULL=1 vitest run src/perf.test.ts"
+  },
+  "dependencies": {
+    "@dojix-desktop/core": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "24.19.2",
+    "@vitest/coverage-v8": "5.0.4",
+    "fast-check": "4.10.2",
     "typescript": "6.0.3",
     "vitest": "5.0.4"
   }

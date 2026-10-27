@@ -12,7 +12,8 @@ describe("FORMULA_INDEX", () => {
   });
 
   it("points implemented entries at existing exports", () => {
-    for (const f of FORMULA_INDEX.filter((x) => x.status === "implemented")) {
+    // Importer entries live in packages/importers and are checked by its own formulas test.
+    for (const f of FORMULA_INDEX.filter((x) => x.status === "implemented" && (x.package ?? "core") === "core")) {
       expect(f.module, f.id).toBeDefined();
       const mod = modules[`./${f.module}`];
       expect(mod, `${f.id}: ${f.module}`).toBeDefined();

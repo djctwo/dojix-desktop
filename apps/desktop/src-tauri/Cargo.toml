@@ -31,7 +31,7 @@ tauri-plugin-single-instance = "=2.5.3"
 rusqlite = { version = "=0.40.2", features = ["bundled", "serialize"] }
 rusqlite_migration = "=2.6.0"
 # AES-256-GCM for the sealed journal file.
-aes-gcm = { version = "=0.10.3", features = ["zeroize"] }
+aes-gcm = { version = "=0.11.1", features = ["zeroize"] }
 # OS credential vault: Windows Credential Manager, Secret Service on Linux.
 keyring = "=4.2.0"
 serde = { version = "1", features = ["derive"] }

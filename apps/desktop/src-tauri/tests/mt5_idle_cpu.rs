@@ -72,15 +72,22 @@ fn an_idle_watcher_uses_under_one_percent_cpu() {
     ];
     for (i, dir) in folders.iter().enumerate() {
         for day in 0..10 {
-            fs::write(dir.join(format!("DojixExport_{i}_202610{day:02}.csv")), SAMPLE).unwrap();
+            fs::write(
+                dir.join(format!("DojixExport_{i}_202610{day:02}.csv")),
+                SAMPLE,
+            )
+            .unwrap();
         }
         fs::write(dir.join("other.csv"), b"x\r\n").unwrap();
     }
+    let paths: Vec<String> = folders
+        .iter()
+        .map(|p| p.to_string_lossy().into_owned())
+        .collect();
+    // Added on this machine ("Add folder…") and enabled.
     let config = Config {
-        enabled: folders
-            .iter()
-            .map(|p| p.to_string_lossy().into_owned())
-            .collect(),
+        enabled: paths.clone(),
+        custom: paths,
         ..Config::default()
     };
 

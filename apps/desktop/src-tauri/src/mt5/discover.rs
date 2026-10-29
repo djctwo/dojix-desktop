@@ -134,13 +134,14 @@ fn looks_utf16le(bytes: &[u8]) -> bool {
 /// when it is empty or not text.
 pub fn decode_origin(bytes: &[u8]) -> Option<String> {
     let utf16 = |data: &[u8], big_endian: bool| -> String {
-        let units: Vec<u16> = data
-            .chunks_exact(2)
-            .map(|c| {
+        let (pairs, _) = data.as_chunks::<2>();
+        let units: Vec<u16> = pairs
+            .iter()
+            .map(|&c| {
                 if big_endian {
-                    u16::from_be_bytes([c[0], c[1]])
+                    u16::from_be_bytes(c)
                 } else {
-                    u16::from_le_bytes([c[0], c[1]])
+                    u16::from_le_bytes(c)
                 }
             })
             .collect();
@@ -257,7 +258,10 @@ fn wine_appdata(prefix: &Path) -> Vec<PathBuf> {
         }
         let home = users.join(&name);
         // Current Wine uses AppData\Roaming; older prefixes use "Application Data".
-        for roaming in [home.join("AppData").join("Roaming"), home.join("Application Data")] {
+        for roaming in [
+            home.join("AppData").join("Roaming"),
+            home.join("Application Data"),
+        ] {
             if ro::is_dir(&roaming) {
                 out.push(roaming);
             }

@@ -9,6 +9,7 @@
 
 pub mod discover;
 pub mod ro;
+pub mod safe_path;
 pub mod watch;
 
 use std::collections::HashMap;
@@ -50,7 +51,7 @@ impl Config {
             let mut seen = std::collections::HashSet::new();
             *list = list
                 .iter()
-                .filter(|p| !p.is_empty() && p.len() <= 4096 && !p.contains('\0'))
+                .filter(|p| safe_path::is_acceptable(p))
                 .filter(|p| seen.insert((*p).clone()))
                 .take(64)
                 .cloned()
@@ -58,7 +59,11 @@ impl Config {
         };
         clean(&mut self.enabled);
         clean(&mut self.custom);
-        if self.prefix32.as_deref().is_some_and(|p| prefix_problem(p).is_some()) {
+        if self
+            .prefix32
+            .as_deref()
+            .is_some_and(|p| prefix_problem(p).is_some())
+        {
             self.prefix32 = None;
         }
         self
@@ -71,10 +76,9 @@ pub fn prefix_problem(prefix: &str) -> Option<&'static str> {
         Some("The prefix can't be empty.")
     } else if prefix.chars().count() > PREFIX_MAX {
         Some("The prefix is too long (64 characters at most).")
-    } else if prefix
-        .chars()
-        .any(|c| c.is_control() || matches!(c, '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|'))
-    {
+    } else if prefix.chars().any(|c| {
+        c.is_control() || matches!(c, '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|')
+    }) {
         Some("The prefix can't contain path separators, wildcards or control characters.")
     } else {
         None
@@ -166,8 +170,8 @@ fn preview(path: &Path, prefix32: &str) -> (u32, u32, Vec<PreviewFile>) {
         u32::try_from(trade.len()).unwrap_or(u32::MAX),
         u32::try_from(other.len()).unwrap_or(u32::MAX),
     );
-    trade.sort_by(|a, b| b.modified_ms.cmp(&a.modified_ms));
-    other.sort_by(|a, b| b.modified_ms.cmp(&a.modified_ms));
+    trade.sort_by_key(|f| std::cmp::Reverse(f.modified_ms));
+    other.sort_by_key(|f| std::cmp::Reverse(f.modified_ms));
     let files = trade.into_iter().chain(other).take(PREVIEW_FILES).collect();
     (counts.0, counts.1, files)
 }
@@ -212,7 +216,9 @@ impl Service {
     pub fn locations(&self, config: &Config) -> Vec<LocationView> {
         let roots = lock(&self.roots).clone();
         let mut found: Vec<Location> = discover::discover(&roots);
-        for path in config.custom.iter().chain(config.enabled.iter()) {
+        let listed = config.custom.iter().chain(config.enabled.iter());
+        // A path that fails the checks is never looked at (not even stat'ed).
+        for path in listed.filter(|p| safe_path::is_acceptable(p)) {
             let p = PathBuf::from(path);
             let id = discover::location_id(&p);
             if !found.iter().any(|l| l.id == id) {
@@ -251,6 +257,30 @@ impl Service {
             .find(|l| l.id == id)
     }
 
+    /// The enabled folders the watcher may read: each must pass [`safe_path`] and be either a
+    /// folder discovery finds on this machine or one the user added here ("Add folder…").
+    /// Anything else (a hand-edited or imported setting) stays listed but is not watched.
+    pub fn allowed(&self, config: &Config) -> Vec<String> {
+        let candidates: Vec<&String> = config
+            .enabled
+            .iter()
+            .filter(|p| safe_path::is_acceptable(p))
+            .collect();
+        if candidates.is_empty() {
+            return Vec::new();
+        }
+        let roots = lock(&self.roots).clone();
+        let discovered: Vec<String> = discover::discover(&roots)
+            .into_iter()
+            .map(|l| l.path)
+            .collect();
+        candidates
+            .into_iter()
+            .filter(|p| config.custom.contains(*p) || discovered.contains(*p))
+            .cloned()
+            .collect()
+    }
+
     /// Makes the running watcher match `config`: starts, restarts or stops it. `ledger` is
     /// called only when a watcher starts.
     pub fn reconcile(
@@ -259,15 +289,16 @@ impl Service {
         ledger: impl FnOnce() -> HashMap<PathBuf, LedgerEntry>,
     ) -> std::io::Result<()> {
         let prefix32 = config.prefix32();
+        let allowed = self.allowed(config);
         let mut running = lock(&self.running);
         if let Some(r) = running.as_ref() {
-            if r.paths == config.enabled && r.prefix32 == prefix32 {
+            if r.paths == allowed && r.prefix32 == prefix32 {
                 return Ok(());
             }
         }
         // Stop the old watcher before starting the new one.
         *running = None;
-        if config.enabled.is_empty() {
+        if allowed.is_empty() {
             log::info!("MT5 auto-import is off");
             return Ok(());
         }
@@ -276,8 +307,7 @@ impl Service {
             .into_iter()
             .map(|v| (v.location.path, v.location.label))
             .collect();
-        let folders = config
-            .enabled
+        let folders = allowed
             .iter()
             .map(|path| {
                 let p = PathBuf::from(path);
@@ -295,10 +325,10 @@ impl Service {
             self.timing.clone(),
             self.sink.clone(),
         )?;
-        log::info!("MT5 auto-import watching {} folder(s)", config.enabled.len());
+        log::info!("MT5 auto-import watching {} folder(s)", allowed.len());
         *running = Some(Running {
             watcher,
-            paths: config.enabled.clone(),
+            paths: allowed,
             prefix32,
         });
         Ok(())
@@ -306,9 +336,10 @@ impl Service {
 
     /// True when the running watcher (or the absence of one) already matches `config`.
     pub fn matches(&self, config: &Config) -> bool {
+        let allowed = self.allowed(config);
         match lock(&self.running).as_ref() {
-            Some(r) => r.paths == config.enabled && r.prefix32 == config.prefix32(),
-            None => config.enabled.is_empty(),
+            Some(r) => r.paths == allowed && r.prefix32 == config.prefix32(),
+            None => allowed.is_empty(),
         }
     }
 

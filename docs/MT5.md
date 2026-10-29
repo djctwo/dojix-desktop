@@ -12,6 +12,15 @@ the code and for the Settings screen.
   nothing else. A test (`apps/desktop/src/mt5/readonlyGate.test.ts`) fails the build if any
   write, create, rename, delete or permission API appears there. Files are opened with full
   sharing on Windows, so MetaTrader is never locked out.
+- **Local folders only, chosen on this machine.** A folder is watched only if its path passes
+  `mt5/safe_path.rs` (no network shares such as `\\server\share` or `//server/share`, no
+  `\\?\UNC\`, `\\.\` or other device paths, no relative paths or `..`; on Windows a drive
+  letter is required, so mapped drives work) **and** it is either a folder discovery finds on
+  this machine or one the user added here with "Add folder…". A path that fails is never
+  listed, stat'ed or opened, and the watcher itself refuses to start on one. This keeps a
+  crafted setting from making Windows connect to a server and offer the user's credentials.
+- **Restores turn MT5 off.** Restoring a backup keeps only the 32-column prefix; watched and
+  added folders are cleared, so the user enables folders again on this machine.
 - **Paused while locked.** When the journal locks, the watcher stops; it starts again when the
   UI calls `mt5_status` after unlocking.
 - **Files it picks up:** `DojixExport_*.csv` (written by [`mql5/DojixExport.mq5`](../mql5/README.md))
@@ -68,7 +77,7 @@ journal is locked. In Greenwick builds every MT5 command fails with `unsupported
 | `mt5Discover()` | `mt5_discover` | `Mt5Location[]` | Every folder found plus the user's own, each with `enabled`, counts and a preview (newest trade files first, at most 20). Use it for the "Find MetaTrader 5" list. Reads folder listings only |
 | `mt5Status()` | `mt5_status` | `Mt5Status` | The watcher's folders (`watching` / `polling` / `missing`), recent files with their state, the queue and the last result. **Also starts the watcher** after an unlock; the auto-import hook calls it |
 | `mt5WatchSet(id, enabled)` | `mt5_watch_set` | `Mt5Status` | Turns one listed folder on or off (the opt-in). `id` comes from `mt5Discover()` |
-| `mt5AddFolder()` | `mt5_add_folder` | `Mt5Location \| null` | "Add folder…": the folder dialog opens in the shell. The folder is listed with its preview but not enabled |
+| `mt5AddFolder()` | `mt5_add_folder` | `Mt5Location \| null` | "Add folder…": the folder dialog opens in the shell. The folder is listed with its preview but not enabled. A network share is refused (`unsafe_folder`) |
 | `mt5RemoveFolder(id)` | `mt5_remove_folder` | `Mt5Status` | Removes an added folder (and stops watching it) |
 | `mt5SetPrefix(prefix \| null)` | `mt5_set_prefix` | `Mt5Status` | The 32-column files' name prefix; `null` clears it. Refused (`invalid_prefix`) when empty, longer than 64 characters, or containing `/ \ : * ? " < > \|` or control characters |
 | `mt5Rescan()` | `mt5_rescan` | `Mt5Status` | Looks at the enabled folders now ("Scan now") |
@@ -84,7 +93,9 @@ written), `busy`, `pending`, `imported`, `unchanged`, `deleted`, `not_trade_file
 `denied`, `too_large`.
 
 Settings (journal key `mt5`): `{ enabled: string[], custom: string[], prefix32: string | null }`,
-bounded on read (at most 64 folders each, no empty or NUL paths, an invalid prefix dropped).
+bounded on read (at most 64 folders each, every path checked by `safe_path`, an invalid prefix
+dropped). `custom` only ever holds folders picked in the dialog on this machine (a restore
+clears it).
 
 ### Settings screen checklist
 

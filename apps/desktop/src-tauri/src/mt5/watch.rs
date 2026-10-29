@@ -360,10 +360,9 @@ impl State {
                     continue;
                 }
                 if let Some(token) = self.pending_for(&path) {
-                    let same = self
-                        .pending
-                        .get(&token)
-                        .is_some_and(|p| p.size == entry.stat.size && p.mtime_ns == entry.stat.mtime_ns);
+                    let same = self.pending.get(&token).is_some_and(|p| {
+                        p.size == entry.stat.size && p.mtime_ns == entry.stat.mtime_ns
+                    });
                     if same {
                         continue;
                     }
@@ -373,7 +372,14 @@ impl State {
                     if l.size == entry.stat.size && l.mtime_ns == entry.stat.mtime_ns {
                         if !self.files.contains_key(&path) {
                             let state = state_of_result(&l.result);
-                            self.record(&path, &folder.id, &entry.name, state, None, Some(entry.stat));
+                            self.record(
+                                &path,
+                                &folder.id,
+                                &entry.name,
+                                state,
+                                None,
+                                Some(entry.stat),
+                            );
                         }
                         continue;
                     }
@@ -443,7 +449,10 @@ enum Outcome {
     Partial(Stat),
     /// The bytes are the same as the ledger's.
     Same(Stat),
-    Ready { stat: Stat, sha256: String },
+    Ready {
+        stat: Stat,
+        sha256: String,
+    },
 }
 
 fn examine(path: &Path, c: &Candidate, ledger: Option<&LedgerEntry>, timing: &Timing) -> Outcome {
@@ -531,7 +540,9 @@ impl Shared {
             st.next_poll = now;
         }
         for path in &event.paths {
-            let Some(parent) = path.parent() else { continue };
+            let Some(parent) = path.parent() else {
+                continue;
+            };
             let Some(folder) = st.folders.iter().find(|f| f.path == parent) else {
                 continue;
             };
@@ -569,6 +580,17 @@ impl Watcher {
         timing: Timing,
         sink: Arc<dyn Sink>,
     ) -> std::io::Result<Self> {
+        // Defence in depth: never watch a path that fails the checks (see `safe_path`).
+        if let Some(f) = folders
+            .iter()
+            .find(|f| !super::safe_path::is_acceptable(&f.path.to_string_lossy()))
+        {
+            log::warn!("MT5 folder {} refused: not a local folder path", f.id);
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "not a local folder path",
+            ));
+        }
         let shared = Arc::new(Shared {
             state: Mutex::new(State {
                 folders,
@@ -752,7 +774,10 @@ fn make_event_source(shared: &Arc<Shared>) -> Option<notify::RecommendedWatcher>
     match notify::recommended_watcher(handler) {
         Ok(w) => Some(w),
         Err(e) => {
-            log::warn!("MT5 folder events unavailable ({}); polling only", error_kind(&e));
+            log::warn!(
+                "MT5 folder events unavailable ({}); polling only",
+                error_kind(&e)
+            );
             None
         }
     }
@@ -880,7 +905,14 @@ fn apply_outcome(st: &mut State, path: &Path, seen: &Candidate, outcome: Outcome
         st.candidates.remove(path);
         st.drop_pending_for(path);
         if st.files.contains_key(path) {
-            st.record(path, &seen.folder_id, &seen.file_name, FileState::Deleted, None, None);
+            st.record(
+                path,
+                &seen.folder_id,
+                &seen.file_name,
+                FileState::Deleted,
+                None,
+                None,
+            );
         }
         return false;
     }
@@ -899,7 +931,14 @@ fn apply_outcome(st: &mut State, path: &Path, seen: &Candidate, outcome: Outcome
                 c.last = Some(stat);
                 c.due = now + timing.stable_gap;
             }
-            st.record(path, &folder_id, &file_name, FileState::Waiting, None, Some(stat));
+            st.record(
+                path,
+                &folder_id,
+                &file_name,
+                FileState::Waiting,
+                None,
+                Some(stat),
+            );
             false
         }
         Outcome::Busy(detail) => {
@@ -908,7 +947,14 @@ fn apply_outcome(st: &mut State, path: &Path, seen: &Candidate, outcome: Outcome
                 c.busy_tries += 1;
                 c.due = now + (timing.busy_retry * factor).min(timing.poll);
             }
-            st.record(path, &folder_id, &file_name, FileState::Busy, Some(detail), None);
+            st.record(
+                path,
+                &folder_id,
+                &file_name,
+                FileState::Busy,
+                Some(detail),
+                None,
+            );
             false
         }
         Outcome::Settled(state, detail, stat) => {
@@ -923,7 +969,14 @@ fn apply_outcome(st: &mut State, path: &Path, seen: &Candidate, outcome: Outcome
                 c.due = now + timing.poll;
             }
             let detail = Some("the last line is still being written".to_string());
-            st.record(path, &folder_id, &file_name, FileState::Partial, detail, Some(stat));
+            st.record(
+                path,
+                &folder_id,
+                &file_name,
+                FileState::Partial,
+                detail,
+                Some(stat),
+            );
             false
         }
         Outcome::Same(stat) => {
@@ -932,7 +985,14 @@ fn apply_outcome(st: &mut State, path: &Path, seen: &Candidate, outcome: Outcome
                 l.size = stat.size;
                 l.mtime_ns = stat.mtime_ns;
             }
-            st.record(path, &folder_id, &file_name, FileState::Unchanged, None, Some(stat));
+            st.record(
+                path,
+                &folder_id,
+                &file_name,
+                FileState::Unchanged,
+                None,
+                Some(stat),
+            );
             false
         }
         Outcome::Ready { stat, sha256 } => {
@@ -952,7 +1012,14 @@ fn apply_outcome(st: &mut State, path: &Path, seen: &Candidate, outcome: Outcome
                     sha256,
                 },
             );
-            st.record(path, &folder_id, &file_name, FileState::Pending, None, Some(stat));
+            st.record(
+                path,
+                &folder_id,
+                &file_name,
+                FileState::Pending,
+                None,
+                Some(stat),
+            );
             true
         }
     }

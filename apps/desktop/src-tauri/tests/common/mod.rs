@@ -146,7 +146,10 @@ pub fn fingerprint(root: &Path) -> BTreeMap<String, String> {
     let mut stack = vec![root.to_path_buf()];
     while let Some(dir) = stack.pop() {
         out.insert(
-            dir.strip_prefix(root).unwrap().to_string_lossy().into_owned(),
+            dir.strip_prefix(root)
+                .unwrap()
+                .to_string_lossy()
+                .into_owned(),
             describe(&dir),
         );
         for entry in fs::read_dir(&dir).unwrap() {
@@ -156,7 +159,10 @@ pub fn fingerprint(root: &Path) -> BTreeMap<String, String> {
                 stack.push(path);
             } else {
                 out.insert(
-                    path.strip_prefix(root).unwrap().to_string_lossy().into_owned(),
+                    path.strip_prefix(root)
+                        .unwrap()
+                        .to_string_lossy()
+                        .into_owned(),
                     describe(&path),
                 );
             }
@@ -184,7 +190,14 @@ pub fn deny_writes(root: &Path, deny: bool) {
     {
         let target = root.to_string_lossy().into_owned();
         let args: Vec<&str> = if deny {
-            vec![&target, "/deny", "*S-1-1-0:(OI)(CI)(WD,AD,WEA,WA,D,DC)", "/T", "/C", "/Q"]
+            vec![
+                &target,
+                "/deny",
+                "*S-1-1-0:(OI)(CI)(WD,AD,WEA,WA,D,DC)",
+                "/T",
+                "/C",
+                "/Q",
+            ]
         } else {
             vec![&target, "/remove:d", "*S-1-1-0", "/T", "/C", "/Q"]
         };

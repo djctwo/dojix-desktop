@@ -35,12 +35,15 @@ fn count(j: &Journal, sql: &str) -> i64 {
     j.conn().query_row(sql, [], |r| r.get(0)).unwrap()
 }
 
+/// Settings with `folders` added on this machine ("Add folder…") and enabled.
 fn config_for(folders: &[&Path]) -> Config {
+    let paths: Vec<String> = folders
+        .iter()
+        .map(|p| p.to_string_lossy().into_owned())
+        .collect();
     Config {
-        enabled: folders
-            .iter()
-            .map(|p| p.to_string_lossy().into_owned())
-            .collect(),
+        enabled: paths.clone(),
+        custom: paths,
         ..Config::default()
     }
 }
@@ -267,7 +270,9 @@ fn origin_txt_is_decoded_in_every_encoding_mt5_and_editors_use() {
     assert_eq!(discover::install_label("Fictional"), "Fictional");
     assert!(discover::is_terminal_id(TERMINAL_A));
     assert!(!discover::is_terminal_id("Common"));
-    assert!(!discover::is_terminal_id("0123456789ABCDEF0123456789ABCDEZ"));
+    assert!(!discover::is_terminal_id(
+        "0123456789ABCDEF0123456789ABCDEZ"
+    ));
 }
 
 #[test]
@@ -329,15 +334,17 @@ fn wine_prefixes_are_searched_like_appdata() {
     assert_eq!(
         summary,
         vec![
-            (Kind::Common, "All terminals (Common\\Files)".into(), m.clone()),
+            (
+                Kind::Common,
+                "All terminals (Common\\Files)".into(),
+                m.clone()
+            ),
             (Kind::Terminal, "MetaTrader 5".into(), m.clone()),
             (Kind::Portable, "MetaTrader 5 (install folder)".into(), m),
             (Kind::Common, "All terminals (Common\\Files)".into(), o),
         ]
     );
-    assert!(found
-        .iter()
-        .all(|l| !l.path.contains("Public") && l.exists));
+    assert!(found.iter().all(|l| !l.path.contains("Public") && l.exists));
 }
 
 #[cfg(unix)]
@@ -401,7 +408,10 @@ fn file_names_are_classified_by_pattern() {
         file_kind("dojixexport_1_20261028.CSV", ""),
         Some(FileKind::Trade)
     );
-    assert_eq!(file_kind("Fictional32_20261028.csv", ""), Some(FileKind::OtherCsv));
+    assert_eq!(
+        file_kind("Fictional32_20261028.csv", ""),
+        Some(FileKind::OtherCsv)
+    );
     assert_eq!(
         file_kind("Fictional32_20261028.csv", "Fictional32_"),
         Some(FileKind::Trade)
@@ -563,7 +573,12 @@ fn a_file_still_being_written_is_read_only_once_it_is_stable() {
     // While the writer runs, nothing is queued with partial bytes.
     while !writer.is_finished() {
         let status = h.status();
-        if let Some(p) = status.watch.pending.iter().find(|p| p.file_name == SAMPLE_NAME) {
+        if let Some(p) = status
+            .watch
+            .pending
+            .iter()
+            .find(|p| p.file_name == SAMPLE_NAME)
+        {
             assert_eq!(
                 p.size,
                 SAMPLE.len() as u64,
@@ -612,10 +627,7 @@ fn a_file_changed_after_it_was_queued_is_read_again() {
     rewrite(&path, &grown_sample());
     // Let the folder events arrive first (they only schedule a look 30 s out).
     std::thread::sleep(Duration::from_millis(500));
-    assert_eq!(
-        h.service.read(token).map(|_| ()),
-        Err(TakeError::Changed)
-    );
+    assert_eq!(h.service.read(token).map(|_| ()), Err(TakeError::Changed));
     assert!(h.pending_token(SAMPLE_NAME).is_none());
     // It is looked at again right away (no waiting for the poll).
     let again = h.wait_pending(SAMPLE_NAME);
@@ -685,7 +697,11 @@ fn reading_never_locks_mt5_out() {
 fn other_csv_files_are_listed_once_and_never_read() {
     let tmp = tempfile::tempdir().unwrap();
     let tree = windows_tree(tmp.path());
-    fs::write(tree.common_files.join("Fictional32_20261028.csv"), b"a,b\r\n").unwrap();
+    fs::write(
+        tree.common_files.join("Fictional32_20261028.csv"),
+        b"a,b\r\n",
+    )
+    .unwrap();
     fs::write(tree.common_files.join("DojixPrices.json"), b"{}").unwrap();
     let h = Harness::start(&[&tree.common_files], fast());
     h.wait_state("Fictional32_20261028.csv", FileState::NotTradeFile);
@@ -730,7 +746,11 @@ fn several_folders_and_restarts_follow_the_settings() {
     let tmp = tempfile::tempdir().unwrap();
     let tree = windows_tree(tmp.path());
     fs::write(tree.common_files.join(SAMPLE_NAME), SAMPLE).unwrap();
-    fs::write(tree.terminal_b_files.join("DojixExport_2_20261028.csv"), SAMPLE).unwrap();
+    fs::write(
+        tree.terminal_b_files.join("DojixExport_2_20261028.csv"),
+        SAMPLE,
+    )
+    .unwrap();
     let sink = Arc::new(CountSink::default());
     let service = Service::new(sink, Roots::default(), fast());
     let both = config_for(&[&tree.common_files, &tree.terminal_b_files]);
@@ -834,7 +854,14 @@ fn settings_list_found_custom_and_orphaned_folders_with_previews() {
     }
     assert_eq!(json["kind"], "common");
     let status = serde_json::to_value(service.status(&config)).unwrap();
-    for key in ["active", "prefix32", "folders", "files", "pending", "lastImport"] {
+    for key in [
+        "active",
+        "prefix32",
+        "folders",
+        "files",
+        "pending",
+        "lastImport",
+    ] {
         assert!(status.get(key).is_some(), "missing {key}");
     }
 }
@@ -1058,17 +1085,25 @@ fn files_that_are_not_trade_files_or_fail_record_only_the_ledger() {
 fn settings_round_trip_and_hostile_settings_are_bounded() {
     let data = tempfile::tempdir().unwrap();
     let mut j = journal(data.path());
-    assert_eq!(mt5_journal::read_config(j.conn()).unwrap(), Config::default());
+    assert_eq!(
+        mt5_journal::read_config(j.conn()).unwrap(),
+        Config::default()
+    );
+    let (a, b) = if cfg!(windows) {
+        (r"C:\a", r"C:\b")
+    } else {
+        ("/a", "/b")
+    };
     let config = Config {
-        enabled: vec!["/a".into(), "/a".into(), String::new(), "x\0y".into()],
-        custom: vec!["/b".into()],
+        enabled: vec![a.into(), a.into(), String::new(), "x\0y".into()],
+        custom: vec![b.into()],
         prefix32: Some("bad/prefix".into()),
     };
     j.write(|tx| mt5_journal::write_config(tx, &config))
         .unwrap();
     let read = mt5_journal::read_config(j.conn()).unwrap();
-    assert_eq!(read.enabled, vec!["/a".to_string()]);
-    assert_eq!(read.custom, vec!["/b".to_string()]);
+    assert_eq!(read.enabled, vec![a.to_string()]);
+    assert_eq!(read.custom, vec![b.to_string()]);
     assert_eq!(read.prefix32, None);
     j.write(|tx| {
         tx.execute(
@@ -1077,11 +1112,207 @@ fn settings_round_trip_and_hostile_settings_are_bounded() {
         )
     })
     .unwrap();
-    assert_eq!(mt5_journal::read_config(j.conn()).unwrap(), Config::default());
+    assert_eq!(
+        mt5_journal::read_config(j.conn()).unwrap(),
+        Config::default()
+    );
 
     use dojix_desktop_lib::mt5::prefix_problem;
     assert!(prefix_problem("Fictional32_").is_none());
     assert!(prefix_problem(" ").is_some());
     assert!(prefix_problem("a*").is_some());
     assert!(prefix_problem(&"x".repeat(65)).is_some());
+}
+
+// ------------------------------------------------------------------------------------------
+// Which paths may be watched (security review: no network shares, no restored folders)
+// ------------------------------------------------------------------------------------------
+
+#[test]
+fn network_device_and_relative_paths_are_refused_on_both_systems() {
+    use dojix_desktop_lib::mt5::safe_path::path_problem_for;
+    let windows_refused = [
+        r"\\attacker\share\MQL5\Files",
+        r"//attacker/share/Files",
+        r"\\?\UNC\attacker\share\Files",
+        r"\\?\unc\attacker\share",
+        r"\\.\pipe\x",
+        r"\\.\C:\Files",
+        r"\\?\GLOBALROOT\Device\X",
+        r"\??\C:\Files",
+        r"\/attacker/share",
+        r"/\attacker\share",
+        r"Files",
+        r"MQL5\Files",
+        r"C:Files",
+        r"\Users\Files",
+        r"C:\Users\..\..\Files",
+        "C:\\Files\u{7}",
+        "",
+    ];
+    for path in windows_refused {
+        assert!(path_problem_for(path, true).is_some(), "accepted on Windows: {path:?}");
+    }
+    assert!(path_problem_for(&format!("C:\\{}", "a".repeat(5000)), true).is_some());
+    for path in [
+        r"C:\Users\fictional\AppData\Roaming\MetaQuotes\Terminal\Common\Files",
+        r"z:\mapped drive\Files",
+        r"\\?\C:\Very long\Files",
+        "D:/Exports",
+    ] {
+        assert_eq!(path_problem_for(path, true), None, "refused on Windows: {path:?}");
+    }
+    for path in [
+        "//attacker/share",
+        r"\\attacker\share",
+        "relative/Files",
+        "/home/fictional/../Files",
+        "C:\\Files",
+        "",
+    ] {
+        assert!(path_problem_for(path, false).is_some(), "accepted on Unix: {path:?}");
+    }
+    for path in ["/home/fictional/.mt5/drive_c/Files", "/mnt/exports"] {
+        assert_eq!(path_problem_for(path, false), None, "refused on Unix: {path:?}");
+    }
+}
+
+#[test]
+fn refused_paths_are_dropped_from_settings_and_never_watched() {
+    let tmp = tempfile::tempdir().unwrap();
+    let tree = windows_tree(tmp.path());
+    let bad = [r"\\attacker\share\Files", "//attacker/share/Files", "relative/Files"];
+    let mut config = config_for(&[&tree.common_files]);
+    for b in bad {
+        config.enabled.push(b.to_string());
+        config.custom.push(b.to_string());
+    }
+    // Reading the settings drops them.
+    let clean = config.clone().sanitized();
+    assert_eq!(clean.enabled, vec![tree.common_files.to_string_lossy().into_owned()]);
+    assert_eq!(clean.custom, clean.enabled);
+    // Even unsanitized settings never reach the watcher or the folder list.
+    let sink = Arc::new(CountSink::default());
+    let service = Service::new(sink, Roots::default(), fast());
+    assert_eq!(service.allowed(&config), clean.enabled);
+    let listed: Vec<String> = service
+        .locations(&config)
+        .into_iter()
+        .map(|v| v.location.path)
+        .collect();
+    assert!(listed.iter().all(|p| !bad.contains(&p.as_str())));
+    service.reconcile(&config, HashMap::new).unwrap();
+    let status = service.status(&config);
+    assert_eq!(status.watch.folders.len(), 1);
+    // Only bad folders: nothing starts.
+    let only_bad = Config {
+        enabled: bad.iter().map(|b| b.to_string()).collect(),
+        custom: bad.iter().map(|b| b.to_string()).collect(),
+        prefix32: None,
+    };
+    service.reconcile(&only_bad, HashMap::new).unwrap();
+    assert!(!service.is_running());
+    // The watcher itself refuses a refused path.
+    for b in bad {
+        let started = watch::Watcher::start(
+            vec![watch::Folder {
+                id: "x".into(),
+                label: "x".into(),
+                path: PathBuf::from(b),
+            }],
+            String::new(),
+            HashMap::new(),
+            fast(),
+            Arc::new(CountSink::default()),
+        );
+        assert_eq!(
+            started.err().map(|e| e.kind()),
+            Some(std::io::ErrorKind::InvalidInput),
+            "{b}"
+        );
+    }
+}
+
+#[test]
+fn an_enabled_folder_must_be_found_or_added_on_this_machine() {
+    let tmp = tempfile::tempdir().unwrap();
+    let tree = windows_tree(tmp.path());
+    fs::write(tree.common_files.join(SAMPLE_NAME), SAMPLE).unwrap();
+    let elsewhere = tmp.path().join("Not added here");
+    mkdirs(&elsewhere);
+    fs::write(elsewhere.join(SAMPLE_NAME), SAMPLE).unwrap();
+    let service = Service::new(
+        Arc::new(CountSink::default()),
+        Roots {
+            appdata: vec![tree.appdata.clone()],
+            ..Roots::default()
+        },
+        fast(),
+    );
+    // Enabled but neither discovered nor added here (e.g. a hand-edited setting).
+    let config = Config {
+        enabled: vec![
+            tree.common_files.to_string_lossy().into_owned(),
+            elsewhere.to_string_lossy().into_owned(),
+        ],
+        ..Config::default()
+    };
+    assert_eq!(
+        service.allowed(&config),
+        vec![tree.common_files.to_string_lossy().into_owned()]
+    );
+    service.reconcile(&config, HashMap::new).unwrap();
+    wait_until("the discovered folder's file", WAIT, || {
+        service.status(&config).watch.pending.len() == 1
+    });
+    std::thread::sleep(Duration::from_millis(900));
+    let status = service.status(&config);
+    assert_eq!(status.watch.folders.len(), 1);
+    assert_eq!(status.watch.pending.len(), 1);
+}
+
+#[test]
+fn a_restore_keeps_every_mt5_folder_off() {
+    use dojix_desktop_lib::brand::DOJIX;
+    use dojix_desktop_lib::restore;
+    let data = tempfile::tempdir().unwrap();
+    let source_dir = data.path().join("a");
+    let target_dir = data.path().join("b");
+    mkdirs(&source_dir);
+    mkdirs(&target_dir);
+    let mut source = journal(&source_dir);
+    let crafted = Config {
+        enabled: vec![r"\\attacker\share\Files".into(), "/home/fictional/Files".into()],
+        custom: vec![r"\\attacker\share\Files".into(), "/home/fictional/Files".into()],
+        prefix32: Some("Fictional32_".into()),
+    };
+    // Written raw, as a crafted backup would hold it.
+    let raw = serde_json::to_string(&crafted).unwrap();
+    source
+        .write(|tx| {
+            tx.execute(
+                "INSERT INTO settings (key, value_json) VALUES ('mt5', ?1)",
+                [raw.as_str()],
+            )
+        })
+        .unwrap();
+    let image = source.image().unwrap();
+    let contents = restore::validate(&image, &DOJIX).unwrap();
+    let mut target = journal(&target_dir);
+    restore::apply(&mut target, &contents, Some("backup.dxbk")).unwrap();
+    let restored = mt5_journal::read_config(target.conn()).unwrap();
+    assert_eq!(
+        restored,
+        Config {
+            enabled: vec![],
+            custom: vec![],
+            prefix32: Some("Fictional32_".into()),
+        }
+    );
+    let garbage: serde_json::Value =
+        serde_json::from_str(&restore::restored_mt5_settings("not json")).unwrap();
+    assert_eq!(
+        garbage,
+        serde_json::json!({ "enabled": [], "custom": [], "prefix32": null })
+    );
 }

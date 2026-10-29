@@ -378,7 +378,9 @@ pub fn prepare(outcome: Outcome) -> Result<Prepared, Refused> {
             mut issues,
         } => {
             if !MT5_FORMATS.contains(&format.as_str()) {
-                return Err(Refused("An MT5 auto-import must be an MT5 trade file.".into()));
+                return Err(Refused(
+                    "An MT5 auto-import must be an MT5 trade file.".into(),
+                ));
             }
             if trades.len() > MAX_TRADES {
                 return Err(Refused("Too many trades in one file.".into()));

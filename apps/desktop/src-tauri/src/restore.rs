@@ -16,7 +16,7 @@
 use std::collections::{BTreeMap, HashSet};
 
 use rusqlite::types::{Value, ValueRef};
-use rusqlite::{Connection, MAIN_DB};
+use rusqlite::{Connection, OptionalExtension, MAIN_DB};
 use serde::Serialize;
 
 use crate::brand::Brand;
@@ -1280,6 +1280,16 @@ pub fn validate(image: &[u8], brand: &Brand) -> Result<Contents, RestoreError> {
     desktop_contents(&conn, brand)
 }
 
+/// The MT5 settings a restore keeps: the 32-column prefix only. Watched and added folders
+/// are cleared, so a crafted backup can't point the watcher at a network share or any other
+/// path; the user enables folders again on this machine.
+pub fn restored_mt5_settings(text: &str) -> String {
+    let prefix = serde_json::from_str::<serde_json::Value>(text)
+        .ok()
+        .and_then(|v| v.get("prefix32").and_then(|p| p.as_str()).map(str::to_string));
+    serde_json::json!({ "enabled": [], "custom": [], "prefix32": prefix }).to_string()
+}
+
 /// Writes validated contents into the journal in one transaction and saves. On any failure
 /// the journal keeps its previous contents.
 pub fn apply(
@@ -1354,6 +1364,21 @@ pub fn apply(
         )?;
         if violations > 0 {
             return Err(StoreError::Invalid("foreign keys".into()));
+        }
+        // MT5 folders belong to the machine they were enabled on: a restored journal never
+        // watches (or even looks at) a folder until the user turns it on here (SPEC 5.4).
+        let mt5: Option<String> = tx
+            .query_row(
+                "SELECT value_json FROM settings WHERE key = 'mt5'",
+                [],
+                |r| r.get(0),
+            )
+            .optional()?;
+        if let Some(text) = mt5 {
+            tx.execute(
+                "UPDATE settings SET value_json = ?1 WHERE key = 'mt5'",
+                [restored_mt5_settings(&text)],
+            )?;
         }
         Ok(())
     });

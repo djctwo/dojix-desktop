@@ -160,7 +160,11 @@ pub mod dojix {
                 config.enabled.push(location.path.clone());
             }
             save_config(&store, config.sanitized())?;
-            log::info!("MT5 folder {} {}", location.id, if enabled { "on" } else { "off" });
+            log::info!(
+                "MT5 folder {} {}",
+                location.id,
+                if enabled { "on" } else { "off" }
+            );
             let config = sync(&store, &service)?;
             Ok(service.status(&config))
         })
@@ -172,10 +176,17 @@ pub mod dojix {
         service: &Service,
         path: PathBuf,
     ) -> Result<LocationView, OpError> {
+        let path_text = path.to_string_lossy().into_owned();
+        // Checked before the folder is touched at all: no network shares or device paths.
+        if mt5::safe_path::path_problem(&path_text).is_some() {
+            return Err(OpError::new(
+                "unsafe_folder",
+                "Choose a folder on this computer (network shares can't be watched).",
+            ));
+        }
         if !mt5::ro::is_dir(&path) {
             return Err(OpError::new("not_found", "That folder can't be opened."));
         }
-        let path_text = path.to_string_lossy().into_owned();
         let mut config = config_of(store)?;
         if !config.custom.contains(&path_text) {
             config.custom.push(path_text.clone());
@@ -301,9 +312,11 @@ pub mod dojix {
         let store = state.store()?;
         let service = mt5.service.clone();
         let summary = blocking(move || {
-            let file = service.pending(token).ok_or_else(|| take_error(TakeError::Unknown))?;
-            let prepared = mt5_journal::prepare(outcome)
-                .map_err(|r| OpError::new("invalid_import", r.0))?;
+            let file = service
+                .pending(token)
+                .ok_or_else(|| take_error(TakeError::Unknown))?;
+            let prepared =
+                mt5_journal::prepare(outcome).map_err(|r| OpError::new("invalid_import", r.0))?;
             let now_ms = crate::journal::now_ms();
             let commit_file = file.clone();
             let summary = store.call(move |c| {

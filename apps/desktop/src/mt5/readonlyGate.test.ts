@@ -53,7 +53,7 @@ const files = readdirSync(DIR).filter((f) => f.endsWith(".rs"));
 
 describe("MT5 module is read-only", () => {
   it("has its sources here", () => {
-    expect(files.sort()).toEqual(["discover.rs", "mod.rs", "ro.rs", "watch.rs"]);
+    expect(files.sort()).toEqual(["discover.rs", "mod.rs", "ro.rs", "safe_path.rs", "watch.rs"]);
   });
 
   for (const file of files) {

@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "main",
-  "description": "Least privilege: the main window may call only this app's own commands and listen to the app's own events. No fs, shell, http, dialog or opener access from the web view.",
+  "description": "Least privilege: the main window may call only this app's own commands and listen to the app's own events. No fs, shell, http, dialog or opener access from the web view; every network call goes through the app's own online commands (Rust).",
   "windows": [
     "main"
   ],
@@ -24,6 +24,25 @@
     "allow-backup-export",
     "allow-backup-pick",
     "allow-backup-restore",
+    "allow-online-settings-get",
+    "allow-online-settings-set",
+    "allow-set-secret",
+    "allow-has-secret",
+    "allow-delete-secret",
+    "allow-test-connection",
+    "allow-ai-models",
+    "allow-ai-preview",
+    "allow-ai-run",
+    "allow-ai-reports-list",
+    "allow-ai-report-delete",
+    "allow-quotes-start",
+    "allow-quotes-stop",
+    "allow-quotes-status",
+    "allow-calendar-week",
+    "allow-finnhub-quote",
+    "allow-finnhub-profile",
+    "allow-finnhub-search",
+    "allow-oanda-fetch-history",
     "core:event:allow-listen",
     "core:event:allow-unlisten"
   ]

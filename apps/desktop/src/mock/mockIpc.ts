@@ -8,7 +8,8 @@
 //                          launch gate or banner (default none)
 //   ?now=2026-09-30T12:00:00Z  "now" for analytics (default: that instant, so screenshots are stable)
 //   ?latency=300           ms delay on every call (loading states)
-//   ?fail=journal_trades,quotes_get  commands that reject (error states)
+//   ?fail=journal_trades,finnhub_quote  commands that reject (error states)
+//   ?online=on             online features on, every key stored (default: off, as in the app)
 
 import {
   type AppInfo,
@@ -21,7 +22,6 @@ import {
   COMMAND_INFO,
   type CallArgs,
   type CommandName,
-  type EconomicEvent,
   type EventName,
   type Events,
   type Ipc,
@@ -31,6 +31,7 @@ import {
   type StrategyCheckpoint,
 } from "../ipc/contract";
 import type { MockFixture } from "./fixtures";
+import { createOnlineHandlers } from "./online";
 
 export type MockGate = "none" | "locked" | "setup" | "olderCopy" | "storageError" | "lockFailed" | "setAside" | "saveFailing";
 
@@ -43,6 +44,8 @@ export interface MockOptions {
   now: number;
   latencyMs: number;
   fail: readonly CommandName[];
+  /** Online features switched on with every key stored (default: off, as in the app). */
+  online: boolean;
 }
 
 /** The App Lock password of every mock gate. Fictional, test-only. */
@@ -70,6 +73,7 @@ export function mockOptionsFromSearch(search: string, brand: BrandId, productNam
     now: Number.isFinite(now) ? now : MOCK_DEFAULT_NOW,
     latencyMs: Number.isFinite(latency) && latency > 0 ? Math.min(latency, 10_000) : 0,
     fail,
+    online: q.get("online") === "on",
   };
 }
 
@@ -88,14 +92,6 @@ export interface MockIpc extends Ipc {
 
 function toRow(t: StoredTrade): JournalRow {
   return { id: t.id, symbol: t.symbol, direction: t.direction, closeTime: t.closeTime, netProfit: t.netProfit };
-}
-
-/** Deterministic fictional price for a symbol (no network in the mock). */
-function fakePrice(symbol: string): number {
-  let h = 2166136261;
-  for (const c of symbol) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
-  const forex = /^[A-Z]{6}$/.test(symbol);
-  return forex ? 0.6 + (h % 9000) / 10000 : 20 + (h % 40000) / 100;
 }
 
 export function createMockIpc(options: MockOptions, initial: readonly StoredTrade[]): MockIpc {
@@ -369,8 +365,6 @@ export function createMockIpc(options: MockOptions, initial: readonly StoredTrad
       sampleTrades: trades.filter((t) => t.isSample === true || t.isSample === 1).length,
       journalBytes: trades.length * 900,
     }),
-    has_secret: () => false,
-    ai_reports_list: () => [],
     updates_check: () => ({ available: false, version: null, notes: null }),
     mt5_discover: () => [],
     watchlist_get: () => watchlist,
@@ -378,17 +372,7 @@ export function createMockIpc(options: MockOptions, initial: readonly StoredTrad
       watchlist = [...symbols];
       return null;
     },
-    quotes_get: ({ symbols }) =>
-      symbols.map((symbol, i) => ({ symbol, price: fakePrice(symbol), change: (i % 3) - 1, changePercent: ((i % 5) - 2) / 10, at: options.now })),
-    symbol_search: ({ query }) =>
-      [...new Set(trades.map((t) => t.symbol))]
-        .filter((s) => s.includes(query.trim().toUpperCase()))
-        .map((symbol) => ({ symbol, description: `${symbol} (fictional)` })),
-    company_profile: ({ symbol }) => ({ symbol, name: `${symbol} Fictional Corp.`, sector: "Technology", industry: "Software", marketCap: null }),
-    calendar_week: ({ weekStartMs }): EconomicEvent[] => [
-      { id: "e1", at: weekStartMs + 86_400_000 + 12.5 * 3_600_000, currency: "USD", title: "Fictional jobs report", impact: "high" },
-      { id: "e2", at: weekStartMs + 2 * 86_400_000 + 8 * 3_600_000, currency: "EUR", title: "Fictional rate decision", impact: "medium" },
-    ],
+    ...createOnlineHandlers({ brand: options.brand, now: options.now, enabled: options.online, requireUnlocked: unlocked, emit }),
   };
 
   const ipc: MockIpc = {

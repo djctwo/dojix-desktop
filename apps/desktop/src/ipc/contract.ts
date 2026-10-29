@@ -13,14 +13,30 @@
 // This file has no Tauri import; `ipc.ts` is the only one (boundary.test.ts).
 
 import type {
+  AiPreview,
+  AiReport,
   AppInfo,
   BackupKind,
+  CalendarWeek,
+  CompanyProfile,
   JournalRow,
   LockStatus,
+  ModelInfo,
+  OandaHistory,
+  OnlineSettingsPatch,
+  OnlineSettingsView,
   PickedBackup,
+  PriceTick,
+  QuotesStatus,
   RestoreSummary,
   RotationOutcome,
+  SecretAccount,
+  StockQuote,
   StoredTrade,
+  StreamStatus,
+  SymbolSearchResult,
+  TestProvider,
+  TestResult,
 } from "@dojix-desktop/core";
 
 type NoArgs = Record<string, never>;
@@ -136,51 +152,6 @@ export interface StrategyCheckpoint {
   description: string;
 }
 
-export type SecretName = "anthropic" | "finnhub" | "twelveData" | "polygon" | "oanda";
-
-export interface ConnectionTest {
-  ok: boolean;
-  message: string;
-}
-
-export interface AiPreview {
-  /** Exactly what would be sent ("what is sent" preview, SPEC 8.2). */
-  text: string;
-  model: string;
-}
-
-export interface AiReport {
-  id: number;
-  createdAt: string;
-  model: string;
-  responseText: string;
-}
-
-export interface Quote {
-  symbol: string;
-  price: number;
-  change: number;
-  changePercent: number;
-  /** Epoch ms of the quote. */
-  at: number;
-}
-
-export interface CompanyProfile {
-  symbol: string;
-  name: string;
-  sector: string;
-  industry: string;
-  marketCap: number | null;
-}
-
-export interface EconomicEvent {
-  id: string;
-  at: number;
-  currency: string;
-  title: string;
-  impact: "low" | "medium" | "high";
-}
-
 export interface Mt5Location {
   label: string;
   /** Shown to the user; the watcher itself stays in Rust. */
@@ -220,6 +191,28 @@ export interface Commands {
   backup_pick: { args: NoArgs; result: PickedBackup | null };
   backup_restore: { args: { password: string | null }; result: RestoreSummary };
 
+  // Available on main (Phase 4 online, docs/ONLINE.md; Rust net/commands.rs). Every one needs
+  // an unlocked journal and rejects with a NetError ({ code, message, retryAfterSecs? }).
+  online_settings_get: { args: NoArgs; result: OnlineSettingsView };
+  online_settings_set: { args: { patch: OnlineSettingsPatch }; result: OnlineSettingsView };
+  set_secret: { args: { account: SecretAccount; value: string }; result: null };
+  has_secret: { args: { account: SecretAccount }; result: boolean };
+  delete_secret: { args: { account: SecretAccount }; result: null };
+  test_connection: { args: { provider: TestProvider }; result: TestResult };
+  ai_models: { args: NoArgs; result: ModelInfo[] };
+  ai_preview: { args: { prompt: string }; result: AiPreview };
+  ai_run: { args: { prompt: string; requestSha256: string; consent: boolean }; result: AiReport };
+  ai_reports_list: { args: { limit: number }; result: AiReport[] };
+  ai_report_delete: { args: { id: number }; result: null };
+  quotes_start: { args: { symbols: string[] }; result: QuotesStatus };
+  quotes_stop: { args: NoArgs; result: null };
+  quotes_status: { args: NoArgs; result: QuotesStatus };
+  calendar_week: { args: { force: boolean }; result: CalendarWeek };
+  finnhub_quote: { args: { symbol: string }; result: StockQuote };
+  finnhub_profile: { args: { symbol: string }; result: CompanyProfile };
+  finnhub_search: { args: { query: string }; result: SymbolSearchResult[] };
+  oanda_fetch_history: { args: { days: number | null }; result: OandaHistory };
+
   // Planned: ui-journal.
   journal_trades: { args: NoArgs; result: StoredTrade[] };
   journal_mutate: { args: { mutation: JournalMutation }; result: MutationResult };
@@ -253,13 +246,6 @@ export interface Commands {
   data_info: { args: NoArgs; result: DataInfo };
   open_data_folder: { args: NoArgs; result: null };
   diagnostics_export: { args: NoArgs; result: string | null };
-  set_secret: { args: { name: SecretName; value: string }; result: null };
-  has_secret: { args: { name: SecretName }; result: boolean };
-  delete_secret: { args: { name: SecretName }; result: null };
-  test_connection: { args: { name: SecretName }; result: ConnectionTest };
-  ai_preview: { args: { scope: "edgeReport" | "dashboard" }; result: AiPreview };
-  ai_run: { args: { scope: "edgeReport" | "dashboard" }; result: AiReport };
-  ai_reports_list: { args: NoArgs; result: AiReport[] };
   updates_check: { args: NoArgs; result: UpdateInfo };
   open_external: { args: { url: string }; result: null };
   mt5_discover: { args: NoArgs; result: Mt5Location[] };
@@ -268,12 +254,6 @@ export interface Commands {
   // Planned: ui-brand (Pulse, Browse, Watchlist, sidebar ticker).
   watchlist_get: { args: NoArgs; result: string[] };
   watchlist_set: { args: { symbols: string[] }; result: null };
-  quotes_get: { args: { symbols: string[] }; result: Quote[] };
-  quotes_subscribe: { args: { symbols: string[] }; result: null };
-  quotes_unsubscribe: { args: NoArgs; result: null };
-  symbol_search: { args: { query: string }; result: { symbol: string; description: string }[] };
-  company_profile: { args: { symbol: string }; result: CompanyProfile | null };
-  calendar_week: { args: { weekStartMs: number }; result: EconomicEvent[] };
 }
 
 export type CommandName = keyof Commands;
@@ -313,6 +293,26 @@ export const COMMAND_INFO: Readonly<Record<CommandName, CommandInfo>> = {
   backup_pick: { status: "available", team: "foundation", purpose: "Pick a backup to restore (dialog in Rust)" },
   backup_restore: { status: "available", team: "foundation", purpose: "Restore the picked backup" },
 
+  online_settings_get: { status: "available", team: "ui-tools", purpose: "Online switches, AI model, live source, which keys are stored (booleans)" },
+  online_settings_set: { status: "available", team: "ui-tools", purpose: "Change online settings (switching the live source stops the stream)" },
+  set_secret: { status: "available", team: "ui-tools", purpose: "Store a provider key in the OS vault (never readable back)" },
+  has_secret: { status: "available", team: "ui-tools", purpose: "Whether a key is stored (never the key)" },
+  delete_secret: { status: "available", team: "ui-tools", purpose: "Remove a stored key" },
+  test_connection: { status: "available", team: "ui-tools", purpose: "Settings → Test for a provider" },
+  ai_models: { status: "available", team: "ui-tools", purpose: "Model list for the advanced picker" },
+  ai_preview: { status: "available", team: "ui-tools", purpose: "The exact AI request (Show what will be sent)" },
+  ai_run: { status: "available", team: "ui-tools", purpose: "Send exactly the previewed request (switch, key, first-run consent)" },
+  ai_reports_list: { status: "available", team: "ui-tools", purpose: "Saved AI reports, newest first" },
+  ai_report_delete: { status: "available", team: "ui-tools", purpose: "Delete a saved AI report" },
+  oanda_fetch_history: { status: "available", team: "ui-tools", purpose: "OANDA import step 1 (Dojix)" },
+  quotes_start: { status: "available", team: "ui-brand", purpose: "Start live prices for the watchlist (Pulse, Dojix)" },
+  quotes_stop: { status: "available", team: "ui-brand", purpose: "Stop live prices" },
+  quotes_status: { status: "available", team: "ui-brand", purpose: "Stream state, latest price per symbol, credits left" },
+  calendar_week: { status: "available", team: "ui-brand", purpose: "Economic calendar week (Pulse, Dojix)" },
+  finnhub_quote: { status: "available", team: "ui-brand", purpose: "Stock quote (Browse / Watchlist, Greenwick)" },
+  finnhub_profile: { status: "available", team: "ui-brand", purpose: "Company profile (Browse, Greenwick)" },
+  finnhub_search: { status: "available", team: "ui-brand", purpose: "Ticker search, debounce 300 ms (Browse, Greenwick)" },
+
   journal_trades: { status: "planned", team: "ui-journal", purpose: "Every trade as a full StoredTrade row, close time descending (Journal table, analytics worker)" },
   journal_mutate: { status: "planned", team: "ui-journal", purpose: "Add / edit / delete / notes / tags / emotion / checklist / costs; delete returns an undo token" },
   checklist_rules_get: { status: "planned", team: "ui-journal", purpose: "Checklist rules for trade detail toggles" },
@@ -343,13 +343,6 @@ export const COMMAND_INFO: Readonly<Record<CommandName, CommandInfo>> = {
   data_info: { status: "planned", team: "ui-tools", purpose: "Trade count and journal size (Settings → Data)" },
   open_data_folder: { status: "planned", team: "ui-tools", purpose: "Open the data folder in the file manager" },
   diagnostics_export: { status: "planned", team: "ui-tools", purpose: "Export the redacted log bundle" },
-  set_secret: { status: "planned", team: "ui-tools", purpose: "Store a provider key in the OS vault" },
-  has_secret: { status: "planned", team: "ui-tools", purpose: "Whether a key is stored (never the key)" },
-  delete_secret: { status: "planned", team: "ui-tools", purpose: "Remove a stored key" },
-  test_connection: { status: "planned", team: "ui-tools", purpose: "Test a provider key" },
-  ai_preview: { status: "planned", team: "ui-tools", purpose: "Exactly what an AI request would send" },
-  ai_run: { status: "planned", team: "ui-tools", purpose: "Run the AI recommendation (user's key, opt-in)" },
-  ai_reports_list: { status: "planned", team: "ui-tools", purpose: "Saved AI reports" },
   updates_check: { status: "planned", team: "ui-tools", purpose: "Check GitHub Releases for an update" },
   open_external: { status: "planned", team: "ui-tools", purpose: "Open an allow-listed https link (Report an issue, provider consoles)" },
   mt5_discover: { status: "planned", team: "ui-tools", purpose: "Found MT5 terminals for Settings (Dojix)" },
@@ -357,12 +350,6 @@ export const COMMAND_INFO: Readonly<Record<CommandName, CommandInfo>> = {
 
   watchlist_get: { status: "planned", team: "ui-brand", purpose: "Watchlist symbols (encrypted journal)" },
   watchlist_set: { status: "planned", team: "ui-brand", purpose: "Save the watchlist (validated symbols)" },
-  quotes_get: { status: "planned", team: "ui-brand", purpose: "Latest quotes for symbols (user's provider key)" },
-  quotes_subscribe: { status: "planned", team: "ui-brand", purpose: "Stream quotes as quote_tick events" },
-  quotes_unsubscribe: { status: "planned", team: "ui-brand", purpose: "Stop streaming quotes" },
-  symbol_search: { status: "planned", team: "ui-brand", purpose: "Ticker search (Browse, Greenwick)" },
-  company_profile: { status: "planned", team: "ui-brand", purpose: "Company profile card (Browse, Greenwick)" },
-  calendar_week: { status: "planned", team: "ui-brand", purpose: "Economic calendar week (Pulse, Dojix)" },
 };
 
 // --- events ------------------------------------------------------------------------------------
@@ -384,8 +371,10 @@ export interface Events {
   trades_changed: null;
   /** Planned (ui-tools). */
   import_progress: ImportProgress;
-  /** Planned (ui-brand). */
-  quote_tick: Quote;
+  /** Available (online): a live price. */
+  quote_tick: PriceTick;
+  /** Available (online): the price stream's state. */
+  quote_status: StreamStatus;
 }
 
 export type EventName = keyof Events;

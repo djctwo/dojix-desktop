@@ -113,7 +113,7 @@ function detectMac(text: string, brand: BrandId, fileName: string | undefined): 
   const samples = (from: number) => lines.slice(from, from + 5).map((l) => fieldsOf(l));
   if (brand === "dojix") {
     const headers = fieldsOf(lines[0]);
-    const d = detectDojixHeaders(headers);
+    const d = detectDojixHeaders(headers, "swift");
     if (d.kind === "mt5_32col") return { format: "mt5_32col", dialect, headers, sampleRows: [], mapping: null, needsMapping: false };
     if (d.kind === "mapped") return { format: DOJIX_PLATFORM_SOURCE[d.mapping.platform] as FormatId, dialect, headers, sampleRows: samples(1), mapping: d.mapping, needsMapping: false };
     return { format: "generic", dialect, headers, sampleRows: samples(1), mapping: null, needsMapping: true };
@@ -154,7 +154,7 @@ export function detectFormat(text: string, brand: BrandId, options: DetectOption
       return { format: isExport ? "dojix_export" : "mt5_32col", dialect, headers, sampleRows: [], mapping: null, needsMapping: false };
     }
     const headers = fieldsOf(lines[0]);
-    const d = detectDojixHeaders(headers);
+    const d = detectDojixHeaders(headers, "fixed");
     if (d.kind === "mt5_32col") throw new ImportError("no_trade_section", "No trade detail section found in CSV");
     if (d.kind === "mapped") {
       return { format: DOJIX_PLATFORM_SOURCE[d.mapping.platform] as FormatId, dialect, headers, sampleRows: samples(1), mapping: d.mapping, needsMapping: false };

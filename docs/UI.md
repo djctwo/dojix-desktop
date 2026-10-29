@@ -20,7 +20,8 @@ the analytics card framework and the tests. Read this before adding a screen or 
 | `packages/ui/src/analytics/` | `AnalyticsCard`, `AnalyticsGrid`, `AnalyticsViewRegistry`, `defineAnalyticsView` |
 | `apps/desktop/src/ipc.ts` | The **only** file that imports `@tauri-apps/api` (`boundary.test.ts`). |
 | `apps/desktop/src/ipc/contract.ts` | Every command (available + planned), its arguments and result; events; `Ipc`. |
-| `apps/desktop/src/mock/` | The mock IPC and its fictional fixture journals. |
+| `apps/desktop/src/ipc/online.ts` | `createOnlineIpc(ipc)`: the named online bindings of docs/ONLINE.md over any `Ipc` (`tauriOnlineIpc` in ipc.ts is the shell's). |
+| `apps/desktop/src/mock/` | The mock IPC (`mockIpc.ts`, online commands in `online.ts`) and its fictional fixture journals. |
 | `apps/desktop/src/data/` | `IpcProvider`/`useIpc`/`useIpcEvent`, TanStack Query hooks and keys. |
 | `apps/desktop/src/analytics/` | The Web Worker running the core engine, its client, `useAnalyticsRun`, `AnalyticsTab`, the app's view registry (`views.tsx`). |
 | `apps/desktop/src/app/` | Launch gate (`App.tsx`), `MainWindow`, navigation, shortcuts, the app command bus, session state, providers. |
@@ -116,6 +117,10 @@ The engine context comes from `AnalyticsProvider`: the computer's zone, locale a
 
 - `ipc.call("name", args)` is fully typed from `Commands` in `ipc/contract.ts`. Commands with no
   arguments take none: `ipc.call("lock_now")`.
+- The online features (docs/ONLINE.md) also have named bindings: `createOnlineIpc(useIpc())`
+  gives `settings()`, `aiPreview(prompt)`, `quotesStart(symbols)`, `onQuoteTick(handler)`, … over
+  the shell or the mock alike. Their errors are `NetError`s (`off`, `no_key`, `consent_required`,
+  `rate_limited` with `retryAfterSecs`, …); handle each code the screen can meet.
 - Queries: `useAppInfo`, `useLockStatus`, `useJournalRows`, `useTrades`, `useSetting`;
   mutations: `useJournalMutation` (invalidates everything under `queryKeys.journal`),
   `useLockTransition`. Defaults: no retries, no refetch on focus, data is fresh until invalidated.
@@ -136,12 +141,17 @@ pnpm --filter @dojix-desktop/desktop dev:mock:dojix      # http://localhost:5174
 pnpm --filter @dojix-desktop/desktop dev:mock:greenwick
 ```
 
-URL parameters: `?fixture=f2|f1|empty`, `?gate=none|locked|setup|olderCopy|storageError|lockFailed|setAside|saveFailing`
+URL parameters: `?online=on` (online features switched on, every key stored; the default is
+the app's: AI off, no live source, Finnhub off, calendar on, no keys), `?fixture=f2|f1|empty`, `?gate=none|locked|setup|olderCopy|storageError|lockFailed|setAside|saveFailing`
 (the App Lock password is `fictional-pass-1`), `?now=2026-09-30T12:00:00Z` (fixed by default so
 screenshots are stable), `?latency=300`, `?fail=journal_trades,quotes_get`. Deep links:
 `#/analytics/risk`, `#/settings`. In the page, `window.__mockIpc.emit("trades_changed", null)` sends
-a shell event. When you build a screen on a planned command, implement it in the mock in the same
-change (the mock test lists what it covers). Mock builds go to `dist-mock/` and are never
+a shell event. The online commands behave like the shell's: the same error codes for a
+switch that is off, a missing key, a first AI run without consent or a request that differs from
+its preview; live prices tick every 2 s (`quote_tick`, `quote_status`) after `quotes_start`;
+Finnhub, the calendar and AI answers are fictional and say so. When you build a screen on a
+planned command, implement it in the mock in the same change (the mock tests list what it
+covers). Mock builds go to `dist-mock/` and are never
 packaged; `ci.yml` fails if fixture text or the mock reaches `dist/`.
 
 ## Tests
@@ -168,15 +178,18 @@ Screens and filters reset at launch, as on the Mac (the app opens on the Journal
 
 ## Who builds what (Phase 3)
 
-| Team | Screens | Rust commands still needed (all `planned` in `ipc/contract.ts`) |
+| Team | Screens | Commands: available now, and still needed from Rust (`planned` in `ipc/contract.ts`) |
 |---|---|---|
 | **ui-journal** | Journal table (virtualised `DataTable`, filters, performance strip), trade detail, Add Trade, Replay, screenshots, CSV / PDF export | `journal_trades`, `journal_mutate` (+ `trades_changed` event), `checklist_rules_get/set`, `screenshot_add/list/get/delete`, `export_save`, `clipboard_write_temporary` |
 | **ui-dashboard** | Dashboard (headline grid, Essential/All, First Look, DailyBrief, equity curve, filters), Analytics views for every registry component, Prop Firm | `journal_trades` (shared), `settings_get/set` (prop-firm parameters), `prefs_get/set` (Essential/All, First Look), `checkpoints_list/add/delete`, `export_save` (PDF) |
-| **ui-tools** | Edge Report (+ AI card, PDF), Import (drop zone, mapping sheet, history, skipped rows), Settings (all sections beyond Security & Data), Onboarding, Help topics, About | `import_pick`, `import_preview_mapping`, `import_commit` (+ `import_progress`), `import_history`, `mapping_presets_list/save`, `sample_trades_load/remove`, `data_info`, `open_data_folder`, `diagnostics_export`, `set_secret/has_secret/delete_secret`, `test_connection`, `ai_preview`, `ai_run`, `ai_reports_list`, `updates_check`, `open_external`, `prefs_get/set` (display zone, week start, onboarding), `mt5_discover`, `mt5_watch_set` |
-| **ui-brand** | Pulse (Dojix), Browse + Watchlist (Greenwick), sidebar live ticker and session clock (`AppShell` `sidebarExtras`) | `watchlist_get/set`, `quotes_get`, `quotes_subscribe/unsubscribe` (+ `quote_tick`), `symbol_search`, `company_profile`, `calendar_week` |
+| **ui-tools** | Edge Report (+ AI card, PDF), Import (drop zone, mapping sheet, history, skipped rows, OANDA import), Settings (all sections beyond Security & Data, including AI, live data, Finnhub and keys), Onboarding, Help topics, About | **Available (online):** `online_settings_get/set`, `set_secret`, `has_secret`, `delete_secret`, `test_connection`, `ai_models`, `ai_preview`, `ai_run`, `ai_reports_list`, `ai_report_delete`, `oanda_fetch_history`. **Planned:** `import_pick`, `import_preview_mapping`, `import_commit` (+ `import_progress`), `import_history`, `mapping_presets_list/save`, `sample_trades_load/remove`, `data_info`, `open_data_folder`, `diagnostics_export`, `updates_check`, `open_external`, `prefs_get/set` (display zone, week start, onboarding), `mt5_discover`, `mt5_watch_set` |
+| **ui-brand** | Pulse (Dojix), Browse + Watchlist (Greenwick), sidebar live ticker and session clock (`AppShell` `sidebarExtras`) | **Available (online):** `quotes_start`, `quotes_stop`, `quotes_status` (+ `quote_tick`, `quote_status` events), `calendar_week`, `finnhub_quote`, `finnhub_profile`, `finnhub_search`. **Planned:** `watchlist_get/set` (the watchlist in the encrypted journal) |
 
-Available today (Phase 1 + security core): `app_info`, `journal_query` (5 columns), `lock_*`,
+Available today: Phase 1 + security core (`app_info`, `journal_query` (5 columns), `lock_*`,
 `older_copy_open`, `prefs_set_idle`, `erase_all`, `save_retry`, `app_quit`, `backup_export`,
-`backup_pick`, `backup_restore`; events `save_failed`, `unsaved_close`, `locked`. The shapes of the
+`backup_pick`, `backup_restore`; events `save_failed`, `unsaved_close`, `locked`) and the 19
+online commands of Phase 4 with the `quote_tick` / `quote_status` events (docs/ONLINE.md, the
+`net/commands.rs` list). Prompt builders for the AI card are in `@dojix-desktop/ai-prompts`; the
+Pulse schedule and currency strength in core's `online/`. The shapes of the
 planned commands are proposals: the Rust team that implements one may refine its types, in the
 contract and the mock in the same change.

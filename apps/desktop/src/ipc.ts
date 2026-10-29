@@ -4,11 +4,12 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { COMMAND_INFO, type Ipc, unavailable } from "./ipc/contract";
+import { createOnlineIpc, type OnlineIpc } from "./ipc/online";
 
 export const tauriIpc: Ipc = {
   call(name, ...args) {
     if (COMMAND_INFO[name].status !== "available") return Promise.reject(unavailable(name));
-    return invoke(name, args[0] ?? {});
+    return args[0] === undefined ? invoke(name) : invoke(name, args[0]);
   },
   on(event, handler) {
     let stop: (() => void) | null = null;
@@ -25,3 +26,7 @@ export const tauriIpc: Ipc = {
     };
   },
 };
+
+/** The online features (SPEC 8, docs/ONLINE.md) as named methods over the same boundary. */
+export const tauriOnlineIpc: OnlineIpc = createOnlineIpc(tauriIpc);
+export type { OnlineIpc };

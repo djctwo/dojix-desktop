@@ -12,6 +12,7 @@ pub mod journal;
 pub mod keyvault;
 pub mod ledger;
 pub mod logging;
+pub mod net;
 pub mod paths;
 pub mod prefs;
 pub mod restore;
@@ -102,6 +103,10 @@ impl Notifier for WindowNotifier {
         let Some(app) = self.app.get() else {
             return;
         };
+        // Live prices stop and provider data cached in memory is dropped (SPEC 6.6).
+        if let Some(online) = app.try_state::<net::commands::OnlineState>() {
+            online.on_lock();
+        }
         let _ = app.emit("locked", ());
         let Some(window) = app.get_webview_window("main") else {
             return;
@@ -289,8 +294,20 @@ pub fn run() {
     }
 
     let app_slot: Arc<OnceLock<AppHandle>> = Arc::new(OnceLock::new());
-    let state = start(&brand, &paths, vault, app_slot.clone());
+    let state = start(&brand, &paths, vault.clone(), app_slot.clone());
     let store = state.store.clone();
+    let online = net::commands::OnlineState::new(
+        Arc::new(net::online::Online::new(
+            brand.id,
+            vault,
+            &paths.root,
+            Arc::new(net::commands::WindowSink {
+                app: app_slot.clone(),
+            }),
+        )),
+        store.clone(),
+        paths.root.clone(),
+    );
     let webview_dir = paths.webview_dir(&brand);
     let window_root = paths.root.clone();
 
@@ -304,6 +321,7 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_dialog::init())
         .manage(state)
+        .manage(online)
         .setup(move |app| {
             let configured = app.config().identifier.clone();
             if configured != brand.identifier {
@@ -427,6 +445,25 @@ pub fn run() {
         commands::app_quit,
         commands::backup_export,
         commands::backup_pick,
+        net::commands::online_settings_get,
+        net::commands::online_settings_set,
+        net::commands::set_secret,
+        net::commands::has_secret,
+        net::commands::delete_secret,
+        net::commands::test_connection,
+        net::commands::ai_models,
+        net::commands::ai_preview,
+        net::commands::ai_run,
+        net::commands::ai_reports_list,
+        net::commands::ai_report_delete,
+        net::commands::quotes_start,
+        net::commands::quotes_stop,
+        net::commands::quotes_status,
+        net::commands::calendar_week,
+        net::commands::finnhub_quote,
+        net::commands::finnhub_profile,
+        net::commands::finnhub_search,
+        net::commands::oanda_fetch_history,
         commands::backup_restore,
         commands::e2e_status,
         commands::e2e_add_trade,
@@ -453,6 +490,25 @@ pub fn run() {
         commands::app_quit,
         commands::backup_export,
         commands::backup_pick,
+        net::commands::online_settings_get,
+        net::commands::online_settings_set,
+        net::commands::set_secret,
+        net::commands::has_secret,
+        net::commands::delete_secret,
+        net::commands::test_connection,
+        net::commands::ai_models,
+        net::commands::ai_preview,
+        net::commands::ai_run,
+        net::commands::ai_reports_list,
+        net::commands::ai_report_delete,
+        net::commands::quotes_start,
+        net::commands::quotes_stop,
+        net::commands::quotes_status,
+        net::commands::calendar_week,
+        net::commands::finnhub_quote,
+        net::commands::finnhub_profile,
+        net::commands::finnhub_search,
+        net::commands::oanda_fetch_history,
         commands::backup_restore
     ]);
 

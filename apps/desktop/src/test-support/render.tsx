@@ -33,6 +33,7 @@ export interface HarnessOptions {
   fixture?: MockFixture;
   gate?: MockGate;
   fail?: MockOptions["fail"];
+  online?: boolean;
   /** Render this instead of the whole App (inside the providers and navigation). */
   screen?: (brand: BrandConfig) => ReactNode;
 }
@@ -49,6 +50,7 @@ export async function renderApp(options: HarnessOptions = {}): Promise<Harness> 
       now: MOCK_DEFAULT_NOW,
       latencyMs: 0,
       fail: options.fail ?? [],
+      online: options.online ?? false,
     },
     trades,
   );

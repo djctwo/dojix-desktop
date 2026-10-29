@@ -11,7 +11,7 @@ afterEach(cleanup);
 
 async function setup(gate: "none" | "locked" = "none") {
   const trades = await loadFixture("f1", "dojix");
-  const ipc = createMockIpc({ brand: "dojix", productName: "Dojix", fixture: "f1", gate, now: MOCK_DEFAULT_NOW, latencyMs: 0, fail: [] }, trades);
+  const ipc = createMockIpc({ brand: "dojix", productName: "Dojix", fixture: "f1", gate, now: MOCK_DEFAULT_NOW, latencyMs: 0, fail: [], online: false }, trades);
   const client = createQueryClient();
   const wrapper = ({ children }: { children: ReactNode }) => (
     <IpcProvider ipc={ipc}>

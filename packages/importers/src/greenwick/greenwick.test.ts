@@ -1,18 +1,20 @@
 // Greenwick imports. Ported from GreenwickTests/{ImportParserTests, ImportSecurityTests}.swift
 // (the fictional TestData samples are in test/fixtures/greenwick), plus FIFO details and the
-// desktop fixes D-16, D-22, D-23, D-24, D-25, D-26, D-27.
+// desktop fixes D-16, D-22, D-23, D-24, D-25, D-26, D-27, D-30, D-32.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { SwiftDecimal, decimalToDouble } from "@dojix-desktop/core";
+import { SwiftDecimal, TRADING_CALENDAR, decimalToDouble } from "@dojix-desktop/core";
 import type { ImportResult } from "../pipeline";
 import { ImportError } from "../model";
 import { NOW, imp } from "../test-support/helpers";
 import { type RawTransaction, pairTransactions } from "./fifo";
-import { greenwickCleanSymbol, parseBoundedDouble, parseGreenwickDecimal, parseShares, sanitizeImportField, stripCurrencyChars } from "./generic";
+import { greenwickCleanSymbol, parseBoundedDouble, parseGreenwickDate, parseGreenwickDecimal, parseShares, sanitizeImportField, stripCurrencyChars } from "./generic";
 import { greenwickControlCharacterFields, greenwickStorageViolations, sanitizeGreenwick } from "./limits";
 
+/** A committed parity fixture (golden/fixtures/greenwick/…), fictional data. */
+const golden = (path: string): Uint8Array => new Uint8Array(readFileSync(fileURLToPath(new URL(`../../../../golden/fixtures/greenwick/${path}`, import.meta.url))));
 const sample = (name: string): Uint8Array => new Uint8Array(readFileSync(fileURLToPath(new URL(`../../test/fixtures/greenwick/${name}`, import.meta.url))));
 
 function stats(r: ImportResult) {
@@ -352,5 +354,73 @@ describe("hostile input (ImportSecurityTests.swift)", () => {
     expect(parseBoundedDouble("1,5")).toBe(15);
     expect(parseBoundedDouble("2e9")).toBeNull();
     expect(parseBoundedDouble(undefined)).toBeNull();
+  });
+});
+
+// Approved 2026-10-29 (docs/DECISIONS.md #10). `swift` keeps the Mac's behaviour, pinned by the
+// Tier B probes and references; `fixed` is what the app ships.
+describe("D-30: an ET wall time in the spring-forward gap (fixed mode)", () => {
+  const f7 = new TextDecoder().decode(golden("F7/f7-et-boundaries-ninjatrader.csv")).trimEnd();
+  // The F7 ET-boundary fixture plus one fictional row that opens inside the 2026 gap (02:00–02:59 ET on 8 March).
+  const withGapRow = `${f7}\n14,FIXA,Sim101,Fictional,Long,100,42.00,42.50,03/08/2026 02:30:00,03/08/2026 04:00:00,4.40,0,0.12,0.6\n`;
+
+  it("reads 03/08/2026 02:30 ET as 8 March with the pre-transition offset, not day-first as 3 August", () => {
+    const swift = imp(withGapRow, "greenwick", "swift");
+    const fixed = imp(withGapRow, "greenwick", "fixed");
+    const gapSwift = swift.trades.find((t) => t.netProfit === "4.4");
+    const gapFixed = fixed.trades.find((t) => t.netProfit === "4.4");
+    // The Mac (golden/README.md probes): MM/dd/yyyy rejects the skipped time, dd/MM/yyyy reads 3 August.
+    expect(gapSwift?.openTime).toBe("2026-08-03 06:30:00.000");
+    // Fixed: 02:30 EST = 07:30Z (the rule ZonedCalendar and the Mac's Calendar use), close 04:00 EDT = 08:00Z.
+    expect(gapFixed).toMatchObject({ openTime: "2026-03-08 07:30:00.000", closeTime: "2026-03-08 08:00:00.000", durationMin: 30 });
+    expect(Date.parse(`${gapFixed?.openTime.replace(" ", "T")}Z`)).toBe(TRADING_CALENDAR.instantFromWall(2026, 3, 8, 2, 30));
+  });
+
+  it("leaves every row outside the gap exactly as the Mac reads it", () => {
+    const times = (compat: "swift" | "fixed") => imp(f7, "greenwick", compat).trades.map((t) => [t.ticket, t.openTime, t.closeTime, t.hour, t.dayOfWeek, t.session]);
+    expect(times("fixed")).toEqual(times("swift"));
+    expect(times("fixed")).toHaveLength(13);
+  });
+
+  it("never lands in another month than the text says, for every gap minute 2007–2040", () => {
+    let macOtherMonth = 0;
+    for (let year = 2007; year <= 2040; year++) {
+      // Second Sunday of March (US rule since 2007).
+      const firstDow = new Date(Date.UTC(year, 2, 1)).getUTCDay();
+      const day = 1 + ((7 - firstDow) % 7) + 7;
+      for (let minute = 0; minute < 60; minute += 7) {
+        const text = `03/${String(day).padStart(2, "0")}/${year} 02:${String(minute).padStart(2, "0")}:00`;
+        const fixed = parseGreenwickDate(text, "MM/dd/yyyy HH:mm:ss", NOW, "fixed");
+        expect(fixed, text).toBe(TRADING_CALENDAR.instantFromWall(year, 3, day, 2, minute));
+        const et = TRADING_CALENDAR.fields(fixed as number);
+        expect([et.year, et.month, et.day, et.hour], text).toEqual([year, 3, day, 3]);
+        const mac = parseGreenwickDate(text, "MM/dd/yyyy HH:mm:ss", NOW, "swift");
+        if (mac !== null && TRADING_CALENDAR.fields(mac).month !== 3) macOtherMonth++;
+      }
+    }
+    expect(macOtherMonth).toBeGreaterThan(0); // the Mac bug the fix removes (days 8–12 are read day-first)
+  });
+});
+
+describe("D-32: Fidelity without a price column never takes the price from the date (fixed mode)", () => {
+  it("golden f6-fidelity-no-price: the Mac imports the month as the price; fixed skips every trade row with a reason", () => {
+    const bytes = golden("F6/f6-fidelity-no-price.csv");
+    const swift = imp(bytes, "greenwick", "swift");
+    // golden/reference/greenwick/f6-fidelity-no-price.json: 9 trades priced 2 (February) or 3 (March).
+    expect(swift.trades).toHaveLength(9);
+    expect(new Set(swift.trades.map((t) => t.openPrice))).toEqual(new Set(["2", "3"]));
+    const fixed = imp(bytes, "greenwick", "fixed");
+    expect(fixed.trades).toEqual([]);
+    expect(fixed.issues).toHaveLength(17); // every buy and sell row
+    for (const issue of fixed.issues) expect(issue).toMatchObject({ code: "invalid_price", reason: "The file has no price column" });
+  });
+
+  it("golden f6-fidelity: a real Price ($) column is used, in both modes", () => {
+    const bytes = golden("F6/f6-fidelity.csv");
+    // The fill prices per symbol (D-26 may swap a same-day pair's open and close in fixed mode).
+    const prices = (compat: "swift" | "fixed") => imp(bytes, "greenwick", compat).trades.flatMap((t) => [`${t.symbol} ${t.openPrice}`, `${t.symbol} ${t.closePrice}`]).sort();
+    expect(prices("fixed").length).toBeGreaterThan(0);
+    for (const p of prices("fixed")) expect(Number(p.split(" ")[1])).toBeGreaterThan(3); // never a month number
+    expect(prices("fixed")).toEqual(prices("swift"));
   });
 });

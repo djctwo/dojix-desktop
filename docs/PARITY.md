@@ -159,24 +159,22 @@ B3 and are now parity.
 | D-21 | Dojix | 32-column file: an unquoted comma in Comment shifts every later column | Extra fields are re-joined into Comment | no |
 | D-22 | Greenwick | Option rows (BTO/STC, Buy to Open, `*_TO_OPEN`) imported as shares without the ×100 multiplier | Skipped, with a count ("options aren't supported yet") | **yes** (if a file has options) |
 | D-23 | Greenwick | Schwab: the last line is always dropped and a header on line 0 gives 0 trades | The footer is detected, and the header is found on line 0 or 1 | **yes** (missing trade) |
-| D-24 | Greenwick | Fidelity price falls back to column 0 (the date), so the row is silently skipped | No fallback; the row is reported | no |
+| D-24 | Greenwick | Fidelity without a price column: the price falls back to column 0 (the Run Date), so the month is imported as the price (`03/24/2026` → 3). The rows **are imported**, not skipped | No fallback; each row is skipped and reported ("The file has no price column"). Approved as headline with D-32 | **yes** (count, P&L) |
 | D-25 | Greenwick | Unmatched FIFO legs: buys are logged, sells dropped silently | Both reported as skipped with a reason | no |
 | D-26 | Greenwick | Same-date sell then buy in date-only exports is recorded as a long | Ties broken by file order to detect the short | no (P&L unchanged) |
 | D-27 | Greenwick | Robinhood fees are never read | Fees read when the column exists | **yes** (P&L by fees) |
-| D-28 | Dojix | The Pulse edge signal is computed once, when the screen appears | Recomputed on hour or session change and after the calendar loads | no |
+| D-28 | Dojix | The Pulse edge signal (and the active danger zone) is computed once, when the screen appears | Recomputed when the UTC hour or the active sessions change, when a danger zone starts or ends, and after the calendar loads (`pulseRefreshKey` / `nextPulseRefreshAt`) | no |
 | D-29 | Dojix | Broker tickets from two different platforms can collide, and the second trade is skipped as a duplicate (UNIQUE ticket) | **No change**, which keeps Mac-backup interop. Documented in Help | — |
+| D-30 | Greenwick | A wall time in the ET spring-forward gap fails `MM/dd/yyyy` (DateFormatter rejects it) and is then read day-first: `03/08/2026 02:30:00` becomes 3 August 2026 | Read with the pre-transition offset, the engine's DST rule (02:30 EST = 07:30Z on 8 March), so it never reaches a day-first format and never lands in another month | **yes** (dates, P&L by period) |
+| D-31 | Dojix | The compact cTrader header (`PositionId`, `EntryTime`, `EntryPrice`, `CloseTime`, `ClosePrice`, `StopLoss`, `TakeProfit`, `NetProfit`) is detected as cTrader, but only the spaced names are mapped: the open time is column 0 and the file imports 0 trades | The compact names are mapped too (after the spaced ones), so the file imports like the spaced header | **yes** (count, P&L) |
+| D-32 | Greenwick | Fidelity without a price column reads column 0 (the Run Date) as the price, so the month becomes the price (`02/03/2026` → 2) and the trades are imported | The price is never taken from the date: each row is skipped with a reason (the D-24 fix); a real `Price` column is used when present | **yes** (count, P&L) |
 
 **"Headline? yes"** means the entry can change a number on the Dashboard header for some input.
 `parity-check` then requires the entry to be marked approved (see "Open questions").
 
-**Proposed, not approved** (in `golden/divergences.yaml` with `approved: false`, no fix in either
-compat mode; they cover no difference until the maintainer decides, see C3):
-
-| ID | App | Mac behaviour (confirmed by the Tier B reference) | Proposed fix | Headline? |
-|---|---|---|---|---|
-| D-30 | Greenwick | A skipped ET wall time (spring-forward gap) fails `MM/dd/yyyy` and is then read day-first: `03/08/2026 02:30:00` becomes 3 August 2026 | Don't fall through to a day-first format for a time the gap rejected | yes |
-| D-31 | Dojix | The compact cTrader header (`PositionId`, `EntryTime`, `CloseTime`, `ClosePrice`) is detected as cTrader but its close columns stay unmapped: 0 trades | Map the compact close columns | yes |
-| D-32 | Greenwick | Fidelity without a price column reads column 0 (the Run Date) as the price, so the month becomes the price (`02/03/2026` → 2) | Never take the price from the date; report the row (as D-24 intends) | yes |
+D-30, D-31 and D-32 were proposed by the importers team on 2026-10-27 and approved on 2026-10-29
+(DECISIONS.md #10). Each changes `fixed` compat only; `swift` compat still reproduces the Mac, and
+the parity suite checks it against the Tier B references.
 
 ### B2. Platform and design differences
 
@@ -191,7 +189,16 @@ compat mode; they cover no difference until the maintainer decides, see C3):
 | Screenshot input limits | No byte limit | 25 MB and 100 megapixels per input file | Memory-exhaustion guard |
 | Certificate pinning | Dojix: none (system trust). Greenwick: pins CA keys for two hosts | No pinning; OS trust store; host allow-list | Pins can't be hot-fixed in an installed open-source app, and the earlier Mac pins broke on provider rotations |
 | Twelve Data REST key | In the URL query | `Authorization` header | Keeps the key out of URLs and logs |
-| Twelve Data daily counter | Per service instance (not enforced in practice) | Persisted per day | Correct quota display |
+| Twelve Data daily counter | Per service instance (not enforced in practice), one per request | Persisted per UTC day, one credit per symbol (Twelve Data's own accounting) | Correct quota display |
+| Twelve Data WebSocket heartbeat | Answers the server's heartbeat with `{"event":"heartbeat"}` | Sends `{"action":"heartbeat"}` every 10 s (the provider's documented client heartbeat) | Keeps the stream open |
+| Polygon WebSocket auth | Reads only the first message after `auth`; Polygon sends a `connected` status first, so every connection is treated as an auth failure | Waits for `auth_success` / `auth_failed` | Bug |
+| Live price symbols | Each source's own names (`EURUSD.r` from MT5 never matches the watchlist's `EUR/USD`) | One form for every source (`EUR/USD`); only the requested symbols reach the window | Bug; a feed can't inject other text |
+| Economic calendar dates | An event whose date can't be read gets the current time, which can invent a high-impact danger zone "now" | The event is dropped | Bug |
+| Economic calendar refresh | Reloaded every 15 min while Pulse is open; a failure clears nothing but shows an error | Checked every 2 min, reloaded after 15 min, never fetched twice within 2 min; a failure keeps the last copy marked stale (offline failures are silent) | The feed has no SLA and rate-limits hard |
+| Finnhub | No local rate limit; profile includes the logo and web address | At most 60 lookups a minute; logo and web address dropped (the web view loads no remote content) | Avoids provider lock-outs; CSP |
+| AI prompt labels | Group labels as stored | Control characters removed from labels (a symbol can't add lines to the summary) | Shape check in the shell |
+| AI average MAE/MFE | Unknowns count as 0 | In `fixed` compat (D-18) "n/a" when no value is known | Consistent with D-18 |
+| AI model list, test | Settings → Test is per data source only | Anthropic key test = one model-list call (bills nothing) | Free check |
 | AI switch | Greenwick: "Allow AI analysis". Dojix: key + click | The switch in both brands | Consistent opt-in |
 | AI model | Hard-coded per brand | Same defaults, plus an advanced picker from the provider's model list | Survives model retirement |
 | AI results | In memory only | Saved in the journal (`ai_reports`), shown as history | Usefulness. Encrypted with the journal |
@@ -248,14 +255,15 @@ the desktop matches them:
 
 ## C. Open questions for the maintainer
 
-Both were answered on 2026-10-27:
+All are answered:
 
-1. **The headline-affecting fixes D-16, D-18, D-22, D-23 and D-27 are approved.** Each one can change
+1. **The headline-affecting fixes D-16, D-18, D-22, D-23 and D-27 are approved** (2026-10-27). Each one can change
    a Dashboard header number compared with the Mac app *for the affected files only* (TradingView
    exports; trades without MAE/MFE; Greenwick files with options, a Schwab file with no footer, or
    Robinhood fees). Each is logged and tested.
-2. **No Windows → Mac backup export in v1.** Mac → Windows is supported; the reverse can follow when
+2. **No Windows → Mac backup export in v1** (2026-10-27). Mac → Windows is supported; the reverse can follow when
    someone asks.
-3. **Open: D-30, D-31 and D-32** (proposed by the importers team, 2026-10-27; table under B1). Each
-   would change Dashboard numbers for the affected files, so each needs an approval before it is
-   implemented.
+3. **D-30, D-31 and D-32 are approved** (2026-10-29). They were proposed by the importers team on
+   2026-10-27; each can change Dashboard numbers for the affected files only (a Greenwick time in the
+   spring-forward gap, a compact cTrader header, a Fidelity export without a price column). Approving
+   D-32 also makes D-24 a headline entry: it is the same fix.

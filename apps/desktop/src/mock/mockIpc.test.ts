@@ -11,6 +11,7 @@ const options = (o: Partial<MockOptions> = {}): MockOptions => ({
   now: MOCK_DEFAULT_NOW,
   latencyMs: 0,
   fail: [],
+  online: false,
   ...o,
 });
 
@@ -24,6 +25,7 @@ describe("mock options", () => {
       now: Date.parse("2026-01-02T00:00:00Z"),
       latencyMs: 50,
       fail: ["journal_trades"],
+      online: false,
     });
     expect(mockOptionsFromSearch("?fixture=bad&gate=bad&latency=-1&now=bad", "dojix", "Dojix")).toMatchObject({
       fixture: "f2",
@@ -166,26 +168,20 @@ describe("mock IPC", () => {
     expect(await ipc.call("watchlist_get")).toEqual(["FIXA"]);
     await ipc.call("watchlist_set", { symbols: ["FIXB"] });
     expect(await ipc.call("watchlist_get")).toEqual(["FIXB"]);
-    const [q] = await ipc.call("quotes_get", { symbols: ["FIXA"] });
-    expect(q?.price).toBeGreaterThan(0);
-    expect((await ipc.call("quotes_get", { symbols: ["EURUSD"] }))[0]?.price).toBeLessThan(2);
-    expect(await ipc.call("symbol_search", { query: "fix" })).toEqual([{ symbol: "FIXA", description: "FIXA (fictional)" }]);
-    expect((await ipc.call("company_profile", { symbol: "FIXA" }))?.name).toContain("Fictional");
-    expect(await ipc.call("calendar_week", { weekStartMs: 0 })).toHaveLength(2);
     expect(await ipc.call("data_info")).toEqual({ trades: 5, sampleTrades: 0, journalBytes: 4500 });
     expect(await ipc.call("backup_export", { password: null, confirmation: null })).toContain("Fictional");
     expect((await ipc.call("backup_pick"))?.kind).toBe("desktop");
     expect((await ipc.call("backup_restore", { password: null })).trades).toBe(5);
-    for (const name of ["screenshot_list", "import_history", "mapping_presets_list", "ai_reports_list", "mt5_discover"] as const) {
+    for (const name of ["screenshot_list", "import_history", "mapping_presets_list", "mt5_discover"] as const) {
       expect(await (ipc.call as (n: string, a?: unknown) => Promise<unknown>)(name, { tradeId: 1 })).toEqual([]);
     }
-    expect(await ipc.call("has_secret", { name: "finnhub" })).toBe(false);
+    expect(await ipc.call("has_secret", { account: "finnhub_api_key" })).toBe(false);
     expect((await ipc.call("updates_check")).available).toBe(false);
     expect(await ipc.call("export_save", { kind: "pdf", suggestedName: "Report.pdf", base64: "" })).toBe("Report.pdf");
     expect(await ipc.call("clipboard_write_temporary", { text: "x", clearAfterSeconds: 30 })).toBeNull();
     expect(await ipc.call("lock_activity")).toBeNull();
     expect(await ipc.call("app_quit", { force: false })).toBeNull();
-    await expect(ipc.call("ai_run", { scope: "edgeReport" })).rejects.toMatchObject({ code: "unavailable" });
+    await expect(ipc.call("import_commit", { token: "t", mappings: {} })).rejects.toMatchObject({ code: "unavailable" });
   });
 
   it("fails on request and adds latency", async () => {

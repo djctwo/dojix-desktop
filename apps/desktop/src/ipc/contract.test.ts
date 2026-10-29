@@ -62,7 +62,7 @@ describe("tauriIpc", () => {
     await expect(tauriIpc.call("journal_query", { limit: 5 })).resolves.toBe("ok");
     expect(invoke).toHaveBeenLastCalledWith("journal_query", { limit: 5 });
     await tauriIpc.call("lock_now");
-    expect(invoke).toHaveBeenLastCalledWith("lock_now", {});
+    expect(invoke).toHaveBeenLastCalledWith("lock_now");
     await expect(tauriIpc.call("journal_trades")).rejects.toEqual(unavailable("journal_trades"));
     expect(invoke).toHaveBeenCalledTimes(2);
   });

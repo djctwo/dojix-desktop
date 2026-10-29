@@ -3,7 +3,7 @@
 // shared field parsers. Transaction platforms (FIFO) are in transactions.ts.
 
 import { POSIX_WEEKDAY_NAMES, SwiftDecimal, TRADING_CALENDAR, graphemes, intSaturating, sessionAtMinute, swiftPrefix } from "@dojix-desktop/core";
-import type { GreenwickMacTrade, ImportContext, ImportSource, ParsedRow, RowIssue } from "../model";
+import type { CompatMode, GreenwickMacTrade, ImportContext, ImportSource, ParsedRow, RowIssue } from "../model";
 import { type CsvDialect, splitFields } from "../csv/dialect";
 import { DateParsers } from "../swift/dates";
 import { swiftDouble, swiftInt } from "../swift/numbers";
@@ -253,12 +253,17 @@ const GREENWICK_FORMATS = [
 ];
 
 const parserCache = new Map<string, DateParsers>();
-/** `parseDateTime(_:format:)` (GenericCSVParser.swift:989-1013): exchange time (ET). */
-export function parseGreenwickDate(s: string, format: string, now: number): number | null {
-  const key = `${format}\u0000${Math.trunc(now / 86_400_000)}`;
+/**
+ * `parseDateTime(_:format:)` (GenericCSVParser.swift:989-1013): exchange time (ET).
+ * `fixed` compat (PARITY D-30): a wall time skipped by the spring-forward change is read with the
+ * pre-transition offset by the first pattern that fits it, so "03/08/2026 02:30:00" stays 8 March
+ * (07:30Z) instead of failing MM/dd/yyyy and being read day-first as 3 August, as on the Mac.
+ */
+export function parseGreenwickDate(s: string, format: string, now: number, compat: CompatMode): number | null {
+  const key = `${compat}\u0000${format}\u0000${Math.trunc(now / 86_400_000)}`;
   let p = parserCache.get(key);
   if (!p) {
-    p = new DateParsers([format, ...GREENWICK_FORMATS], "America/New_York", now);
+    p = new DateParsers([format, ...GREENWICK_FORMATS], "America/New_York", now, Infinity, compat === "fixed" ? "earlierOffset" : "reject");
     if (parserCache.size > 64) parserCache.clear();
     parserCache.set(key, p);
   }
@@ -303,7 +308,7 @@ interface Mapped {
 }
 
 /** `mapToTrade` (GenericCSVParser.swift:638-762). */
-function mapToTrade(fields: readonly string[], m: GreenwickColumnMapping, ticket: bigint, now: number): Mapped {
+function mapToTrade(fields: readonly string[], m: GreenwickColumnMapping, ticket: bigint, now: number, compat: CompatMode): Mapped {
   const symbol = greenwickCleanSymbol(at(fields, m.symbol) ?? "");
   if (symbol === "") throw new RowError({ code: "missing_symbol", reason: "No symbol" });
   const dirStr = sanitizeImportField(trimWs((at(fields, m.direction) ?? "").toUpperCase()));
@@ -312,10 +317,10 @@ function mapToTrade(fields: readonly string[], m: GreenwickColumnMapping, ticket
   const shares = parseShares(at(fields, m.shares) ?? "");
   if (shares === null) throw new RowError({ code: "invalid_quantity", reason: "Shares must be a number above 0" });
   const openStr = at(fields, m.openTime) ?? "";
-  const openTime = parseGreenwickDate(openStr, m.dateFormat, now);
+  const openTime = parseGreenwickDate(openStr, m.dateFormat, now, compat);
   if (openTime === null) throw new RowError({ code: "invalid_date", reason: `Cannot read the date "${openStr.slice(0, 40)}"` });
   const closeStr = at(fields, m.closeTime);
-  const closeTime = (closeStr !== undefined ? parseGreenwickDate(closeStr, m.dateFormat, now) : null) ?? openTime;
+  const closeTime = (closeStr !== undefined ? parseGreenwickDate(closeStr, m.dateFormat, now, compat) : null) ?? openTime;
   const openPrice = parseGreenwickDecimal(at(fields, m.openPrice)) ?? SwiftDecimal.zero;
   const closePrice = (m.closePrice !== null ? parseGreenwickDecimal(at(fields, m.closePrice)) : null) ?? openPrice;
   const profit = parseGreenwickDecimal(at(fields, m.profit)) ?? SwiftDecimal.zero;
@@ -394,7 +399,7 @@ export function parseGreenwickMapped(
     }
     const ticket = tickets.ticket(`${name}|${fields.join("|")}`);
     try {
-      const mapped = mapToTrade(fields, mapping, ticket, ctx.now);
+      const mapped = mapToTrade(fields, mapping, ticket, ctx.now, ctx.compat);
       const ext = at(fields, mapping.ticket);
       rows.push({
         trade: mapped.trade,
@@ -462,8 +467,8 @@ function parseTradingViewPaired(
     let entry: Mapped;
     let exit: Mapped;
     try {
-      entry = mapToTrade(g.entry.fields, mapping, ticket, ctx.now);
-      exit = mapToTrade(g.exit.fields, mapping, ticket, ctx.now);
+      entry = mapToTrade(g.entry.fields, mapping, ticket, ctx.now, ctx.compat);
+      exit = mapToTrade(g.exit.fields, mapping, ticket, ctx.now, ctx.compat);
     } catch (e) {
       /* c8 ignore next */
       if (!(e instanceof RowError)) throw e;

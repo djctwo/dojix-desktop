@@ -1,5 +1,6 @@
 // Analytics components (SPEC Appendix A): one file per Mac component (support.ts and shared.ts
 // hold the helpers); e2.ts and e3.ts register their sets, greenwick/ holds the E4 components.
+export * from "./all";
 export * from "./behavioral-analytics";
 export * from "./benchmark-comparison";
 export * from "./calendar-correlation";

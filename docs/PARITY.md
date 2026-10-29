@@ -197,7 +197,7 @@ compat mode; they cover no difference until the maintainer decides, see C3):
 | AI results | In memory only | Saved in the journal (`ai_reports`), shown as history | Usefulness. Encrypted with the journal |
 | AI disclosure (Greenwick) | The text omits the position-size section | The text and the exact preview list everything | Accuracy |
 | Watchlist, checklist rules, MT5 settings | Plain preferences file | Inside the encrypted journal | They describe the user's trading. Non-sensitive UI preferences stay in a plain `prefs.json` |
-| MT5 watcher | Always on; Wine Common + default terminal folder, or one custom folder | **Off by default**; multi-terminal discovery; several folders; preview before enabling | Decision: opt-in, read-only |
+| MT5 watcher | Always on; Wine Common + default terminal folder, or one custom folder; picks up the 32-column files by their default name prefix | **Off by default**; multi-terminal discovery; several folders; preview before enabling; picks up `DojixExport_*.csv`, and 32-column files once the user enters their file-name prefix (no default); waits for a stable, finished file; paused while locked | Decision: opt-in, read-only. The program that writes 32-column files is not part of the project, so its file names are the user's to enter (docs/MT5.md) |
 | Broker server time | Read as UTC, no setting | The same by default, plus an opt-in broker zone | Lets users correct hour/session buckets |
 | Scan Folder | Only the last file's confirmation survives | One queue and one combined summary | Bug |
 | Import history | Session only | Saved | Usefulness |

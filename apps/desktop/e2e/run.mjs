@@ -2,7 +2,7 @@
 // the desktop app, so never run them on a maintainer's machine.
 //
 //   node apps/desktop/e2e/run.mjs --brand dojix --app <binary> [--out <dir>]
-//        [--native-driver <path>] [--scenario all|lock|layout|no-keyring]
+//        [--native-driver <path>] [--scenario all|lock|layout|no-keyring|mt5]
 //
 // Every run uses a fresh scratch data folder and a scratch vault namespace (except "layout",
 // which checks the DEFAULT data folder of a disposable CI runner).
@@ -22,15 +22,22 @@
 //   it, so that folder holds no plaintext SQLite at all.
 // "no-keyring" (Linux without a Secret Service): a password is required before anything is
 //   created; the wrapped key lives in the data folder; App Lock can't be turned off.
+// "mt5" (SPEC 5.4, phase 5 gate; Dojix): a synthetic MetaTrader tree; auto-import is off until a
+//   folder is enabled; matching files are previewed first; a file already there, a file
+//   rewritten in place and a new file are imported through the real importer in the web view;
+//   a deleted file is reported; a restart imports nothing twice; the whole tree is unchanged
+//   byte for byte while the app watches it. Greenwick: every MT5 command answers "unsupported".
 // Zero dependencies: a minimal WebDriver client over fetch.
 
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import {
   existsSync,
   mkdtempSync,
   mkdirSync,
   readdirSync,
   readFileSync,
+  rmSync,
   statSync,
   writeFileSync,
 } from "node:fs";
@@ -440,9 +447,155 @@ async function layoutScenario() {
   checkAtRest(dataDir, "layout");
 }
 
+// ---------------------------------------------------------------------------------------------
+// MT5 auto-import
+
+const MT5_SAMPLE_NAME = "DojixExport_10000001_20261028.csv";
+const MT5_SAMPLE = readFileSync(new URL(`../../../mql5/samples/${MT5_SAMPLE_NAME}`, import.meta.url));
+const MT5_TERMINAL = "0123456789ABCDEF0123456789ABCDEF";
+
+/** Every path under `root` with its size, modification time and SHA-256. */
+function treeHash(root) {
+  const lines = [];
+  const walk = (dir) => {
+    for (const name of readdirSync(dir).sort()) {
+      const path = join(dir, name);
+      const st = statSync(path);
+      if (st.isDirectory()) {
+        lines.push(`${path.slice(root.length)}/ ${st.mtimeMs}`);
+        walk(path);
+      } else {
+        const sha = createHash("sha256").update(readFileSync(path)).digest("hex");
+        lines.push(`${path.slice(root.length)} ${st.size} ${st.mtimeMs} ${sha}`);
+      }
+    }
+  };
+  walk(root);
+  return lines.join("\n");
+}
+
+/** The sample with every ticket shifted (another day's file) or one extra row (a rewrite). */
+function mt5Variant(kind) {
+  const lines = MT5_SAMPLE.toString("utf8").split("\r\n").filter((l) => l !== "");
+  if (kind === "grown") lines.push(lines[lines.length - 1].replace(/^500003,/, "500004,"));
+  if (kind === "other-day") for (let i = 1; i < lines.length; i++) lines[i] = lines[i].replace(/^5000/, "7000");
+  return Buffer.from(`${lines.join("\r\n")}\r\n`, "utf8");
+}
+
+async function waitFor(what, test, timeoutMs = 45000) {
+  const end = Date.now() + timeoutMs;
+  for (;;) {
+    const value = await test();
+    if (value) return value;
+    if (Date.now() > end) throw new Error(`timed out waiting for ${what}`);
+    await sleep(500);
+  }
+}
+
+async function mt5Scenario() {
+  const dataDir = mkdtempSync(join(tmpdir(), `e2e-mt5-${opts.brand}-`));
+  const root = mkdtempSync(join(tmpdir(), "e2e-mt5-tree-"));
+  const appArgs = [`--data-dir=${dataDir}`, `--vault-service=e2e.mt5.${opts.brand}.${process.pid}`];
+  const appdata = join(root, "AppData", "Roaming");
+  const terminal = join(appdata, "MetaQuotes", "Terminal");
+  const common = join(terminal, "Common", "Files");
+  const terminalFiles = join(terminal, MT5_TERMINAL, "MQL5", "Files");
+  mkdirSync(common, { recursive: true });
+  mkdirSync(terminalFiles, { recursive: true });
+  writeFileSync(
+    join(terminal, MT5_TERMINAL, "origin.txt"),
+    Buffer.concat([Buffer.from([0xff, 0xfe]), Buffer.from("C:\\Program Files\\Fictional Markets MT5", "utf16le")]),
+  );
+  writeFileSync(join(common, MT5_SAMPLE_NAME), MT5_SAMPLE);
+  writeFileSync(join(common, "notes.csv"), "not,a,trade\r\n");
+  const trades = async (session) => (await invoke(session, "e2e_status")).trades;
+  try {
+    let session = await newSession(appArgs);
+    await find(session, '[data-testid="journal-empty"]');
+    if (opts.brand !== "dojix") {
+      for (const command of ["mt5_status", "mt5_discover", "mt5_read"]) {
+        const r = await call(session, command, { token: 1 });
+        check(!r.ok && r.code === "unsupported", `${brand.productName}: ${command} answers "unsupported"`);
+      }
+      await endSession(session);
+      return;
+    }
+    let status = await invoke(session, "mt5_status");
+    check(status.active === false && status.folders.length === 0, "MT5 auto-import is off by default");
+    await invoke(session, "e2e_mt5_roots", { appdata: [appdata], programFiles: [], winePrefixes: [] });
+    const locations = await invoke(session, "mt5_discover");
+    check(
+      locations.map((l) => `${l.kind}:${l.label}`).join("|") ===
+        "common:All terminals (Common\\Files)|terminal:Fictional Markets MT5",
+      "discovery lists Common\\Files and the terminal, labelled from origin.txt",
+    );
+    const [commonLoc, terminalLoc] = locations;
+    check(
+      commonLoc.tradeFiles === 1 && commonLoc.otherCsvFiles === 1 && commonLoc.preview[0].fileName === MT5_SAMPLE_NAME,
+      "matching files are previewed before anything is enabled",
+    );
+    await sleep(3000);
+    check((await trades(session)) === 0, "nothing is imported before a folder is enabled");
+
+    status = await invoke(session, "mt5_watch_set", { id: commonLoc.id, enabled: true });
+    check(status.active === true && status.folders.length === 1, "enabling Common\\Files starts the watcher");
+    await waitFor("the existing file to be imported", async () => (await trades(session)) === 3);
+    check(true, "a file already in the folder is imported (3 trades)");
+    await screenshot(session, "mt5-imported");
+
+    writeFileSync(join(common, MT5_SAMPLE_NAME), mt5Variant("grown"));
+    await waitFor("the rewritten file to be imported", async () => (await trades(session)) === 4);
+    status = await invoke(session, "mt5_status");
+    check(
+      status.lastImport?.inserted === 1 && status.lastImport?.duplicates === 3,
+      "a file rewritten in place adds only its new row (3 duplicates skipped)",
+    );
+
+    await invoke(session, "mt5_watch_set", { id: terminalLoc.id, enabled: true });
+    writeFileSync(join(terminalFiles, "DojixExport_10000001_20261029.csv"), mt5Variant("other-day"));
+    await waitFor("the new terminal file to be imported", async () => (await trades(session)) === 7);
+    check(true, "a new file in a second enabled folder is imported");
+
+    rmSync(join(terminalFiles, "DojixExport_10000001_20261029.csv"));
+    await waitFor("the deleted file to be reported", async () =>
+      (await invoke(session, "mt5_status")).files.some(
+        (f) => f.fileName === "DojixExport_10000001_20261029.csv" && f.state === "deleted",
+      ),
+    );
+    check((await trades(session)) === 7, "deleting a file reports it and removes no trades");
+    status = await invoke(session, "mt5_status");
+    check(
+      status.files.some((f) => f.fileName === "notes.csv" && f.state === "not_trade_file"),
+      "another CSV is listed as not a trade file",
+    );
+    await endSession(session);
+
+    // From here on only the app touches the tree: it must not change at all.
+    const before = treeHash(root);
+    session = await newSession(appArgs);
+    await find(session, '[data-testid="journal-table"]');
+    await invoke(session, "e2e_mt5_roots", { appdata: [appdata], programFiles: [], winePrefixes: [] });
+    status = await waitFor("the watcher to restart", async () => {
+      const s = await invoke(session, "mt5_status");
+      return s.active && s.files.some((f) => f.fileName === MT5_SAMPLE_NAME && f.state === "imported") ? s : null;
+    });
+    check(status.folders.length === 2, "the enabled folders survive a restart");
+    await invoke(session, "mt5_rescan");
+    await sleep(5000);
+    check((await trades(session)) === 7, "a restart imports nothing twice");
+    await invoke(session, "mt5_discover");
+    await endSession(session);
+    check(treeHash(root) === before, "nothing under the watched MT5 tree changed (hash of every file and folder)");
+    checkAtRest(dataDir, "mt5");
+  } catch (err) {
+    dumpLogs(dataDir);
+    throw err;
+  }
+}
+
 async function main() {
   const scenarios =
-    opts.scenario === "all" ? ["lock", "layout"] : opts.scenario.split(",").map((s) => s.trim());
+    opts.scenario === "all" ? ["lock", "layout", "mt5"] : opts.scenario.split(",").map((s) => s.trim());
   let failed = false;
   for (const scenario of scenarios) {
     console.log(`=== ${opts.brand}: ${scenario}`);
@@ -453,6 +606,7 @@ async function main() {
       if (scenario === "lock") await lockScenario();
       else if (scenario === "no-keyring") await noKeyringScenario();
       else if (scenario === "layout") await layoutScenario();
+      else if (scenario === "mt5") await mt5Scenario();
       else throw new Error(`unknown scenario ${scenario}`);
     } catch (err) {
       failed = true;

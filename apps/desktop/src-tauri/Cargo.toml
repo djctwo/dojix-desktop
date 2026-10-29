@@ -40,7 +40,7 @@ log = { version = "0.4", features = ["std"] }
 getrandom = "0.3"
 zeroize = "1"
 thiserror = "2"
-dirs = "6"
+dirs = "7"
 # App Lock key wrapping and desktop backups (SPEC 6.4, 6.8): Argon2id.
 argon2 = { version = "=0.5.3", default-features = false, features = ["alloc", "zeroize"] }
 # Reading Mac backups (PBKDF2-SHA256) and the rollback record's file hash.

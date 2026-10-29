@@ -1286,7 +1286,11 @@ pub fn validate(image: &[u8], brand: &Brand) -> Result<Contents, RestoreError> {
 pub fn restored_mt5_settings(text: &str) -> String {
     let prefix = serde_json::from_str::<serde_json::Value>(text)
         .ok()
-        .and_then(|v| v.get("prefix32").and_then(|p| p.as_str()).map(str::to_string));
+        .and_then(|v| {
+            v.get("prefix32")
+                .and_then(|p| p.as_str())
+                .map(str::to_string)
+        });
     serde_json::json!({ "enabled": [], "custom": [], "prefix32": prefix }).to_string()
 }
 

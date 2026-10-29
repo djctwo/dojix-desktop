@@ -887,9 +887,14 @@ fn run_everything_read_only(tree: &Tree) -> usize {
     assert_eq!(views.len(), 4);
     config.enabled = views.iter().map(|v| v.location.path.clone()).collect();
     service.reconcile(&config, HashMap::new).unwrap();
-    wait_until("every trade file queued", WAIT, || {
-        service.status(&config).watch.pending.len() == 4
-    });
+    let start = std::time::Instant::now();
+    while service.status(&config).watch.pending.len() != 4 {
+        if start.elapsed() > WAIT {
+            let status = serde_json::to_string_pretty(&service.status(&config)).unwrap();
+            panic!("not every trade file was queued:\n{status}");
+        }
+        std::thread::sleep(Duration::from_millis(25));
+    }
     let pending = service.status(&config).watch.pending;
     for p in &pending {
         let (file, bytes) = service.read(p.token).unwrap();
@@ -1151,7 +1156,10 @@ fn network_device_and_relative_paths_are_refused_on_both_systems() {
         "",
     ];
     for path in windows_refused {
-        assert!(path_problem_for(path, true).is_some(), "accepted on Windows: {path:?}");
+        assert!(
+            path_problem_for(path, true).is_some(),
+            "accepted on Windows: {path:?}"
+        );
     }
     assert!(path_problem_for(&format!("C:\\{}", "a".repeat(5000)), true).is_some());
     for path in [
@@ -1160,7 +1168,11 @@ fn network_device_and_relative_paths_are_refused_on_both_systems() {
         r"\\?\C:\Very long\Files",
         "D:/Exports",
     ] {
-        assert_eq!(path_problem_for(path, true), None, "refused on Windows: {path:?}");
+        assert_eq!(
+            path_problem_for(path, true),
+            None,
+            "refused on Windows: {path:?}"
+        );
     }
     for path in [
         "//attacker/share",
@@ -1170,10 +1182,17 @@ fn network_device_and_relative_paths_are_refused_on_both_systems() {
         "C:\\Files",
         "",
     ] {
-        assert!(path_problem_for(path, false).is_some(), "accepted on Unix: {path:?}");
+        assert!(
+            path_problem_for(path, false).is_some(),
+            "accepted on Unix: {path:?}"
+        );
     }
     for path in ["/home/fictional/.mt5/drive_c/Files", "/mnt/exports"] {
-        assert_eq!(path_problem_for(path, false), None, "refused on Unix: {path:?}");
+        assert_eq!(
+            path_problem_for(path, false),
+            None,
+            "refused on Unix: {path:?}"
+        );
     }
 }
 
@@ -1181,7 +1200,11 @@ fn network_device_and_relative_paths_are_refused_on_both_systems() {
 fn refused_paths_are_dropped_from_settings_and_never_watched() {
     let tmp = tempfile::tempdir().unwrap();
     let tree = windows_tree(tmp.path());
-    let bad = [r"\\attacker\share\Files", "//attacker/share/Files", "relative/Files"];
+    let bad = [
+        r"\\attacker\share\Files",
+        "//attacker/share/Files",
+        "relative/Files",
+    ];
     let mut config = config_for(&[&tree.common_files]);
     for b in bad {
         config.enabled.push(b.to_string());
@@ -1189,7 +1212,10 @@ fn refused_paths_are_dropped_from_settings_and_never_watched() {
     }
     // Reading the settings drops them.
     let clean = config.clone().sanitized();
-    assert_eq!(clean.enabled, vec![tree.common_files.to_string_lossy().into_owned()]);
+    assert_eq!(
+        clean.enabled,
+        vec![tree.common_files.to_string_lossy().into_owned()]
+    );
     assert_eq!(clean.custom, clean.enabled);
     // Even unsanitized settings never reach the watcher or the folder list.
     let sink = Arc::new(CountSink::default());
@@ -1282,8 +1308,14 @@ fn a_restore_keeps_every_mt5_folder_off() {
     mkdirs(&target_dir);
     let mut source = journal(&source_dir);
     let crafted = Config {
-        enabled: vec![r"\\attacker\share\Files".into(), "/home/fictional/Files".into()],
-        custom: vec![r"\\attacker\share\Files".into(), "/home/fictional/Files".into()],
+        enabled: vec![
+            r"\\attacker\share\Files".into(),
+            "/home/fictional/Files".into(),
+        ],
+        custom: vec![
+            r"\\attacker\share\Files".into(),
+            "/home/fictional/Files".into(),
+        ],
         prefix32: Some("Fictional32_".into()),
     };
     // Written raw, as a crafted backup would hold it.

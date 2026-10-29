@@ -127,7 +127,18 @@ fn describe(path: &Path) -> String {
     if meta.is_dir() {
         format!("dir mtime={mtime}")
     } else if meta.is_file() {
-        let bytes = fs::read(path).unwrap();
+        let bytes = fs::read(path).unwrap_or_else(|e| {
+            #[cfg(windows)]
+            {
+                for target in [path.to_path_buf(), path.parent().unwrap().to_path_buf()] {
+                    let out = std::process::Command::new("icacls").arg(&target).output();
+                    if let Ok(out) = out {
+                        eprintln!("{}", String::from_utf8_lossy(&out.stdout));
+                    }
+                }
+            }
+            panic!("reading {path:?}: {e}")
+        });
         let digest = dojix_desktop_lib::crypto::hex(&dojix_desktop_lib::crypto::sha256(&bytes));
         format!(
             "file size={} mtime={mtime} sha256={digest} readonly={}",

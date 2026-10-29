@@ -13,10 +13,7 @@ pub const PATH_MAX: usize = 4096;
 
 fn is_drive_absolute(p: &str) -> bool {
     let b = p.as_bytes();
-    b.len() >= 3
-        && b[0].is_ascii_alphabetic()
-        && b[1] == b':'
-        && (b[2] == b'\\' || b[2] == b'/')
+    b.len() >= 3 && b[0].is_ascii_alphabetic() && b[1] == b':' && (b[2] == b'\\' || b[2] == b'/')
 }
 
 /// Why `path` may not be watched on a Windows (`windows`) or Unix system, if it may not.

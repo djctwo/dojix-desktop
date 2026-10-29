@@ -7,3 +7,5 @@
 golden/fixtures/** -text
 golden/reference/** -text
 golden/reference-meta/** -text
+# The DojixExport sample is the exporter's exact bytes (CRLF).
+mql5/samples/** -text

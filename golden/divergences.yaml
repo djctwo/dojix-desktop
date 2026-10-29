@@ -184,8 +184,8 @@
   app: dojix
   headline: false
   approved: true
-  reason: "Pulse edge signal recomputed on hour/session change (Mac: once when the screen appears). Not in the harness (live view model)"
-  test: null
+  reason: "Pulse edge signal recomputed on hour/session change, danger-zone edges and calendar loads (Mac: once when the screen appears). Not in the harness (live view model)"
+  test: packages/core/src/online/online.test.ts
   affects: []
   fixtures: []
 - id: D-29

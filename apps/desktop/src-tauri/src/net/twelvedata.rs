@@ -77,7 +77,9 @@ pub fn parse_quotes(json: &Value, symbols: &[String]) -> Result<Vec<Quote>, NetE
             .map(|q| vec![q])
             .ok_or_else(|| NetError::bad_response(PROVIDER));
     }
-    let map = json.as_object().ok_or_else(|| NetError::bad_response(PROVIDER))?;
+    let map = json
+        .as_object()
+        .ok_or_else(|| NetError::bad_response(PROVIDER))?;
     Ok(symbols
         .iter()
         .filter_map(|s| map.get(s).and_then(|entry| parse_quote(entry, s)))
@@ -96,7 +98,11 @@ pub async fn get_quotes(
     let credits = u32::try_from(symbols.len()).unwrap_or(u32::MAX);
     let now = crate::journal::now_ms();
     budget.check(credits, now)?;
-    let mut url = checked_url(&format!("{}/quote", base.trim_end_matches('/')), HOSTS, policy)?;
+    let mut url = checked_url(
+        &format!("{}/quote", base.trim_end_matches('/')),
+        HOSTS,
+        policy,
+    )?;
     url.query_pairs_mut()
         .append_pair("symbol", &symbols.join(","));
     let request = http
@@ -104,7 +110,11 @@ pub async fn get_quotes(
         .header("Authorization", format!("apikey {key}"));
     let got = fetch(PROVIDER, request, MAX_BODY).await?;
     if got.status != 200 {
-        return Err(status_error(PROVIDER, got.status, super::retry_after(&got.headers)));
+        return Err(status_error(
+            PROVIDER,
+            got.status,
+            super::retry_after(&got.headers),
+        ));
     }
     budget.record(credits, now);
     let json: Value =
@@ -245,10 +255,7 @@ pub async fn stream(
 
 /// The symbols Twelve Data expects (`EUR/USD`).
 pub fn provider_symbols(symbols: &[String]) -> Vec<String> {
-    symbols
-        .iter()
-        .filter_map(|s| normalize_symbol(s))
-        .collect()
+    symbols.iter().filter_map(|s| normalize_symbol(s)).collect()
 }
 
 #[cfg(test)]
@@ -264,7 +271,14 @@ mod tests {
     fn single_and_batch_quotes_parse_like_the_mac() {
         let one = json!({"symbol": "EUR/USD", "close": "1.08512", "percent_change": "-0.25"});
         let q = parse_quotes(&one, &syms(&["EUR/USD"])).unwrap();
-        assert_eq!(q, [Quote { symbol: "EUR/USD".into(), close: 1.08512, change_percent: -0.25 }]);
+        assert_eq!(
+            q,
+            [Quote {
+                symbol: "EUR/USD".into(),
+                close: 1.08512,
+                change_percent: -0.25
+            }]
+        );
 
         let batch = json!({
             "EUR/USD": {"close": "1.1", "percent_change": "0.5"},
@@ -272,28 +286,59 @@ mod tests {
             "USD/JPY": {"status": "error", "message": "not in plan"},
             "AUD/USD": {"close": 0.66}
         });
-        let q = parse_quotes(&batch, &syms(&["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "NZD/USD"])).unwrap();
+        let q = parse_quotes(
+            &batch,
+            &syms(&["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "NZD/USD"]),
+        )
+        .unwrap();
         let got: Vec<&str> = q.iter().map(|q| q.symbol.as_str()).collect();
         assert_eq!(got, ["EUR/USD", "AUD/USD"]);
         assert_eq!(q[1].change_percent, 0.0);
 
-        assert_eq!(parse_quotes(&json!({"close": "x"}), &syms(&["EUR/USD"])).unwrap_err().code, "bad_response");
-        assert_eq!(parse_quotes(&json!([1, 2]), &syms(&["A", "B"])).unwrap_err().code, "bad_response");
+        assert_eq!(
+            parse_quotes(&json!({"close": "x"}), &syms(&["EUR/USD"]))
+                .unwrap_err()
+                .code,
+            "bad_response"
+        );
+        assert_eq!(
+            parse_quotes(&json!([1, 2]), &syms(&["A", "B"]))
+                .unwrap_err()
+                .code,
+            "bad_response"
+        );
     }
 
     #[test]
     fn error_objects_map_to_codes() {
         let e = |code: u64| json!({"status": "error", "code": code, "message": "fictional"});
-        assert_eq!(parse_quotes(&e(401), &syms(&["EUR/USD"])).unwrap_err().code, "invalid_key");
-        assert_eq!(parse_quotes(&e(429), &syms(&["EUR/USD", "GBP/USD"])).unwrap_err().code, "rate_limited");
-        assert_eq!(parse_quotes(&e(400), &syms(&["EUR/USD"])).unwrap_err().code, "bad_response");
+        assert_eq!(
+            parse_quotes(&e(401), &syms(&["EUR/USD"])).unwrap_err().code,
+            "invalid_key"
+        );
+        assert_eq!(
+            parse_quotes(&e(429), &syms(&["EUR/USD", "GBP/USD"]))
+                .unwrap_err()
+                .code,
+            "rate_limited"
+        );
+        assert_eq!(
+            parse_quotes(&e(400), &syms(&["EUR/USD"])).unwrap_err().code,
+            "bad_response"
+        );
     }
 
     #[test]
     fn websocket_messages() {
-        let ws = Ws { key: zeroize::Zeroizing::new("td-fictional".into()), symbols: syms(&["EUR/USD", "GBP/USD"]) };
+        let ws = Ws {
+            key: zeroize::Zeroizing::new("td-fictional".into()),
+            symbols: syms(&["EUR/USD", "GBP/USD"]),
+        };
         let sub: Value = serde_json::from_str(&ws.subscribe()).unwrap();
-        assert_eq!(sub, json!({"action": "subscribe", "params": {"symbols": "EUR/USD,GBP/USD", "apikey": "td-fictional"}}));
+        assert_eq!(
+            sub,
+            json!({"action": "subscribe", "params": {"symbols": "EUR/USD,GBP/USD", "apikey": "td-fictional"}})
+        );
         assert!(ws.auth().is_none());
         assert_eq!(ws.heartbeat().as_deref(), Some(r#"{"action":"heartbeat"}"#));
 
@@ -318,7 +363,10 @@ mod tests {
             assert_eq!(ws.parse(ignored, 0), WsEvent::Ignore, "{ignored}");
         }
         assert!(matches!(
-            ws.parse(r#"{"event":"subscribe-status","status":"error","message":"key"}"#, 0),
+            ws.parse(
+                r#"{"event":"subscribe-status","status":"error","message":"key"}"#,
+                0
+            ),
             WsEvent::Refused(_)
         ));
         assert!(matches!(

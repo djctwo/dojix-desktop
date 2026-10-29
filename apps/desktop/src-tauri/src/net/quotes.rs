@@ -61,7 +61,11 @@ impl PriceTick {
 
 /// `StreamingStatus` on the Mac.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
-#[serde(tag = "state", rename_all = "camelCase", rename_all_fields = "camelCase")]
+#[serde(
+    tag = "state",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase"
+)]
 pub enum StreamStatus {
     Disconnected,
     Connecting,
@@ -84,7 +88,10 @@ pub trait TickSink: Send + Sync {
 /// Returns `None` for an empty or overlong name.
 pub fn normalize_symbol(raw: &str) -> Option<String> {
     let raw = raw.trim();
-    let raw = raw.strip_prefix("C:").or_else(|| raw.strip_prefix("C.")).unwrap_or(raw);
+    let raw = raw
+        .strip_prefix("C:")
+        .or_else(|| raw.strip_prefix("C."))
+        .unwrap_or(raw);
     let alnum: String = raw
         .chars()
         .filter(|c| c.is_ascii_alphanumeric())
@@ -271,12 +278,18 @@ pub async fn ws_session(
     let mut ws = match tokio::time::timeout(timing.connect_timeout, connect).await {
         Ok(Ok((ws, _response))) => ws,
         Ok(Err(e)) => return ws_error_end(&e, false),
-        Err(_) => return SessionEnd::Dropped { was_connected: false },
+        Err(_) => {
+            return SessionEnd::Dropped {
+                was_connected: false,
+            }
+        }
     };
 
     if let Some(auth) = proto.auth() {
         if ws.send(Message::text(auth)).await.is_err() {
-            return SessionEnd::Dropped { was_connected: false };
+            return SessionEnd::Dropped {
+                was_connected: false,
+            };
         }
         let deadline = tokio::time::Instant::now() + timing.connect_timeout;
         loop {
@@ -285,7 +298,11 @@ pub async fn ws_session(
                 Ok(Some(Ok(Message::Text(t)))) => t.as_str().to_string(),
                 Ok(Some(Ok(_))) => continue,
                 Ok(Some(Err(e))) => return ws_error_end(&e, false),
-                Ok(None) | Err(_) => return SessionEnd::Dropped { was_connected: false },
+                Ok(None) | Err(_) => {
+                    return SessionEnd::Dropped {
+                        was_connected: false,
+                    }
+                }
             };
             match proto.parse(&text, now_ms()) {
                 WsEvent::AuthOk => break,
@@ -296,7 +313,9 @@ pub async fn ws_session(
     }
 
     if ws.send(Message::text(proto.subscribe())).await.is_err() {
-        return SessionEnd::Dropped { was_connected: false };
+        return SessionEnd::Dropped {
+            was_connected: false,
+        };
     }
     sink.status(StreamStatus::Connected);
 
@@ -478,7 +497,10 @@ impl QuoteHub {
         } else {
             status
         };
-        let twelve = matches!(s.source, LiveSource::TwelveDataRest | LiveSource::TwelveDataWs);
+        let twelve = matches!(
+            s.source,
+            LiveSource::TwelveDataRest | LiveSource::TwelveDataWs
+        );
         QuotesStatus {
             source: s.source,
             source_label: s.source.label(),
@@ -512,7 +534,12 @@ pub mod test_support {
 
     impl Collect {
         pub fn tick_symbols(&self) -> Vec<String> {
-            self.ticks.lock().unwrap().iter().map(|t| t.symbol.clone()).collect()
+            self.ticks
+                .lock()
+                .unwrap()
+                .iter()
+                .map(|t| t.symbol.clone())
+                .collect()
         }
         pub fn last_status(&self) -> Option<StreamStatus> {
             self.statuses.lock().unwrap().last().cloned()
@@ -574,7 +601,10 @@ mod tests {
             ["EUR/USD", "GBP/USD"]
         );
         assert_eq!(requested_symbols(&[]).unwrap_err().code, "invalid");
-        assert_eq!(requested_symbols(&s(&["", "EURUSD"])).unwrap_err().code, "invalid");
+        assert_eq!(
+            requested_symbols(&s(&["", "EURUSD"])).unwrap_err().code,
+            "invalid"
+        );
         let many: Vec<String> = (0..40).map(|i| format!("X{i:02}")).collect();
         assert_eq!(requested_symbols(&many).unwrap_err().code, "invalid");
     }
@@ -596,7 +626,10 @@ mod tests {
     #[test]
     fn status_serialises_with_a_state_tag() {
         let v = serde_json::to_value(StreamStatus::Reconnecting { attempt: 3 }).unwrap();
-        assert_eq!(v, serde_json::json!({"state": "reconnecting", "attempt": 3}));
+        assert_eq!(
+            v,
+            serde_json::json!({"state": "reconnecting", "attempt": 3})
+        );
         let v = serde_json::to_value(StreamStatus::Disconnected).unwrap();
         assert_eq!(v, serde_json::json!({"state": "disconnected"}));
     }
@@ -607,7 +640,11 @@ mod tests {
         let mut calls = 0;
         reconnecting(&sink, FAST, || {
             calls += 1;
-            async { SessionEnd::Dropped { was_connected: false } }
+            async {
+                SessionEnd::Dropped {
+                    was_connected: false,
+                }
+            }
         })
         .await;
         assert_eq!(calls, 11, "the first try plus 10 reconnects");
@@ -622,7 +659,9 @@ mod tests {
         reconnecting(&sink, FAST, || {
             n += 1;
             let end = match n {
-                1..=15 => SessionEnd::Dropped { was_connected: true },
+                1..=15 => SessionEnd::Dropped {
+                    was_connected: true,
+                },
                 _ => SessionEnd::Fatal("refused".into()),
             };
             async move { end }
@@ -631,7 +670,9 @@ mod tests {
         assert_eq!(n, 16);
         assert_eq!(
             sink.last_status(),
-            Some(StreamStatus::Error { message: "refused".into() })
+            Some(StreamStatus::Error {
+                message: "refused".into()
+            })
         );
     }
 
@@ -679,11 +720,21 @@ mod tests {
     #[tokio::test]
     async fn a_finished_source_reports_its_final_state() {
         let hub = QuoteHub::new(Arc::new(Collect::default()));
-        hub.start(LiveSource::PolygonWs, vec!["EUR/USD".into()], |sink| async move {
-            sink.status(StreamStatus::Error { message: "bad key".into() });
-        });
+        hub.start(
+            LiveSource::PolygonWs,
+            vec!["EUR/USD".into()],
+            |sink| async move {
+                sink.status(StreamStatus::Error {
+                    message: "bad key".into(),
+                });
+            },
+        );
         eventually(|| matches!(hub.status(None).status, StreamStatus::Error { .. })).await;
-        hub.start(LiveSource::Mt5File, vec!["EUR/USD".into()], |_sink| async move {});
+        hub.start(
+            LiveSource::Mt5File,
+            vec!["EUR/USD".into()],
+            |_sink| async move {},
+        );
         eventually(|| hub.status(None).status == StreamStatus::Disconnected).await;
         assert_eq!(hub.status(None).credits_left_today, None);
     }

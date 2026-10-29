@@ -71,7 +71,12 @@ fn text(v: Option<&Value>) -> Option<String> {
     if s.is_empty() {
         return None;
     }
-    Some(s.chars().filter(|c| !c.is_control()).take(MAX_TEXT).collect())
+    Some(
+        s.chars()
+            .filter(|c| !c.is_control())
+            .take(MAX_TEXT)
+            .collect(),
+    )
 }
 
 /// `parseEvent`: title, country and a readable date are required; impact defaults to Low.
@@ -190,7 +195,12 @@ impl CalendarCache {
     }
 
     fn stale_or(&self, e: NetError) -> Result<CalendarWeek, NetError> {
-        match self.cached.lock().ok().and_then(|g| g.as_ref().map(|c| c.week.clone())) {
+        match self
+            .cached
+            .lock()
+            .ok()
+            .and_then(|g| g.as_ref().map(|c| c.week.clone()))
+        {
             Some(mut week) => {
                 week.stale = true;
                 Ok(week)
@@ -228,13 +238,19 @@ mod tests {
         ]);
         let events = parse_week(&feed).unwrap();
         let titles: Vec<&str> = events.iter().map(|e| e.title.as_str()).collect();
-        assert_eq!(titles, ["Fictional Payrolls", "Fictional PMI", "Bank holiday"]);
+        assert_eq!(
+            titles,
+            ["Fictional Payrolls", "Fictional PMI", "Bank holiday"]
+        );
         assert_eq!(events[0].impact, Impact::High);
         assert_eq!(events[0].time_ms, 1_793_017_800_000);
         assert_eq!(events[0].actual, None);
         assert_eq!(events[1].forecast.as_deref(), Some("50.1"));
         assert_eq!(events[2].impact, Impact::Low);
-        assert_eq!(parse_week(&json!({"events": []})).unwrap_err().code, "bad_response");
+        assert_eq!(
+            parse_week(&json!({"events": []})).unwrap_err().code,
+            "bad_response"
+        );
         let v = serde_json::to_value(&events[1]).unwrap();
         assert_eq!(v["impact"], "medium");
         assert!(v.get("actual").is_none());

@@ -74,8 +74,7 @@ pub fn ticker(raw: &str) -> Result<String, NetError> {
     let t = raw.trim().to_ascii_uppercase();
     let ok = !t.is_empty()
         && t.len() <= 20
-        && t
-            .bytes()
+        && t.bytes()
             .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b'^' | b'=' | b':'));
     if ok {
         Ok(t)
@@ -117,12 +116,19 @@ pub fn parse_quote(symbol: &str, json: &Value) -> Result<StockQuote, NetError> {
 pub fn parse_profile(symbol: &str, json: &Value) -> Result<CompanyProfile, NetError> {
     let name = clean(json.get("name"));
     if name.is_empty() {
-        return Err(NetError::new("not_found", format!("No company profile for {symbol}.")));
+        return Err(NetError::new(
+            "not_found",
+            format!("No company profile for {symbol}."),
+        ));
     }
     let ticker = clean(json.get("ticker"));
     Ok(CompanyProfile {
         name,
-        ticker: if ticker.is_empty() { symbol.to_string() } else { ticker },
+        ticker: if ticker.is_empty() {
+            symbol.to_string()
+        } else {
+            ticker
+        },
         exchange: clean(json.get("exchange")),
         industry: clean(json.get("finnhubIndustry")),
         market_cap: finite(json.get("marketCapitalization")).unwrap_or(0.0),
@@ -203,7 +209,11 @@ async fn get(
     query: &[(&str, &str)],
     cache: &FinnhubCache,
 ) -> Result<Value, NetError> {
-    let mut url = checked_url(&format!("{}{path}", base.trim_end_matches('/')), HOSTS, policy)?;
+    let mut url = checked_url(
+        &format!("{}{path}", base.trim_end_matches('/')),
+        HOSTS,
+        policy,
+    )?;
     {
         let mut pairs = url.query_pairs_mut();
         for (k, v) in query {
@@ -211,7 +221,12 @@ async fn get(
         }
     }
     cache.take_slot()?;
-    fetch_json(PROVIDER, http.get(url).header("X-Finnhub-Token", key), MAX_BODY).await
+    fetch_json(
+        PROVIDER,
+        http.get(url).header("X-Finnhub-Token", key),
+        MAX_BODY,
+    )
+    .await
 }
 
 pub async fn quote(
@@ -231,7 +246,16 @@ pub async fn quote(
     if let Some(q) = cached {
         return Ok(q);
     }
-    let json = get(http, base, policy, key, "/quote", &[("symbol", symbol.as_str())], cache).await?;
+    let json = get(
+        http,
+        base,
+        policy,
+        key,
+        "/quote",
+        &[("symbol", symbol.as_str())],
+        cache,
+    )
+    .await?;
     let q = parse_quote(&symbol, &json)?;
     if let Ok(mut map) = cache.quotes.lock() {
         map.retain(|_, (_, at)| at.elapsed() < QUOTE_TTL);
@@ -249,11 +273,24 @@ pub async fn profile(
     cache: &FinnhubCache,
 ) -> Result<CompanyProfile, NetError> {
     let symbol = ticker(symbol)?;
-    let cached = cache.profiles.lock().ok().and_then(|p| p.get(&symbol).cloned());
+    let cached = cache
+        .profiles
+        .lock()
+        .ok()
+        .and_then(|p| p.get(&symbol).cloned());
     if let Some(p) = cached {
         return Ok(p);
     }
-    let json = get(http, base, policy, key, "/stock/profile2", &[("symbol", symbol.as_str())], cache).await?;
+    let json = get(
+        http,
+        base,
+        policy,
+        key,
+        "/stock/profile2",
+        &[("symbol", symbol.as_str())],
+        cache,
+    )
+    .await?;
     let p = parse_profile(&symbol, &json)?;
     if let Ok(mut map) = cache.profiles.lock() {
         if map.len() >= MAX_PROFILES {
@@ -291,7 +328,16 @@ pub async fn test(
     key: &str,
     cache: &FinnhubCache,
 ) -> Result<String, NetError> {
-    let json = get(http, base, policy, key, "/quote", &[("symbol", "AAPL")], cache).await?;
+    let json = get(
+        http,
+        base,
+        policy,
+        key,
+        "/quote",
+        &[("symbol", "AAPL")],
+        cache,
+    )
+    .await?;
     let q = parse_quote("AAPL", &json)?;
     Ok(format!("Connected — AAPL {:.2}", q.current_price))
 }
@@ -316,14 +362,21 @@ mod tests {
         let q = parse_quote("FICT", &json!({"c": 12.5, "d": -0.5, "dp": -3.85, "h": 13, "l": 12, "o": 13, "pc": 13, "t": 1793017800})).unwrap();
         assert_eq!(q.current_price, 12.5);
         assert_eq!(q.timestamp, 1_793_017_800);
-        let unknown = json!({"c": 0, "d": null, "dp": null, "h": 0, "l": 0, "o": 0, "pc": 0, "t": 0});
+        let unknown =
+            json!({"c": 0, "d": null, "dp": null, "h": 0, "l": 0, "o": 0, "pc": 0, "t": 0});
         assert_eq!(parse_quote("NOPE", &unknown).unwrap_err().code, "not_found");
 
         let p = parse_profile("FICT", &json!({"name": "Fictional Corp", "finnhubIndustry": "Widgets", "marketCapitalization": 1234.5, "logo": "https://example.invalid/logo.png"})).unwrap();
-        assert_eq!((p.ticker.as_str(), p.industry.as_str()), ("FICT", "Widgets"));
+        assert_eq!(
+            (p.ticker.as_str(), p.industry.as_str()),
+            ("FICT", "Widgets")
+        );
         assert_eq!(p.shares_outstanding, 0.0);
         assert!(!serde_json::to_string(&p).unwrap().contains("logo"));
-        assert_eq!(parse_profile("FICT", &json!({})).unwrap_err().code, "not_found");
+        assert_eq!(
+            parse_profile("FICT", &json!({})).unwrap_err().code,
+            "not_found"
+        );
 
         let rows: Vec<Value> = (0..15)
             .map(|i| json!({"description": format!("Fictional {i}"), "displaySymbol": format!("F{i}"), "symbol": format!("F{i}"), "type": if i == 0 { "Crypto" } else { "Common Stock" }}))
@@ -334,7 +387,10 @@ mod tests {
         let v = serde_json::to_value(&found[0]).unwrap();
         assert_eq!(v["type"], "Common Stock");
         assert_eq!(v["displaySymbol"], "F1");
-        assert_eq!(parse_search(&json!({"count": 0})).unwrap_err().code, "bad_response");
+        assert_eq!(
+            parse_search(&json!({"count": 0})).unwrap_err().code,
+            "bad_response"
+        );
     }
 
     #[test]

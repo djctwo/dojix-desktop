@@ -250,7 +250,10 @@ async fn anthropic_run_sends_exactly_the_previewed_request() {
     assert_eq!(request.body, preview.body.as_bytes());
     assert!(answer.text.starts_with("1. Trade London"));
     assert!(answer.text.contains("[redacted]"));
-    assert_eq!((answer.input_tokens, answer.output_tokens), (Some(812), Some(455)));
+    assert_eq!(
+        (answer.input_tokens, answer.output_tokens),
+        (Some(812), Some(455))
+    );
     assert_eq!(answer.model, "claude-opus-5-5");
     assert_no_secret(&answer.text);
     let sent = env.server.received_requests().await.unwrap();
@@ -264,7 +267,11 @@ async fn anthropic_run_gates() {
     // Switch off (the default): nothing is sent.
     let off = env
         .online
-        .ai_run(&OnlineSettings::default(), &prompt(), &preview.request_sha256)
+        .ai_run(
+            &OnlineSettings::default(),
+            &prompt(),
+            &preview.request_sha256,
+        )
         .await
         .unwrap_err();
     assert_eq!(off.code, "off");
@@ -300,12 +307,22 @@ async fn anthropic_refusals_and_empty_answers() {
         .await;
     Mock::given(method("POST"))
         .and(path("/v1/messages"))
-        .respond_with(json_body(json!({"content": [{"type": "text", "text": "  "}]})))
+        .respond_with(json_body(
+            json!({"content": [{"type": "text", "text": "  "}]}),
+        ))
         .mount(&env.server)
         .await;
-    let e = env.online.ai_run(&s, &prompt(), &preview.request_sha256).await.unwrap_err();
+    let e = env
+        .online
+        .ai_run(&s, &prompt(), &preview.request_sha256)
+        .await
+        .unwrap_err();
     assert_eq!(e.code, "refused");
-    let e = env.online.ai_run(&s, &prompt(), &preview.request_sha256).await.unwrap_err();
+    let e = env
+        .online
+        .ai_run(&s, &prompt(), &preview.request_sha256)
+        .await
+        .unwrap_err();
     assert_eq!(e.code, "empty");
     env.server.reset().await;
     Mock::given(method("POST"))
@@ -313,7 +330,11 @@ async fn anthropic_refusals_and_empty_answers() {
         .respond_with(ResponseTemplate::new(200).set_body_string("<html>proxy</html>"))
         .mount(&env.server)
         .await;
-    let e = env.online.ai_run(&s, &prompt(), &preview.request_sha256).await.unwrap_err();
+    let e = env
+        .online
+        .ai_run(&s, &prompt(), &preview.request_sha256)
+        .await
+        .unwrap_err();
     assert_eq!(e.code, "bad_response", "content-type is checked");
     env.server.reset().await;
     Mock::given(method("POST"))
@@ -323,9 +344,17 @@ async fn anthropic_refusals_and_empty_answers() {
         ))
         .mount(&env.server)
         .await;
-    let e = env.online.ai_run(&s, &prompt(), &preview.request_sha256).await.unwrap_err();
+    let e = env
+        .online
+        .ai_run(&s, &prompt(), &preview.request_sha256)
+        .await
+        .unwrap_err();
     assert_eq!(e.code, "http");
-    assert!(e.message.contains("model not found [redacted]"), "{}", e.message);
+    assert!(
+        e.message.contains("model not found [redacted]"),
+        "{}",
+        e.message
+    );
     assert_no_secret(&e);
 }
 
@@ -373,11 +402,18 @@ async fn anthropic_models_list_pages_and_failure_matrix() {
         .await;
     let models = env.online.ai_models().await.unwrap();
     let ids: Vec<&str> = models.iter().map(|m| m.id.as_str()).collect();
-    assert_eq!(ids, ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]);
+    assert_eq!(
+        ids,
+        ["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]
+    );
     assert_eq!(models[1].display_name, "claude-sonnet-5-5");
     assert_no_secret(&models);
 
-    let test = env.online.test_connection("anthropic", &on()).await.unwrap();
+    let test = env
+        .online
+        .test_connection("anthropic", &on())
+        .await
+        .unwrap();
     assert!(test.ok);
     assert_no_secret(&test);
 
@@ -401,26 +437,44 @@ async fn twelve_data_rest_uses_the_header_and_counts_credits() {
     let env = env("dojix").await;
     Mock::given(method("GET"))
         .and(path("/td/quote"))
-        .and(header("authorization", format!("apikey {CANARY_TWELVE}").as_str()))
+        .and(header(
+            "authorization",
+            format!("apikey {CANARY_TWELVE}").as_str(),
+        ))
         .and(query_param("symbol", "EUR/USD"))
-        .respond_with(json_body(json!({"symbol": "EUR/USD", "close": "1.08512", "percent_change": "0.1"})))
+        .respond_with(json_body(
+            json!({"symbol": "EUR/USD", "close": "1.08512", "percent_change": "0.1"}),
+        ))
         .mount(&env.server)
         .await;
     let before = env.online.credits_left_today();
-    let t = env.online.test_connection("twelve_data", &on()).await.unwrap();
+    let t = env
+        .online
+        .test_connection("twelve_data", &on())
+        .await
+        .unwrap();
     assert_eq!(t.message, "Connected — EUR/USD: 1.08512");
     assert_eq!(env.online.credits_left_today(), before - 1);
     let sent = env.server.received_requests().await.unwrap();
-    assert!(!sent[0].url.as_str().contains(CANARY_TWELVE), "never in the URL");
+    assert!(
+        !sent[0].url.as_str().contains(CANARY_TWELVE),
+        "never in the URL"
+    );
 
     // A Twelve Data error object (HTTP 200).
     env.server.reset().await;
     Mock::given(method("GET"))
         .and(path("/td/quote"))
-        .respond_with(json_body(json!({"status": "error", "code": 401, "message": format!("bad {CANARY_TWELVE}")})))
+        .respond_with(json_body(
+            json!({"status": "error", "code": 401, "message": format!("bad {CANARY_TWELVE}")}),
+        ))
         .mount(&env.server)
         .await;
-    let e = env.online.test_connection("twelve_data", &on()).await.unwrap_err();
+    let e = env
+        .online
+        .test_connection("twelve_data", &on())
+        .await
+        .unwrap_err();
     assert_eq!(e.code, "invalid_key");
     assert_no_secret(&e);
 
@@ -471,7 +525,13 @@ async fn twelve_data_rest_source_polls_and_stops_on_a_bad_key() {
         .respond_with(ResponseTemplate::new(401))
         .mount(&env.server)
         .await;
-    eventually(|| matches!(env.online.quotes_status().status, StreamStatus::Error { .. })).await;
+    eventually(|| {
+        matches!(
+            env.online.quotes_status().status,
+            StreamStatus::Error { .. }
+        )
+    })
+    .await;
     env.online.quotes_stop();
 }
 
@@ -542,7 +602,10 @@ async fn twelve_data_websocket_subscribes_streams_and_answers_heartbeats() {
     let messages = subscribed.lock().unwrap().clone();
     let sub: serde_json::Value = serde_json::from_str(&messages[0]).unwrap();
     assert_eq!(sub["params"]["symbols"], "EUR/USD");
-    assert_eq!(sub["params"]["apikey"], CANARY_TWELVE, "the key goes in the message, as on the Mac");
+    assert_eq!(
+        sub["params"]["apikey"], CANARY_TWELVE,
+        "the key goes in the message, as on the Mac"
+    );
     assert_eq!(messages[1], r#"{"action":"heartbeat"}"#);
     eventually(|| env.sink.tick_symbols() == ["EUR/USD"]).await;
     assert_eq!(env.online.quotes_status().status, StreamStatus::Connected);
@@ -555,7 +618,9 @@ async fn twelve_data_websocket_refused_subscription_does_not_reconnect() {
     let (ws_url, connections) = ws_server(|mut ws| async move {
         let _ = next_text(&mut ws).await;
         let _ = ws
-            .send(Message::text(r#"{"event":"subscribe-status","status":"error","message":"invalid key"}"#))
+            .send(Message::text(
+                r#"{"event":"subscribe-status","status":"error","message":"invalid key"}"#,
+            ))
             .await;
         std::future::pending::<()>().await;
     })
@@ -566,7 +631,13 @@ async fn twelve_data_websocket_refused_subscription_does_not_reconnect() {
         ..on()
     };
     env.online.quotes_start(&s, &["EUR/USD".into()]).unwrap();
-    eventually(|| matches!(env.online.quotes_status().status, StreamStatus::Error { .. })).await;
+    eventually(|| {
+        matches!(
+            env.online.quotes_status().status,
+            StreamStatus::Error { .. }
+        )
+    })
+    .await;
     tokio::time::sleep(Duration::from_millis(100)).await;
     assert_eq!(connections.load(Ordering::SeqCst), 1);
 }
@@ -620,8 +691,18 @@ async fn websocket_reconnects_at_most_ten_times() {
         ..on()
     };
     env.online.quotes_start(&s, &["EUR/USD".into()]).unwrap();
-    eventually(|| matches!(env.online.quotes_status().status, StreamStatus::Error { .. })).await;
-    assert_eq!(count.load(Ordering::SeqCst), 11, "one try plus ten reconnects");
+    eventually(|| {
+        matches!(
+            env.online.quotes_status().status,
+            StreamStatus::Error { .. }
+        )
+    })
+    .await;
+    assert_eq!(
+        count.load(Ordering::SeqCst),
+        11,
+        "one try plus ten reconnects"
+    );
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -660,10 +741,17 @@ async fn polygon_waits_for_auth_then_subscribes() {
     env.online.quotes_start(&s, &["EURUSD".into()]).unwrap();
     eventually(|| env.sink.tick_symbols() == ["EUR/USD"]).await;
     let log = received.lock().unwrap().clone();
-    assert_eq!(log[0], format!(r#"{{"action":"auth","params":"{CANARY_POLYGON}"}}"#));
+    assert_eq!(
+        log[0],
+        format!(r#"{{"action":"auth","params":"{CANARY_POLYGON}"}}"#)
+    );
     assert_eq!(log[1], r#"{"action":"subscribe","params":"C.EUR/USD"}"#);
     tokio::time::sleep(Duration::from_millis(50)).await;
-    assert_eq!(env.sink.tick_symbols(), ["EUR/USD"], "only requested symbols reach the window");
+    assert_eq!(
+        env.sink.tick_symbols(),
+        ["EUR/USD"],
+        "only requested symbols reach the window"
+    );
     env.online.quotes_stop();
 }
 
@@ -672,7 +760,9 @@ async fn polygon_auth_failure_is_final() {
     let (ws_url, connections) = ws_server(|mut ws| async move {
         let _ = next_text(&mut ws).await;
         let _ = ws
-            .send(Message::text(r#"[{"ev":"status","status":"auth_failed","message":"authentication failed"}]"#))
+            .send(Message::text(
+                r#"[{"ev":"status","status":"auth_failed","message":"authentication failed"}]"#,
+            ))
             .await;
         std::future::pending::<()>().await;
     })
@@ -683,7 +773,13 @@ async fn polygon_auth_failure_is_final() {
         ..on()
     };
     env.online.quotes_start(&s, &["EUR/USD".into()]).unwrap();
-    eventually(|| matches!(env.online.quotes_status().status, StreamStatus::Error { .. })).await;
+    eventually(|| {
+        matches!(
+            env.online.quotes_status().status,
+            StreamStatus::Error { .. }
+        )
+    })
+    .await;
     tokio::time::sleep(Duration::from_millis(100)).await;
     assert_eq!(connections.load(Ordering::SeqCst), 1);
 }
@@ -693,20 +789,32 @@ async fn polygon_rest_test_and_failure_matrix() {
     let env = env("dojix").await;
     Mock::given(method("GET"))
         .and(path("/pg/v2/last/nbbo/C:EURUSD"))
-        .and(header("authorization", format!("Bearer {CANARY_POLYGON}").as_str()))
+        .and(header(
+            "authorization",
+            format!("Bearer {CANARY_POLYGON}").as_str(),
+        ))
         .respond_with(json_body(json!({"status": "OK"})))
         .mount(&env.server)
         .await;
     let t = env.online.test_connection("polygon", &on()).await.unwrap();
     assert_eq!(t.message, "Connected to Polygon.io");
     // The REST check reads no JSON, so malformed bodies pass; the rest of the matrix applies.
-    for (status, want) in [(401, "invalid_key"), (403, "invalid_key"), (429, "rate_limited"), (502, "unavailable")] {
+    for (status, want) in [
+        (401, "invalid_key"),
+        (403, "invalid_key"),
+        (429, "rate_limited"),
+        (502, "unavailable"),
+    ] {
         env.server.reset().await;
         Mock::given(method("GET"))
             .respond_with(ResponseTemplate::new(status))
             .mount(&env.server)
             .await;
-        let e = env.online.test_connection("polygon", &on()).await.unwrap_err();
+        let e = env
+            .online
+            .test_connection("polygon", &on())
+            .await
+            .unwrap_err();
         assert_eq!(e.code, want);
     }
     env.server.reset().await;
@@ -714,13 +822,27 @@ async fn polygon_rest_test_and_failure_matrix() {
         .respond_with(ResponseTemplate::new(200).set_delay(Duration::from_secs(3)))
         .mount(&env.server)
         .await;
-    assert_eq!(env.online.test_connection("polygon", &on()).await.unwrap_err().code, "timeout");
+    assert_eq!(
+        env.online
+            .test_connection("polygon", &on())
+            .await
+            .unwrap_err()
+            .code,
+        "timeout"
+    );
     env.server.reset().await;
     Mock::given(method("GET"))
         .respond_with(ResponseTemplate::new(200).set_body_bytes(vec![b'x'; 300 * 1024]))
         .mount(&env.server)
         .await;
-    assert_eq!(env.online.test_connection("polygon", &on()).await.unwrap_err().code, "too_large");
+    assert_eq!(
+        env.online
+            .test_connection("polygon", &on())
+            .await
+            .unwrap_err()
+            .code,
+        "too_large"
+    );
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -731,24 +853,41 @@ async fn polygon_rest_test_and_failure_matrix() {
 async fn oanda_tests_use_the_practice_or_live_host() {
     let env = env("dojix").await;
     Mock::given(method("GET"))
-        .and(path(format!("/oanda-practice/v3/accounts/{ACCOUNT_ID}/summary").as_str()))
-        .and(header("authorization", format!("Bearer {CANARY_OANDA}").as_str()))
-        .respond_with(json_body(json!({"account": {"id": ACCOUNT_ID, "currency": "USD", "balance": "1000.00"}})))
+        .and(path(
+            format!("/oanda-practice/v3/accounts/{ACCOUNT_ID}/summary").as_str(),
+        ))
+        .and(header(
+            "authorization",
+            format!("Bearer {CANARY_OANDA}").as_str(),
+        ))
+        .respond_with(json_body(
+            json!({"account": {"id": ACCOUNT_ID, "currency": "USD", "balance": "1000.00"}}),
+        ))
         .mount(&env.server)
         .await;
     Mock::given(method("GET"))
-        .and(path(format!("/oanda-live/v3/accounts/{ACCOUNT_ID}/pricing").as_str()))
+        .and(path(
+            format!("/oanda-live/v3/accounts/{ACCOUNT_ID}/pricing").as_str(),
+        ))
         .and(query_param("instruments", "EUR_USD"))
         .respond_with(json_body(json!({"prices": []})))
         .mount(&env.server)
         .await;
-    let t = env.online.test_connection("oanda_import", &on()).await.unwrap();
+    let t = env
+        .online
+        .test_connection("oanda_import", &on())
+        .await
+        .unwrap();
     assert_eq!(t.message, "Connected — USD account");
     let live = OnlineSettings {
         oanda_live: true,
         ..on()
     };
-    let t = env.online.test_connection("oanda_stream", &live).await.unwrap();
+    let t = env
+        .online
+        .test_connection("oanda_stream", &live)
+        .await
+        .unwrap();
     assert_eq!(t.message, "Connected to OANDA Live");
 
     let s = on();
@@ -766,7 +905,10 @@ async fn oanda_tests_use_the_practice_or_live_host() {
 #[tokio::test]
 async fn oanda_history_follows_trusted_pages_only() {
     let env = env("dojix").await;
-    let base = format!("{}/oanda-practice/v3/accounts/{ACCOUNT_ID}", env.server.uri());
+    let base = format!(
+        "{}/oanda-practice/v3/accounts/{ACCOUNT_ID}",
+        env.server.uri()
+    );
     Mock::given(method("GET"))
         .and(path(format!("/oanda-practice/v3/accounts/{ACCOUNT_ID}/transactions").as_str()))
         .and(query_param("type", "ORDER_FILL"))
@@ -787,22 +929,36 @@ async fn oanda_history_follows_trusted_pages_only() {
         .mount(&env.server)
         .await;
     Mock::given(method("GET"))
-        .and(path(format!("/oanda-practice/v3/accounts/{ACCOUNT_ID}/transactions/idrange").as_str()))
+        .and(path(
+            format!("/oanda-practice/v3/accounts/{ACCOUNT_ID}/transactions/idrange").as_str(),
+        ))
         .and(query_param("from", "3"))
         .respond_with(json_body(json!({"transactions": []})))
         .mount(&env.server)
         .await;
     let h = env.online.oanda_history(&on(), Some(30)).await.unwrap();
     assert_eq!((h.transactions.len(), h.pages), (2, 2));
-    assert_eq!(h.transactions[1]["tradesClosed"][0]["realizedPL"], "10.0000");
+    assert_eq!(
+        h.transactions[1]["tradesClosed"][0]["realizedPL"],
+        "10.0000"
+    );
     assert_no_secret(&h);
-    assert_eq!(env.online.oanda_history(&on(), Some(0)).await.unwrap_err().code, "invalid");
+    assert_eq!(
+        env.online
+            .oanda_history(&on(), Some(0))
+            .await
+            .unwrap_err()
+            .code,
+        "invalid"
+    );
 
     // A page on another host: refused before the token is sent anywhere.
     env.server.reset().await;
     Mock::given(method("GET"))
         .and(path_regex("/transactions$"))
-        .respond_with(json_body(json!({"pages": ["https://attacker.example/steal"]})))
+        .respond_with(json_body(
+            json!({"pages": ["https://attacker.example/steal"]}),
+        ))
         .mount(&env.server)
         .await;
     let e = env.online.oanda_history(&on(), None).await.unwrap_err();
@@ -813,15 +969,26 @@ async fn oanda_history_follows_trusted_pages_only() {
     env.server.reset().await;
     Mock::given(method("GET"))
         .and(path_regex("/transactions$"))
-        .respond_with(json_body(json!({"pages": [format!("{base}/transactions/idrange?from=1&to=1")]})))
+        .respond_with(json_body(
+            json!({"pages": [format!("{base}/transactions/idrange?from=1&to=1")]}),
+        ))
         .mount(&env.server)
         .await;
     Mock::given(method("GET"))
         .and(path_regex("/idrange$"))
-        .respond_with(json_body(json!({"transactions": [{"id": "1", "note": CANARY_OANDA}]})))
+        .respond_with(json_body(
+            json!({"transactions": [{"id": "1", "note": CANARY_OANDA}]}),
+        ))
         .mount(&env.server)
         .await;
-    assert_eq!(env.online.oanda_history(&on(), None).await.unwrap_err().code, "bad_response");
+    assert_eq!(
+        env.online
+            .oanda_history(&on(), None)
+            .await
+            .unwrap_err()
+            .code,
+        "bad_response"
+    );
 
     let s = on();
     failure_matrix(
@@ -839,14 +1006,21 @@ async fn oanda_history_follows_trusted_pages_only() {
 async fn oanda_stream_reads_lines_and_stops_on_a_refused_token() {
     let env = env("dojix").await;
     let body = concat!(
-        r#"{"type":"HEARTBEAT","time":"2026-10-26T12:30:00.000000000Z"}"#, "\n",
-        r#"{"type":"PRICE","time":"2026-10-26T12:30:00.123456789Z","bids":[{"price":"1.08510"}],"asks":[{"price":"1.08522"}],"instrument":"EUR_USD"}"#, "\n",
+        r#"{"type":"HEARTBEAT","time":"2026-10-26T12:30:00.000000000Z"}"#,
+        "\n",
+        r#"{"type":"PRICE","time":"2026-10-26T12:30:00.123456789Z","bids":[{"price":"1.08510"}],"asks":[{"price":"1.08522"}],"instrument":"EUR_USD"}"#,
+        "\n",
         "not json\n",
     );
     Mock::given(method("GET"))
-        .and(path(format!("/oanda-stream-practice/v3/accounts/{ACCOUNT_ID}/pricing/stream").as_str()))
+        .and(path(
+            format!("/oanda-stream-practice/v3/accounts/{ACCOUNT_ID}/pricing/stream").as_str(),
+        ))
         .and(query_param("instruments", "EUR_USD"))
-        .and(header("authorization", format!("Bearer {CANARY_OANDA}").as_str()))
+        .and(header(
+            "authorization",
+            format!("Bearer {CANARY_OANDA}").as_str(),
+        ))
         .respond_with(ResponseTemplate::new(200).set_body_raw(body, "application/octet-stream"))
         .mount(&env.server)
         .await;
@@ -857,7 +1031,10 @@ async fn oanda_stream_reads_lines_and_stops_on_a_refused_token() {
     env.online.quotes_start(&s, &["EUR/USD".into()]).unwrap();
     eventually(|| !env.sink.ticks.lock().unwrap().is_empty()).await;
     let first = env.sink.ticks.lock().unwrap()[0].clone();
-    assert_eq!((first.symbol.as_str(), first.timestamp_ms), ("EUR/USD", 1_793_017_800_123));
+    assert_eq!(
+        (first.symbol.as_str(), first.timestamp_ms),
+        ("EUR/USD", 1_793_017_800_123)
+    );
     env.online.quotes_stop();
 
     env.server.reset().await;
@@ -866,10 +1043,20 @@ async fn oanda_stream_reads_lines_and_stops_on_a_refused_token() {
         .mount(&env.server)
         .await;
     env.online.quotes_start(&s, &["EUR/USD".into()]).unwrap();
-    eventually(|| matches!(env.online.quotes_status().status, StreamStatus::Error { .. })).await;
+    eventually(|| {
+        matches!(
+            env.online.quotes_status().status,
+            StreamStatus::Error { .. }
+        )
+    })
+    .await;
     let n = env.server.received_requests().await.unwrap().len();
     tokio::time::sleep(Duration::from_millis(100)).await;
-    assert_eq!(env.server.received_requests().await.unwrap().len(), n, "no retry on 401");
+    assert_eq!(
+        env.server.received_requests().await.unwrap().len(),
+        n,
+        "no retry on 401"
+    );
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -893,7 +1080,14 @@ async fn calendar_fetches_caches_and_marks_stale_copies() {
     assert_eq!(week.source, "nfs.faireconomy.media");
     let again = env.online.calendar_week(true, true).await.unwrap();
     assert_eq!(again, week, "served from memory: no second request");
-    assert_eq!(env.online.calendar_week(false, false).await.unwrap_err().code, "off");
+    assert_eq!(
+        env.online
+            .calendar_week(false, false)
+            .await
+            .unwrap_err()
+            .code,
+        "off"
+    );
     env.server.verify().await;
 }
 
@@ -941,9 +1135,15 @@ async fn calendar_keeps_the_last_copy_when_offline() {
         .mount(&env.server)
         .await;
     let cache = CalendarCache::default();
-    let first = cache.week(&http, &url, NetPolicy::LOOPBACK_FOR_TESTS, false).await.unwrap();
+    let first = cache
+        .week(&http, &url, NetPolicy::LOOPBACK_FOR_TESTS, false)
+        .await
+        .unwrap();
     // A refresh asked for within 2 minutes is not sent; the copy comes back.
-    let again = cache.week(&http, &url, NetPolicy::LOOPBACK_FOR_TESTS, true).await.unwrap();
+    let again = cache
+        .week(&http, &url, NetPolicy::LOOPBACK_FOR_TESTS, true)
+        .await
+        .unwrap();
     assert_eq!(again.events, first.events);
     assert_eq!(env.server.received_requests().await.unwrap().len(), 1);
 }
@@ -977,13 +1177,37 @@ async fn finnhub_quote_profile_search_with_a_shared_cache() {
     let s = on();
     let q = env.online.finnhub_quote(&s, "fict").await.unwrap();
     let cached = env.online.finnhub_quote(&s, "FICT").await.unwrap();
-    assert_eq!(q, cached, "the second quote within 30 s comes from the cache");
-    assert_eq!(env.online.finnhub_profile(&s, "FICT").await.unwrap().name, "Fictional Corp");
-    assert_eq!(env.online.finnhub_search(&s, " fict ").await.unwrap().len(), 1);
-    assert!(env.online.finnhub_search(&s, "   ").await.unwrap().is_empty());
-    assert_eq!(env.online.finnhub_quote(&s, "A&B").await.unwrap_err().code, "invalid");
+    assert_eq!(
+        q, cached,
+        "the second quote within 30 s comes from the cache"
+    );
+    assert_eq!(
+        env.online.finnhub_profile(&s, "FICT").await.unwrap().name,
+        "Fictional Corp"
+    );
+    assert_eq!(
+        env.online.finnhub_search(&s, " fict ").await.unwrap().len(),
+        1
+    );
+    assert!(env
+        .online
+        .finnhub_search(&s, "   ")
+        .await
+        .unwrap()
+        .is_empty());
+    assert_eq!(
+        env.online.finnhub_quote(&s, "A&B").await.unwrap_err().code,
+        "invalid"
+    );
     let off = OnlineSettings::default();
-    assert_eq!(env.online.finnhub_quote(&off, "FICT").await.unwrap_err().code, "off");
+    assert_eq!(
+        env.online
+            .finnhub_quote(&off, "FICT")
+            .await
+            .unwrap_err()
+            .code,
+        "off"
+    );
     env.server.verify().await;
 
     // A provider echoing the key is refused.
@@ -993,7 +1217,14 @@ async fn finnhub_quote_profile_search_with_a_shared_cache() {
         .respond_with(json_body(json!({"name": format!("Echo {CANARY_FINNHUB}")})))
         .mount(&env.server)
         .await;
-    assert_eq!(env.online.finnhub_profile(&s, "ECHO").await.unwrap_err().code, "bad_response");
+    assert_eq!(
+        env.online
+            .finnhub_profile(&s, "ECHO")
+            .await
+            .unwrap_err()
+            .code,
+        "bad_response"
+    );
 }
 
 #[tokio::test]
@@ -1001,17 +1232,32 @@ async fn finnhub_failure_matrix() {
     let env = env("greenwick").await;
     let s = on();
     let big = 3 * 1024 * 1024;
-    failure_matrix(&env, "GET", "^/api/v1/search$", CANARY_FINNHUB, || {
-        env.online.finnhub_search(&s, "fict")
-    }, big)
+    failure_matrix(
+        &env,
+        "GET",
+        "^/api/v1/search$",
+        CANARY_FINNHUB,
+        || env.online.finnhub_search(&s, "fict"),
+        big,
+    )
     .await;
-    failure_matrix(&env, "GET", "^/api/v1/stock/profile2$", CANARY_FINNHUB, || {
-        env.online.finnhub_profile(&s, "FICT")
-    }, big)
+    failure_matrix(
+        &env,
+        "GET",
+        "^/api/v1/stock/profile2$",
+        CANARY_FINNHUB,
+        || env.online.finnhub_profile(&s, "FICT"),
+        big,
+    )
     .await;
-    failure_matrix(&env, "GET", "^/api/v1/quote$", CANARY_FINNHUB, || {
-        env.online.test_connection("finnhub", &s)
-    }, big)
+    failure_matrix(
+        &env,
+        "GET",
+        "^/api/v1/quote$",
+        CANARY_FINNHUB,
+        || env.online.test_connection("finnhub", &s),
+        big,
+    )
     .await;
 }
 
@@ -1023,7 +1269,11 @@ async fn finnhub_failure_matrix() {
 async fn mt5_file_source_and_test() {
     let env = env("dojix").await;
     assert_eq!(
-        env.online.test_connection("mt5_file", &on()).await.unwrap_err().code,
+        env.online
+            .test_connection("mt5_file", &on())
+            .await
+            .unwrap_err()
+            .code,
         "not_found"
     );
     std::fs::write(
@@ -1031,7 +1281,13 @@ async fn mt5_file_source_and_test() {
         r#"{"ts":"2026.10.26 12:30:00","prices":[{"s":"EURUSD.pro","b":1.0851,"a":1.0852}]}"#,
     )
     .unwrap();
-    assert!(env.online.test_connection("mt5_file", &on()).await.unwrap().ok);
+    assert!(
+        env.online
+            .test_connection("mt5_file", &on())
+            .await
+            .unwrap()
+            .ok
+    );
     let s = OnlineSettings {
         live_source: LiveSource::Mt5File,
         ..on()
@@ -1049,18 +1305,55 @@ async fn mt5_file_source_and_test() {
 async fn brand_and_switch_gates() {
     let fx = env("dojix").await;
     let st = env("greenwick").await;
-    assert_eq!(fx.online.finnhub_quote(&on(), "FICT").await.unwrap_err().code, "unsupported");
-    assert_eq!(st.online.calendar_week(true, false).await.unwrap_err().code, "unsupported");
-    assert_eq!(st.online.test_connection("polygon", &on()).await.unwrap_err().code, "unsupported");
-    assert_eq!(fx.online.test_connection("finnhub", &on()).await.unwrap_err().code, "unsupported");
-    assert_eq!(fx.online.test_connection("nope", &on()).await.unwrap_err().code, "invalid");
     assert_eq!(
-        fx.online.quotes_start(&on(), &["EUR/USD".into()]).unwrap_err().code,
+        fx.online
+            .finnhub_quote(&on(), "FICT")
+            .await
+            .unwrap_err()
+            .code,
+        "unsupported"
+    );
+    assert_eq!(
+        st.online.calendar_week(true, false).await.unwrap_err().code,
+        "unsupported"
+    );
+    assert_eq!(
+        st.online
+            .test_connection("polygon", &on())
+            .await
+            .unwrap_err()
+            .code,
+        "unsupported"
+    );
+    assert_eq!(
+        fx.online
+            .test_connection("finnhub", &on())
+            .await
+            .unwrap_err()
+            .code,
+        "unsupported"
+    );
+    assert_eq!(
+        fx.online
+            .test_connection("nope", &on())
+            .await
+            .unwrap_err()
+            .code,
+        "invalid"
+    );
+    assert_eq!(
+        fx.online
+            .quotes_start(&on(), &["EUR/USD".into()])
+            .unwrap_err()
+            .code,
         "off",
         "no live source until one is chosen"
     );
     assert_eq!(
-        st.online.quotes_start(&on(), &["EUR/USD".into()]).unwrap_err().code,
+        st.online
+            .quotes_start(&on(), &["EUR/USD".into()])
+            .unwrap_err()
+            .code,
         "unsupported"
     );
     assert!(fx.server.received_requests().await.unwrap().is_empty());
@@ -1082,16 +1375,39 @@ async fn missing_keys_are_reported_without_a_request() {
         None,
     );
     let sha = online.ai_preview(&on(), &prompt()).unwrap().request_sha256;
-    assert_eq!(online.ai_run(&on(), &prompt(), &sha).await.unwrap_err().code, "no_key");
+    assert_eq!(
+        online
+            .ai_run(&on(), &prompt(), &sha)
+            .await
+            .unwrap_err()
+            .code,
+        "no_key"
+    );
     assert_eq!(online.ai_models().await.unwrap_err().code, "no_key");
-    for p in ["anthropic", "twelve_data", "polygon", "oanda_stream", "oanda_import"] {
-        assert_eq!(online.test_connection(p, &on()).await.unwrap_err().code, "no_key", "{p}");
+    for p in [
+        "anthropic",
+        "twelve_data",
+        "polygon",
+        "oanda_stream",
+        "oanda_import",
+    ] {
+        assert_eq!(
+            online.test_connection(p, &on()).await.unwrap_err().code,
+            "no_key",
+            "{p}"
+        );
     }
     let s = OnlineSettings {
         live_source: LiveSource::PolygonWs,
         ..on()
     };
-    assert_eq!(online.quotes_start(&s, &["EUR/USD".into()]).unwrap_err().code, "no_key");
+    assert_eq!(
+        online
+            .quotes_start(&s, &["EUR/USD".into()])
+            .unwrap_err()
+            .code,
+        "no_key"
+    );
     assert!(server.received_requests().await.unwrap().is_empty());
 }
 
@@ -1113,7 +1429,10 @@ async fn production_endpoints_are_https_and_on_the_allow_lists() {
         (&e.finnhub, super::finnhub::HOSTS),
     ] {
         assert!(super::checked_url(url, hosts, strict).is_ok(), "{url}");
-        assert!(url.starts_with("https://") || url.starts_with("wss://"), "{url}");
+        assert!(
+            url.starts_with("https://") || url.starts_with("wss://"),
+            "{url}"
+        );
     }
     // The production service refuses the mock servers' plain-HTTP loopback addresses.
     let tmp = tempfile::tempdir().unwrap();
@@ -1129,7 +1448,10 @@ async fn production_endpoints_are_https_and_on_the_allow_lists() {
         TIMEOUTS,
         None,
     );
-    assert_eq!(strict_online.ai_models().await.unwrap_err().code, "blocked_host");
+    assert_eq!(
+        strict_online.ai_models().await.unwrap_err().code,
+        "blocked_host"
+    );
 }
 
 /// The IPC commands never return a key: every command result type is listed here, and each
@@ -1172,8 +1494,14 @@ fn every_online_command_returns_only_checked_types() {
         }
     }
     assert_eq!(commands, super::commands::COMMANDS.len());
-    assert!(!source.contains("secrets::read"), "commands never read a key");
-    assert!(!source.contains("secrets::require"), "commands never read a key");
+    assert!(
+        !source.contains("secrets::read"),
+        "commands never read a key"
+    );
+    assert!(
+        !source.contains("secrets::require"),
+        "commands never read a key"
+    );
 }
 
 #[test]
@@ -1189,7 +1517,11 @@ fn command_lists_match_build_rs_capabilities_and_the_handler() {
         .collect();
     let lib = include_str!("../lib.rs");
     for name in super::commands::COMMANDS {
-        assert_eq!(build.matches(&format!("\"{name}\"")).count(), 2, "build.rs lists {name} twice");
+        assert_eq!(
+            build.matches(&format!("\"{name}\"")).count(),
+            2,
+            "build.rs lists {name} twice"
+        );
         let perm = format!("allow-{}", name.replace('_', "-"));
         assert!(perms.contains(&perm.as_str()), "capability {perm}");
         assert_eq!(
@@ -1216,7 +1548,10 @@ fn the_web_view_cannot_reach_the_network() {
     assert!(!caps.contains("http:"), "no http plugin permission");
     let manifest = include_str!("../../Cargo.toml");
     assert!(!manifest.contains("tauri-plugin-http"), "no http plugin");
-    assert!(!manifest.contains("tauri-plugin-websocket"), "no websocket plugin");
+    assert!(
+        !manifest.contains("tauri-plugin-websocket"),
+        "no websocket plugin"
+    );
 }
 
 #[test]
@@ -1240,7 +1575,10 @@ fn keys_written_by_the_ui_round_trip_without_being_returned() {
     assert_eq!(view.ai_model, "claude-sonnet-5-5");
     assert!(!view.ai_enabled && !view.finnhub_enabled);
     assert_no_secret(&view);
-    assert_eq!(online.set_secret(TWELVE_DATA, "x1234").unwrap_err().code, "invalid");
+    assert_eq!(
+        online.set_secret(TWELVE_DATA, "x1234").unwrap_err().code,
+        "invalid"
+    );
     online.delete_secret(FINNHUB).unwrap();
     assert!(!online.has_secret(FINNHUB).unwrap());
     assert!(!vault.contains(FINNHUB));

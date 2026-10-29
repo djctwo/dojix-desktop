@@ -243,12 +243,18 @@ mod tests {
             live_source: Some(LiveSource::PolygonWs),
             ..Default::default()
         };
-        assert_eq!(s.apply(&fx_on_stocks, "greenwick").unwrap_err().code, "unsupported");
+        assert_eq!(
+            s.apply(&fx_on_stocks, "greenwick").unwrap_err().code,
+            "unsupported"
+        );
         let finnhub_on_fx = OnlineSettingsPatch {
             finnhub_enabled: Some(true),
             ..Default::default()
         };
-        assert_eq!(s.apply(&finnhub_on_fx, "dojix").unwrap_err().code, "unsupported");
+        assert_eq!(
+            s.apply(&finnhub_on_fx, "dojix").unwrap_err().code,
+            "unsupported"
+        );
         assert_eq!(s, OnlineSettings::default());
         assert!(serde_json::from_str::<OnlineSettingsPatch>(r#"{"apiKey":"x"}"#).is_err());
     }
@@ -264,7 +270,8 @@ mod tests {
         let s = load(&c).unwrap();
         assert!(s.ai_enabled);
         assert_eq!((s.ai_model, s.oanda_import_days), (None, 90));
-        c.execute("UPDATE settings SET value_json = 'not json'", []).unwrap();
+        c.execute("UPDATE settings SET value_json = 'not json'", [])
+            .unwrap();
         assert_eq!(load(&c).unwrap(), OnlineSettings::default());
         c.execute(
             "UPDATE settings SET value_json = '{\"liveSource\":\"carrier_pigeon\",\"aiEnabled\":true}'",

@@ -231,7 +231,11 @@ impl Online {
     pub fn settings_view(&self, s: &OnlineSettings, calendar_enabled: bool) -> OnlineSettingsView {
         let brand = anthropic::ai_brand(self.brand_id);
         OnlineSettingsView {
-            brand: if self.brand_id == "greenwick" { "greenwick" } else { "dojix" },
+            brand: if self.brand_id == "greenwick" {
+                "greenwick"
+            } else {
+                "dojix"
+            },
             ai_enabled: s.ai_enabled,
             ai_model: s
                 .ai_model
@@ -360,9 +364,15 @@ impl Online {
             "finnhub" => {
                 self.greenwick()?;
                 let key = self.key(FINNHUB)?;
-                finnhub::test(&http, &self.endpoints.finnhub, self.policy, &key, &self.finnhub)
-                    .await
-                    .map(ok)
+                finnhub::test(
+                    &http,
+                    &self.endpoints.finnhub,
+                    self.policy,
+                    &key,
+                    &self.finnhub,
+                )
+                .await
+                .map(ok)
             }
             "mt5_file" => {
                 self.dojix()?;
@@ -549,7 +559,11 @@ impl Online {
     // Economic calendar (Dojix)
     // -----------------------------------------------------------------------------------------
 
-    pub async fn calendar_week(&self, enabled: bool, force: bool) -> Result<CalendarWeek, NetError> {
+    pub async fn calendar_week(
+        &self,
+        enabled: bool,
+        force: bool,
+    ) -> Result<CalendarWeek, NetError> {
         self.dojix()?;
         if !enabled {
             return Err(NetError::off("The economic calendar"));
@@ -575,10 +589,21 @@ impl Online {
         self.key(FINNHUB)
     }
 
-    pub async fn finnhub_quote(&self, s: &OnlineSettings, symbol: &str) -> Result<StockQuote, NetError> {
+    pub async fn finnhub_quote(
+        &self,
+        s: &OnlineSettings,
+        symbol: &str,
+    ) -> Result<StockQuote, NetError> {
         let key = self.finnhub_key(s)?;
-        let q = finnhub::quote(&self.http()?, &self.endpoints.finnhub, self.policy, &key, symbol, &self.finnhub)
-            .await?;
+        let q = finnhub::quote(
+            &self.http()?,
+            &self.endpoints.finnhub,
+            self.policy,
+            &key,
+            symbol,
+            &self.finnhub,
+        )
+        .await?;
         no_echo(q, finnhub::PROVIDER, &[key.as_str()])
     }
 
@@ -588,8 +613,15 @@ impl Online {
         symbol: &str,
     ) -> Result<CompanyProfile, NetError> {
         let key = self.finnhub_key(s)?;
-        let p = finnhub::profile(&self.http()?, &self.endpoints.finnhub, self.policy, &key, symbol, &self.finnhub)
-            .await?;
+        let p = finnhub::profile(
+            &self.http()?,
+            &self.endpoints.finnhub,
+            self.policy,
+            &key,
+            symbol,
+            &self.finnhub,
+        )
+        .await?;
         no_echo(p, finnhub::PROVIDER, &[key.as_str()])
     }
 
@@ -599,8 +631,15 @@ impl Online {
         query: &str,
     ) -> Result<Vec<SymbolSearchResult>, NetError> {
         let key = self.finnhub_key(s)?;
-        let found = finnhub::search(&self.http()?, &self.endpoints.finnhub, self.policy, &key, query, &self.finnhub)
-            .await?;
+        let found = finnhub::search(
+            &self.http()?,
+            &self.endpoints.finnhub,
+            self.policy,
+            &key,
+            query,
+            &self.finnhub,
+        )
+        .await?;
         no_echo(found, finnhub::PROVIDER, &[key.as_str()])
     }
 

@@ -65,7 +65,8 @@ pub fn find_price_file(dirs: &[PathBuf]) -> Option<PathBuf> {
         .map(|d| d.join(FILE_NAME))
         .filter_map(|p| {
             let meta = std::fs::symlink_metadata(&p).ok()?;
-            meta.is_file().then(|| (meta.modified().unwrap_or(SystemTime::UNIX_EPOCH), p))
+            meta.is_file()
+                .then(|| (meta.modified().unwrap_or(SystemTime::UNIX_EPOCH), p))
         })
         .max_by_key(|(modified, _)| *modified)
         .map(|(_, p)| p)
@@ -136,7 +137,10 @@ pub fn test(dirs: &[PathBuf], now: SystemTime) -> Result<String, NetError> {
     let modified = std::fs::metadata(&path)
         .and_then(|m| m.modified())
         .map_err(|_| not_found())?;
-    let age = now.duration_since(modified).map(|d| d.as_secs()).unwrap_or(0);
+    let age = now
+        .duration_since(modified)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
     if age < 10 {
         Ok(format!("Receiving prices (updated {age}s ago)"))
     } else if age < 60 {
@@ -178,8 +182,9 @@ pub async fn watch(
             None => {
                 if !missing_reported {
                     sink.status(StreamStatus::Error {
-                        message: "DojixPrices.json not found. Attach the DojixPriceFeed script in MT5."
-                            .into(),
+                        message:
+                            "DojixPrices.json not found. Attach the DojixPriceFeed script in MT5."
+                                .into(),
                     });
                     missing_reported = true;
                 }
@@ -193,12 +198,16 @@ pub async fn watch(
                     .await
                     .ok()
                     .flatten();
-                if let Some(ticks) = bytes.and_then(|b| parse_prices(&b, crate::journal::now_ms())) {
+                if let Some(ticks) = bytes.and_then(|b| parse_prices(&b, crate::journal::now_ms()))
+                {
                     if !connected {
                         sink.status(StreamStatus::Connected);
                         connected = true;
                     }
-                    ticks.into_iter().filter(|t| wanted(t)).for_each(|t| sink.tick(t));
+                    ticks
+                        .into_iter()
+                        .filter(|t| wanted(t))
+                        .for_each(|t| sink.tick(t));
                     last = Some(state);
                 }
                 // Otherwise: half-written or oversized; try again next time.
@@ -225,8 +234,13 @@ mod tests {
         let syms: Vec<&str> = ticks.iter().map(|t| t.symbol.as_str()).collect();
         assert_eq!(syms, ["EUR/USD", "USD/JPY"]);
         assert_eq!(ticks[0].timestamp_ms, 1_793_017_800_000);
-        assert!(parse_prices(br#"{"ts":"2026.10.26 12:30","prices":[]}"#, 9).unwrap().is_empty());
-        assert!(parse_prices(br#"{"prices":[{"s":"EURUSD","b":1,"a"#, 0).is_none(), "half written");
+        assert!(parse_prices(br#"{"ts":"2026.10.26 12:30","prices":[]}"#, 9)
+            .unwrap()
+            .is_empty());
+        assert!(
+            parse_prices(br#"{"prices":[{"s":"EURUSD","b":1,"a"#, 0).is_none(),
+            "half written"
+        );
         assert!(parse_prices(b"[]", 0).is_none());
     }
 
@@ -255,10 +269,18 @@ mod tests {
     fn the_test_reports_freshness() {
         let tmp = tempfile::tempdir().unwrap();
         let dirs = vec![tmp.path().to_path_buf()];
-        assert_eq!(test(&dirs, SystemTime::now()).unwrap_err().code, "not_found");
+        assert_eq!(
+            test(&dirs, SystemTime::now()).unwrap_err().code,
+            "not_found"
+        );
         std::fs::write(tmp.path().join(FILE_NAME), SAMPLE).unwrap();
-        let modified = std::fs::metadata(tmp.path().join(FILE_NAME)).unwrap().modified().unwrap();
-        assert!(test(&dirs, modified).unwrap().starts_with("Receiving prices"));
+        let modified = std::fs::metadata(tmp.path().join(FILE_NAME))
+            .unwrap()
+            .modified()
+            .unwrap();
+        assert!(test(&dirs, modified)
+            .unwrap()
+            .starts_with("Receiving prices"));
         let later = modified + std::time::Duration::from_secs(30);
         assert!(test(&dirs, later).unwrap().starts_with("File found"));
         let much_later = modified + std::time::Duration::from_secs(600);
@@ -270,7 +292,11 @@ mod tests {
     #[test]
     fn common_files_dirs_end_in_the_shared_folder() {
         for d in common_files_dirs() {
-            assert!(d.ends_with(Path::new("MetaQuotes/Terminal/Common/Files")), "{}", d.display());
+            assert!(
+                d.ends_with(Path::new("MetaQuotes/Terminal/Common/Files")),
+                "{}",
+                d.display()
+            );
         }
     }
 

@@ -44,7 +44,11 @@ fn account(id: &str) -> Result<&str, NetError> {
 }
 
 fn base_url(base: &str, path: &str, policy: NetPolicy) -> Result<reqwest::Url, NetError> {
-    checked_url(&format!("{}{path}", base.trim_end_matches('/')), HOSTS, policy)
+    checked_url(
+        &format!("{}{path}", base.trim_end_matches('/')),
+        HOSTS,
+        policy,
+    )
 }
 
 /// Settings → Test (import): the account summary, as on the Mac ("Connected — USD account").
@@ -59,7 +63,9 @@ pub async fn account_summary(
     let url = base_url(rest, &format!("/v3/accounts/{id}/summary"), policy)?;
     let json = fetch_json(
         PROVIDER,
-        http.get(url).bearer_auth(token).header("Accept", "application/json"),
+        http.get(url)
+            .bearer_auth(token)
+            .header("Accept", "application/json"),
         MAX_SMALL_BODY,
     )
     .await?;
@@ -124,7 +130,9 @@ pub async fn fetch_history(
         .append_pair("from", &from);
     let index = fetch_json(
         PROVIDER,
-        http.get(url).bearer_auth(token).header("Accept", "application/json"),
+        http.get(url)
+            .bearer_auth(token)
+            .header("Accept", "application/json"),
         MAX_SMALL_BODY,
     )
     .await?;
@@ -148,7 +156,9 @@ pub async fn fetch_history(
     for page_url in page_urls {
         let page = fetch_json(
             PROVIDER,
-            http.get(page_url).bearer_auth(token).header("Accept", "application/json"),
+            http.get(page_url)
+                .bearer_auth(token)
+                .header("Accept", "application/json"),
             MAX_PAGE_BODY,
         )
         .await?;
@@ -194,8 +204,8 @@ pub fn parse_stream_line(line: &str, now_ms: i64) -> Option<PriceTick> {
     PriceTick::new(&instrument.replace('_', "/"), bid, ask, ts)
 }
 
-/// Splits complete lines off `buffer`. A line longer than [`MAX_STREAM_LINE`] is an error.
-pub fn take_lines(buffer: &mut Vec<u8>) -> Result<Vec<String>, ()> {
+/// Splits complete lines off `buffer`. `None` when a line is longer than [`MAX_STREAM_LINE`].
+pub fn take_lines(buffer: &mut Vec<u8>) -> Option<Vec<String>> {
     let mut lines = Vec::new();
     while let Some(pos) = buffer.iter().position(|&b| b == b'\n') {
         let line: Vec<u8> = buffer.drain(..=pos).collect();
@@ -205,9 +215,9 @@ pub fn take_lines(buffer: &mut Vec<u8>) -> Result<Vec<String>, ()> {
         }
     }
     if buffer.len() > MAX_STREAM_LINE {
-        return Err(());
+        return None;
     }
-    Ok(lines)
+    Some(lines)
 }
 
 /// The OANDA pricing stream (`GET {stream}/v3/accounts/{id}/pricing/stream?instruments=…`).
@@ -223,7 +233,13 @@ pub async fn stream(
     sink: Arc<dyn TickSink>,
 ) {
     let url = account(&account_id)
-        .and_then(|id| base_url(&stream_base, &format!("/v3/accounts/{id}/pricing/stream"), policy))
+        .and_then(|id| {
+            base_url(
+                &stream_base,
+                &format!("/v3/accounts/{id}/pricing/stream"),
+                policy,
+            )
+        })
         .map(|mut u| {
             let instruments = symbols
                 .iter()
@@ -258,9 +274,15 @@ async fn session(
         Ok(Ok(r)) => r,
         Ok(Err(e)) => {
             log::info!("OANDA stream: {}", transport_error(PROVIDER, &e).code);
-            return SessionEnd::Dropped { was_connected: false };
+            return SessionEnd::Dropped {
+                was_connected: false,
+            };
         }
-        Err(_) => return SessionEnd::Dropped { was_connected: false },
+        Err(_) => {
+            return SessionEnd::Dropped {
+                was_connected: false,
+            }
+        }
     };
     match response.status().as_u16() {
         200 => {}
@@ -269,7 +291,9 @@ async fn session(
         }
         s => {
             log::info!("OANDA stream answered HTTP {s}");
-            return SessionEnd::Dropped { was_connected: false };
+            return SessionEnd::Dropped {
+                was_connected: false,
+            };
         }
     }
     sink.status(StreamStatus::Connected);
@@ -280,8 +304,10 @@ async fn session(
         match chunk {
             Ok(Ok(Some(bytes))) => {
                 buffer.extend_from_slice(&bytes);
-                let Ok(lines) = take_lines(&mut buffer) else {
-                    return SessionEnd::Dropped { was_connected: true };
+                let Some(lines) = take_lines(&mut buffer) else {
+                    return SessionEnd::Dropped {
+                        was_connected: true,
+                    };
                 };
                 let now = crate::journal::now_ms();
                 for line in lines {
@@ -292,7 +318,9 @@ async fn session(
             }
             // A clean end (the server closed the stream), an error or silence: reconnect.
             Ok(Ok(None)) | Ok(Err(_)) | Err(_) => {
-                return SessionEnd::Dropped { was_connected: true }
+                return SessionEnd::Dropped {
+                    was_connected: true,
+                }
             }
         }
     }
@@ -332,7 +360,7 @@ mod tests {
         assert_eq!(take_lines(&mut buf).unwrap(), ["{\"b\":2}"]);
         assert!(buf.is_empty());
         let mut huge = vec![b'x'; MAX_STREAM_LINE + 1];
-        assert!(take_lines(&mut huge).is_err());
+        assert!(take_lines(&mut huge).is_none());
     }
 
     #[test]

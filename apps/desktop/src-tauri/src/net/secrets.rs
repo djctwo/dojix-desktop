@@ -129,7 +129,12 @@ pub fn delete(store: &dyn SecretStore, brand_id: &str, account: &str) -> Result<
 pub fn status(store: &dyn SecretStore, brand_id: &str) -> BTreeMap<String, bool> {
     accounts_for(brand_id)
         .iter()
-        .map(|a| (a.to_string(), matches!(store.lookup(a), Lookup::Found(ref v) if !v.is_empty())))
+        .map(|a| {
+            (
+                a.to_string(),
+                matches!(store.lookup(a), Lookup::Found(ref v) if !v.is_empty()),
+            )
+        })
         .collect()
 }
 
@@ -150,7 +155,10 @@ pub(crate) fn read(
 }
 
 /// [`read`], with "no key" as an error naming the key.
-pub(crate) fn require(store: &dyn SecretStore, account: &str) -> Result<Zeroizing<String>, NetError> {
+pub(crate) fn require(
+    store: &dyn SecretStore,
+    account: &str,
+) -> Result<Zeroizing<String>, NetError> {
     read(store, account)?.ok_or_else(|| NetError::no_key(label(account)))
 }
 
@@ -165,7 +173,10 @@ mod tests {
         assert!(!accounts_for("dojix").contains(&FINNHUB));
         assert_eq!(accounts_for("greenwick"), &[ANTHROPIC, FINNHUB]);
         assert!(accounts_for("other").is_empty());
-        for a in accounts_for("dojix").iter().chain(accounts_for("greenwick")) {
+        for a in accounts_for("dojix")
+            .iter()
+            .chain(accounts_for("greenwick"))
+        {
             assert!(crate::vault::API_KEYS.contains(a), "erase covers {a}");
             assert_ne!(label(a), "key");
         }
@@ -194,13 +205,33 @@ mod tests {
     fn values_and_names_are_validated() {
         let v = MemoryVault::default();
         assert_eq!(set(&v, "dojix", FINNHUB, "k").unwrap_err().code, "invalid");
-        assert_eq!(set(&v, "greenwick", "database_encryption_key", "k").unwrap_err().code, "invalid");
-        assert_eq!(set(&v, "dojix", ANTHROPIC, "   ").unwrap_err().code, "invalid");
-        assert_eq!(set(&v, "dojix", ANTHROPIC, "has space").unwrap_err().code, "invalid");
-        assert_eq!(set(&v, "dojix", ANTHROPIC, "ключ").unwrap_err().code, "invalid");
+        assert_eq!(
+            set(&v, "greenwick", "database_encryption_key", "k")
+                .unwrap_err()
+                .code,
+            "invalid"
+        );
+        assert_eq!(
+            set(&v, "dojix", ANTHROPIC, "   ").unwrap_err().code,
+            "invalid"
+        );
+        assert_eq!(
+            set(&v, "dojix", ANTHROPIC, "has space").unwrap_err().code,
+            "invalid"
+        );
+        assert_eq!(
+            set(&v, "dojix", ANTHROPIC, "ключ").unwrap_err().code,
+            "invalid"
+        );
         let long = "k".repeat(MAX_SECRET_LEN + 1);
-        assert_eq!(set(&v, "dojix", ANTHROPIC, &long).unwrap_err().code, "invalid");
-        assert_eq!(set(&v, "dojix", OANDA_ACCOUNT, "101/004").unwrap_err().code, "invalid");
+        assert_eq!(
+            set(&v, "dojix", ANTHROPIC, &long).unwrap_err().code,
+            "invalid"
+        );
+        assert_eq!(
+            set(&v, "dojix", OANDA_ACCOUNT, "101/004").unwrap_err().code,
+            "invalid"
+        );
         set(&v, "dojix", OANDA_ACCOUNT, "101-004-1234567-001").unwrap();
         assert!(valid_oanda_account("A-1"));
         assert!(!valid_oanda_account(""));
@@ -215,7 +246,10 @@ mod tests {
         v.fail(ANTHROPIC);
         assert_eq!(has(&v, "dojix", ANTHROPIC).unwrap_err().code, "vault");
         assert_eq!(read(&v, ANTHROPIC).unwrap_err().code, "vault");
-        assert_eq!(set(&v, "dojix", ANTHROPIC, "abcd").unwrap_err().code, "vault");
+        assert_eq!(
+            set(&v, "dojix", ANTHROPIC, "abcd").unwrap_err().code,
+            "vault"
+        );
         assert_eq!(delete(&v, "dojix", ANTHROPIC).unwrap_err().code, "vault");
         assert_eq!(status(&v, "dojix").get(ANTHROPIC), Some(&false));
     }

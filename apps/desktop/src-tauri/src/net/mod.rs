@@ -196,7 +196,10 @@ pub fn http_client(timeout: Duration, policy: NetPolicy) -> Result<reqwest::Clie
 
 /// A client for long-lived streams: no total timeout, but a read timeout so a silent
 /// connection (no heartbeat) is noticed and reconnected.
-pub fn stream_client(read_timeout: Duration, policy: NetPolicy) -> Result<reqwest::Client, NetError> {
+pub fn stream_client(
+    read_timeout: Duration,
+    policy: NetPolicy,
+) -> Result<reqwest::Client, NetError> {
     builder(policy)
         .read_timeout(read_timeout)
         .build()
@@ -376,10 +379,7 @@ pub fn provider_text(text: &str, secrets: &[&str]) -> String {
             out = out.replace(s, "[redacted]");
         }
     }
-    out.chars()
-        .filter(|c| !c.is_control())
-        .take(300)
-        .collect()
+    out.chars().filter(|c| !c.is_control()).take(300).collect()
 }
 
 /// The last line of defence against a provider that echoes a key back: a result whose JSON
@@ -474,12 +474,7 @@ pub fn parse_mt5_time_ms(text: &str) -> Option<i64> {
 pub fn journal_time(ms: i64) -> String {
     let secs = u64::try_from(ms.div_euclid(1000)).unwrap_or(0);
     let iso = crate::logging::utc_timestamp(secs);
-    format!(
-        "{} {}.{:03}",
-        &iso[..10],
-        &iso[11..19],
-        ms.rem_euclid(1000)
-    )
+    format!("{} {}.{:03}", &iso[..10], &iso[11..19], ms.rem_euclid(1000))
 }
 
 #[cfg(test)]
@@ -548,7 +543,10 @@ mod unit {
         assert_eq!(retry_after(&h), Some(12));
         h.insert(RETRY_AFTER, "999999".parse().unwrap());
         assert_eq!(retry_after(&h), Some(3600));
-        h.insert(RETRY_AFTER, "Wed, 21 Oct 2026 07:28:00 GMT".parse().unwrap());
+        h.insert(
+            RETRY_AFTER,
+            "Wed, 21 Oct 2026 07:28:00 GMT".parse().unwrap(),
+        );
         assert_eq!(retry_after(&h), None);
     }
 
@@ -603,9 +601,16 @@ mod unit {
     fn echoed_keys_are_refused() {
         let ok = no_echo(vec!["EUR/USD".to_string()], "X", &["sk-fictional-9"]).unwrap();
         assert_eq!(ok, ["EUR/USD"]);
-        let e = no_echo(vec!["has sk-fictional-9".to_string()], "X", &["sk-fictional-9"]);
+        let e = no_echo(
+            vec!["has sk-fictional-9".to_string()],
+            "X",
+            &["sk-fictional-9"],
+        );
         assert_eq!(e.unwrap_err().code, "bad_response");
-        assert!(no_echo("abc", "X", &["", "ab"]).is_ok(), "too short to match");
+        assert!(
+            no_echo("abc", "X", &["", "ab"]).is_ok(),
+            "too short to match"
+        );
     }
 
     #[test]

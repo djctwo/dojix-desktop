@@ -69,7 +69,10 @@ mod tests {
         assert_eq!(load(tmp.path()).idle_lock_minutes, 5);
         assert!(!load(tmp.path()).economic_calendar);
         std::fs::write(path(tmp.path()), br#"{"idleLockMinutes": 5}"#).unwrap();
-        assert!(load(tmp.path()).economic_calendar, "older files keep the default");
+        assert!(
+            load(tmp.path()).economic_calendar,
+            "older files keep the default"
+        );
         std::fs::write(path(tmp.path()), br#"{"idleLockMinutes": 7}"#).unwrap();
         assert_eq!(load(tmp.path()).idle_lock_minutes, 15);
         std::fs::write(path(tmp.path()), b"not json").unwrap();

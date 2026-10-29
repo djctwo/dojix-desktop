@@ -130,11 +130,18 @@ mod tests {
             key: zeroize::Zeroizing::new("pg-fictional".into()),
             symbols: vec!["EUR/USD".into(), "GBP/USD".into()],
         };
-        assert_eq!(ws.auth().unwrap(), r#"{"action":"auth","params":"pg-fictional"}"#);
-        assert_eq!(ws.subscribe(), r#"{"action":"subscribe","params":"C.EUR/USD,C.GBP/USD"}"#);
+        assert_eq!(
+            ws.auth().unwrap(),
+            r#"{"action":"auth","params":"pg-fictional"}"#
+        );
+        assert_eq!(
+            ws.subscribe(),
+            r#"{"action":"subscribe","params":"C.EUR/USD,C.GBP/USD"}"#
+        );
         assert!(ws.heartbeat().is_none());
 
-        let connected = r#"[{"ev":"status","status":"connected","message":"Connected Successfully"}]"#;
+        let connected =
+            r#"[{"ev":"status","status":"connected","message":"Connected Successfully"}]"#;
         assert_eq!(ws.parse(connected, 0), WsEvent::Ignore);
         let ok = r#"[{"ev":"status","status":"auth_success","message":"authenticated"}]"#;
         assert_eq!(ws.parse(ok, 0), WsEvent::AuthOk);

@@ -1,0 +1,115 @@
+/*
+ * Design tokens. Two layers:
+ *  1. Brand tokens (surfaces, accent, text, borders) are set on <html> at start-up by
+ *     applyBrandTokens() from brands/<brand>/brand.ts, so the other brand never ships.
+ *  2. The shared tokens below: the semantic palette is identical in both Mac apps
+ *     (Extensions/Color+Theme.swift), and the type scale follows Extensions/Font+Theme.swift.
+ * Components use only these custom properties, never raw colours.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Semantic palette (both Mac apps). */
+  --green: #5cc98a;
+  --red: #e06050;
+  --blue: #6ba3d9;
+  --purple: #a48bd4;
+  --amber: #e8b44c;
+  --cyan: #4fb8c4;
+  --pink: #ff6699;
+  --green-dim: rgba(92, 201, 138, 0.14);
+  --red-dim: rgba(224, 96, 80, 0.14);
+  --blue-dim: rgba(107, 163, 217, 0.14);
+  --purple-dim: rgba(164, 139, 212, 0.14);
+  --amber-dim: rgba(232, 180, 76, 0.14);
+  --cyan-dim: rgba(79, 184, 196, 0.14);
+
+  /* Meaning, not hue: what components reference. */
+  --profit: var(--green);
+  --loss: var(--red);
+  --info: var(--blue);
+  --warning: var(--amber);
+  --danger: var(--red);
+  --success: var(--green);
+  --profit-dim: var(--green-dim);
+  --loss-dim: var(--red-dim);
+  --warning-dim: var(--amber-dim);
+  --info-dim: var(--blue-dim);
+  /* Text for a zero / breakeven amount: the brand's breakeven grey is below 4.5:1 for text. */
+  --flat-text: var(--text-secondary);
+  --focus-ring: var(--accent);
+  --scrim: rgba(0, 0, 0, 0.55);
+  --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  /* Type (Font+Theme.swift). */
+  --font-ui: "DM Sans", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+  --fs-logo: 18px;
+  --fs-screen-title: 22px;
+  --fs-card-title: 17px;
+  --fs-body: 16px;
+  --fs-sidebar: 15px;
+  --fs-small: 13px;
+  --fs-label: 14px;
+  --fs-section: 13px;
+  --fs-table-header: 14px;
+  --fs-table-cell: 15px;
+  --fs-kpi: 28px;
+  --fs-kpi-secondary: 22px;
+  --fs-mono-subtitle: 14px;
+  --fs-mono-small: 11px;
+  /* Letter spacing of the uppercase labels (Mac: 0.8px KPI labels, 1.2px section headers). */
+  --tracking-label: 0.8px;
+  --tracking-section: 1.2px;
+  --tracking-table: 0.6px;
+
+  /* Shape and space. */
+  --radius-card: 12px;
+  --radius-inset: 8px;
+  --radius-control: 8px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --sidebar-width: 220px;
+  --control-height: 34px;
+
+  /* Motion. Reduced motion (OS setting) turns it off below. */
+  --duration-fast: 120ms;
+  --duration: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Layering. */
+  --z-sticky: 10;
+  --z-popover: 40;
+  --z-dialog: 50;
+  --z-toast: 60;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration: 0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Forced colours (Windows High Contrast): keep outlines and borders visible. */
+@media (forced-colors: active) {
+  :root {
+    --focus-ring: Highlight;
+  }
+}

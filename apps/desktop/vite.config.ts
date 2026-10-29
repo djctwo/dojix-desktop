@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 
 const BRANDS = ["dojix", "greenwick"];
@@ -12,8 +12,17 @@ export default defineConfig(({ mode }) => {
     throw new Error(`Build with --mode dojix, greenwick, dojix-mock or greenwick-mock (got "${mode}")`);
   }
   const mock = MOCK_MODES.includes(mode);
+  // Mock builds freeze Object.prototype before any module runs, as Tauri's `freezePrototype`
+  // does in the real app, so the browser specs catch libraries that break under it. A classic
+  // script in <head> runs before every module script (an import would run after shared chunks).
+  // Mock builds are never served under the app's CSP.
+  const freezeFirst: Plugin = {
+    name: "freeze-prototype-first",
+    transformIndexHtml: () =>
+      mock ? [{ tag: "script", children: "Object.freeze(Object.prototype);", injectTo: "head-prepend" }] : [],
+  };
   return {
-    plugins: [react()],
+    plugins: [react(), freezeFirst],
     clearScreen: false,
     server: { port: mock ? 5174 : 5173, strictPort: true },
     preview: { port: mode.startsWith("greenwick") ? 4174 : 4173, strictPort: true },

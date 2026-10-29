@@ -11,3 +11,5 @@ saveExact: true
 minimumReleaseAge: 10080
 # No dependency may run install scripts unless listed here.
 onlyBuiltDependencies: []
+patchedDependencies:
+  echarts@6.1.0: patches/echarts@6.1.0.patch

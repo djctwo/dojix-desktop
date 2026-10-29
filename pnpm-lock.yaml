@@ -162,6 +162,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  echarts@6.1.0: 11337e955d070b921826289d44e3208326d6d511beb0e03254d285c69fd7858c
+
 importers:
 
   .:
@@ -315,7 +318,7 @@ importers:
         version: 3.14.22(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       echarts:
         specifier: 6.1.0
-        version: 6.1.0
+        version: 6.1.0(patch_hash=11337e955d070b921826289d44e3208326d6d511beb0e03254d285c69fd7858c)
       lucide-react:
         specifier: 1.61.0
         version: 1.61.0(@types/react@19.3.0)(react@19.3.0)
@@ -2400,7 +2403,7 @@ snapshots:
 
   dom-accessibility-api@0.5.16: {}
 
-  echarts@6.1.0:
+  echarts@6.1.0(patch_hash=11337e955d070b921826289d44e3208326d6d511beb0e03254d285c69fd7858c):
     dependencies:
       tslib: 2.3.0
       zrender: 6.1.0

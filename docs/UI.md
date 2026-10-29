@@ -57,6 +57,12 @@ the analytics card framework and the tests. Read this before adding a screen or 
 - **No telemetry, no network, no remote assets.** The CSP allows `'self'` only for scripts, styles
   and fonts. No `console` output in app code (ESLint). Online data goes through planned Rust
   commands with the user's own keys.
+- **Frozen `Object.prototype`.** The app runs with Tauri's `freezePrototype`, so a library that
+  assigns an inherited property (`obj.constructor = …`) on a plain object throws and blanks the
+  window. Mock builds freeze it too (a script in `<head>`), and `frozen-prototype.test.*` in
+  `packages/ui` and `apps/desktop` load every library and screen under it. ECharts 6.1 needs
+  `patches/echarts@6.1.0.patch` (one line in its Scheduler); re-check the patch when upgrading.
+  Test any new dependency the same way.
 - **Wording.** Plain English, sentence case, the Mac's terms. Never name other journaling products.
 
 ## Adding a screen

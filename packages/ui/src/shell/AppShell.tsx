@@ -122,7 +122,8 @@ export function AppShell({
           {status}
         </div>
       </nav>
-      <main className="content" id="main-content" tabIndex={-1}>
+      {/* Focusable so the keyboard can scroll it when a screen has no controls (axe scrollable-region-focusable). */}
+      <main className="content" id="main-content" tabIndex={0}>
         {children}
       </main>
     </div>

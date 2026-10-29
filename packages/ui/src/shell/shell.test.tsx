@@ -26,6 +26,7 @@ describe("AppShell", () => {
     );
     expect(screen.getByRole("link", { name: "Skip to content" }).getAttribute("href")).toBe("#main-content");
     expect(screen.getByRole("main").id).toBe("main-content");
+    expect(screen.getByRole("main").getAttribute("tabindex")).toBe("0");
     expect(screen.getByRole("list", { name: "Core" })).toBeTruthy();
     const market = screen.getByRole("button", { name: "Market" });
     expect(market.getAttribute("aria-expanded")).toBe("true");

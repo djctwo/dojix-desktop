@@ -1135,12 +1135,9 @@ impl Core {
         }
         self.idle_minutes = minutes;
         self.activity();
-        prefs::save(
-            &self.cfg.paths.root,
-            &prefs::Prefs {
-                idle_lock_minutes: minutes,
-            },
-        )
+        let mut stored = prefs::load(&self.cfg.paths.root);
+        stored.idle_lock_minutes = minutes;
+        prefs::save(&self.cfg.paths.root, &stored)
         .map_err(|e| {
             log::error!("could not save prefs.json: {e}");
             OpError::new("prefs", "The setting could not be saved.")

@@ -49,6 +49,15 @@ sha2 = "0.10"
 subtle = "2"
 # File dialogs for backup export and restore, opened from Rust only (no web-view permission).
 tauri-plugin-dialog = "2"
+# Online features (SPEC 8): HTTPS with rustls and the OS trust store (rustls-platform-verifier,
+# no pinning), WebSocket price streams, the async runtime Tauri already uses.
+reqwest = { version = "=0.13.5", default-features = false, features = ["rustls"] }
+rustls = { version = "0.23", default-features = false, features = ["std", "tls12", "aws-lc-rs"] }
+rustls-platform-verifier = "0.7"
+tokio = { version = "1", features = ["macros", "net", "rt", "sync", "time"] }
+tokio-tungstenite = { version = "=0.30.0", default-features = false, features = ["connect", "__rustls-tls"] }
+futures-util = { version = "0.3", default-features = false, features = ["std", "sink"] }
+url = "2"
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"
@@ -70,3 +79,5 @@ windows-sys = { version = "=0.61.2", features = [
 
 [dev-dependencies]
 tempfile = "3"
+# Contract tests for every online endpoint against local mock servers (no real network).
+wiremock = "=0.6.5"

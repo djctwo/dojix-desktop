@@ -16,12 +16,15 @@ pub const IDLE_DEFAULT: u32 = 15;
 #[serde(rename_all = "camelCase", default)]
 pub struct Prefs {
     pub idle_lock_minutes: u32,
+    /// Pulse's economic calendar (Dojix; SPEC 8.3): on by default, a public feed, no key.
+    pub economic_calendar: bool,
 }
 
 impl Default for Prefs {
     fn default() -> Self {
         Self {
             idle_lock_minutes: IDLE_DEFAULT,
+            economic_calendar: true,
         }
     }
 }
@@ -54,14 +57,19 @@ mod tests {
     fn defaults_round_trip_and_bad_values() {
         let tmp = tempfile::tempdir().unwrap();
         assert_eq!(load(tmp.path()).idle_lock_minutes, 15);
+        assert!(load(tmp.path()).economic_calendar);
         save(
             tmp.path(),
             &Prefs {
                 idle_lock_minutes: 5,
+                economic_calendar: false,
             },
         )
         .unwrap();
         assert_eq!(load(tmp.path()).idle_lock_minutes, 5);
+        assert!(!load(tmp.path()).economic_calendar);
+        std::fs::write(path(tmp.path()), br#"{"idleLockMinutes": 5}"#).unwrap();
+        assert!(load(tmp.path()).economic_calendar, "older files keep the default");
         std::fs::write(path(tmp.path()), br#"{"idleLockMinutes": 7}"#).unwrap();
         assert_eq!(load(tmp.path()).idle_lock_minutes, 15);
         std::fs::write(path(tmp.path()), b"not json").unwrap();

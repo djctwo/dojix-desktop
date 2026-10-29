@@ -163,7 +163,7 @@ B3 and are now parity.
 | D-25 | Greenwick | Unmatched FIFO legs: buys are logged, sells dropped silently | Both reported as skipped with a reason | no |
 | D-26 | Greenwick | Same-date sell then buy in date-only exports is recorded as a long | Ties broken by file order to detect the short | no (P&L unchanged) |
 | D-27 | Greenwick | Robinhood fees are never read | Fees read when the column exists | **yes** (P&L by fees) |
-| D-28 | Dojix | The Pulse edge signal is computed once, when the screen appears | Recomputed on hour or session change and after the calendar loads | no |
+| D-28 | Dojix | The Pulse edge signal (and the active danger zone) is computed once, when the screen appears | Recomputed when the UTC hour or the active sessions change, when a danger zone starts or ends, and after the calendar loads (`pulseRefreshKey` / `nextPulseRefreshAt`) | no |
 | D-29 | Dojix | Broker tickets from two different platforms can collide, and the second trade is skipped as a duplicate (UNIQUE ticket) | **No change**, which keeps Mac-backup interop. Documented in Help | — |
 
 **"Headline? yes"** means the entry can change a number on the Dashboard header for some input.
@@ -191,7 +191,16 @@ compat mode; they cover no difference until the maintainer decides, see C3):
 | Screenshot input limits | No byte limit | 25 MB and 100 megapixels per input file | Memory-exhaustion guard |
 | Certificate pinning | Dojix: none (system trust). Greenwick: pins CA keys for two hosts | No pinning; OS trust store; host allow-list | Pins can't be hot-fixed in an installed open-source app, and the earlier Mac pins broke on provider rotations |
 | Twelve Data REST key | In the URL query | `Authorization` header | Keeps the key out of URLs and logs |
-| Twelve Data daily counter | Per service instance (not enforced in practice) | Persisted per day | Correct quota display |
+| Twelve Data daily counter | Per service instance (not enforced in practice), one per request | Persisted per UTC day, one credit per symbol (Twelve Data's own accounting) | Correct quota display |
+| Twelve Data WebSocket heartbeat | Answers the server's heartbeat with `{"event":"heartbeat"}` | Sends `{"action":"heartbeat"}` every 10 s (the provider's documented client heartbeat) | Keeps the stream open |
+| Polygon WebSocket auth | Reads only the first message after `auth`; Polygon sends a `connected` status first, so every connection is treated as an auth failure | Waits for `auth_success` / `auth_failed` | Bug |
+| Live price symbols | Each source's own names (`EURUSD.r` from MT5 never matches the watchlist's `EUR/USD`) | One form for every source (`EUR/USD`); only the requested symbols reach the window | Bug; a feed can't inject other text |
+| Economic calendar dates | An event whose date can't be read gets the current time, which can invent a high-impact danger zone "now" | The event is dropped | Bug |
+| Economic calendar refresh | Reloaded every 15 min while Pulse is open; a failure clears nothing but shows an error | Checked every 2 min, reloaded after 15 min, never fetched twice within 2 min; a failure keeps the last copy marked stale (offline failures are silent) | The feed has no SLA and rate-limits hard |
+| Finnhub | No local rate limit; profile includes the logo and web address | At most 60 lookups a minute; logo and web address dropped (the web view loads no remote content) | Avoids provider lock-outs; CSP |
+| AI prompt labels | Group labels as stored | Control characters removed from labels (a symbol can't add lines to the summary) | Shape check in the shell |
+| AI average MAE/MFE | Unknowns count as 0 | In `fixed` compat (D-18) "n/a" when no value is known | Consistent with D-18 |
+| AI model list, test | Settings → Test is per data source only | Anthropic key test = one model-list call (bills nothing) | Free check |
 | AI switch | Greenwick: "Allow AI analysis". Dojix: key + click | The switch in both brands | Consistent opt-in |
 | AI model | Hard-coded per brand | Same defaults, plus an advanced picker from the provider's model list | Survives model retirement |
 | AI results | In memory only | Saved in the journal (`ai_reports`), shown as history | Usefulness. Encrypted with the journal |

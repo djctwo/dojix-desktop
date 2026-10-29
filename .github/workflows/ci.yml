@@ -66,12 +66,18 @@ jobs:
       - name: Vitest
         run: pnpm test
 
-      - name: Web build per brand, and check the other brand is tree-shaken out
+      - name: Web build per brand, and check the other brand and the mock IPC are left out
         run: |
+          # No fixture text, mock password or mock module may reach a release bundle.
+          no_mock() { ! grep -rqE 'fictional-pass-1|Fictional\. The Mac app|__mockIpc' apps/desktop/dist; }
           pnpm build:web:greenwick
           ! grep -q '#e8b44c' apps/desktop/dist/assets/*.js
+          ! grep -q 'io.github.djctwo.dojix' apps/desktop/dist/assets/*.js
+          no_mock
           pnpm build:web:dojix
           ! grep -q '#00d4aa' apps/desktop/dist/assets/*.js
+          ! grep -q 'io.github.djctwo.greenwick' apps/desktop/dist/assets/*.js
+          no_mock
 
       - name: Linux system libraries
         if: runner.os == 'Linux'

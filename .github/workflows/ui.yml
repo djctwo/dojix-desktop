@@ -1,0 +1,97 @@
+name: ui
+
+# Fast UI specs in a plain browser: the Vite mock builds (fictional fixtures, mock IPC, no Rust)
+# driven by Playwright on Chromium. Navigation + shortcut smoke and axe accessibility checks on
+# Windows and Linux; visual baselines per screen skeleton on Windows Chromium only. See docs/UI.md.
+#
+# Updating the baselines: run this workflow by hand with "update_snapshots" ticked, download the
+# "ui-baselines" artifact and commit it under apps/desktop/playwright/__screenshots__/.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      update_snapshots:
+        description: Record new visual baselines (Windows) instead of comparing
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  playwright:
+    name: playwright (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Mock builds (both brands)
+        working-directory: apps/desktop
+        run: |
+          pnpm build:mock:dojix
+          pnpm build:mock:greenwick
+          # Each mock build carries only its own brand's fixtures.
+          ! grep -rq 'f2-stocks-year' dist-mock/dojix/assets
+          ! grep -rq 'f2-forex-year' dist-mock/greenwick/assets
+
+      - name: Chromium for Playwright
+        working-directory: apps/desktop
+        run: |
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            pnpm exec playwright install --with-deps chromium
+          else
+            pnpm exec playwright install chromium
+          fi
+
+      - name: Playwright (smoke, shortcuts, axe, visual on Windows)
+        working-directory: apps/desktop
+        env:
+          CI: "1"
+          UPDATE_SNAPSHOTS: ${{ inputs.update_snapshots == true }}
+        run: |
+          if [ "$UPDATE_SNAPSHOTS" = "true" ] && [ "$RUNNER_OS" = "Windows" ]; then
+            pnpm exec playwright test --update-snapshots=all
+          else
+            pnpm exec playwright test
+          fi
+
+      - name: Upload the report, traces and screen captures
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ui-${{ matrix.os }}
+          path: |
+            apps/desktop/playwright-report/
+            apps/desktop/test-results/
+            e2e-output/ui/
+          if-no-files-found: ignore
+
+      - name: Upload recorded baselines
+        if: always() && inputs.update_snapshots && runner.os == 'Windows'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ui-baselines
+          path: apps/desktop/playwright/__screenshots__/
+          if-no-files-found: error

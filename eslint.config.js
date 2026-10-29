@@ -6,7 +6,7 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig(
   {
-    ignores: ["**/node_modules/**", "**/dist/**", "target/**", "apps/desktop/src-tauri/**"],
+    ignores: ["**/node_modules/**", "**/dist/**", "**/dist-mock/**", "**/playwright-report/**", "**/test-results/**", "target/**", "apps/desktop/src-tauri/**"],
   },
   js.configs.recommended,
   tseslint.configs.recommended,
@@ -25,7 +25,7 @@ export default defineConfig(
     },
   },
   {
-    files: ["**/*.{js,mjs}", "**/*.config.ts", "**/*.test.{ts,tsx}", "brands/**/*.ts", "tools/**"],
+    files: ["**/*.{js,mjs}", "**/*.config.ts", "**/*.test.{ts,tsx}", "brands/**/*.ts", "tools/**", "apps/desktop/playwright/**"],
     languageOptions: {
       globals: { ...globals.node },
     },

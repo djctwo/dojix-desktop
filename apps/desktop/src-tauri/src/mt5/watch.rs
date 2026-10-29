@@ -539,6 +539,12 @@ impl Shared {
         if event.need_rescan() {
             st.next_poll = now;
         }
+        // Opening or reading a file (including the watcher's own reads: inotify reports
+        // IN_OPEN) changes nothing; reacting to it would make every read schedule another.
+        if matches!(event.kind, notify::EventKind::Access(_)) {
+            drop(guard);
+            return;
+        }
         for path in &event.paths {
             let Some(parent) = path.parent() else {
                 continue;

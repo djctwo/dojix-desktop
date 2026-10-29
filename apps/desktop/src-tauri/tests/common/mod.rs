@@ -195,28 +195,26 @@ pub fn touch_later(path: &Path, seconds: u64) {
 }
 
 /// A deny-write rule on `root` and everything under it, for the current user: Windows ACL
-/// (`icacls /deny`; no SYNCHRONIZE, so reading still works), Unix mode bits.
+/// (a .NET deny rule set with PowerShell; reading still works), Unix mode bits.
 pub fn deny_writes(root: &Path, deny: bool) {
     #[cfg(windows)]
     {
-        let target = root.to_string_lossy().into_owned();
-        let args: Vec<&str> = if deny {
-            vec![
-                &target,
-                "/deny",
-                "*S-1-1-0:(OI)(CI)(WD,AD,WEA,WA,D,DC)",
-                "/T",
-                "/C",
-                "/Q",
-            ]
-        } else {
-            vec![&target, "/remove:d", "*S-1-1-0", "/T", "/C", "/Q"]
-        };
-        let status = std::process::Command::new("icacls")
-            .args(&args)
+        // .NET's deny rule leaves SYNCHRONIZE and READ_CONTROL alone (icacls' "W" denies
+        // them too, which also blocks reading). Set on the root, inherited by everything.
+        let action = if deny { "AddAccessRule" } else { "RemoveAccessRuleAll" };
+        let script = format!(
+            "$ErrorActionPreference = 'Stop'; \
+             $sid = New-Object System.Security.Principal.SecurityIdentifier('S-1-1-0'); \
+             $rights = 'WriteData,AppendData,WriteExtendedAttributes,WriteAttributes,Delete,DeleteSubdirectoriesAndFiles'; \
+             $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($sid, $rights, 'ContainerInherit,ObjectInherit', 'None', 'Deny'); \
+             $acl = Get-Acl -LiteralPath $env:DENY_ROOT; $acl.{action}($rule); Set-Acl -LiteralPath $env:DENY_ROOT -AclObject $acl"
+        );
+        let status = std::process::Command::new("powershell")
+            .args(["-NoProfile", "-NonInteractive", "-Command", &script])
+            .env("DENY_ROOT", root)
             .status()
             .unwrap();
-        assert!(status.success(), "icacls failed");
+        assert!(status.success(), "Set-Acl failed");
     }
     #[cfg(unix)]
     {

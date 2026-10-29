@@ -200,14 +200,23 @@ pub fn deny_writes(root: &Path, deny: bool) {
     #[cfg(windows)]
     {
         // .NET's deny rule leaves SYNCHRONIZE and READ_CONTROL alone (icacls' "W" denies
-        // them too, which also blocks reading). Set on the root, inherited by everything.
-        let action = if deny { "AddAccessRule" } else { "RemoveAccessRuleAll" };
+        // them too, which also blocks reading).
+        // Applied to the root and to every folder and file under it explicitly.
+        let action = if deny {
+            "AddAccessRule"
+        } else {
+            "RemoveAccessRuleAll"
+        };
         let script = format!(
             "$ErrorActionPreference = 'Stop'; \
              $sid = New-Object System.Security.Principal.SecurityIdentifier('S-1-1-0'); \
              $rights = 'WriteData,AppendData,WriteExtendedAttributes,WriteAttributes,Delete,DeleteSubdirectoriesAndFiles'; \
-             $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($sid, $rights, 'ContainerInherit,ObjectInherit', 'None', 'Deny'); \
-             $acl = Get-Acl -LiteralPath $env:DENY_ROOT; $acl.{action}($rule); Set-Acl -LiteralPath $env:DENY_ROOT -AclObject $acl"
+             $items = @(Get-Item -LiteralPath $env:DENY_ROOT) + @(Get-ChildItem -LiteralPath $env:DENY_ROOT -Recurse -Force); \
+             foreach ($item in $items) {{ \
+               $inherit = if ($item.PSIsContainer) {{ 'ContainerInherit,ObjectInherit' }} else {{ 'None' }}; \
+               $rule = New-Object System.Security.AccessControl.FileSystemAccessRule($sid, $rights, $inherit, 'None', 'Deny'); \
+               $acl = Get-Acl -LiteralPath $item.FullName; $acl.{action}($rule); \
+               Set-Acl -LiteralPath $item.FullName -AclObject $acl }}"
         );
         let status = std::process::Command::new("powershell")
             .args(["-NoProfile", "-NonInteractive", "-Command", &script])

@@ -49,6 +49,8 @@ sha2 = "0.10"
 subtle = "2"
 # File dialogs for backup export and restore, opened from Rust only (no web-view permission).
 tauri-plugin-dialog = "2"
+# MT5 auto-import (Dojix): folder events through ReadDirectoryChangesW / inotify (SPEC 5.4).
+notify = "=8.2.0"
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"

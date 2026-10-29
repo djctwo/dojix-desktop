@@ -413,7 +413,7 @@ pub fn valid_money(s: &str) -> bool {
 // ---------------------------------------------------------------------------------------------
 
 /// One row as column → value.
-type Row = BTreeMap<String, Value>;
+pub(crate) type Row = BTreeMap<String, Value>;
 
 const LABEL_MAX: usize = 200;
 const TEXT_MAX: usize = 100_000;
@@ -471,7 +471,7 @@ fn is_null(row: &Row, col: &str) -> bool {
 
 /// Checks (and for Dojix, cleans) one trade. Returns the names of the fields outside the
 /// brand's limits: Dojix `Trade+Sanitize` limits in reject form, Greenwick `TradeLimits`.
-fn check_trade(brand: &Brand, row: &mut Row) -> Vec<String> {
+pub(crate) fn check_trade(brand: &Brand, row: &mut Row) -> Vec<String> {
     let dojix = brand.id == "dojix";
     let mut bad: Vec<String> = Vec::new();
     let mut flag = |name: &str| bad.push(name.to_string());
@@ -1172,7 +1172,7 @@ const TRADE_COLUMNS: &[&str] = &[
     "updated_at",
 ];
 
-fn timestamp_now() -> String {
+pub(crate) fn timestamp_now() -> String {
     let ms = journal::now_ms().max(0) as u64;
     let iso = crate::logging::utc_timestamp(ms / 1000);
     // "YYYY-MM-DDTHH:MM:SSZ" → "YYYY-MM-DD HH:MM:SS.mmm"

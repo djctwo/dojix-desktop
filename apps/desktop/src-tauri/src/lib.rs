@@ -12,6 +12,11 @@ pub mod journal;
 pub mod keyvault;
 pub mod ledger;
 pub mod logging;
+#[cfg(feature = "brand-dojix")]
+pub mod mt5;
+pub mod mt5_commands;
+#[cfg(feature = "brand-dojix")]
+pub mod mt5_journal;
 pub mod paths;
 pub mod prefs;
 pub mod restore;
@@ -36,6 +41,14 @@ use crate::paths::{DataPaths, OVERRIDES_ALLOWED};
 use crate::session::{Config, Core, Notifier, Store};
 use crate::throttle::SystemClock;
 use crate::vault::{OsVault, SecretStore, UnavailableVault};
+
+#[cfg(feature = "brand-dojix")]
+use crate::mt5_commands::dojix as mt5_cmd;
+#[cfg(not(feature = "brand-dojix"))]
+use crate::mt5_commands::greenwick as mt5_cmd;
+
+/// Run when the journal locks (Dojix: MT5 auto-import pauses).
+type OnLock = Option<Arc<dyn Fn() + Send + Sync>>;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 /// The web view runs in private mode (WebView2 InPrivate, WebKitGTK ephemeral) in every
@@ -94,10 +107,14 @@ fn open_vault(service: &str, paths: &DataPaths) -> Arc<dyn SecretStore> {
 /// Tells the window layer what the session did. The handle arrives once the app is built.
 struct WindowNotifier {
     app: Arc<OnceLock<AppHandle>>,
+    on_lock: OnLock,
 }
 
 impl Notifier for WindowNotifier {
     fn locked(&self) {
+        if let Some(on_lock) = &self.on_lock {
+            on_lock();
+        }
         let Some(app) = self.app.get() else {
             return;
         };
@@ -136,6 +153,7 @@ fn start(
     paths: &DataPaths,
     vault: Arc<dyn SecretStore>,
     app_slot: Arc<OnceLock<AppHandle>>,
+    on_lock: OnLock,
 ) -> AppState {
     let state = |store: Option<Store>,
                  error: Option<(&'static str, String)>,
@@ -176,7 +194,10 @@ fn start(
             kdf: KdfParams::DEFAULT,
             clock: Arc::new(SystemClock),
         },
-        Box::new(WindowNotifier { app: app_slot }),
+        Box::new(WindowNotifier {
+            app: app_slot,
+            on_lock,
+        }),
     );
     match Store::spawn(core) {
         Ok(store) => state(Some(store), None, lock),
@@ -288,7 +309,17 @@ pub fn run() {
     }
 
     let app_slot: Arc<OnceLock<AppHandle>> = Arc::new(OnceLock::new());
-    let state = start(&brand, &paths, vault, app_slot.clone());
+    // MT5 auto-import (Dojix): off until the user enables a folder; paused while locked.
+    #[cfg(feature = "brand-dojix")]
+    let mt5_service = mt5_cmd::new_service(app_slot.clone());
+    #[cfg(feature = "brand-dojix")]
+    let on_lock: OnLock = {
+        let service = mt5_service.clone();
+        Some(Arc::new(move || service.suspend()))
+    };
+    #[cfg(not(feature = "brand-dojix"))]
+    let on_lock: OnLock = None;
+    let state = start(&brand, &paths, vault, app_slot.clone(), on_lock);
     let store = state.store.clone();
     let webview_dir = paths.webview_dir(&brand);
 
@@ -391,6 +422,11 @@ pub fn run() {
             Ok(())
         });
 
+    #[cfg(feature = "brand-dojix")]
+    let builder = builder.manage(mt5_cmd::Mt5State {
+        service: mt5_service,
+    });
+
     #[cfg(feature = "e2e")]
     let builder = builder.invoke_handler(tauri::generate_handler![
         commands::app_info,
@@ -415,7 +451,18 @@ pub fn run() {
         commands::e2e_add_trade,
         commands::e2e_set_idle_seconds,
         commands::e2e_backup_export,
-        commands::e2e_backup_pick
+        commands::e2e_backup_pick,
+        mt5_cmd::mt5_discover,
+        mt5_cmd::mt5_status,
+        mt5_cmd::mt5_watch_set,
+        mt5_cmd::mt5_add_folder,
+        mt5_cmd::mt5_remove_folder,
+        mt5_cmd::mt5_set_prefix,
+        mt5_cmd::mt5_rescan,
+        mt5_cmd::mt5_read,
+        mt5_cmd::mt5_import_commit,
+        mt5_cmd::e2e_mt5_roots,
+        mt5_cmd::e2e_mt5_add_folder
     ]);
     #[cfg(not(feature = "e2e"))]
     let builder = builder.invoke_handler(tauri::generate_handler![
@@ -436,7 +483,16 @@ pub fn run() {
         commands::app_quit,
         commands::backup_export,
         commands::backup_pick,
-        commands::backup_restore
+        commands::backup_restore,
+        mt5_cmd::mt5_discover,
+        mt5_cmd::mt5_status,
+        mt5_cmd::mt5_watch_set,
+        mt5_cmd::mt5_add_folder,
+        mt5_cmd::mt5_remove_folder,
+        mt5_cmd::mt5_set_prefix,
+        mt5_cmd::mt5_rescan,
+        mt5_cmd::mt5_read,
+        mt5_cmd::mt5_import_commit
     ]);
 
     if let Err(e) = builder.run(tauri::generate_context!()) {

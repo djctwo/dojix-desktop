@@ -24,6 +24,15 @@
     "allow-backup-export",
     "allow-backup-pick",
     "allow-backup-restore",
+    "allow-mt5-discover",
+    "allow-mt5-status",
+    "allow-mt5-watch-set",
+    "allow-mt5-add-folder",
+    "allow-mt5-remove-folder",
+    "allow-mt5-set-prefix",
+    "allow-mt5-rescan",
+    "allow-mt5-read",
+    "allow-mt5-import-commit",
     "core:event:allow-listen",
     "core:event:allow-unlisten"
   ]

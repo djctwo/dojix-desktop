@@ -98,7 +98,7 @@ impl AppState {
         }
     }
 
-    fn store(&self) -> Result<Store, OpError> {
+    pub(crate) fn store(&self) -> Result<Store, OpError> {
         match (&self.store, &self.startup_error) {
             (Some(store), _) => Ok(store.clone()),
             (None, Some((code, message))) => Err(OpError::new(code, message.clone())),
@@ -108,7 +108,7 @@ impl AppState {
 }
 
 /// Runs blocking work (store calls, dialogs, file I/O) off the async runtime's workers.
-async fn blocking<T: Send + 'static>(
+pub(crate) async fn blocking<T: Send + 'static>(
     f: impl FnOnce() -> Result<T, OpError> + Send + 'static,
 ) -> Result<T, OpError> {
     tauri::async_runtime::spawn_blocking(f)

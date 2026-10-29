@@ -15,7 +15,9 @@
             "allow-e2e-add-trade",
             "allow-e2e-set-idle-seconds",
             "allow-e2e-backup-export",
-            "allow-e2e-backup-pick"
+            "allow-e2e-backup-pick",
+            "allow-e2e-mt5-roots",
+            "allow-e2e-mt5-add-folder"
           ]
         }
       ]

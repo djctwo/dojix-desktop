@@ -236,7 +236,8 @@ h4 {
 .nav-item-hint {
   font-family: var(--font-mono);
   font-size: var(--fs-mono-small);
-  color: var(--text-secondary);
+  /* Primary text: it sits on the accent tint of a hovered or active item. */
+  color: var(--text-primary);
   opacity: 0;
   transition: opacity var(--duration-fast) var(--ease);
 }

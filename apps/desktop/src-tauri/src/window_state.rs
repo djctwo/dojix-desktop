@@ -42,7 +42,10 @@ impl WindowState {
     /// plausible number.
     pub fn sanitized(self) -> Option<Self> {
         let values = [self.x, self.y, self.width, self.height];
-        if values.iter().any(|v| !v.is_finite() || v.abs() > MAX_SIDE * 4.0) {
+        if values
+            .iter()
+            .any(|v| !v.is_finite() || v.abs() > MAX_SIDE * 4.0)
+        {
             return None;
         }
         if self.width > MAX_SIDE || self.height > MAX_SIDE {
@@ -74,7 +77,9 @@ pub fn path(root: &Path) -> PathBuf {
 /// The saved state, if it is readable and sane.
 pub fn load(root: &Path) -> Option<WindowState> {
     let bytes = std::fs::read(path(root)).ok()?;
-    serde_json::from_slice::<WindowState>(&bytes).ok()?.sanitized()
+    serde_json::from_slice::<WindowState>(&bytes)
+        .ok()?
+        .sanitized()
 }
 
 pub fn save(root: &Path, state: &WindowState) -> std::io::Result<()> {
@@ -125,7 +130,10 @@ mod tests {
         )
         .unwrap();
         let small = load(tmp.path()).unwrap();
-        assert_eq!((small.width, small.height, small.maximized), (900.0, 600.0, true));
+        assert_eq!(
+            (small.width, small.height, small.maximized),
+            (900.0, 600.0, true)
+        );
         std::fs::write(
             path(tmp.path()),
             br#"{"x":0,"y":0,"width":99999,"height":800,"maximized":false}"#,
@@ -158,6 +166,9 @@ mod tests {
             restore(Some(state(5000.0, 0.0)), &[SCREEN]),
             Some((state(5000.0, 0.0), false))
         );
-        assert_eq!(restore(Some(state(0.0, 0.0)), &[]), Some((state(0.0, 0.0), true)));
+        assert_eq!(
+            restore(Some(state(0.0, 0.0)), &[]),
+            Some((state(0.0, 0.0), true))
+        );
     }
 }

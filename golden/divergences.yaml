@@ -150,10 +150,10 @@
   fixtures: ["greenwick/f6-schwab-no-footer", "greenwick/f6-schwab-header-first"]
 - id: D-24
   app: greenwick
-  headline: false
+  headline: true
   approved: true
-  reason: "Fidelity price never falls back to column 0; the row is reported (Mac: silently skipped)"
-  test: null
+  reason: "Fidelity price never falls back to column 0; the row is skipped and reported (Mac: column 0, the Run Date, is read as the price and the row is imported; golden/reference/greenwick/f6-fidelity-no-price.json). Headline since the trade count changes; approved with D-32 (2026-10-29)"
+  test: packages/importers/src/greenwick/greenwick.test.ts
   affects: ["*"]
   fixtures: ["greenwick/f6-fidelity-no-price"]
 - id: D-25
@@ -196,29 +196,29 @@
   test: null
   affects: []
   fixtures: []
-# Proposed by the importers team (Phase 2), not decided by the maintainer: approved false, no
-# fix in either compat mode yet (test: null), so they cover no difference until approved.
+# Proposed by the importers team (Phase 2, 2026-10-27); approved by the maintainer on 2026-10-29
+# (DECISIONS.md #10) and fixed in `fixed` compat only; `swift` still reproduces the Mac.
 - id: D-30
   app: greenwick
   headline: true
-  approved: false
-  reason: "PROPOSED. A skipped ET wall time (spring-forward gap) is not re-read day-first (Mac: DateFormatter rejects '03/08/2026 02:30:00' as MM/dd/yyyy and parseDateTime then reads it as dd/MM/yyyy, 3 August 2026; golden/README.md probes)"
-  test: null
-  affects: ["import.parsed", "import.journal", "outputs.*"]
+  approved: true
+  reason: "A skipped ET wall time (spring-forward gap) is read with the pre-transition offset, the engine's DST rule, so it is never re-read day-first (Mac: DateFormatter rejects '03/08/2026 02:30:00' as MM/dd/yyyy and parseDateTime then reads it as dd/MM/yyyy, 3 August 2026; golden/README.md probes). No golden fixture has a gap-time row, so no reference value differs"
+  test: packages/importers/src/greenwick/greenwick.test.ts
+  affects: []
   fixtures: []
 - id: D-31
   app: dojix
   headline: true
-  approved: false
-  reason: "PROPOSED. The compact cTrader header (PositionId/EntryTime/CloseTime/ClosePrice without spaces) maps its close columns (Mac: detected as cTrader but closeTime/closePrice unmapped, so the file imports 0 trades; golden/reference/dojix/f5-ctrader-compact.json)"
-  test: null
+  approved: true
+  reason: "The compact cTrader header (PositionId/EntryTime/EntryPrice/CloseTime/ClosePrice/StopLoss/TakeProfit/NetProfit) maps its columns and imports its trades (Mac: detected as cTrader but only the spaced names are looked up, so the open time is column 0 and the file imports 0 trades; golden/reference/dojix/f5-ctrader-compact.json)"
+  test: packages/importers/src/dojix/dojix.test.ts
   affects: ["*"]
   fixtures: ["dojix/f5-ctrader-compact"]
 - id: D-32
   app: greenwick
   headline: true
-  approved: false
-  reason: "PROPOSED. Fidelity without a price column never takes the month of the Run Date as the price (Mac: column 0, '02/03/2026', is read as price 2 and the trades are imported; golden/reference/greenwick/f6-fidelity-no-price.json). Overlaps D-24, whose 'silently skipped' the reference contradicts"
-  test: null
+  approved: true
+  reason: "Fidelity without a price column never takes the price from the Run Date; every trade row is skipped with the reason 'The file has no price column' (Mac: column 0, '02/03/2026', is read as price 2 and the trades are imported; golden/reference/greenwick/f6-fidelity-no-price.json). Same fix as D-24, whose wording this corrects"
+  test: packages/importers/src/greenwick/greenwick.test.ts
   affects: ["*"]
   fixtures: ["greenwick/f6-fidelity-no-price"]

@@ -28,7 +28,7 @@ describe("FORMULA_INDEX", () => {
   });
 
   it("only cites known divergences", () => {
-    const known = new Set(["D-01", "D-02", "D-03", "D-04", "D-05", "D-06", "D-08", "D-09", "D-15", "D-16", "D-17", "D-18", "D-19", "D-20", "D-21", "D-22", "D-23", "D-24", "D-25", "D-26", "D-27", "D-28", "D-29"]);
+    const known = new Set(["D-01", "D-02", "D-03", "D-04", "D-05", "D-06", "D-08", "D-09", "D-15", "D-16", "D-17", "D-18", "D-19", "D-20", "D-21", "D-22", "D-23", "D-24", "D-25", "D-26", "D-27", "D-28", "D-29", "D-30", "D-31", "D-32"]);
     for (const f of FORMULA_INDEX) for (const d of f.divergences ?? []) expect(known.has(d), `${f.id}: ${d}`).toBe(true);
   });
 

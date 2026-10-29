@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -46,17 +46,35 @@ describe("divergences.yaml", () => {
     const ids = divergences.map((d) => d.id);
     for (const id of ["D-01", "D-04", "D-05", "D-06", "D-15", "D-16", "D-18", "D-22", "D-23", "D-27"]) expect(ids).toContain(id);
     const approvedHeadline = divergences.filter((d) => d.headline && d.approved).map((d) => d.id).sort();
-    expect(approvedHeadline).toEqual(["D-16", "D-18", "D-22", "D-23", "D-27"]);
+    // D-16…D-27: DECISIONS.md #8 (2026-10-27); D-24 (with D-32), D-30, D-31, D-32: #10 (2026-10-29).
+    expect(approvedHeadline).toEqual(["D-16", "D-18", "D-22", "D-23", "D-24", "D-27", "D-30", "D-31", "D-32"]);
     expect(unapprovedHeadlineFixes(divergences)).toEqual([]);
   });
 
-  it("keeps proposals (not approved, no test) out of the coverage", () => {
-    const proposals = divergences.filter(isProposal).map((d) => d.id);
-    expect(proposals).toEqual(["D-30", "D-31", "D-32"]);
-    expect(coveredBy(divergences, "dojix/f5-ctrader-compact", "outputs.Metrics.totalTrades")?.id).not.toBe("D-31");
-    const implemented = [{ ...(divergences.find((d) => d.id === "D-31") as Divergence), test: "x.test.ts" }];
-    expect(unapprovedHeadlineFixes(implemented)).toEqual(["D-31"]);
-    expect(runParity([], {}, implemented).errors).toEqual(["D-31: changes a headline number but is not approved"]);
+  it("has no open proposals; D-30…D-32 are approved fixes whose tests exist", () => {
+    expect(divergences.filter(isProposal).map((d) => d.id)).toEqual([]);
+    for (const id of ["D-30", "D-31", "D-32"]) {
+      const d = divergences.find((x) => x.id === id) as Divergence;
+      expect(d, id).toMatchObject({ approved: true, headline: true });
+      expect(existsSync(join(golden, "..", d.test as string)), `${id}: ${String(d.test)}`).toBe(true);
+    }
+    expect(coveringIds(divergences, "dojix/f5-ctrader-compact", "outputs.Metrics.totalTrades")).toContain("D-31");
+    expect(coveringIds(divergences, "greenwick/f6-fidelity-no-price", "outputs.Metrics.totalTrades")).toEqual(expect.arrayContaining(["D-24", "D-32"]));
+    // D-30 changes no reference value (no fixture has a gap-time row), so it covers nothing.
+    expect(coveringIds(divergences, "greenwick/f7-et-boundaries-ninjatrader", "import.parsed")).not.toContain("D-30");
+  });
+
+  it("every test path in divergences.yaml exists", () => {
+    for (const d of divergences.filter((x) => x.test !== null)) expect(existsSync(join(golden, "..", d.test as string)), `${d.id}: ${String(d.test)}`).toBe(true);
+  });
+
+  it("refuses a headline fix that is implemented without approval, and keeps proposals out of the coverage", () => {
+    const unapproved = { ...(divergences.find((d) => d.id === "D-31") as Divergence), approved: false };
+    expect(unapprovedHeadlineFixes([unapproved])).toEqual(["D-31"]);
+    expect(runParity([], {}, [unapproved]).errors).toEqual(["D-31: changes a headline number but is not approved"]);
+    const proposal = { ...unapproved, test: null };
+    expect(isProposal(proposal)).toBe(true);
+    expect(coveredBy([proposal], "dojix/f5-ctrader-compact", "import.parsed")).toBeUndefined();
   });
 
   it("scopes an entry to its app, fixtures and paths", () => {

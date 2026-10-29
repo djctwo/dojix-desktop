@@ -182,6 +182,19 @@ describe("DateFormatter patterns", () => {
     expect(parseDatePattern("01/15/12026 09:30:00", "MM/dd/yyyy HH:mm:ss", "America/New_York", NOW)).toBeNull();
   });
 
+  it("DST: DateFormatter rejects a skipped wall time and reads a repeated one as its second occurrence; D-30 keeps the skipped one", () => {
+    const ny = (s: string, skipped?: "reject" | "earlierOffset") => parseDatePattern(s, "MM/dd/yyyy HH:mm:ss", "America/New_York", NOW, skipped);
+    expect(ny("03/08/2026 02:30:00")).toBeNull(); // the Mac (golden/README.md probes)
+    expect(ny("03/08/2026 02:30:00", "earlierOffset")).toBe(Date.UTC(2026, 2, 8, 7, 30)); // 02:30 EST
+    expect(ny("03/08/2026 03:30:00", "earlierOffset")).toBe(Date.UTC(2026, 2, 8, 7, 30)); // outside the gap: unchanged
+    expect(ny("11/01/2026 01:30:00")).toBe(Date.UTC(2026, 10, 1, 6, 30));
+    expect(ny("11/01/2026 01:30:00", "earlierOffset")).toBe(Date.UTC(2026, 10, 1, 6, 30)); // D-30 only touches the gap
+    const mac = new DateParsers(["MM/dd/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss"], "America/New_York", NOW);
+    const fixed = new DateParsers(["MM/dd/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss"], "America/New_York", NOW, Infinity, "earlierOffset");
+    expect(mac.parse("03/08/2026 02:30:00", (s) => s)).toBe(Date.UTC(2026, 7, 3, 6, 30)); // 3 August, day-first
+    expect(fixed.parse("03/08/2026 02:30:00", (s) => s)).toBe(Date.UTC(2026, 2, 8, 7, 30));
+  });
+
   it("parses ISO 8601 internet date-times", () => {
     expect(parseIso8601("2024-01-15T08:30:00Z", false)).toBe(Date.UTC(2024, 0, 15, 8, 30));
     expect(parseIso8601("2024-01-15T08:30:00.123456Z", true)).toBe(Date.UTC(2024, 0, 15, 8, 30, 0, 123));

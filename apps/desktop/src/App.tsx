@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { AppInfo, BrandConfig, JournalRow, LockStatus, ScreenId } from "@dojix-desktop/core";
+import type { AppInfo, BrandConfig, JournalRow, LockStatus, Mt5ImportSummary, ScreenId } from "@dojix-desktop/core";
 import {
   AppShell,
   JournalScreen,
@@ -13,6 +13,7 @@ import {
   UnsavedQuitDialog,
 } from "@dojix-desktop/ui";
 import type { Ipc } from "./ipc";
+import { useMt5AutoImport } from "./mt5/useMt5AutoImport";
 
 const JOURNAL_PAGE = 500;
 /** At most one "activity" message to the idle timer per this many ms. */
@@ -96,6 +97,20 @@ export function App({ brand, ipc }: AppProps) {
       for (const name of ACTIVITY_EVENTS) window.removeEventListener(name, onInput);
     };
   }, [ipc]);
+
+  // MT5 auto-import (Dojix): runs while the journal is unlocked; new trades refresh the list.
+  const onMt5Imported = useCallback(
+    (summary: Mt5ImportSummary) => {
+      if (summary.inserted > 0) {
+        ipc
+          .listTrades(JOURNAL_PAGE)
+          .then(setRows)
+          .catch(() => undefined);
+      }
+    },
+    [ipc],
+  );
+  useMt5AutoImport(ipc, brand.id === "dojix" && lock?.phase === "unlocked", onMt5Imported);
 
   const storage = info?.storage;
   const lockFailure = lock?.phase === "failed" ? lock.message : null;

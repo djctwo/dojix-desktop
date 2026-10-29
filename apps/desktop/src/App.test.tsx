@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ALL_BRANDS } from "@dojix-desktop/brands";
-import type { AppInfo, JournalRow, LockStatus } from "@dojix-desktop/core";
+import type { AppInfo, JournalRow, LockStatus, Mt5ImportSummary, Mt5Status } from "@dojix-desktop/core";
 import { App } from "./App";
 import type { Ipc } from "./ipc";
 
@@ -38,6 +38,8 @@ const row: JournalRow = {
 
 type MockIpc = Ipc & { listCalls: number };
 
+const emptyMt5Status: Mt5Status = { active: false, prefix32: "", folders: [], files: [], pending: [], lastImport: null };
+
 function mockIpc(info: AppInfo, status: LockStatus = unlocked, rows: JournalRow[] = []): MockIpc {
   const fail = () => Promise.reject({ code: "unexpected", message: "not mocked" });
   const ipc: MockIpc = {
@@ -64,6 +66,15 @@ function mockIpc(info: AppInfo, status: LockStatus = unlocked, rows: JournalRow[
     pickBackup: () => Promise.resolve(null),
     restoreBackup: fail,
     onEvent: () => () => undefined,
+    mt5Discover: () => Promise.resolve([]),
+    mt5Status: () => Promise.resolve(emptyMt5Status),
+    mt5WatchSet: fail,
+    mt5AddFolder: () => Promise.resolve(null),
+    mt5RemoveFolder: fail,
+    mt5SetPrefix: fail,
+    mt5Rescan: fail,
+    mt5Read: fail,
+    mt5ImportCommit: fail,
   };
   return ipc;
 }
@@ -215,5 +226,52 @@ describe("App", () => {
     await waitFor(() => expect(screen.getByTestId("unsaved-dialog")).toBeTruthy());
     fireEvent.click(screen.getByText("Quit anyway"));
     expect(ipc.quit).toHaveBeenCalledWith(true);
+  });
+
+  it("Dojix, unlocked: MT5 auto-import imports queued files and refreshes the journal", async () => {
+    const ipc = mockIpc(readyInfo, unlocked, []);
+    const summary: Mt5ImportSummary = {
+      fileName: "DojixExport_10000001_20261028.csv",
+      folderId: "f1",
+      format: "dojix_export",
+      result: "imported",
+      message: null,
+      parsed: 1,
+      inserted: 1,
+      duplicates: 0,
+      skipped: 0,
+      atMs: 0,
+    };
+    let rows: JournalRow[] = [];
+    ipc.listTrades = () => Promise.resolve(rows);
+    ipc.mt5Status = vi.fn(() =>
+      Promise.resolve({
+        ...emptyMt5Status,
+        active: true,
+        pending: rows.length === 0 ? [{ token: 1, folderId: "f1", fileName: summary.fileName, size: 10 }] : [],
+      }),
+    );
+    ipc.mt5Read = vi.fn(() => Promise.resolve(new TextEncoder().encode("not a trade file\n")));
+    ipc.mt5ImportCommit = vi.fn(() => {
+      rows = [row];
+      return Promise.resolve(summary);
+    });
+    render(<App brand={ALL_BRANDS.dojix} ipc={ipc} />);
+    await waitFor(() => expect(screen.getByTestId("journal-table").textContent).toContain("TESTSYM"));
+    expect(ipc.mt5ImportCommit).toHaveBeenCalledWith(1, expect.objectContaining({ kind: "not_trade_file" }));
+  });
+
+  it("Greenwick and locked journals never start MT5 auto-import", async () => {
+    const ipc = mockIpc({ ...readyInfo, brand: "greenwick" });
+    ipc.mt5Status = vi.fn(() => Promise.resolve(emptyMt5Status));
+    render(<App brand={ALL_BRANDS.greenwick} ipc={ipc} />);
+    await waitFor(() => expect(screen.getByTestId("journal-empty")).toBeTruthy());
+    cleanup();
+    const lockedIpc = mockIpc(readyInfo, locked);
+    lockedIpc.mt5Status = vi.fn(() => Promise.resolve(emptyMt5Status));
+    render(<App brand={ALL_BRANDS.dojix} ipc={lockedIpc} />);
+    await waitFor(() => expect(screen.getByTestId("lock-screen")).toBeTruthy());
+    expect(ipc.mt5Status).not.toHaveBeenCalled();
+    expect(lockedIpc.mt5Status).not.toHaveBeenCalled();
   });
 });

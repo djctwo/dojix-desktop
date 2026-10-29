@@ -16,6 +16,7 @@
   "dependencies": {
     "@dojix-desktop/brands": "workspace:*",
     "@dojix-desktop/core": "workspace:*",
+    "@dojix-desktop/importers": "workspace:*",
     "@dojix-desktop/ui": "workspace:*",
     "@tauri-apps/api": "2.12.3",
     "react": "19.3.0",

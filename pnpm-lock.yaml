@@ -193,6 +193,9 @@ importers:
       '@dojix-desktop/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@dojix-desktop/importers':
+        specifier: workspace:*
+        version: link:../../packages/importers
       '@dojix-desktop/ui':
         specifier: workspace:*
         version: link:../../packages/ui

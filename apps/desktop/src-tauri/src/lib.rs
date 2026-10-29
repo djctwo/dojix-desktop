@@ -23,8 +23,9 @@ pub mod snapshot;
 pub mod throttle;
 pub mod triggers;
 pub mod vault;
+pub mod window_state;
 
-use std::sync::{Arc, OnceLock};
+use std::sync::{Arc, Mutex, OnceLock};
 use std::time::Duration;
 
 use tauri::{AppHandle, Emitter, Manager};
@@ -291,6 +292,7 @@ pub fn run() {
     let state = start(&brand, &paths, vault, app_slot.clone());
     let store = state.store.clone();
     let webview_dir = paths.webview_dir(&brand);
+    let window_root = paths.root.clone();
 
     let builder = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
@@ -315,13 +317,27 @@ pub fn run() {
             let _ = app_slot.set(app.handle().clone());
             // The main window is created here rather than from the config, so the webview can
             // be adjusted per build before it exists.
-            let config = app
+            let mut config = app
                 .config()
                 .app
                 .windows
                 .first()
                 .cloned()
                 .ok_or("no window configured")?;
+            // SPEC 2.1: reopen at the last size and place, if that is still on a monitor.
+            let monitors = monitor_areas(app.handle());
+            if let Some((saved, on_screen)) =
+                window_state::restore(window_state::load(&window_root), &monitors)
+            {
+                config.width = saved.width;
+                config.height = saved.height;
+                config.maximized = saved.maximized;
+                if on_screen {
+                    config.center = false;
+                    config.x = Some(saved.x);
+                    config.y = Some(saved.y);
+                }
+            }
             // SPEC 6.2: the web view's own files (caches, cookies, IndexedDB: plain SQLite)
             // never live in the journal's data folder, and private mode keeps most of them
             // off the disk entirely (see `PRIVATE_WEBVIEW`).
@@ -350,6 +366,7 @@ pub fn run() {
             }
             #[allow(unused_variables)]
             let window = window.build()?;
+            track_geometry(&window, window_root.clone());
 
             if let Some(store) = store.clone() {
                 start_ticker(store.clone());
@@ -443,6 +460,72 @@ pub fn run() {
         log::error!("the window system failed: {e}");
         exit_with("the window system failed", 1);
     }
+}
+
+/// Every monitor's area in logical pixels (for the saved window position).
+fn monitor_areas(app: &AppHandle) -> Vec<window_state::Area> {
+    app.available_monitors()
+        .unwrap_or_default()
+        .iter()
+        .map(|m| {
+            let scale = m.scale_factor();
+            window_state::Area {
+                x: f64::from(m.position().x) / scale,
+                y: f64::from(m.position().y) / scale,
+                width: f64::from(m.size().width) / scale,
+                height: f64::from(m.size().height) / scale,
+            }
+        })
+        .collect()
+}
+
+/// The window's geometry in logical pixels; None while minimised.
+fn current_geometry(window: &tauri::WebviewWindow) -> Option<window_state::WindowState> {
+    if window.is_minimized().unwrap_or(true) {
+        return None;
+    }
+    let scale = window.scale_factor().ok()?;
+    let position = window.outer_position().ok()?.to_logical::<f64>(scale);
+    let size = window.inner_size().ok()?.to_logical::<f64>(scale);
+    Some(window_state::WindowState {
+        x: position.x,
+        y: position.y,
+        width: size.width,
+        height: size.height,
+        maximized: window.is_maximized().unwrap_or(false),
+    })
+}
+
+/// Remembers the main window's size and place (keeping the normal size while maximised) and
+/// writes it to `window.json` when the window closes.
+fn track_geometry(window: &tauri::WebviewWindow, root: std::path::PathBuf) {
+    let tracked = window.clone();
+    let last: Mutex<Option<window_state::WindowState>> = Mutex::new(None);
+    window.on_window_event(move |event| match event {
+        tauri::WindowEvent::Moved(_) | tauri::WindowEvent::Resized(_) => {
+            let Some(now) = current_geometry(&tracked) else {
+                return;
+            };
+            if let Ok(mut slot) = last.lock() {
+                *slot = match (now.maximized, *slot) {
+                    (true, Some(normal)) => Some(window_state::WindowState {
+                        maximized: true,
+                        ..normal
+                    }),
+                    _ => Some(now),
+                };
+            }
+        }
+        tauri::WindowEvent::CloseRequested { .. } | tauri::WindowEvent::Destroyed => {
+            let saved = last.lock().ok().and_then(|slot| *slot);
+            if let Some(state) = saved {
+                if let Err(e) = window_state::save(&root, &state) {
+                    log::warn!("could not save the window position: {e}");
+                }
+            }
+        }
+        _ => {}
+    });
 }
 
 #[cfg(test)]

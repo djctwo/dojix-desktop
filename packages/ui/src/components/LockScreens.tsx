@@ -1,5 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { errorMessage, passwordProblem, type LockStatus } from "@dojix-desktop/core";
+import { Dialog } from "../feedback/Dialog";
 
 /** Full-window frame for the lock, older-copy and setup screens (no sidebar, no journal). */
 function Gate({
@@ -379,24 +380,14 @@ export interface UnsavedQuitDialogProps {
 export function UnsavedQuitDialog({ onRetry, onQuitAnyway, onCancel }: UnsavedQuitDialogProps) {
   const { busy, message, run } = useAction();
   return (
-    <div className="dialog-backdrop">
-      <div
-        className="dialog"
-        role="alertdialog"
-        aria-labelledby="unsaved-title"
-        data-testid="unsaved-dialog"
-      >
-        <h2 id="unsaved-title">Your latest changes are not saved</h2>
-        <p>
-          The journal could not be saved to disk. If you quit now, changes since the last
-          successful save are lost.
-        </p>
-        {message && (
-          <p className="form-error" role="alert">
-            {message}
-          </p>
-        )}
-        <div className="actions">
+    <Dialog
+      open
+      onClose={onCancel}
+      role="alertdialog"
+      title="Your latest changes are not saved"
+      testId="unsaved-dialog"
+      footer={
+        <>
           <button type="button" className="button" onClick={onCancel} disabled={busy}>
             Cancel
           </button>
@@ -411,8 +402,18 @@ export function UnsavedQuitDialog({ onRetry, onQuitAnyway, onCancel }: UnsavedQu
           >
             Try again
           </button>
-        </div>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <p>
+        The journal could not be saved to disk. If you quit now, changes since the last
+        successful save are lost.
+      </p>
+      {message && (
+        <p className="form-error" role="alert">
+          {message}
+        </p>
+      )}
+    </Dialog>
   );
 }

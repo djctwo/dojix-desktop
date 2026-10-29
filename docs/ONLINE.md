@@ -2,7 +2,10 @@
 
 How the UI uses the online features (SPEC §8). Rust: `apps/desktop/src-tauri/src/net/*`.
 TypeScript: the types in `@dojix-desktop/core` (`online/types.ts`), the prompt builders in
-`@dojix-desktop/ai-prompts`, and the bindings `tauriOnlineIpc` in `apps/desktop/src/ipc.ts`.
+`@dojix-desktop/ai-prompts`, and the bindings `tauriOnlineIpc` in `apps/desktop/src/ipc.ts`
+(`createOnlineIpc(ipc)` in `apps/desktop/src/ipc/online.ts` gives the same bindings over the mock
+IPC for browser development; see docs/UI.md). The commands are typed in the IPC contract
+(`apps/desktop/src/ipc/contract.ts`).
 
 ## Rules the shell enforces
 

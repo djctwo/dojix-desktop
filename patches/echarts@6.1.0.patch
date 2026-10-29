@@ -1,0 +1,14 @@
+diff --git a/lib/core/Scheduler.js b/lib/core/Scheduler.js
+index 1b70d94393f48c8b27ac711d9afcf5a4b8931bea..1c13a371d8d89b5c02fea82c1141aa5ddde28357 100644
+--- a/lib/core/Scheduler.js
++++ b/lib/core/Scheduler.js
+@@ -465,6 +465,9 @@ function mockMethods(target, Clz) {
+   /* eslint-disable */
+   for (var name_1 in Clz.prototype) {
+     // Do not use hasOwnProperty
++    // dojix-desktop: skip "constructor"; assigning it on a plain object throws when the host
++    // freezes Object.prototype (Tauri freezePrototype).
++    if (name_1 === 'constructor') continue;
+     target[name_1] = noop;
+   }
+   /* eslint-enable */

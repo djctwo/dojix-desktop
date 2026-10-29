@@ -1,6 +1,6 @@
 import type { BrandConfig } from "@dojix-desktop/core";
 
-/** Greenwick: the stock journal. Colours match the Mac app's theme. */
+/** Greenwick: the stock journal. Colours match the Mac app's theme (Greenwick `Extensions/Color+Theme.swift`). */
 export const greenwick: BrandConfig = {
   id: "greenwick",
   productName: "Greenwick",
@@ -11,12 +11,19 @@ export const greenwick: BrandConfig = {
     bgSidebar: "#101214",
     bgContent: "#0e1012",
     bgCard: "#151718",
+    bgCardHover: "#1c1e20",
+    bgInset: "rgba(128, 128, 130, 0.04)",
     accent: "#00d4aa",
     accentDim: "rgba(0, 212, 170, 0.10)",
+    accentDark: "#00b894",
+    onAccent: "#0c0d0e",
     textPrimary: "#e0e4e8",
     textSecondary: "#7a8490",
     textTertiary: "#4a5560",
-    border: "rgba(200, 210, 220, 0.08)",
+    border: "rgba(128, 133, 138, 0.12)",
+    borderSubtle: "rgba(128, 133, 138, 0.07)",
+    borderActive: "rgba(0, 212, 170, 0.35)",
+    breakeven: "#66707a",
   },
   instrument: { qtyLabel: "Shares", moveUnit: "points", symbolNoun: "Symbol" },
   sessionModel: "us-equities-et",

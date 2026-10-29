@@ -1,4 +1,6 @@
 import type { BrandConfig, JournalRow } from "@dojix-desktop/core";
+import { Screen } from "../shell/Screen";
+import { LoadingState } from "../states/States";
 
 export interface JournalScreenProps {
   brand: BrandConfig;
@@ -8,43 +10,38 @@ export interface JournalScreenProps {
 
 export function JournalScreen({ brand, rows }: JournalScreenProps) {
   return (
-    <section className="screen" aria-labelledby="screen-title">
-      <header className="screen-header">
-        <h1 id="screen-title" data-testid="screen-title">
-          Journal
-        </h1>
-      </header>
+    <Screen title="Journal">
       {rows === null ? (
-        <p className="muted" data-testid="journal-loading">
-          Opening your journal…
-        </p>
+        <LoadingState testId="journal-loading" label="Opening your journal…" />
       ) : rows.length === 0 ? (
         <JournalEmpty brand={brand} />
       ) : (
-        <table className="journal-table" data-testid="journal-table">
-          <thead>
-            <tr>
-              <th scope="col">{brand.instrument.symbolNoun}</th>
-              <th scope="col">Side</th>
-              <th scope="col">Closed</th>
-              <th scope="col" className="num">
-                Net P&amp;L
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.id}>
-                <td>{row.symbol}</td>
-                <td>{row.direction}</td>
-                <td>{row.closeTime}</td>
-                <td className="num">{row.netProfit}</td>
+        <div className="table-wrap" tabIndex={0} role="region" aria-label="Trades">
+          <table className="journal-table" data-testid="journal-table">
+            <thead>
+              <tr>
+                <th scope="col">{brand.instrument.symbolNoun}</th>
+                <th scope="col">Side</th>
+                <th scope="col">Closed</th>
+                <th scope="col" className="num">
+                  Net P&amp;L
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.id}>
+                  <td>{row.symbol}</td>
+                  <td>{row.direction}</td>
+                  <td>{row.closeTime}</td>
+                  <td className="num">{row.netProfit}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </section>
+    </Screen>
   );
 }
 

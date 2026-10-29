@@ -4,3 +4,8 @@ Copyright (C) 2026 Douglas Cleary
 This program is free software: you can redistribute it and/or modify it under the terms of
 the GNU General Public License as published by the Free Software Foundation, either version 3
 of the License, or (at your option) any later version. See LICENSE.
+
+Bundled fonts (packages/ui/src/fonts), under the SIL Open Font License 1.1 (see the OFL-*.txt
+files next to them):
+- DM Sans, Copyright 2014 The DM Sans Project Authors
+- JetBrains Mono, Copyright 2020 The JetBrains Mono Project Authors

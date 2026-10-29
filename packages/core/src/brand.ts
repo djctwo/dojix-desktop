@@ -10,14 +10,33 @@ export interface BrandTokens {
   bgSidebar: string;
   bgContent: string;
   bgCard: string;
+  /** Card surface under the pointer (Mac `bgCardHover`). */
+  bgCardHover: string;
+  /** Nested surface inside a card (Mac `bgInset`). */
+  bgInset: string;
   /** Brand accent (Dojix gold, Greenwick teal). */
   accent: string;
   /** Accent at low opacity, for selected rows and badges. */
   accentDim: string;
+  /** Gradient end of the accent (Mac `accentDark`). */
+  accentDark: string;
+  /** Text drawn on a solid accent fill (the Mac uses the window background). */
+  onAccent: string;
   textPrimary: string;
   textSecondary: string;
+  /**
+   * The Mac's tertiary grey. Below 3:1 on every surface, so the desktop uses it only for
+   * non-text marks (rules, idle icons); text the Mac draws in it uses `textSecondary`.
+   */
   textTertiary: string;
+  /** Card border (Mac `borderCard`). */
   border: string;
+  /** Hairline divider (Mac `borderSubtle`). */
+  borderSubtle: string;
+  /** Focused / active outline (Mac `borderActive`). */
+  borderActive: string;
+  /** Breakeven / flat marks in charts (Mac `breakeven`). */
+  breakeven: string;
 }
 
 export interface InstrumentVocabulary {
@@ -40,7 +59,9 @@ export type ScreenId =
   | "browse"
   | "watchlist"
   | "import"
-  | "settings";
+  | "settings"
+  /** Reached with F1 / Ctrl+? and the sidebar footer, not a sidebar tab (the Mac opens a Help window). */
+  | "help";
 
 export interface SidebarItem {
   id: ScreenId;

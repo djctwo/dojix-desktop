@@ -12,9 +12,9 @@
       {
         "label": "main",
         "title": "Dojix",
-        "width": 1280,
+        "width": 1200,
         "height": 800,
-        "minWidth": 960,
+        "minWidth": 900,
         "minHeight": 600,
         "center": true,
         "theme": "Dark",

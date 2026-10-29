@@ -13,7 +13,7 @@
   "scripts": {
     "lint": "eslint .",
     "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test",
+    "test": "pnpm -r --workspace-concurrency=1 --if-present test",
     "build:web:dojix": "pnpm --filter @dojix-desktop/desktop build:web:dojix",
     "build:web:greenwick": "pnpm --filter @dojix-desktop/desktop build:web:greenwick"
   },

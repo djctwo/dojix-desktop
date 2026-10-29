@@ -1,7 +1,9 @@
 // Dojix imports. Swift unit tests ported from DojixTests/{CSVParserTests, GenericCSVParserTests,
 // ImportHardeningTests, ReimportDedupeTests, SampleFileCrossCheckTests, HostileInputRegressionTests}.swift
-// (each `it` names its source), plus the desktop fixes D-06, D-15, D-16, D-18, D-21.
+// (each `it` names its source), plus the desktop fixes D-06, D-15, D-16, D-18, D-21, D-31.
 
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { SwiftDecimal } from "@dojix-desktop/core";
 import { ImportError } from "../model";
@@ -9,7 +11,7 @@ import { detectFormat, importTradeText } from "../pipeline";
 import { NOW, imp, totalProfit, utf16 } from "../test-support/helpers";
 import { dojixContentKey, dojixContentTicket } from "../tickets";
 import { SA32_HEADER } from "./sa32";
-import { type DojixColumnMapping, directionOf } from "./generic";
+import { type DojixColumnMapping, detectDojixHeaders, directionOf } from "./generic";
 import { dojixLotSize, dojixStorageViolations, sanitizeDojix, sanitizeDojixForRestore } from "./sanitize";
 
 const ROW1 =
@@ -364,5 +366,43 @@ describe("Trade+Sanitize (HostileInputRegressionTests.swift F5)", () => {
     expect(["B", "BOT", "LONG", "BUY TO OPEN"].map(directionOf)).toEqual(["BUY", "BUY", "BUY", "BUY"]);
     expect(["S", "SLD", "SHORT", "-3"].map(directionOf)).toEqual(["SELL", "SELL", "SELL", "SELL"]);
     expect(directionOf("3")).toBeNull();
+  });
+});
+
+// Approved 2026-10-29 (docs/DECISIONS.md #10). `swift` keeps the Mac's behaviour, pinned by
+// golden/reference/dojix/f5-ctrader-compact.json (0 trades); `fixed` is what the app ships.
+describe("D-31: the compact cTrader header maps its columns (fixed mode)", () => {
+  const golden = (name: string): Uint8Array => new Uint8Array(readFileSync(fileURLToPath(new URL(`../../../../golden/fixtures/dojix/F5/${name}`, import.meta.url))));
+  const compact = golden("f5-ctrader-compact.csv");
+  const spaced = golden("f5-ctrader.csv"); // the same fictional trades under the spaced header
+
+  it("golden f5-ctrader-compact: 0 trades on the Mac, all 12 in fixed mode", () => {
+    const swift = imp(compact, "dojix", "swift");
+    expect(swift.format).toBe("ctrader");
+    expect(swift.trades).toEqual([]);
+    expect(swift.issues.map((i) => i.code)).toEqual(Array(12).fill("invalid_date")); // column 0 (PositionId) read as the open time
+    const fixed = imp(compact, "dojix", "fixed");
+    expect(fixed.issues).toEqual([]);
+    expect(fixed.trades).toHaveLength(12);
+    expect(fixed.trades[0]).toMatchObject({
+      ticket: "51000114", symbol: "AUDUSD", direction: "BUY", openTime: "2026-06-01 20:34:50.000", closeTime: "2026-06-01 21:48:37.000",
+      openPrice: "0.66242", closePrice: "0.66377", sl: "0.66075", tp: "0.66576", netProfit: "192.59", quantity: 1.5, source: "ctrader",
+    });
+  });
+
+  it("imports exactly what the spaced header imports", () => {
+    expect(imp(compact, "dojix", "fixed").trades).toEqual(imp(spaced, "dojix", "fixed").trades);
+  });
+
+  it("maps a spaced header the same in both modes, and compact names only in fixed mode", () => {
+    const header = (bytes: Uint8Array) => (new TextDecoder().decode(bytes).split("\n")[0] as string).split(",");
+    const mapOf = (h: string[], compat: "swift" | "fixed") => {
+      const d = detectDojixHeaders(h, compat);
+      return d.kind === "mapped" ? d.mapping : null;
+    };
+    expect(mapOf(header(spaced), "fixed")).toEqual(mapOf(header(spaced), "swift"));
+    expect(mapOf(header(compact), "swift")).toMatchObject({ openTime: 0, openPrice: 0, closeTime: null, closePrice: null, sl: null, tp: null, profit: 0 });
+    expect(mapOf(header(compact), "fixed")).toMatchObject({ ticket: 0, openTime: 4, openPrice: 5, closeTime: 6, closePrice: 7, sl: 8, tp: 9, profit: 12 });
+    expect(mapOf(header(compact), "fixed")).toEqual(mapOf(header(spaced), "fixed"));
   });
 });

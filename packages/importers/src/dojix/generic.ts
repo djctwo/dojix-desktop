@@ -1,9 +1,9 @@
 // Dojix `GenericCSVParser.swift`: platform detection, the per-platform column mappings and the
 // row mapper, plus the desktop's fixes (D-06 pip value, D-15 units, D-16 TradingView pairing,
-// D-18 unknown MAE/MFE).
+// D-18 unknown MAE/MFE, D-31 compact cTrader header).
 
 import { SwiftDecimal, fxSessionAt, utcHour, utcShortDayName, intSaturating } from "@dojix-desktop/core";
-import type { DojixMacTrade, ImportContext, ImportSource, ParsedRow, RowIssue } from "../model";
+import type { CompatMode, DojixMacTrade, ImportContext, ImportSource, ParsedRow, RowIssue } from "../model";
 import { type CsvDialect, splitFields } from "../csv/dialect";
 import { DateParsers } from "../swift/dates";
 import { swiftDouble, swiftInt64 } from "../swift/numbers";
@@ -89,22 +89,34 @@ function mt4Mapping(headers: readonly string[]): DojixColumnMapping {
   };
 }
 
-/** GenericCSVParser.swift:365-387. */
-function cTraderMapping(headers: readonly string[]): DojixColumnMapping {
+/**
+ * GenericCSVParser.swift:365-387. The Mac detects the compact header (`PositionId`, `EntryTime`,
+ * `EntryPrice`, `CloseTime`, `ClosePrice`, `StopLoss`, `TakeProfit`, `NetProfit`;
+ * GenericCSVParser.swift:70) but looks up only the spaced names, so open time, open price and
+ * profit fall back to column 0 (the position ID) and every row fails its date: 0 trades
+ * (golden/reference/dojix/f5-ctrader-compact.json). `fixed` compat (PARITY D-31) also accepts
+ * the compact names, after the spaced ones, so a spaced header maps exactly as on the Mac.
+ */
+function cTraderMapping(headers: readonly string[], compat: CompatMode): DojixColumnMapping {
   const h = lowerTrim(headers);
+  const col = (...names: string[]): number | null => {
+    const spaced = idx(h, ...names);
+    if (spaced !== null || compat !== "fixed") return spaced;
+    return idx(h, ...names.map((n) => n.replaceAll(" ", ""))); // D-31
+  };
   return {
     platform: "cTrader",
     ticket: idx(h, "position id", "positionid"),
     symbol: or0(idx(h, "symbol")),
     direction: or0(idx(h, "direction", "type")),
     lots: or0(idx(h, "volume", "quantity")),
-    openTime: or0(idx(h, "entry time", "opening time")),
-    closeTime: idx(h, "close time", "closing time"),
-    openPrice: or0(idx(h, "entry price", "opening price")),
-    closePrice: idx(h, "close price", "closing price"),
-    sl: idx(h, "stop loss", "sl"),
-    tp: idx(h, "take profit", "tp"),
-    profit: or0(idx(h, "net profit", "profit", "net p&l")),
+    openTime: or0(col("entry time", "opening time")),
+    closeTime: col("close time", "closing time"),
+    openPrice: or0(col("entry price", "opening price")),
+    closePrice: col("close price", "closing price"),
+    sl: col("stop loss", "sl"),
+    tp: col("take profit", "tp"),
+    profit: or0(col("net profit", "profit", "net p&l")),
     commission: idx(h, "commission"),
     swap: idx(h, "swap"),
     maePips: null,
@@ -244,14 +256,17 @@ export type DojixDetection =
   | { kind: "mapped"; mapping: DojixColumnMapping }
   | { kind: "generic" };
 
-/** `GenericCSVParser.detect` header rules (GenericCSVParser.swift:44-100), on the header fields. */
-export function detectDojixHeaders(headers: readonly string[]): DojixDetection {
+/**
+ * `GenericCSVParser.detect` header rules (GenericCSVParser.swift:44-100), on the header fields.
+ * `compat` only changes the cTrader mapping (D-31); it defaults to what the app ships.
+ */
+export function detectDojixHeaders(headers: readonly string[], compat: CompatMode = "fixed"): DojixDetection {
   const set = new Set(lowerTrim(headers));
   const has = (...names: string[]) => names.every((n) => set.has(n));
   if (has("ticket", "rmultiple")) return { kind: "mt5_32col" };
   if (has("ticket", "type", "item", "profit")) return { kind: "mapped", mapping: mt4Mapping(headers) };
   if (has("position id", "direction", "entry price") || has("positionid", "direction", "entryprice")) {
-    return { kind: "mapped", mapping: cTraderMapping(headers) };
+    return { kind: "mapped", mapping: cTraderMapping(headers, compat) };
   }
   if (has("trade #", "signal", "contracts")) return { kind: "mapped", mapping: tradingViewMapping(headers) };
   if (has("transaction id", "instrument", "units")) return { kind: "mapped", mapping: oandaMapping(headers) };

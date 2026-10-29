@@ -16,3 +16,4 @@ listed in [PARITY.md](PARITY.md).
 | 7 | **The products keep their names on Windows and Linux: Dojix (forex) and Greenwick (stocks).** | One codebase builds two installers, one for each brand. |
 | 8 | **The five headline-affecting parity fixes (D-16, D-18, D-22, D-23, D-27) are approved** (2026-10-27). | A Dashboard number can differ from the Mac app for the affected files only; each fix is listed in PARITY.md with a test. |
 | 9 | **No Windows → Mac backup export in v1** (2026-10-27). | Mac → Windows import is supported; the reverse can be added on request. |
+| 10 | **The importer fixes D-30, D-31 and D-32 are approved** (2026-10-29). | `fixed` mode only: a Greenwick ET time in the spring-forward gap keeps its date, the compact cTrader header imports, and a Fidelity export without a price column never uses the date as the price (D-24 is the same fix and is now a headline entry). `swift` mode still matches the Mac exactly. |

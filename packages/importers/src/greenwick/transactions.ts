@@ -5,8 +5,10 @@
 // - D-22 option rows are skipped and counted (the Mac imports them as shares, without ×100);
 // - D-23 Schwab: the header is found on line 1 or 2 and only a real "Transactions Total" footer
 //   is dropped (the Mac always drops the last line and assumes a title line);
-// - D-24 Fidelity: no price column means the row is reported (the Mac reads column 0, the date);
-// - D-27 Robinhood: a Fees column is read when present (the Mac never reads fees).
+// - D-24 / D-32 Fidelity: no price column means the row is skipped and reported (the Mac reads
+//   column 0, the Run Date, so "02/03/2026" becomes price 2 and the row is imported);
+// - D-27 Robinhood: a Fees column is read when present (the Mac never reads fees);
+// - D-30 dates: an ET time in the spring-forward gap keeps its date (parseGreenwickDate).
 
 import { SwiftDecimal } from "@dojix-desktop/core";
 import type { ImportContext, RowIssue } from "../model";
@@ -97,7 +99,7 @@ function common(
   priceIdx: number,
   dateIdx: number,
   format: string,
-  now: number,
+  ctx: ImportContext,
   stripQtyCommas: boolean,
 ): { symbol: string; shares: number; price: SwiftDecimal; date: number } | RowResult {
   const symbol = greenwickCleanSymbol(f[symbolIdx] ?? "");
@@ -107,7 +109,7 @@ function common(
   if (shares === null) return bad("invalid_quantity", "Quantity must be a number above 0");
   const price = parseGreenwickDecimal(stripCurrencyChars(f[priceIdx] ?? "0"));
   if (price === null || price.sign() <= 0) return bad("invalid_price", "Price must be above 0");
-  const date = parseGreenwickDate(f[dateIdx] ?? "", format, now);
+  const date = parseGreenwickDate(f[dateIdx] ?? "", format, ctx.now, ctx.compat); // D-30 in fixed mode
   if (date === null) return bad("invalid_date", `Cannot read the date "${(f[dateIdx] ?? "").slice(0, 40)}"`);
   return { symbol, shares, price, date };
 }
@@ -128,7 +130,7 @@ function robinhood(f: readonly string[], h: readonly string[], ctx: ImportContex
   const isBuy = code === "BUY" || code === "BTO";
   if (!isBuy && code !== "SELL" && code !== "STC") return notTrade(`Trans code "${code.slice(0, 20)}"`);
   if (ctx.compat === "fixed" && (code === "BTO" || code === "STC")) return { option: true };
-  const c = common(f, sym, qty, price, date, "M/d/yyyy", ctx.now, false);
+  const c = common(f, sym, qty, price, date, "M/d/yyyy", ctx, false);
   if (isRowResult(c)) return c;
   let fees = SwiftDecimal.zero;
   if (ctx.compat === "fixed") {
@@ -151,7 +153,7 @@ function schwab(f: readonly string[], h: readonly string[], ctx: ImportContext):
   const sells = ["SELL", "SELL TO CLOSE", "SELL SHORT"];
   if (!buys.includes(action) && !sells.includes(action)) return notTrade(`Action "${action.slice(0, 30)}"`);
   if (ctx.compat === "fixed" && (action === "BUY TO OPEN" || action === "SELL TO CLOSE")) return { option: true };
-  const c = common(f, sym, qty, price, date, "MM/dd/yyyy", ctx.now, true);
+  const c = common(f, sym, qty, price, date, "MM/dd/yyyy", ctx, true);
   if (isRowResult(c)) return c;
   const fees = money(f, first(h, "fees & comm"));
   return { txn: { ...c, isBuy: buys.includes(action), commission: absDec(fees), fees: SwiftDecimal.zero } };
@@ -173,12 +175,12 @@ function fidelity(f: readonly string[], h: readonly string[], ctx: ImportContext
     const secType = (at(f, typeIdx) ?? "").toUpperCase();
     if (action.includes("OPENING TRANSACTION") || action.includes("CLOSING TRANSACTION") || secType.includes("OPTION")) return { option: true };
   }
-  let priceIdx = h.findIndex((x) => x.includes("price"));
+  let priceIdx = h.findIndex((x) => x.includes("price")); // GenericCSVParser.swift:503
   if (priceIdx < 0) {
-    if (ctx.compat === "fixed") return bad("invalid_price", "The file has no price column"); // D-24
+    if (ctx.compat === "fixed") return bad("invalid_price", "The file has no price column"); // D-24, D-32
     priceIdx = 0;
   }
-  const c = common(f, sym, qty, priceIdx, date, "MM/dd/yyyy", ctx.now, true);
+  const c = common(f, sym, qty, priceIdx, date, "MM/dd/yyyy", ctx, true);
   if (isRowResult(c)) return c;
   const commIdx = h.findIndex((x) => x.includes("commission"));
   const feesIdx = h.findIndex((x) => x.includes("fees") && !x.includes("commission"));
@@ -203,7 +205,7 @@ function etrade(f: readonly string[], h: readonly string[], ctx: ImportContext):
     if (/TO (OPEN|CLOSE)$/.test(action)) return { option: true };
     if (secType === "OPTN" || secType.includes("OPTION")) return { option: true };
   }
-  const c = common(f, sym, qty, price, date, "MM/dd/yy", ctx.now, true);
+  const c = common(f, sym, qty, price, date, "MM/dd/yy", ctx, true);
   if (isRowResult(c)) return c;
   const comm = money(f, first(h, "commission", "comm"));
   return { txn: { ...c, isBuy, commission: absDec(comm), fees: SwiftDecimal.zero } };
@@ -228,7 +230,7 @@ function tastytrade(f: readonly string[], h: readonly string[], ctx: ImportConte
     const optionFields = [first(h, "expiration date"), first(h, "strike price"), first(h, "call or put")].some((i) => trimWs(at(f, i) ?? "") !== "");
     if (inst.includes("OPTION") || (instIdx === null && optionFields)) return { option: true };
   }
-  const c = common(f, sym, qty, price, date, "yyyy-MM-dd'T'HH:mm:ssZ", ctx.now, true);
+  const c = common(f, sym, qty, price, date, "yyyy-MM-dd'T'HH:mm:ssZ", ctx, true);
   if (isRowResult(c)) return c;
   const comm = money(f, first(h, "commissions", "commission"));
   const fees = money(f, first(h, "fees", "clearing fees"));

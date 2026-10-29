@@ -509,7 +509,7 @@ don't transfer. The restore summary says so.
 |---|---|---|---|
 | **32-column MT5 CSV** (the trade-detail section of an analysis export the user already has; multi-section; 26–32 columns, short rows padded: column 31 `NEUTRAL`, the rest `0`) | FX | ADAPT | **Fix:** unquoted commas inside the Comment field (more than 32 fields) are joined back into Comment. On the Mac the columns shift. Times: §3.1 |
 | MT4 CSV (`ticket,type,item,profit`; `yyyy.MM.dd HH:mm:ss`; profit includes costs) | FX | PORT | |
-| cTrader CSV | FX | ADAPT | Volume in **units ÷ 100,000 = lots** (D-15) |
+| cTrader CSV | FX | ADAPT | Volume in **units ÷ 100,000 = lots** (D-15). The compact header (`PositionId`, `EntryTime`, …) is mapped like the spaced one (D-31; the Mac imports 0 trades) |
 | OANDA CSV | FX | ADAPT | Same units fix (D-15). The OANDA API path already divides on the Mac |
 | OANDA v20 API | FX | PORT | §8.4 |
 | TradingView strategy export | S | ADAPT | Entry and exit rows paired by Trade # into one round trip (D-16). On the Mac each row is a trade, with direction read as "contains LONG/SHORT" |

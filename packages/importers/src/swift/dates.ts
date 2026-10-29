@@ -8,7 +8,10 @@
 // - literals must match exactly and the whole string must be consumed (`date(from:)`);
 // - `Z` accepts "Z", ±HH, ±HHMM, ±HH:MM and "GMT"/"UTC" with an optional offset;
 // - wall times are read in the formatter's zone (UTC, or America/New_York for Greenwick);
-//   a wall time skipped by DST is read with the earlier offset (ZonedCalendar).
+//   a wall time skipped by DST is rejected (nil) and a repeated one is read as its second
+//   occurrence (Tier B probes, golden/README.md). PARITY D-30 (`fixed` mode): a skipped wall
+//   time is read with the pre-transition offset instead, the rule `Calendar` and the engine's
+//   ZonedCalendar use, so the next pattern in a list never gets a chance to read it day-first.
 //
 // `ISO8601DateFormatter` with `.withInternetDateTime` (optionally `.withFractionalSeconds`):
 // `yyyy-MM-ddTHH:mm:ss[.fff]` followed by "Z" or ±HH:MM (±HHMM also read).
@@ -16,6 +19,13 @@
 import { ZonedCalendar } from "@dojix-desktop/core";
 
 export type TimeZoneId = "UTC" | "America/New_York";
+
+/**
+ * What a pattern does with a wall time the spring-forward change skips: `"reject"` is
+ * DateFormatter (the Mac, `swift` compat); `"earlierOffset"` reads it with the offset in force
+ * before the change, 02:30 in New York on 8 March 2026 → 07:30Z (PARITY D-30, `fixed` compat).
+ */
+export type SkippedWallTime = "reject" | "earlierOffset";
 
 const calendars = new Map<string, ZonedCalendar>();
 function calendarFor(tz: string): ZonedCalendar {
@@ -106,7 +116,7 @@ function isDigit(code: number): boolean {
 }
 
 /** Parses `text` against an ICU pattern in `tz`. `now` (epoch ms) anchors two-digit years. Returns epoch ms or null. */
-export function parseDatePattern(text: string, pattern: string, tz: TimeZoneId, now: number): number | null {
+export function parseDatePattern(text: string, pattern: string, tz: TimeZoneId, now: number, skipped: SkippedWallTime = "reject"): number | null {
   const tokens = compilePattern(pattern);
   if (!tokens) return null;
   const p: Parsed = {};
@@ -177,7 +187,7 @@ export function parseDatePattern(text: string, pattern: string, tz: TimeZoneId, 
     pos = end;
   }
   if (pos !== text.length) return null;
-  return resolve(p, tz, now);
+  return resolve(p, tz, now, skipped);
 }
 
 function parseZone(text: string, pos: number): { offsetMinutes: number; end: number } | null {
@@ -207,12 +217,23 @@ function daysInMonth(year: number, month: number): number {
 /**
  * DateFormatter's reading of a wall time in a DST zone (Swift reference run, golden/reference):
  * a wall time skipped by the spring-forward change is rejected (nil), and a repeated one (the
- * autumn hour) resolves to its SECOND occurrence.
+ * autumn hour) resolves to its SECOND occurrence. With `skipped = "earlierOffset"` (D-30) the
+ * skipped time is kept, read with the pre-transition offset (ZonedCalendar.instantFromWall).
  */
-function wallToInstant(cal: ZonedCalendar, y: number, month: number, day: number, hour: number, minute: number, second: number, millis: number): number | null {
+function wallToInstant(
+  cal: ZonedCalendar,
+  y: number,
+  month: number,
+  day: number,
+  hour: number,
+  minute: number,
+  second: number,
+  millis: number,
+  skipped: SkippedWallTime,
+): number | null {
   const t = cal.instantFromWall(y, month, day, hour, minute, second, millis);
   const f = cal.fields(t);
-  if (f.year !== y || f.month !== month || f.day !== day || f.hour !== hour || f.minute !== minute) return null; // skipped
+  if (f.year !== y || f.month !== month || f.day !== day || f.hour !== hour || f.minute !== minute) return skipped === "earlierOffset" ? t : null;
   const later = t + 3_600_000;
   const g = cal.fields(later);
   return g.year === y && g.month === month && g.day === day && g.hour === hour && g.minute === minute ? later : t;
@@ -225,7 +246,7 @@ function utcInstant(year: number, month: number, day: number, hour: number, minu
   return d.getTime();
 }
 
-function resolve(p: Parsed, tz: TimeZoneId, now: number): number | null {
+function resolve(p: Parsed, tz: TimeZoneId, now: number, skipped: SkippedWallTime): number | null {
   let year = p.year ?? 1970;
   const month = p.month ?? 1;
   const day = p.day ?? 1;
@@ -260,7 +281,7 @@ function resolve(p: Parsed, tz: TimeZoneId, now: number): number | null {
     if (p.offsetMinutes !== undefined) return utcInstant(y, month, day, hour, minute, second, millis) - p.offsetMinutes * 60_000;
     if (tz === "UTC") return utcInstant(y, month, day, hour, minute, second, millis);
     if (y > 9999) return null;
-    return wallToInstant(calendarFor(tz), y, month, day, hour, minute, second, millis);
+    return wallToInstant(calendarFor(tz), y, month, day, hour, minute, second, millis, skipped);
   };
   let t = instant(year);
   if (t !== null && ambiguousYear && centuryStart !== null && t < centuryStart) t = instant(year + 100);
@@ -311,6 +332,7 @@ export class DateParsers {
     private readonly tz: TimeZoneId,
     private readonly now: number,
     private readonly maxLength = Infinity,
+    private readonly skipped: SkippedWallTime = "reject",
   ) {
     this.patterns = [...new Set(patterns)];
   }
@@ -319,7 +341,7 @@ export class DateParsers {
     const trimmed = trim(raw);
     if (trimmed === "" || [...trimmed].length > this.maxLength) return null;
     for (const pattern of this.patterns) {
-      const t = parseDatePattern(trimmed, pattern, this.tz, this.now);
+      const t = parseDatePattern(trimmed, pattern, this.tz, this.now, this.skipped);
       if (t !== null) return t;
     }
     return parseIso8601(trimmed, true) ?? parseIso8601(trimmed, false);

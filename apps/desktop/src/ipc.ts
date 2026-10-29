@@ -3,12 +3,28 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type {
+  AiPreview,
+  AiReport,
   AppInfo,
+  CalendarWeek,
+  CompanyProfile,
   JournalRow,
   LockStatus,
+  ModelInfo,
+  OandaHistory,
+  OnlineSettingsPatch,
+  OnlineSettingsView,
   PickedBackup,
+  PriceTick,
+  QuotesStatus,
   RestoreSummary,
   RotationOutcome,
+  SecretAccount,
+  StockQuote,
+  StreamStatus,
+  SymbolSearchResult,
+  TestProvider,
+  TestResult,
 } from "@dojix-desktop/core";
 
 /** Events the shell sends: a save failed or recovered, a close with unsaved changes. */
@@ -78,4 +94,80 @@ export const tauriIpc: Ipc = {
       stop?.();
     };
   },
+};
+
+// ---------------------------------------------------------------------------------------------
+// Online features (SPEC 8; Rust: src-tauri/src/net/commands.rs). The web view never touches
+// the network: every call below goes through the shell. No method returns a key.
+// ---------------------------------------------------------------------------------------------
+
+/** Price-stream events from the shell. */
+export type OnlineEvent = "quote_tick" | "quote_status";
+
+export interface OnlineIpc {
+  settings(): Promise<OnlineSettingsView>;
+  updateSettings(patch: OnlineSettingsPatch): Promise<OnlineSettingsView>;
+  /** Stores a key in the OS credential vault. It can never be read back. */
+  setSecret(account: SecretAccount, value: string): Promise<void>;
+  hasSecret(account: SecretAccount): Promise<boolean>;
+  deleteSecret(account: SecretAccount): Promise<void>;
+  testConnection(provider: TestProvider): Promise<TestResult>;
+  /** The provider's model list for the advanced picker. */
+  aiModels(): Promise<ModelInfo[]>;
+  /** The exact request a run would send (works without a key or the switch). */
+  aiPreview(prompt: string): Promise<AiPreview>;
+  /** Sends exactly the previewed request; `consent` is required on the first run. */
+  aiRun(prompt: string, requestSha256: string, consent: boolean): Promise<AiReport>;
+  aiReports(limit: number): Promise<AiReport[]>;
+  deleteAiReport(id: number): Promise<void>;
+  quotesStart(symbols: string[]): Promise<QuotesStatus>;
+  quotesStop(): Promise<void>;
+  quotesStatus(): Promise<QuotesStatus>;
+  calendarWeek(force: boolean): Promise<CalendarWeek>;
+  finnhubQuote(symbol: string): Promise<StockQuote>;
+  finnhubProfile(symbol: string): Promise<CompanyProfile>;
+  finnhubSearch(query: string): Promise<SymbolSearchResult[]>;
+  /** OANDA import step 1 (map with `mapOandaTransactions`, then commit like any import). */
+  oandaFetchHistory(days: number | null): Promise<OandaHistory>;
+  onQuoteTick(handler: (tick: PriceTick) => void): () => void;
+  onQuoteStatus(handler: (status: StreamStatus) => void): () => void;
+}
+
+function subscribe<T>(event: OnlineEvent, handler: (payload: T) => void): () => void {
+  let stop: (() => void) | null = null;
+  let cancelled = false;
+  listen<T>(event, (e) => handler(e.payload))
+    .then((unlisten) => {
+      if (cancelled) unlisten();
+      else stop = unlisten;
+    })
+    .catch(() => undefined);
+  return () => {
+    cancelled = true;
+    stop?.();
+  };
+}
+
+export const tauriOnlineIpc: OnlineIpc = {
+  settings: () => invoke<OnlineSettingsView>("online_settings_get"),
+  updateSettings: (patch) => invoke<OnlineSettingsView>("online_settings_set", { patch }),
+  setSecret: (account, value) => invoke<void>("set_secret", { account, value }),
+  hasSecret: (account) => invoke<boolean>("has_secret", { account }),
+  deleteSecret: (account) => invoke<void>("delete_secret", { account }),
+  testConnection: (provider) => invoke<TestResult>("test_connection", { provider }),
+  aiModels: () => invoke<ModelInfo[]>("ai_models"),
+  aiPreview: (prompt) => invoke<AiPreview>("ai_preview", { prompt }),
+  aiRun: (prompt, requestSha256, consent) => invoke<AiReport>("ai_run", { prompt, requestSha256, consent }),
+  aiReports: (limit) => invoke<AiReport[]>("ai_reports_list", { limit }),
+  deleteAiReport: (id) => invoke<void>("ai_report_delete", { id }),
+  quotesStart: (symbols) => invoke<QuotesStatus>("quotes_start", { symbols }),
+  quotesStop: () => invoke<void>("quotes_stop"),
+  quotesStatus: () => invoke<QuotesStatus>("quotes_status"),
+  calendarWeek: (force) => invoke<CalendarWeek>("calendar_week", { force }),
+  finnhubQuote: (symbol) => invoke<StockQuote>("finnhub_quote", { symbol }),
+  finnhubProfile: (symbol) => invoke<CompanyProfile>("finnhub_profile", { symbol }),
+  finnhubSearch: (query) => invoke<SymbolSearchResult[]>("finnhub_search", { query }),
+  oandaFetchHistory: (days) => invoke<OandaHistory>("oanda_fetch_history", { days }),
+  onQuoteTick: (handler) => subscribe<PriceTick>("quote_tick", handler),
+  onQuoteStatus: (handler) => subscribe<StreamStatus>("quote_status", handler),
 };
